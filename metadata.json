@@ -1,0 +1,8 @@
+{
+  "name": "Neev - Phygital Library",
+  "description": "Fusing Physical books with Digital soul. Explore Neev phygital library search catalog, interactive shelf-locator floor map, active RFIDs telemetry logs, and smart books AI bookmark scanners.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
