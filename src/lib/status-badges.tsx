@@ -1,0 +1,202 @@
+import { cn } from "@/lib/utils";
+
+// Standardized visual shape for all status badges everywhere
+export const uniformBadgeShape = "inline-flex items-center justify-center whitespace-nowrap px-2.5 py-0.5 rounded-none text-[11px] font-semibold tracking-wide uppercase";
+
+// Keep this around for backwards compatibility where the cover shape was expected,
+// but now just map it to the new uniform shape + backdrop blur.
+export const shelfFilterChipOnCoverClass = "shadow-sm backdrop-blur-md bg-opacity-90 dark:bg-opacity-90";
+
+export const shelfFilterChipClass = cn(uniformBadgeShape, "border border-border bg-background text-foreground shadow-sm");
+export const shelfFilterChipOnDarkClass = cn(uniformBadgeShape, "border border-white/20 bg-black/60 text-white shadow-sm backdrop-blur-md");
+
+export function getStatusColorClasses(status: string): string {
+  const s = status.toLowerCase();
+  
+  // Available (Emerald)
+  if (["available", "ready", "on marketplace"].includes(s)) {
+    return "border border-emerald-500/30 bg-emerald-500/10 text-secondary/80 dark:text-secondary/20";
+  }
+  
+  // Approved (Sky)
+  if (["approved", "listed", "requested", "new"].includes(s)) {
+    return "border border-sky-500/35 bg-sky-500/10 text-sky-950 dark:text-sky-100";
+  }
+  
+  // Set Aside (Amber)
+  if (["set aside", "reserved", "fulfilled", "borrowed"].includes(s)) {
+    return "border border-amber-500/35 bg-amber-500/10 text-accent/90 dark:text-accent/20";
+  }
+  
+  // Checked Out (Violet)
+  if (["checked out", "checked_out", "in_transit", "in transit", "transfer_pending", "transfer pending", "routed", "finding", "pending_dropoff", "pending drop-off"].includes(s)) {
+    return "border border-violet-500/35 bg-violet-500/10 text-violet-950 dark:text-violet-100";
+  }
+  
+  // Overdue (Rose)
+  if (["overdue", "timed out"].includes(s)) {
+    return "border border-rose-500/30 bg-rose-500/10 text-rose-900 dark:text-destructive/20";
+  }
+  
+  // Rejected (Red)
+  if (["rejected", "unavailable", "expired"].includes(s)) {
+    return "border border-destructive/30 bg-destructive/10 text-destructive";
+  }
+  
+  // Cancelled (Slate)
+  if (["cancelled", "sold", "withdrawn", "picked", "completed"].includes(s)) {
+    return "border border-muted-foreground/25 bg-muted/50 text-muted-foreground";
+  }
+
+  // Fallback (Slate)
+  return "border border-muted-foreground/25 bg-muted/50 text-muted-foreground";
+}
+
+/** Staff-facing label: reserved copies are held for desk pickup. */
+export function hubBookStatusLabel(status: string): string {
+  if (status === "reserved") return "Set aside";
+  if (status === "transfer_pending") return "Transfer pending";
+  if (status === "in_transit") return "In transit";
+  return status.replace(/_/g, " ");
+}
+
+export function HubBookStatusBadge({
+  status,
+  className,
+  onCover = true,
+}: {
+  status: string;
+  className?: string;
+  onCover?: boolean;
+}) {
+  return (
+    <span
+      className={cn(
+        uniformBadgeShape,
+        onCover ? shelfFilterChipOnCoverClass : null,
+        getStatusColorClasses(status),
+        className,
+      )}
+      role="status"
+    >
+      {hubBookStatusLabel(status)}
+    </span>
+  );
+}
+
+export function P2pStatusBadge({ status, className }: { status: string; className?: string }) {
+  return (
+    <span
+      className={cn(
+        uniformBadgeShape,
+        getStatusColorClasses(status),
+        className,
+      )}
+      role="status"
+    >
+      {status.replace(/_/g, " ")}
+    </span>
+  );
+}
+
+/** P2P pipeline listing (desk) — same labels as `hub-desk-p2p-listings` status filter copy. */
+export function p2pPipelineStatusLabel(s: string): string {
+  switch (s) {
+    case "listed":
+      return "Listed (online)";
+    case "pending_dropoff":
+      return "Pending drop-off";
+    case "available":
+      return "On marketplace";
+    case "reserved":
+      return "Reserved";
+    case "sold":
+      return "Sold";
+    case "expired":
+      return "Expired";
+    case "rejected":
+      return "Rejected";
+    default:
+      return s.replace(/_/g, " ");
+  }
+}
+
+/** Cover corner badge for peer pipeline listings (hub desk P2P), matching All copies placement. */
+export function P2pPipelineCoverStatusBadge({ status, className }: { status: string; className?: string }) {
+  return (
+    <span
+      className={cn(
+        uniformBadgeShape,
+        shelfFilterChipOnCoverClass,
+        getStatusColorClasses(status),
+        className,
+      )}
+      role="status"
+    >
+      {p2pPipelineStatusLabel(status)}
+    </span>
+  );
+}
+
+export function ShelfPeerStatusBadge({
+  status,
+  className,
+  onCover = true,
+}: {
+  status: string;
+  className?: string;
+  onCover?: boolean;
+}) {
+  let label = status;
+  if (status === "approved") label = "available"; // Peer tiles on the shelf: approved is labeled available
+  return (
+    <span
+      className={cn(
+        uniformBadgeShape,
+        onCover ? shelfFilterChipOnCoverClass : null,
+        getStatusColorClasses(status),
+        className,
+      )}
+      role="status"
+    >
+      {label.replace(/_/g, " ")}
+    </span>
+  );
+}
+
+export function requestStatusLabel(status: string): string {
+  switch (status) {
+    case "requested":
+      return "New";
+    case "routed":
+      return "Finding";
+    case "fulfilled":
+      return "Set aside";
+    case "ready":
+      return "In catalog";
+    case "picked":
+      return "Completed";
+    case "expired":
+      return "Timed out";
+    case "cancelled":
+      return "Withdrawn";
+    default:
+      return status.replace(/_/g, " ");
+  }
+}
+
+export function RequestStatusBadge({ status, className }: { status: string; className?: string }) {
+  const label = requestStatusLabel(status);
+  return (
+    <span
+      className={cn(
+        uniformBadgeShape,
+        getStatusColorClasses(status),
+        className,
+      )}
+      role="status"
+    >
+      {label}
+    </span>
+  );
+}
