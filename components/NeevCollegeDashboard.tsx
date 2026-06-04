@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { PhygitalBook, LiveRFIDEvent } from '../services/neevData';
-import { useCatalogBooks, useActivityTimeline } from '../services/api';
-import { 
-  Sliders, RefreshCw, Layers, Check, BookOpen, Clock, Activity, 
+import { useQuery } from '@tanstack/react-query';
+import { apiFetch } from '../lib/api';
+import { useAuth } from '../context/auth-context';
+import {
+  Sliders, RefreshCw, Layers, Check, BookOpen, Clock, Activity,
   ShieldCheck, Camera, QrCode, UserCheck, AlertTriangle, TrendingUp, Users,
   CheckCircle, ArrowRight, ShieldAlert, DollarSign, Send, Ban
 } from 'lucide-react';
@@ -23,10 +25,20 @@ export const NeevCollegeDashboard: React.FC<any> = ({
   secureEscrowLiability,
   violations
 }) => {
-  const { data: backendBooks = [] } = useCatalogBooks();
-  const { data: activityTimeline = [] } = useActivityTimeline();
+  const { token } = useAuth();
 
-  const books = backendBooks.map((cat: any, idx: number) => ({
+  const { data: backendBooksPayload } = useQuery({
+    queryKey: ['catalog', 'books'],
+    queryFn: () => apiFetch<{ books: any[] }>('/api/catalog/books', { token: token || undefined })
+  });
+
+  const { data: activityTimelinePayload } = useQuery({
+    queryKey: ['activity', 'timeline'],
+    queryFn: () => apiFetch<{ timeline: any[] }>('/api/activity', { token: token || undefined })
+  });
+
+  const backendBooks = (backendBooksPayload as any)?.books || backendBooksPayload || [];
+  const books = (backendBooks as any[]).map((cat: any, idx: number) => ({
     id: cat.id,
     title: cat.title,
     author: cat.author || "Peer/Hub Listing",
@@ -41,11 +53,12 @@ export const NeevCollegeDashboard: React.FC<any> = ({
     shelfLocation: { aisle: 'A' as any, shelfId: `A1`, row: 1 },
     summary: "Book available from Hub.",
     keyTakeaways: [],
-    mockDigitalContent: `CHAPTER 1: Preview Content`,
     reviews: []
   } as PhygitalBook));
 
-  const rfidEvents = activityTimeline.slice(-10).map((act: any) => ({
+  const timelinePayload = activityTimelinePayload as any;
+  const timeline = timelinePayload?.timeline || timelinePayload?.events || timelinePayload || [];
+  const rfidEvents = (timeline as any[]).slice(-10).map((act: any) => ({
     id: act.id,
     timestamp: new Date(act.createdAt).toLocaleTimeString(),
     type: 'shelf_lift',
@@ -119,7 +132,7 @@ export const NeevCollegeDashboard: React.FC<any> = ({
       setHandoffStep('transferred');
       setActionSuccessMsg(res.message);
       addXp(120);
-      
+
       setTimeout(() => {
         setHandoffStep('idle');
         setStampUrl('');
@@ -179,12 +192,12 @@ export const NeevCollegeDashboard: React.FC<any> = ({
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
-      
+
       {/* Overview Analytics Dashboard Matrix (Section 3) */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        
+
         {/* Metric 1 */}
-        <div className="bg-muted/50/40 border border-border/60 rounded-2xl p-6 flex items-center justify-between">
+        <div className="bg-muted/50/40 border border-slate-200/60 rounded-2xl p-6 flex items-center justify-between">
           <div className="space-y-1">
             <span className="text-[10px] font-mono tracking-widest text-muted-foreground/60 uppercase font-bold block">
               Total Assets Circulated
@@ -200,7 +213,7 @@ export const NeevCollegeDashboard: React.FC<any> = ({
         </div>
 
         {/* Metric 2: Escrow Liabilities */}
-        <div className="bg-muted/50/40 border border-border/60 rounded-2xl p-6 flex items-center justify-between">
+        <div className="bg-muted/50/40 border border-slate-200/60 rounded-2xl p-6 flex items-center justify-between">
           <div className="space-y-1">
             <span className="text-[10px] font-mono tracking-widest text-muted-foreground/60 uppercase font-bold block">
               Secure Escrow Float
@@ -216,7 +229,7 @@ export const NeevCollegeDashboard: React.FC<any> = ({
         </div>
 
         {/* Metric 3: Operating Revenue */}
-        <div className="bg-muted/50/40 border border-border/60 rounded-2xl p-6 flex items-center justify-between">
+        <div className="bg-muted/50/40 border border-slate-200/60 rounded-2xl p-6 flex items-center justify-between">
           <div className="space-y-1">
             <span className="text-[10px] font-mono tracking-widest text-muted-foreground/60 uppercase font-bold block">
               Operating Capital Pool [V2]
@@ -234,7 +247,7 @@ export const NeevCollegeDashboard: React.FC<any> = ({
       </section>
 
       {/* Desk Operating Category Selector Tabs */}
-      <div className="border-b border-border flex flex-wrap gap-1">
+      <div className="border-b border-slate-200 flex flex-wrap gap-1">
         {[
           { id: 'checkout', label: 'Book Handout', icon: QrCode },
           { id: 'return', label: 'Return Intake', icon: UserCheck },
@@ -248,11 +261,10 @@ export const NeevCollegeDashboard: React.FC<any> = ({
             <button
               key={tab.id}
               onClick={() => setDeskTab(tab.id as any)}
-              className={`px-4 py-2.5 text-xs font-semibold flex items-center space-x-2 border-b-2 transition -mb-0.5 ${
-                isActive 
-                  ? 'border-indigo-500 text-foreground bg-muted/50/35' 
+              className={`px-4 py-2.5 text-xs font-semibold flex items-center space-x-2 border-b-2 transition -mb-0.5 ${isActive
+                  ? 'border-indigo-500 text-foreground bg-slate-50'
                   : 'border-transparent text-muted-foreground hover:text-foreground/90'
-              }`}
+                }`}
             >
               <Icon className="w-3.5 h-3.5 shrink-0" />
               <span>{tab.label}</span>
@@ -270,12 +282,12 @@ export const NeevCollegeDashboard: React.FC<any> = ({
       )}
 
       {/* category tab container content */}
-      <div className="bg-muted/50/10 border border-border rounded-2xl p-6">
-        
+      <div className="bg-muted/50/10 border border-slate-200 rounded-2xl p-6">
+
         {/* CATEGORY A: KIOSK BOOK HANDOUT CHEKCOUT WORKSPACE */}
         {deskTab === 'checkout' && (
           <div className="space-y-6">
-            <div className="flex items-center justify-between border-b border-border pb-3">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-3">
               <div>
                 <h2 className="text-sm font-bold text-foreground tracking-tight">Kiosk Book Handoff Desk</h2>
                 <p className="text-[10px] font-mono text-muted-foreground/60 uppercase font-semibold">Step-by-step physical-to-digital transfer compiler</p>
@@ -288,14 +300,14 @@ export const NeevCollegeDashboard: React.FC<any> = ({
             {handoffStep === 'idle' && (
               <form onSubmit={handleStartCheckout} className="space-y-4 text-xs font-sans">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  
+
                   {/* Select Student */}
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-mono text-muted-foreground/80 uppercase font-bold block">1. Select Target Student Card ID</label>
                     <select
                       value={studentSelectId}
                       onChange={(e) => setStudentSelectId(e.target.value)}
-                      className="w-full bg-background border border-border/60 hover:border-border focus:border-zinc-650 rounded-xl px-3.5 py-2.5 text-muted-foreground focus:outline-none transition"
+                      className="w-full bg-background border border-slate-200/60 hover:border-slate-200 focus:border-zinc-650 rounded-xl px-3.5 py-2.5 text-muted-foreground focus:outline-none transition"
                     >
                       <option value="student_1">NEEV-ST-ishaan (Ishaan K. - Premium Active)</option>
                       <option value="student_2">NEEV-ST-sneha (Sneha V. - Premium Active)</option>
@@ -309,7 +321,7 @@ export const NeevCollegeDashboard: React.FC<any> = ({
                     <select
                       value={selectedBookIsbn}
                       onChange={(e) => setSelectedBookIsbn(e.target.value)}
-                      className="w-full bg-background border border-border/60 hover:border-border focus:border-zinc-650 rounded-xl px-3.5 py-2.5 text-muted-foreground focus:outline-none transition"
+                      className="w-full bg-background border border-slate-200/60 hover:border-slate-200 focus:border-zinc-650 rounded-xl px-3.5 py-2.5 text-muted-foreground focus:outline-none transition"
                     >
                       <option value="978-1617294433">Algorithms (CLRS) [₹1,200 retail cost]</option>
                       <option value="978-0130313583">Modern Operating Systems [₹1,500 retail cost]</option>
@@ -323,7 +335,7 @@ export const NeevCollegeDashboard: React.FC<any> = ({
                     <select
                       value={selectedPhysicalCopyId}
                       onChange={(e) => setSelectedPhysicalCopyId(e.target.value)}
-                      className="w-full bg-background border border-border/60 focus:outline-none px-3 py-2.5 text-muted-foreground font-mono"
+                      className="w-full bg-background border border-slate-200/60 focus:outline-none px-3 py-2.5 text-muted-foreground font-mono"
                     >
                       <option value="QR-1002">QR-1002 (In-Hub Shelf B)</option>
                       <option value="QR-1003">QR-1003 (In-Hub Shelf B)</option>
@@ -341,11 +353,10 @@ export const NeevCollegeDashboard: React.FC<any> = ({
                       <button
                         type="button"
                         onClick={() => setCheckoutType('SHORT_TERM_CREDIT')}
-                        className={`p-2.5 border rounded-xl text-left transition ${
-                          checkoutType === 'SHORT_TERM_CREDIT' 
-                            ? 'bg-indigo-950/20 border-indigo-500 text-primary font-bold' 
-                            : 'bg-transparent border-border/60 text-muted-foreground hover:text-foreground/90'
-                        }`}
+                        className={`p-2.5 border rounded-xl text-left transition ${checkoutType === 'SHORT_TERM_CREDIT'
+                            ? 'bg-indigo-950/20 border-indigo-500 text-primary font-bold'
+                            : 'bg-transparent border-slate-200/60 text-muted-foreground hover:text-foreground/90'
+                          }`}
                       >
                         <span className="block text-[11px]">Short-Term Credit</span>
                         <span className="block font-light text-[9px] text-muted-foreground/60 mt-1">Uses Elastic limit</span>
@@ -354,11 +365,10 @@ export const NeevCollegeDashboard: React.FC<any> = ({
                       <button
                         type="button"
                         onClick={() => setCheckoutType('LONG_TERM_DEPOSIT')}
-                        className={`p-2.5 border rounded-xl text-left transition ${
-                          checkoutType === 'LONG_TERM_DEPOSIT' 
-                            ? 'bg-amber-950/20 border-amber-500 text-amber-400 font-bold' 
-                            : 'bg-transparent border-border/60 text-muted-foreground hover:text-foreground/90'
-                        }`}
+                        className={`p-2.5 border rounded-xl text-left transition ${checkoutType === 'LONG_TERM_DEPOSIT'
+                            ? 'bg-amber-950/20 border-amber-500 text-amber-400 font-bold'
+                            : 'bg-transparent border-slate-200/60 text-muted-foreground hover:text-foreground/90'
+                          }`}
                       >
                         <span className="block text-[11px]">Long-Term Lease Lease</span>
                         <span className="block font-light text-[9px] text-muted-foreground/60 mt-1">Requires Cash Lock</span>
@@ -381,12 +391,12 @@ export const NeevCollegeDashboard: React.FC<any> = ({
 
             {handoffStep === 'scanned_qr' && (
               <div className="space-y-4 animate-in fade-in">
-                <div className="p-4 bg-background/60 border border-border rounded-xl flex justify-between items-start">
+                <div className="p-4 bg-background/60 border border-slate-200 rounded-xl flex justify-between items-start">
                   <div>
                     <span className="px-1.5 py-0.5 bg-indigo-950 text-primary font-mono text-[9px] rounded font-bold uppercase">
                       Physical asset aligned
                     </span>
-                    <h3 className="text-foreground text-sm font-bold mt-2 font-sans">{getBookTitle(selectedBookIsbn)}</h3>
+                    <h3 className="text-foreground text-sm font-bold mt-2 ">{getBookTitle(selectedBookIsbn)}</h3>
                     <p className="text-[11px] text-muted-foreground">Target copy unique ID: <span className="font-mono font-bold text-foreground/90">{selectedPhysicalCopyId}</span></p>
                   </div>
                   <div className="text-right text-[10px] font-mono text-muted-foreground/60">
@@ -404,7 +414,7 @@ export const NeevCollegeDashboard: React.FC<any> = ({
 
                 <div className="flex justify-between items-center pt-2">
                   <button onClick={() => setHandoffStep('idle')} className="text-xs font-bold text-muted-foreground/80 hover:text-foreground transition">Reset Process</button>
-                  <button 
+                  <button
                     onClick={handleCaptureSpineStamp}
                     className="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-550 text-xs font-bold text-foreground rounded-xl shadow-lg transition flex items-center space-x-1.5 animate-pulse"
                   >
@@ -416,12 +426,12 @@ export const NeevCollegeDashboard: React.FC<any> = ({
             )}
 
             {handoffStep === 'capturing_spine' && (
-              <div className="p-4 bg-background border border-border rounded-xl space-y-4 animate-in zoom-in-95">
+              <div className="p-4 bg-background border border-slate-200 rounded-xl space-y-4 animate-in zoom-in-95">
                 <div className="flex items-center justify-between text-[9px] font-mono bg-muted/50 px-3 py-1.5 rounded text-muted-foreground">
                   <span className="flex items-center space-x-1"><span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-ping"></span><span>SENSOR_CAM LIVE PORT 3000 feed</span></span>
                   <span>MD5: 53a2_92bc</span>
                 </div>
-                <div className="aspect-[21/9] bg-muted/50 relative rounded-xl border border-border/60 overflow-hidden flex items-center justify-center">
+                <div className="aspect-[21/9] bg-muted/50 relative rounded-xl border border-slate-200/60 overflow-hidden flex items-center justify-center">
                   <div className="absolute inset-4 border border-dashed border-emerald-500/25 rounded"></div>
                   <div className="text-center font-mono text-[10px] text-muted-foreground/50 space-y-1">
                     <span className="text-emerald-400 animate-pulse uppercase block">Textbook covers aligned on counter loadcell grid</span>
@@ -438,7 +448,7 @@ export const NeevCollegeDashboard: React.FC<any> = ({
             )}
 
             {handoffStep === 'ready_to_transfer' && (
-              <div className="p-4 bg-background/50 border border-border rounded-xl space-y-4 animate-in fade-in">
+              <div className="p-4 bg-background/50 border border-slate-200 rounded-xl space-y-4 animate-in fade-in">
                 <div className="flex justify-between items-start">
                   <div>
                     <span className="px-2 py-0.5 bg-emerald-950 border border-emerald-500/20 text-emerald-400 text-[9px] font-mono font-bold rounded uppercase">
@@ -447,12 +457,12 @@ export const NeevCollegeDashboard: React.FC<any> = ({
                     <h4 className="text-xs text-muted-foreground mt-2 font-mono">Grade A+ (Spotless textbook bindings verified)</h4>
                     <p className="text-[11px] text-muted-foreground/60">Asset physical collateral registers are compiled. Safe handoff is ready.</p>
                   </div>
-                  <div className="w-16 h-12 rounded bg-muted/50 border border-border/60 overflow-hidden shrink-0">
+                  <div className="w-16 h-12 rounded bg-muted/50 border border-slate-200/60 overflow-hidden shrink-0">
                     <img src={stampUrl} alt="Condition verification" referrerPolicy="no-referrer" className="w-full h-full object-cover" />
                   </div>
                 </div>
 
-                <div className="flex justify-end gap-2 pt-2 border-t border-border">
+                <div className="flex justify-end gap-2 pt-2 border-t border-slate-200">
                   <button onClick={() => setHandoffStep('scanned_qr')} className="px-3 py-1.5 bg-muted/50 text-muted-foreground text-xs font-bold rounded-lg">Retake Cover Snapshot</button>
                   <button onClick={handleApproveHandoffTransfer} className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-550 text-foreground text-xs font-bold rounded-xl flex items-center space-x-1">
                     <UserCheck className="w-4 h-4" />
@@ -479,8 +489,8 @@ export const NeevCollegeDashboard: React.FC<any> = ({
         {/* CATEGORY B: RETURN INTAKE OPERATIONS DESK */}
         {deskTab === 'return' && (
           <form onSubmit={handleCompleteReturn} className="space-y-6 text-xs text-left">
-            <div className="border-b border-border pb-3">
-              <h2 className="text-sm font-bold text-foreground tracking-tight font-sans">Kiosk Book Return Desk</h2>
+            <div className="border-b border-slate-200 pb-3">
+              <h2 className="text-sm font-bold text-foreground tracking-tight ">Kiosk Book Return Desk</h2>
               <p className="text-[10px] font-mono text-muted-foreground/60 uppercase font-semibold">Verify barcodes, detect telemetry locks, and restore student limits</p>
             </div>
 
@@ -499,7 +509,7 @@ export const NeevCollegeDashboard: React.FC<any> = ({
                   placeholder="e.g. QR-1002"
                   value={returnPhysicalCopyId}
                   onChange={(e) => setReturnPhysicalCopyId(e.target.value)}
-                  className="w-full bg-background border border-border/60 rounded-xl px-3.5 py-2.5 text-foreground/90 focus:outline-none"
+                  className="w-full bg-background border border-slate-200/60 rounded-xl px-3.5 py-2.5 text-foreground/90 focus:outline-none"
                 />
               </div>
 
@@ -508,7 +518,7 @@ export const NeevCollegeDashboard: React.FC<any> = ({
                 <select
                   value={returnCondition}
                   onChange={(e) => setReturnCondition(e.target.value as any)}
-                  className="w-full bg-background border border-border/60 rounded-xl px-3.5 py-2.5 text-muted-foreground focus:outline-none cursor-pointer"
+                  className="w-full bg-background border border-slate-200/60 rounded-xl px-3.5 py-2.5 text-muted-foreground focus:outline-none cursor-pointer"
                 >
                   <option value="in-hub">Spotless (Clean and immediately restocked to shelf) [RESTORES CREDITS]</option>
                   <option value="lost">Lost (Deducts penalty, freezes student buffer limit) [LOCKS BUFFER]</option>
@@ -532,7 +542,7 @@ export const NeevCollegeDashboard: React.FC<any> = ({
         {/* CATEGORY C: BOUNTY BOARD INTAKE OPERATOR DESK */}
         {deskTab === 'bounty' && (
           <div className="space-y-6 text-left text-xs">
-            <div className="border-b border-border pb-3 flex justify-between items-center">
+            <div className="border-b border-slate-200 pb-3 flex justify-between items-center">
               <div>
                 <h2 className="text-sm font-bold text-foreground tracking-tight">Campus Bounty Board Intake</h2>
                 <p className="text-[10px] font-mono text-muted-foreground/60 uppercase font-semibold">Clear student lost penalty buffers by receiving donated/bartered references</p>
@@ -549,17 +559,17 @@ export const NeevCollegeDashboard: React.FC<any> = ({
             )}
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
-              
+
               {/* Left Form */}
-              <form onSubmit={handleCompleteBountyIntake} className="md:col-span-1 space-y-4 bg-background p-5 rounded-2xl border border-border">
+              <form onSubmit={handleCompleteBountyIntake} className="md:col-span-1 space-y-4 bg-background p-5 rounded-2xl border border-slate-200">
                 <span className="text-[9px] font-mono text-muted-foreground/60 uppercase tracking-widest font-extrabold block">Bounty Intake Node</span>
-                
+
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-mono text-muted-foreground/80 uppercase block">Align Book ISBN / Barcode</label>
                   <select
                     value={bountyIsbn}
                     onChange={(e) => setBountyIsbn(e.target.value)}
-                    className="w-full bg-muted/50 border border-border/60 rounded-lg p-2 text-muted-foreground outline-none"
+                    className="w-full bg-muted/50 border border-slate-200/60 rounded-lg p-2 text-muted-foreground outline-none"
                   >
                     {bountyBoard.map((item, idx) => (
                       <option key={idx} value={item.isbn}>{item.title} ({item.department})</option>
@@ -573,7 +583,7 @@ export const NeevCollegeDashboard: React.FC<any> = ({
                   <select
                     value={donorStudentId}
                     onChange={(e) => setDonorStudentId(e.target.value)}
-                    className="w-full bg-muted/50 border border-border/60 rounded-lg p-2 text-muted-foreground outline-none"
+                    className="w-full bg-muted/50 border border-slate-200/60 rounded-lg p-2 text-muted-foreground outline-none"
                   >
                     <option value="student_unregistered">Kabir S. (NEEV-ST-kabir - Buffer Inactive)</option>
                     <option value="student_2">Sneha V. (NEEV-ST-sneha)</option>
@@ -592,10 +602,10 @@ export const NeevCollegeDashboard: React.FC<any> = ({
               {/* Right list of upvoted requested books */}
               <div className="md:col-span-2 space-y-3">
                 <span className="text-[10px] font-mono text-muted-foreground/60 uppercase tracking-widest font-bold block">Current High-Demand Requested Books (Bounty Board Threshold)</span>
-                
+
                 <div className="space-y-2.5">
                   {bountyBoard?.slice(0, 5).map((b, idx) => (
-                    <div key={idx} className="bg-background p-3.5 rounded-xl border border-border flex items-center justify-between">
+                    <div key={idx} className="bg-background p-3.5 rounded-xl border border-slate-200 flex items-center justify-between">
                       <div className="space-y-1">
                         <h4 className="text-foreground/90 font-bold text-xs">{b.title}</h4>
                         <div className="flex items-center space-x-2 text-[10px] font-mono text-muted-foreground/60">
@@ -604,7 +614,7 @@ export const NeevCollegeDashboard: React.FC<any> = ({
                           <span>Upvotes: <strong className="text-primary">{b.currentUpvotes} / {b.thresholdRequired}</strong></span>
                         </div>
                       </div>
-                      <span className="px-2.5 py-1 bg-muted/50 border border-border/60 text-[10px] font-mono text-primary rounded-lg uppercase">
+                      <span className="px-2.5 py-1 bg-muted/50 border border-slate-200/60 text-[10px] font-mono text-primary rounded-lg uppercase">
                         {b.currentUpvotes >= b.thresholdRequired ? '🎯 BOUNTY LIVE' : '⌛ GATHERING UPVOTES'}
                       </span>
                     </div>
@@ -622,7 +632,7 @@ export const NeevCollegeDashboard: React.FC<any> = ({
         {/* CATEGORY D: FINANCIAL LEDGER & STRIPE/RAZORPAY WEBHOOK SIMULATOR */}
         {deskTab === 'finance' && (
           <div className="space-y-6 text-left text-xs">
-            <div className="border-b border-border pb-3 flex justify-between items-center">
+            <div className="border-b border-slate-200 pb-3 flex justify-between items-center">
               <div>
                 <h2 className="text-sm font-bold text-foreground tracking-tight">Financial Ledger Cockpit [V2 Strict Segmenter]</h2>
                 <p className="text-[10px] font-mono text-muted-foreground/50 uppercase font-semibold">Operating profits vs Secure Escrow refund pools audited programmatic ledger</p>
@@ -633,73 +643,28 @@ export const NeevCollegeDashboard: React.FC<any> = ({
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-              
-              {/* Webhook Form */}
-              <div className="lg:col-span-1 bg-background border border-border p-5 rounded-2xl space-y-4">
-                <div className="space-y-1">
-                  <span className="text-[9px] font-mono text-muted-foreground/60 uppercase tracking-widest font-bold block">Developer Webhook Simulator</span>
-                  <p className="text-[11px] text-muted-foreground/80 font-sans leading-relaxed">
-                    Trigger Simulated Razorpay/Stripe payments. High-frequency algorithms immediately direct capital according to V2 strict splits: Operating Revenue vs Refundable Deposits Escrow.
-                  </p>
-                </div>
 
-                <div className="space-y-3.5">
+                {/* Webhook Form */}
+                <div className="lg:col-span-1 bg-background border border-slate-200 p-5 rounded-2xl space-y-4">
                   <div className="space-y-1">
-                    <label className="text-[10px] font-mono text-muted-foreground/80 block uppercase font-bold">1. Payment Type Payload</label>
-                    <select
-                      value={webhookType}
-                      onChange={(e) => {
-                        setWebhookType(e.target.value as any);
-                        setWebhookAmount(e.target.value === 'PREMIUM_SUBSCRIPTION_ANNUAL' ? 999 : 2000);
-                      }}
-                      className="w-full bg-muted/50 border border-border/60 rounded-lg p-2.5 text-muted-foreground outline-none"
-                    >
-                      <option value="PREMIUM_SUBSCRIPTION_ANNUAL">₹999 Student Premium registration (100% Operating Profits)</option>
-                      <option value="LONG_TERM_LEASE_DEPOSIT">₹2,000 Cash textbook collateral lease deposit (100% Escrow liability)</option>
-                    </select>
+                    <span className="text-[9px] font-mono text-muted-foreground/60 uppercase tracking-widest font-bold block">Developer Webhook Simulator</span>
+                    <p className="text-[11px] text-muted-foreground/80 font-sans leading-relaxed">
+                      Trigger Simulated Razorpay/Stripe payments. High-frequency algorithms immediately direct capital according to V2 strict splits: Operating Revenue vs Refundable Deposits Escrow.
+                    </p>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-mono text-muted-foreground/80 block uppercase font-bold">2. Amount (INR)</label>
-                      <input
-                        type="number"
-                        value={webhookAmount}
-                        onChange={(e) => setWebhookAmount(Number(e.target.value))}
-                        className="w-full bg-muted/50 border border-border/60 rounded-lg p-2 text-muted-foreground focus:outline-none font-mono"
-                      />
-                    </div>
-                    
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-mono text-muted-foreground/80 block uppercase font-bold">3. Student ID</label>
-                      <select
-                        value={webhookStudentId}
-                        onChange={(e) => setWebhookStudentId(e.target.value)}
-                        className="w-full bg-muted/50 border border-border/60 rounded-lg p-[7px] text-muted-foreground"
-                      >
-                        <option value="student_unregistered">NEEV-ST-kabir (Premium Inactive)</option>
-                        <option value="student_1">NEEV-ST-ishaan (Premium Active)</option>
-                      </select>
-                    </div>
+                  <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg text-center">
+                    <p className="text-xs font-bold text-slate-500 uppercase">Webhook Simulation Disabled</p>
+                    <p className="text-[10px] text-slate-400 mt-1">This demo component has been removed in production. Use real financial integrations.</p>
                   </div>
-
-                  <button
-                    type="button"
-                    onClick={handleTriggerWebhook}
-                    className="w-full py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-555 text-foreground font-bold rounded-lg text-xs tracking-wider uppercase transition flex items-center justify-center space-x-1"
-                  >
-                    <Send className="w-4.5 h-4.5 shrink-0" />
-                    <span>Fire Programmatic Webhook</span>
-                  </button>
                 </div>
-              </div>
 
               {/* Transactions Ledger View */}
               <div className="lg:col-span-2 space-y-3.5">
                 <span className="text-[10px] font-mono text-muted-foreground/60 uppercase tracking-widest font-extrabold block">Live Transaction Ledger Records</span>
-                
-                <div className="bg-background border border-border rounded-2xl overflow-hidden font-mono text-[10.5px]">
-                  <div className="bg-muted/50 px-4 py-2 text-muted-foreground font-bold grid grid-cols-12 gap-2 border-b border-border/60">
+
+                <div className="bg-background border border-slate-200 rounded-2xl overflow-hidden font-mono text-[10.5px]">
+                  <div className="bg-muted/50 px-4 py-2 text-muted-foreground font-bold grid grid-cols-12 gap-2 border-b border-slate-200/60">
                     <span className="col-span-3">TIMESTAMP</span>
                     <span className="col-span-4">EVENT CATEGORY</span>
                     <span className="col-span-3">STUDENT</span>
@@ -734,7 +699,7 @@ export const NeevCollegeDashboard: React.FC<any> = ({
         {/* CATEGORY E: GEOFENCE COORDINATE VIOLATIONS TELEMETRY LOGS */}
         {deskTab === 'telemetry' && (
           <div className="space-y-6 text-left text-xs">
-            <div className="border-b border-border pb-3 flex justify-between items-center">
+            <div className="border-b border-slate-200 pb-3 flex justify-between items-center">
               <div>
                 <h2 className="text-sm font-bold text-foreground tracking-tight">Geofence Poly-Fence Monitor Console</h2>
                 <p className="text-[10px] font-mono text-muted-foreground/50 uppercase font-semibold">Strict real-time tracking of in-facility assets and coordinate fences</p>
@@ -745,13 +710,13 @@ export const NeevCollegeDashboard: React.FC<any> = ({
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-              
+
               {/* Telemetry map graphic */}
-              <div className="bg-background p-5 rounded-2xl border border-border space-y-4">
+              <div className="bg-background p-5 rounded-2xl border border-slate-200 space-y-4">
                 <span className="text-[10px] font-mono text-muted-foreground/50 uppercase block font-bold">Library Sector Poly-fence Grid Layout</span>
-                
-                <div className="aspect-[16/10] bg-muted/50/60 border border-border/60 rounded-xl relative overflow-hidden flex items-center justify-center">
-                  
+
+                <div className="aspect-[16/10] bg-muted/50/60 border border-slate-200/60 rounded-xl relative overflow-hidden flex items-center justify-center">
+
                   {/* Safety Boundary polygon line visual */}
                   <div className="absolute inset-10 border border-emerald-500/30 rounded flex items-center justify-center bg-emerald-900/5">
                     <span className="text-[9px] font-mono text-emerald-500/80 uppercase font-bold tracking-widest text-[8px]">
@@ -762,7 +727,7 @@ export const NeevCollegeDashboard: React.FC<any> = ({
                   {/* Dot placement representing a simulated coordinate breach */}
                   <div className="absolute top-[20%] left-[85%] w-3 h-3 bg-red-500 rounded-full animate-ping pointer-events-none"></div>
                   <div className="absolute top-[20%] left-[85%] w-2 h-2 bg-red-500 rounded-full pointer-events-none"></div>
-                  
+
                   <span className="absolute top-[12%] left-[78%] text-[8px] font-mono bg-red-950 border border-red-900 text-red-400 p-1 rounded font-bold">
                     BREACH WARNING: student_1 (QR-1002)
                   </span>
@@ -772,8 +737,8 @@ export const NeevCollegeDashboard: React.FC<any> = ({
               {/* Live Violation logs */}
               <div className="space-y-3 font-mono text-[10.5px]">
                 <span className="text-[10px] font-mono text-muted-foreground/60 uppercase tracking-widest font-extrabold block">Breach Exception Incident Registry</span>
-                
-                <div className="bg-background border border-border rounded-2xl divide-y divide-zinc-900">
+
+                <div className="bg-background border border-slate-200 rounded-2xl divide-y divide-zinc-900">
                   {violations?.map((v, idx) => (
                     <div key={idx} className="p-3.5 space-y-1.5 text-muted-foreground hover:bg-muted/50/30">
                       <div className="flex justify-between items-center">
@@ -805,43 +770,45 @@ export const NeevCollegeDashboard: React.FC<any> = ({
       </div>
 
       {/* Persistent Live RFID Activity Log stream */}
-      <div className="bg-muted/50/40 border border-border/60 rounded-2xl p-6 space-y-4">
-        <div className="flex items-center justify-between border-b border-border pb-3">
-          <div className="flex items-center space-x-2">
-            <Activity className="w-5 h-5 text-primary" />
-            <div>
-              <h3 className="text-sm font-bold text-foreground tracking-tight">Capacitance Spine & RFID Stream</h3>
-              <p className="text-[10px] font-mono text-muted-foreground/60 uppercase font-semibold">Active telemetry signals emitted by Hub Desk Counter</p>
-            </div>
-          </div>
-          <span className="text-[10px] font-mono px-2 py-0.5 bg-background text-primary border border-border rounded font-bold uppercase shrink-0">
-            LOAD CELL LIVE FEED
-          </span>
-        </div>
-
-        <div className="divide-y divide-zinc-900 max-h-[180px] overflow-y-auto">
-          {rfidEvents?.map((evt, index) => (
-            <div key={index} className="py-2.5 flex justify-between items-start text-[11px] hover:bg-muted/50/20 px-1">
-              <div className="space-y-1 flex-1 pr-3">
-                <div className="flex items-center space-x-2">
-                  <span className={`w-1.5 h-1.5 rounded-full ${
-                    evt.type === 'kiosk_checkout' ? 'bg-indigo-400' : evt.type === 'kiosk_checkin' ? 'bg-emerald-400' : 'bg-zinc-400'
-                  }`} />
-                  <span className="font-bold text-foreground/90">{evt.bookTitle}</span>
-                  <span className="text-zinc-650">•</span>
-                  <span className="text-muted-foreground/60 font-mono text-[10px]">{evt.userMeta}</span>
-                </div>
-                <p className="text-[10.5px] text-zinc-405 font-light">{evt.details}</p>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="bg-muted/50/40 border border-slate-200/60 rounded-2xl p-6 space-y-4 lg:col-span-2">
+          <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+            <div className="flex items-center space-x-2">
+              <Activity className="w-5 h-5 text-primary" />
+              <div>
+                <h3 className="text-sm font-bold text-foreground tracking-tight">Capacitance Spine & RFID Stream</h3>
+                <p className="text-[10px] font-mono text-muted-foreground/60 uppercase font-semibold">Active telemetry signals emitted by Hub Desk Counter</p>
               </div>
-              <span className="text-[10px] font-mono text-zinc-600 uppercase shrink-0">{evt.timestamp}</span>
             </div>
-          ))}
-          {(!rfidEvents || rfidEvents.length === 0) && (
-            <p className="text-center italic text-muted-foreground/60 text-xs py-4">No events in telemetry queue.</p>
-          )}
+            <span className="text-[10px] font-mono px-2 py-0.5 bg-background text-primary border border-slate-200 rounded font-bold uppercase shrink-0">
+              LOAD CELL LIVE FEED
+            </span>
+          </div>
+
+          <div className="divide-y divide-zinc-900 max-h-[180px] overflow-y-auto">
+            {rfidEvents?.map((evt, index) => (
+              <div key={index} className="py-2.5 flex justify-between items-start text-[11px] hover:bg-muted/50/20 px-1">
+                <div className="space-y-1 flex-1 pr-3">
+                  <div className="flex items-center space-x-2">
+                    <span className={`w-1.5 h-1.5 rounded-full ${evt.type === 'kiosk_checkout' ? 'bg-indigo-400' : evt.type === 'kiosk_checkin' ? 'bg-emerald-400' : 'bg-zinc-400'
+                      }`} />
+                    <span className="font-bold text-foreground/90">{evt.bookTitle}</span>
+                    <span className="text-zinc-650">•</span>
+                    <span className="text-muted-foreground/60 font-mono text-[10px]">{evt.userMeta}</span>
+                  </div>
+                  <p className="text-[10.5px] text-zinc-405 font-light">{evt.details}</p>
+                </div>
+                <span className="text-[10px] font-mono text-zinc-600 uppercase shrink-0">{evt.timestamp}</span>
+              </div>
+            ))}
+            {(!rfidEvents || rfidEvents.length === 0) && (
+              <p className="text-center italic text-muted-foreground/60 text-xs py-4">No events in telemetry queue.</p>
+            )}
+          </div>
         </div>
       </div>
-
     </div>
   );
 };
+
+export default NeevCollegeDashboard;

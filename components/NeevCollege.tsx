@@ -162,15 +162,6 @@ export const NeevCollege: React.FC<any> = ({
         `Prescribed in India University curriculum notes under AICTE standards.`,
         "Equipped with active UHF RFID tag for automated issue/return counters validation."
       ],
-      mockDigitalContent: `CHAPTER 1: Syllabus Guide to ${syllabusTitle}
-This is a digital preview copy calibrated for ${syllabusDept}.
-Includes:
-1. Core academic syllabus notes aligned with standard Indian tech colleges.
-2. Formatted 10-year Previous Solved Questions (PYQs).
-3. Live micro-scannable companion quiz questions.
-
-Please issue the physical copy from Shelf ${targetShelf} or use the AI Bookmark Scanner to test dynamic study aids instantly.`,
-      reviews: []
     };
 
     onAddBook(campusBook);

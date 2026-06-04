@@ -17,8 +17,8 @@ export interface PhygitalBook {
   };
   summary: string;
   keyTakeaways: string[];
-  mockDigitalContent: string; // Scrollable digital preview text
-  reviews: { user: string; text: string; rating: number; date: string }[];
+  mockDigitalContent?: string; // Scrollable digital preview text
+  reviews?: { user: string; text: string; rating: number; date: string }[];
 }
 
 export interface LibraryZone {

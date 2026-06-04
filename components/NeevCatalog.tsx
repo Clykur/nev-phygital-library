@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { PhygitalBook } from '../services/neevData';
-import { useCatalogBooks } from '../services/api';
+import { useCatalogBooks } from '../lib/hooks';
 import { Search, ChevronDown, BookOpen, MapPin, Eye } from 'lucide-react';
 
 interface NeevCatalogProps {
@@ -13,9 +13,9 @@ export const NeevCatalog: React.FC<NeevCatalogProps> = ({
   onLocateOnMap,
   addXp,
 }) => {
-  const { data: backendBooks = [] } = useCatalogBooks();
+  const { data: backendBooks } = useCatalogBooks();
   
-  const books = backendBooks.map((cat: any, idx: number) => {
+  const books = ((backendBooks as any)?.books || backendBooks || []).map((cat: any, idx: number) => {
     const aisMap = ['A', 'B', 'C', 'D', 'E', 'B'];
     const parsedAisle = aisMap[idx % aisMap.length];
     return {
@@ -33,8 +33,6 @@ export const NeevCatalog: React.FC<NeevCatalogProps> = ({
       shelfLocation: { aisle: parsedAisle as any, shelfId: `${parsedAisle}${idx + 1}`, row: (idx % 4) + 1 },
       summary: "Book available from Hub.",
       keyTakeaways: [],
-      mockDigitalContent: `CHAPTER 1: Preview Content`,
-      reviews: []
     } as PhygitalBook;
   });
 

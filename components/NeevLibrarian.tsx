@@ -1,14 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { LiveRFIDEvent, PhygitalBook } from '../services/neevData';
 import { Sliders, RefreshCw, Layers, PlusCircle, Check, BookOpen, Clock, Activity, HardDrive, ShieldCheck, Camera, QrCode, UserCheck, AlertTriangle } from 'lucide-react';
+import { useHubQueue, useCatalogBooks, useActivityTimeline } from '../lib/hooks';
 
-
-export const NeevLibrarian: React.FC<any> = ({
-  onAddBook,
-  books,
-  rfidEvents,
-  addXp,
-}) => {
+export const NeevLibrarian: React.FC = () => {
   // Add new book form state
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
@@ -29,17 +24,33 @@ export const NeevLibrarian: React.FC<any> = ({
   const [stampUrl, setStampUrl] = useState<string>('');
   const [deskXpEarned, setDeskXpEarned] = useState(false);
 
-  const mockAmbassadorQueue = {
-    student: "Mr. Ishaan Kothari",
-    cardId: "NEEV-IN-BLR-04829",
-    bookTitle: "Deep Learning with Python",
-    isbn: "978-1617294433",
-    retailPrice: "₹1,495",
-  };
+  const { data: queueData } = useHubQueue();
+  const queueItem = queueData?.queue?.[0]; // Assuming array of items
+
+  const { data: catalogData } = useCatalogBooks();
+  const books = catalogData?.books || catalogData || [];
+
+  const { data: activityData } = useActivityTimeline();
+  const activityTimeline = (activityData as any)?.events || (activityData as any)?.timeline || [];
+
+  const rfidEvents = (activityTimeline as any[]).slice(-10).map((act: any) => ({
+    id: act.id,
+    timestamp: new Date(act.createdAt || act.timestamp || Date.now()).toLocaleTimeString(),
+    type: 'shelf_lift',
+    bookTitle: act.metadata?.title || act.title || "Syllabus Textbook",
+    userMeta: act.userId || act.user || "Unknown",
+    details: act.eventType || act.action || "Scanned"
+  }));
+
+  // If no queue item is present, we handle the empty state.
+  const activeStudent = queueItem?.studentName || "No pending students";
+  const activeBook = queueItem?.bookTitle || "No pending assets";
+  const activeIsbn = queueItem?.isbn || "N/A";
+  const activePrice = queueItem?.retailPrice || "N/A";
 
   const handleStartAmbassadorHandoff = () => {
     setHandoffStep('scanned_qr');
-    addXp(20);
+    // addXp(20);
   };
 
   const handleCaptureSpineStamp = () => {
@@ -50,12 +61,12 @@ export const NeevLibrarian: React.FC<any> = ({
   const handleSimulateCaptureFinished = () => {
     setStampUrl("https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=200");
     setHandoffStep('ready_to_transfer');
-    addXp(50);
+    // addXp(50);
   };
 
   const handleApproveHandoffTransfer = () => {
     setHandoffStep('transferred');
-    addXp(120);
+    // addXp(120);
     // Push a new live event to the parent logs
     setDeskXpEarned(true);
     setTimeout(() => {
@@ -67,7 +78,7 @@ export const NeevLibrarian: React.FC<any> = ({
 
   // Computes shelf loadings based on active catalog
   const computeShelfWeightLoad = (aisleLetter: 'A' | 'B' | 'C' | 'D' | 'E') => {
-    const aisleBooks = books.filter((b) => b.shelfLocation.aisle === aisleLetter);
+    const aisleBooks = (books as any[]).filter((b) => b.shelfLocation?.aisle === aisleLetter);
     const sumCopies = aisleBooks.reduce((acc, curr) => acc + curr.physicalCopiesAvailable, 0);
     // Let's assume maximum capacity of an aisle shelf row-deck is 12 units
     const maxCapacity = 12;
@@ -101,16 +112,11 @@ export const NeevLibrarian: React.FC<any> = ({
         "Dynamic micro-sensor and spine tag check completed successfully.",
         "Calibrated with local pressure arrays on active deck weight cells."
       ],
-      mockDigitalContent: `CHAPTER 1: Staff Logged Reference Edition
-This book was manually inserted into the Neev Phygital library system by staff using the librarian cockpit. This volume is actively bound with a passive UHF silicon identifier sticker on its rear spine cover.
-
-All chapters are indexed, and the physical weight cells are calibrated to align exactly within current shelf grids bounds. Thank you for utilizing Neev.`,
-      reviews: []
     };
 
-    onAddBook(newBook);
+    // onAddBook(newBook); // Replaced with actual API logic if needed
     setFormSubmitted(true);
-    addXp(150); // Direct curation task rewards heavy XP
+    // addXp(150); // Direct curation task rewards heavy XP
 
     // Resetting states
     setTimeout(() => {
@@ -149,7 +155,7 @@ All chapters are indexed, and the physical weight cells are calibrated to align 
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                   <h4 className="text-xs font-bold text-foreground/90 uppercase font-mono">1 Student Reservation Hold Pending at Counter</h4>
                 </div>
-                <p className="text-[11px] text-muted-foreground font-sans">Student: <span className="text-foreground/90 font-semibold">{mockAmbassadorQueue.student}</span> &bull; Asset: <span className="text-foreground/90 italic">Deep Learning with Python</span></p>
+                <p className="text-[11px] text-muted-foreground font-sans">Student: <span className="text-foreground/90 font-semibold">{activeStudent}</span> &bull; Asset: <span className="text-foreground/90 italic">{activeBook}</span></p>
               </div>
               <button
                 type="button"
@@ -168,8 +174,8 @@ All chapters are indexed, and the physical weight cells are calibrated to align 
               <div className="flex items-start justify-between">
                 <div className="space-y-1">
                   <span className="text-[9px] font-mono bg-indigo-950 text-primary border border-indigo-900 px-1.5 py-0.5 rounded uppercase font-bold">QR Barcode Verified ✓</span>
-                  <h4 className="text-xs font-semibold text-foreground/90 mt-1">Book: <span className="text-foreground font-bold">{mockAmbassadorQueue.bookTitle}</span></h4>
-                  <p className="text-[10px] text-muted-foreground/60 font-mono">ISBN: {mockAmbassadorQueue.isbn} &bull; Retail Value: {mockAmbassadorQueue.retailPrice}</p>
+                  <h4 className="text-xs font-semibold text-foreground/90 mt-1">Book: <span className="text-foreground font-bold">{activeBook}</span></h4>
+                  <p className="text-[10px] text-muted-foreground/60 font-mono">ISBN: {activeIsbn} &bull; Retail Value: {activePrice}</p>
                 </div>
                 <div className="p-2 bg-indigo-950/30 rounded-lg border border-indigo-900/50">
                   <QrCode className="w-5 h-5 text-primary" />
@@ -180,7 +186,7 @@ All chapters are indexed, and the physical weight cells are calibrated to align 
               <div className="p-3 bg-amber-950/10 border border-amber-900/40 rounded-xl flex items-start space-x-2.5 text-[11px] text-amber-500/95 leading-relaxed font-sans font-normal">
                 <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5 animate-pulse" />
                 <p>
-                  <strong className="text-amber-450 font-bold">MANDATORY CAMERA INTERACTION DECK BLOCK:</strong> To protect cash flow and prevent student disputes during eventual deposit returns, you must capture one clear visual stamp of the physical spine and front layout before checking out the textbook to {mockAmbassadorQueue.student}.
+                  <strong className="text-amber-450 font-bold">MANDATORY CAMERA INTERACTION DECK BLOCK:</strong> To protect cash flow and prevent student disputes during eventual deposit returns, you must capture one clear visual stamp of the physical spine and front layout before checking out the textbook to {activeStudent}.
                 </p>
               </div>
 
@@ -308,7 +314,7 @@ All chapters are indexed, and the physical weight cells are calibrated to align 
               <div className="space-y-1">
                 <h4 className="text-xs font-bold text-foreground uppercase tracking-wider font-mono">Book Ownership Transferred Successfully</h4>
                 <p className="text-[11px] text-muted-foreground leading-normal max-w-sm mx-auto font-sans">
-                  Asset <span className="text-emerald-300 italic font-medium font-semibold">Deep Learning with Python</span> was legally checked out and assigned to student <span className="text-foreground/90 font-bold">{mockAmbassadorQueue.student}</span>'s active holdings ledger.
+                  Asset <span className="text-emerald-300 italic font-medium font-semibold">{activeBook}</span> was legally checked out and assigned to student <span className="text-foreground/90 font-bold">{activeStudent}</span>'s active holdings ledger.
                 </p>
                 <p className="text-[9px] text-emerald-450 font-mono mt-3 animate-pulse">🔒 SPINE PASSIVE TAG VERIFIED • KIOSK HAND-OFF PROTOCOL SAVED</p>
               </div>

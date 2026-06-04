@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { PhygitalBook } from '../services/neevData';
 import { ShieldAlert, Award, Calendar, BookOpen, Clock, HardDrive, ThumbsUp, Check, Key, Map, Compass, Navigation, AlertTriangle } from 'lucide-react';
+import { useAuth } from '../context/auth-context';
+import { apiFetch } from '../lib/api';
+import { useQuery } from '@tanstack/react-query';
 
 interface ActiveCheckout {
   id: string;
@@ -13,13 +15,9 @@ interface ActiveCheckout {
 }
 
 
-export const NeevMember: React.FC<any> = ({
-  xp,
-  addXp,
-  books,
-  activeCheckouts,
-  onReturnBook,
-}) => {
+export const NeevMember: React.FC = () => {
+  const { user, token } = useAuth();
+  const xp = 1200; // Mocked for now, backend doesn't have xp natively yet
   const currentLevel = Math.floor(xp / 1000) + 1;
   const levelXpProgress = xp % 1000;
 
@@ -59,6 +57,24 @@ export const NeevMember: React.FC<any> = ({
     return 800; // Baseline standard credits e.g. Meditations, Dune
   };
 
+  const { data: backendBooksPayload } = useQuery({
+    queryKey: ['catalog', 'books'],
+    queryFn: () => apiFetch<{ books: any[] }>('/api/catalog/books', { token: token || undefined })
+  });
+
+  const backendBooks = backendBooksPayload?.books || [];
+  const activeCheckouts: ActiveCheckout[] = backendBooks
+    .filter((b: any) => b.borrowerUserId === user?.userId && b.status === 'checked_out')
+    .map((b: any) => ({
+      id: b.id,
+      bookId: b.id,
+      title: b.title,
+      author: b.author || "Peer/Hub Listing",
+      dateBorrowed: b.updatedAt ? new Date(b.updatedAt).toLocaleDateString() : 'Recent',
+      dueDate: b.dueAt ? new Date(b.dueAt).toLocaleDateString() : 'N/A',
+      daysRemaining: b.dueAt ? Math.max(0, Math.ceil((new Date(b.dueAt).getTime() - Date.now()) / (1000 * 3600 * 24))) : 0
+    }));
+
   const totalBorrowedValue = activeCheckouts.reduce((sum, checkout) => sum + getBookCreditValue(checkout.title), 0);
   const availableCredits = 5000 - totalBorrowedValue;
 
@@ -76,6 +92,18 @@ export const NeevMember: React.FC<any> = ({
       setPrevCheckoutsCount(activeCheckouts.length);
     }
   }, [activeCheckouts.length, prevCheckoutsCount]);
+
+  const handleReturnBook = async (checkoutId: string, bookId: string) => {
+    try {
+      await apiFetch(`/api/books/${bookId}/return`, {
+        method: 'POST',
+        token: token || undefined
+      });
+      // Will refetch via react-query cache invalidation or just depend on polling
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-[20px] duration-500">
@@ -107,10 +135,9 @@ export const NeevMember: React.FC<any> = ({
             </div>
           </div>
 
-          {/* Member Name details */}
           <div className="space-y-1 z-10">
-            <p className="text-xs font-semibold text-muted-foreground">Mr. Ishaan Kothari</p>
-            <p className="text-[10px] font-mono text-indigo-300">CARD ID: NEEV-IN-BLR-04829</p>
+            <p className="text-xs font-semibold text-muted-foreground">{user?.name || "Member"}</p>
+            <p className="text-[10px] font-mono text-indigo-300">CARD ID: NEEV-{user?.userId?.substring(0,8).toUpperCase() || 'NEW'}</p>
           </div>
 
           {/* Barcode representation */}
@@ -250,7 +277,7 @@ export const NeevMember: React.FC<any> = ({
 
                   {/* Return item simulator button */}
                   <button
-                    onClick={() => onReturnBook(checkout.id, checkout.bookId)}
+                    onClick={() => handleReturnBook(checkout.id, checkout.bookId)}
                     className="self-end md:self-center px-4 py-2 bg-gradient-to-tr from-emerald-600/10 to-emerald-600/5 hover:from-emerald-600 hover:to-emerald-500 border border-emerald-800/40 hover:border-emerald-400/40 text-[10px] uppercase font-bold text-emerald-400 hover:text-foreground rounded-xl transition shadow flex items-center space-x-1 shrink-0"
                     title="Simulate setting this book back onto our intelligent capacitive weight shelf"
                   >
@@ -359,7 +386,7 @@ export const NeevMember: React.FC<any> = ({
                 {geofenceBreached ? (
                   <button
                     type="button"
-                    onClick={() => { setGeofenceBreached(false); addXp(20); }}
+                    onClick={() => { setGeofenceBreached(false); }}
                     className="px-3 py-1.5 bg-background border border-border/60 hover:border-border text-muted-foreground font-bold font-mono text-[10px] uppercase rounded-lg transition"
                   >
                     🚶 Step back inside gates

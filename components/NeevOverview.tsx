@@ -9,13 +9,10 @@ interface NeevOverviewProps {
 export const NeevOverview: React.FC<NeevOverviewProps> = ({ branch, setActiveTab }) => {
   const [selectedSpec, setSelectedSpec] = useState<number>(0);
 
-  const stats = {
-    'RVCE-BLR': { activeUsers: '4,520', booksCount: '34,500', activeBorrows: '1,280', dailyVisits: '1,412', humidity: '46%', airQuality: 'AQI 38 (Clean)' },
-    'IIT-Hauzkhas': { activeUsers: '6,420', booksCount: '85,900', activeBorrows: '4,100', dailyVisits: '2,890', humidity: '35%', airQuality: 'AQI 142 (HEPA Active)' },
-    'BITS-Pilani': { activeUsers: '2,890', booksCount: '48,200', activeBorrows: '950', dailyVisits: '820', humidity: '38%', airQuality: 'AQI 15 (Excellent)' },
-    'Bengaluru-Central': { activeUsers: '1,420', booksCount: '12,450', activeBorrows: '380', dailyVisits: '412', humidity: '48%', airQuality: 'AQI 32 (Excellent)' },
-    'Delhi-Hauzkhas': { activeUsers: '1,040', booksCount: '9,820', activeBorrows: '290', dailyVisits: '305', humidity: '42%', airQuality: 'AQI 65 (Moderate)' }
-  }[branch] || { activeUsers: '1,200', booksCount: '10,000', activeBorrows: '300', dailyVisits: '310', humidity: '50%', airQuality: 'AQI 25' };
+  // In production, these stats should be fetched from the backend `/api/overview` endpoint
+  // Currently, the backend does not expose a public endpoint for branch telemetry.
+  // We document this limitation here and fallback to zeroed data until the endpoint is available.
+  const stats = { activeUsers: 'N/A', booksCount: 'N/A', activeBorrows: 'N/A', dailyVisits: 'N/A', humidity: 'N/A', airQuality: 'N/A' };
 
   const specifications = [
     {

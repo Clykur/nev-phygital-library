@@ -1,4 +1,4 @@
-import React, {
+import {
   createContext,
   useCallback,
   useContext,
@@ -7,46 +7,38 @@ import React, {
   useState,
   type ReactNode,
 } from "react";
-import { fetchWithAuth } from "../services/api";
+import { apiFetch } from "@/lib/api";
+import type { HubKindValue } from "@/lib/hub-display";
+import type { AuthUser } from "@/lib/rbac";
 
-const STORAGE_KEY = "neev_token";
-
-export type AuthUser = {
-  id: string;
-  name: string;
-  email: string;
-  baseRole: string;
-  premiumStatus?: string;
-  hubStaffHubIds?: string[];
-  [key: string]: any;
-};
+const STORAGE_KEY = "phygital_token";
 
 export type RegisterPayload =
   | {
       name: string;
       email: string;
-      password?: string;
+      password: string;
       accountType?: "user";
     }
   | {
       name: string;
       email: string;
-      password?: string;
+      password: string;
       accountType: "hub";
       hubName: string;
       hubLocation: string;
-      hubKind?: string;
+      hubKind: HubKindValue;
     };
 
 type AuthContextValue = {
   token: string | null;
   user: AuthUser | null;
   loading: boolean;
-  login: (email: string, password?: string) => Promise<AuthUser>;
-  googleLogin: (credential: string) => Promise<AuthUser>;
+  login: (email: string, password: string) => Promise<AuthUser>;
   register: (payload: RegisterPayload) => Promise<AuthUser>;
   logout: () => void;
   refreshUser: () => Promise<void>;
+  activateDemoPremium: (months?: number) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -61,24 +53,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(null);
       return;
     }
-    try {
-      const data = await fetchWithAuth("/auth/me");
-      if (!data || !data.user) {
-        throw new Error("No user returned");
-      }
-      setUser(data.user);
-    } catch (err) {
+    const { user: next } = await apiFetch<{ user: AuthUser | null }>("/api/auth/me", {
+      token,
+    });
+    if (!next) {
       localStorage.removeItem(STORAGE_KEY);
       setToken(null);
       setUser(null);
+      return;
     }
+    setUser(next);
   }, [token]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) setToken(stored);
-      else setLoading(false);
+      setToken(localStorage.getItem(STORAGE_KEY));
     }
   }, []);
 
@@ -92,7 +81,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       try {
         await refreshUser();
-      } catch (e) {
+      } catch {
         if (!cancelled) {
           setToken(null);
           localStorage.removeItem(STORAGE_KEY);
@@ -107,28 +96,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, [token, refreshUser]);
 
-  const login = useCallback(async (email: string, password?: string) => {
-    const res = await fetch("/api/auth/login", {
+  const login = useCallback(async (email: string, password: string) => {
+    const data = await apiFetch<{ token: string; user: AuthUser }>("/api/auth/login", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password: password || "password123" }),
+      body: JSON.stringify({ email, password }),
     });
-    if (!res.ok) throw new Error("Login failed");
-    const data = await res.json();
-    localStorage.setItem(STORAGE_KEY, data.token);
-    setToken(data.token);
-    setUser(data.user);
-    return data.user;
-  }, []);
-
-  const googleLogin = useCallback(async (credential: string) => {
-    const res = await fetch("/api/auth/google", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token: credential }),
-    });
-    if (!res.ok) throw new Error("Google login failed");
-    const data = await res.json();
     localStorage.setItem(STORAGE_KEY, data.token);
     setToken(data.token);
     setUser(data.user);
@@ -136,13 +108,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const register = useCallback(async (payload: RegisterPayload) => {
-    const res = await fetch("/api/auth/register", {
+    const body =
+      payload.accountType === "hub"
+        ? {
+            name: payload.name,
+            email: payload.email,
+            password: payload.password,
+            accountType: "hub" as const,
+            hubName: payload.hubName,
+            hubLocation: payload.hubLocation,
+            hubKind: payload.hubKind,
+          }
+        : {
+            name: payload.name,
+            email: payload.email,
+            password: payload.password,
+            accountType: "user" as const,
+          };
+    const data = await apiFetch<{
+      token: string;
+      user: AuthUser;
+      registeredAs?: "student" | "hub";
+    }>("/api/auth/register", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(body),
     });
-    if (!res.ok) throw new Error("Registration failed");
-    const data = await res.json();
     localStorage.setItem(STORAGE_KEY, data.token);
     setToken(data.token);
     setUser(data.user);
@@ -155,18 +145,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   }, []);
 
+  const activateDemoPremium = useCallback(
+    async (months = 1) => {
+      if (!token) throw new Error("Not signed in");
+      const data = await apiFetch<{ token: string; user: AuthUser }>(
+        "/api/auth/billing/demo-premium",
+        {
+          method: "POST",
+          token,
+          body: JSON.stringify({ months }),
+        },
+      );
+      localStorage.setItem(STORAGE_KEY, data.token);
+      setToken(data.token);
+      setUser(data.user);
+    },
+    [token],
+  );
+
   const value = useMemo(
     () => ({
       token,
       user,
       loading,
       login,
-      googleLogin,
       register,
       logout,
       refreshUser,
+      activateDemoPremium,
     }),
-    [token, user, loading, login, googleLogin, register, logout, refreshUser]
+    [token, user, loading, login, register, logout, refreshUser, activateDemoPremium],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import { PhygitalBook } from '../services/neevData';
-import { useCatalogBooks } from '../services/api';
+import { useQuery } from '@tanstack/react-query';
+import { apiFetch } from '../lib/api';
+import { useAuth } from '../context/auth-context';
 import { Search, ChevronDown, BookOpen, MapPin, Eye, BookMarked } from 'lucide-react';
 const CATALOG_PAGE_SIZE = 12;
 
@@ -8,8 +9,15 @@ export const NeevMarketplace: React.FC<any> = ({
   onLocateOnMap,
   addXp,
 }) => {
-  const { data: backendBooks = [] } = useCatalogBooks();
+  const { token } = useAuth();
   
+  const { data: backendBooksPayload } = useQuery({
+    queryKey: ['catalog', 'books'],
+    queryFn: () => apiFetch<{ books: any[] }>('/api/catalog/books', { token: token || undefined })
+  });
+  
+  const backendBooks = backendBooksPayload?.books || [];
+
   const books = backendBooks.map((cat: any, idx: number) => {
     const aisMap = ['A', 'B', 'C', 'D', 'E', 'B'];
     const parsedAisle = aisMap[idx % aisMap.length];
@@ -28,8 +36,6 @@ export const NeevMarketplace: React.FC<any> = ({
       shelfLocation: { aisle: parsedAisle as any, shelfId: `${parsedAisle}${idx + 1}`, row: (idx % 4) + 1 },
       summary: "Book available from Hub.",
       keyTakeaways: [],
-      mockDigitalContent: `CHAPTER 1: Preview Content`,
-      reviews: [],
       source: idx % 3 === 0 ? 'peer' : 'hub' // Mocking peer vs hub
     };
   });
@@ -40,7 +46,7 @@ export const NeevMarketplace: React.FC<any> = ({
 
   const filteredBooks = books.filter((book) => {
     const q = search.trim().toLowerCase();
-    
+
     // Filter by source
     if (sourceFilter === 'hub' && book.source !== 'hub') return false;
     if (sourceFilter === 'peers' && book.source !== 'peer') return false;
@@ -69,7 +75,7 @@ export const NeevMarketplace: React.FC<any> = ({
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#64748B]">
               Student
             </p>
-            <h1 className="mt-1 font-sans text-lg font-bold tracking-tight text-foreground text-balance">
+            <h1 className="mt-1  text-lg font-bold tracking-tight text-foreground text-balance">
               Find a Book
             </h1>
           </div>
@@ -80,14 +86,14 @@ export const NeevMarketplace: React.FC<any> = ({
           <div className="flex w-full items-end gap-2 min-w-0">
             <div className="flex min-w-0 flex-1 flex-col">
               <label className="text-[10px] text-muted-foreground mb-1">Search</label>
-              <div className="mt-1.5 flex h-10 items-center gap-2 rounded-xl border border-border bg-background px-3">
-                <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
+              <div className="mt-1.5 flex h-10 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 focus-within:ring-2 focus-within:ring-slate-900 focus-within:border-transparent transition-all">
+                <Search className="h-4 w-4 shrink-0 text-slate-400" />
                 <input
                   type="search"
                   placeholder="Search title, author, or subject…"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="min-w-0 flex-1 border-none bg-transparent py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none sm:text-[15px]"
+                  className="min-w-0 flex-1 border-none bg-transparent py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none sm:text-[15px]"
                 />
               </div>
             </div>
@@ -101,23 +107,23 @@ export const NeevMarketplace: React.FC<any> = ({
                     setSourceFilter(e.target.value as any);
                     setBrowsePage(1); // Reset page on filter
                   }}
-                  className="h-10 w-full appearance-none rounded-xl border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/15 pr-8"
+                  className="h-10 w-full appearance-none rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all pr-8"
                 >
                   <option value="all">All</option>
                   <option value="hub">Hubs</option>
                   <option value="peers">Peers</option>
                 </select>
-                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
               </div>
             </div>
 
             <div className="flex w-auto shrink flex-col">
               <label className="text-[10px] text-muted-foreground mb-1">Request</label>
               <button
-                className="mt-1.5 flex h-10 items-center justify-center gap-2 rounded-xl border border-border bg-muted/50 px-4 text-sm font-medium transition-colors hover:bg-muted/80"
+                className="mt-1.5 flex h-10 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-4 text-sm font-medium transition-colors hover:bg-slate-100 text-slate-700"
                 onClick={() => alert("Book Request Modal triggered")}
               >
-                <BookMarked className="h-4 w-4 text-primary" />
+                <BookMarked className="h-4 w-4 text-slate-700" />
                 <span className="truncate text-[11px] sm:text-sm">Request a book</span>
               </button>
             </div>
@@ -173,27 +179,26 @@ export const NeevMarketplace: React.FC<any> = ({
                   </div>
 
                   <div className="mt-auto pt-4 flex gap-2">
-                     <button
-                        onClick={() => {
-                          onLocateOnMap(book.shelfLocation.shelfId);
-                          addXp(10);
-                        }}
-                        className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-muted/50 px-3 py-2 text-xs font-medium transition-colors hover:bg-muted/80"
-                      >
-                        <MapPin className="h-3.5 w-3.5 text-primary" />
-                        Locate
-                      </button>
-                      <button
-                        onClick={() => addXp(40)}
-                        className={`flex-1 inline-flex items-center justify-center gap-2 rounded-xl px-3 py-2 text-xs font-medium transition-colors ${
-                          isAvailable 
-                            ? 'bg-primary text-primary-foreground hover:bg-primary/90' 
-                            : 'bg-muted/50 text-muted-foreground cursor-not-allowed'
+                    <button
+                      onClick={() => {
+                        onLocateOnMap(book.shelfLocation.shelfId);
+                        addXp(10);
+                      }}
+                      className="flex-1 inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-50"
+                    >
+                      <MapPin className="h-3.5 w-3.5 text-slate-500" />
+                      Locate
+                    </button>
+                    <button
+                      onClick={() => addXp(40)}
+                      className={`flex-1 inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs font-medium transition-colors ${isAvailable
+                          ? 'bg-slate-900 text-white hover:bg-slate-800'
+                          : 'bg-slate-100 text-slate-400 cursor-not-allowed'
                         }`}
-                      >
-                        <BookOpen className="h-3.5 w-3.5" />
-                        Hold
-                      </button>
+                    >
+                      <BookOpen className="h-3.5 w-3.5" />
+                      Hold
+                    </button>
                   </div>
                 </div>
               </div>

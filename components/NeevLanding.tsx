@@ -24,9 +24,10 @@ import {
   Info,
   ShieldAlert,
   Key,
-  RefreshCw
+  RefreshCw,
+  CreditCard
 } from 'lucide-react';
-import { GoogleLogin } from '@react-oauth/google';
+import { CredentialResponse, GoogleLogin } from '@react-oauth/google';
 
 interface NeevLandingProps {
   onLogin: (email: string, password?: string, isGoogleAuth?: boolean) => void;
@@ -214,67 +215,37 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
     }, 1200);
   };
 
-  useEffect(() => {
-    const handleCredentialResponse = (response: any) => {
-      try {
-        setGoogleLoading(true);
-        const token = response.credential;
-        // Decode JWT payload token securely without third-party libraries:
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(
-          window.atob(base64)
-            .split('')
-            .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-            .join('')
-        );
-        const payload = JSON.parse(jsonPayload);
-        const email = payload.email;
-        const name = payload.name || email.split('@')[0];
+  const handleCredentialResponse = (response: any) => {
+    try {
+      setGoogleLoading(true);
+      const token = response.credential;
+      // Decode JWT payload token securely without third-party libraries:
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(
+        window.atob(base64)
+          .split('')
+          .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+      );
+      const payload = JSON.parse(jsonPayload);
+      const email = payload.email;
+      const name = payload.name || email.split('@')[0];
 
-        registerCustomGoogleAccount(email, name);
-        setShowGoogleModal(false);
-        setGoogleLoading(false);
-        setTimeout(() => {
-          initiateSecureLogin(email, undefined, true);
-        }, 120);
-      } catch (err) {
-        console.error("Official Google token parse rejected", err);
-        setGoogleLoading(false);
-      }
-    };
-
-    const gClientId = (process.env.VITE_GOOGLE_CLIENT_ID || '').trim();
-    const isRealClientId = gClientId && gClientId.includes('.apps.googleusercontent.com') && gClientId.length > 25;
-
-    if (isRealClientId && typeof window !== 'undefined' && (window as any).google) {
-      try {
-        (window as any).google.accounts.id.initialize({
-          client_id: gClientId,
-          callback: handleCredentialResponse,
-          ux_mode: "popup"
-        });
-
-        if (showGoogleModal && !showGoogleCustomInput) {
-          setTimeout(() => {
-            const btnParent = document.getElementById("google-signin-btn-container-actual");
-            if (btnParent) {
-              (window as any).google.accounts.id.renderButton(
-                btnParent,
-                {
-                  theme: "filled_blue",
-                  size: "large",
-                  shape: "pill",
-                  text: "continue_with"
-                }
-              );
-            }
-          }, 150);
-        }
-      } catch (e) {
-        console.error("GIS environment was unable to start:", e);
-      }
+      registerCustomGoogleAccount(email, name);
+      setShowGoogleModal(false);
+      setGoogleLoading(false);
+      setTimeout(() => {
+        initiateSecureLogin(email, undefined, true);
+      }, 120);
+    } catch (err) {
+      console.error("Official Google token parse rejected", err);
+      setGoogleLoading(false);
     }
+  };
+
+  useEffect(() => {
+    // Keep empty dependency or remove entirely if nothing else is inside
   }, [showGoogleModal, showGoogleCustomInput]);
 
   const trendBooks: Textbook[] = [
@@ -297,6 +268,23 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
     setConsultationSubmitted(true);
     addXp(50);
   };
+
+  // Institution admin registration form state
+  const [adminName, setAdminName] = useState('');
+  const [adminEmail, setAdminEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [designation, setDesignation] = useState('');
+  const [institutionName, setInstitutionName] = useState('');
+  const [institutionType, setInstitutionType] = useState('college');
+  const [country, setCountry] = useState('India');
+  const [adminState, setAdminState] = useState('');
+  const [city, setCity] = useState('');
+  const [district, setDistrict] = useState('');
+  const [address, setAddress] = useState('');
+  const [postalCode, setPostalCode] = useState('');
+  const [adminRole, setAdminRole] = useState('admin');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   return (
     <div className="space-y-10 py-4 animate-in fade-in duration-700 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -340,262 +328,124 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
         /* ==================== PHASE 1: STUDENTS HOMEPAGE ==================== */
         <div className="space-y-20 animate-in fade-in duration-500">
 
-          {/* Block 1: Hero Splash Video & Typography Overlay */}
-          <div className="relative rounded-3xl overflow-hidden border border-border h-[380px] sm:h-[460px] flex flex-col justify-center items-center text-center px-4 bg-background/60 shadow-2xl">
-            {/* Dark background blurred simulated library animation */}
-            <div className="absolute inset-0 z-0 bg-cover bg-center overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-b from-zinc-950 via-zinc-900/90 to-zinc-950 z-10"></div>
-              {/* Animated abstract light bars simulating illuminated physical shelves */}
-              <div className="absolute inset-x-0 top-1/4 h-2 bg-indigo-500/10 blur-xl animate-pulse"></div>
-              <div className="absolute inset-x-0 top-2/4 h-3 bg-blue-500/5 blur-2xl"></div>
-              <div className="absolute inset-x-0 bottom-1/4 h-2 bg-purple-500/10 blur-xl animate-pulse"></div>
-
-              {/* Simulated particle field or video placeholder styling */}
-              <div className="absolute inset-0 flex flex-wrap gap-2 p-10 opacity-10 filter blur-[2px] select-none pointer-events-none grid-cols-6 sm:grid-cols-12">
-                {Array.from({ length: 48 }).map((_, i) => (
-                  <div key={i} className="h-44 w-12 bg-zinc-650 rounded-md border border-zinc-500 shadow-inner flex-shrink-0 animate-pulse" style={{ animationDelay: `${i * 120}ms` }}></div>
-                ))}
-              </div>
+          {/* Single Clean Hero Section */}
+          <section className="flex flex-col items-center text-center max-w-4xl mx-auto space-y-8 pt-12 pb-8">
+            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-slate-100 border border-slate-200">
+              <span className="text-xs font-medium text-slate-700">Premium Academic Platform</span>
             </div>
 
-            {/* Direct High-Contrast Typography overlay */}
-            <div className="relative z-25 max-w-3xl space-y-5">
-              <span className="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 border border-primary/50 text-[10px] font-mono tracking-widest text-blue-400 font-bold uppercase">
-                ⚙️ ACTIVE TELEMETRY PLATFORM
-              </span>
-              <h1 className="text-5xl sm:text-7xl font-extrabold tracking-tight text-foreground leading-none">
-                Neev
-              </h1>
-              <h2 className="text-xl sm:text-3xl font-extrabold tracking-tight text-foreground max-w-2xl mx-auto leading-snug">
-                Your Campus Textbooks. Instantly on Your Shelf.
-              </h2>
-              <p className="text-muted-foreground text-xs sm:text-sm font-mono tracking-wide max-w-xl mx-auto flex flex-wrap justify-center items-center gap-x-3 gap-y-1">
-                <span className="text-foreground">Zero Shipping Delays</span>
-                <span className="text-zinc-650">•</span>
-                <span className="text-foreground">Zero Screen Fatigue</span>
-                <span className="text-zinc-650">•</span>
-                <span className="text-foreground">100% Physical Technical Books</span>
-              </p>
-              <div className="pt-4">
-                <button
-                  onClick={scrollToAuth}
-                  className="px-6 py-3 bg-white text-zinc-950 font-bold rounded-xl text-xs sm:text-sm tracking-wider uppercase hover:bg-zinc-200 transition shadow-lg inline-flex items-center space-x-2"
-                >
-                  <span>Get Started Instantly</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          </div>
+            <h1 className="text-5xl sm:text-7xl font-extrabold tracking-tight text-slate-900 leading-tight">
+              Your Campus Textbooks. <br className="hidden sm:block" />
+              <span className="text-slate-500">Instantly on Your Shelf.</span>
+            </h1>
 
-          {/* Block 2: Above-the-Fold Main Hero & Split Layout */}
-          <section className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            {/* Left side: Pure B2C student copy */}
-            <div className="lg:col-span-6 space-y-6">
-              <span className="text-[10px] uppercase font-mono font-bold tracking-widest text-amber-500">
-                ⚡ Premium Academic Subscription
-              </span>
+            <p className="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
+              No shipping delays. No screen fatigue. Access thousands of premium engineering and technical reference books directly from the Neev Smart Kiosk inside your college library.
+            </p>
 
-              <h1 className="text-3xl sm:text-5xl font-extrabold text-foreground leading-tight font-display tracking-tight">
-                Your Campus Textbooks. <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-zinc-105 to-indigo-400">Instantly on Your Shelf.</span>
-              </h1>
-
-              <p className="text-muted-foreground text-sm sm:text-base leading-relaxed font-light">
-                No shipping delays. No screen fatigue. Access thousands of premium, high-cost engineering and technical reference books directly from the Neev Smart Kiosk inside your college library for just ₹999/year.
-              </p>
-
-              <div className="space-y-3.5">
-                <div className="flex items-center space-x-2">
-                  <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
-                  <span className="text-xs text-muted-foreground font-mono">Instant verification on college smart cards</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full"></span>
-                  <span className="text-xs text-muted-foreground font-mono">No security deposits required for active students</span>
-                </div>
-              </div>
-
-              <div className="pt-2">
-                <button
-                  onClick={scrollToAuth}
-                  className="px-6 py-3 bg-primary hover:bg-primary/90 text-foreground font-bold rounded-xl text-xs tracking-wider uppercase transition shadow-lg flex items-center space-x-2 border border-primary/30 font-mono"
-                >
-                  <span>Join Neev Premium — ₹999/Yr &rarr;</span>
-                </button>
-              </div>
-
-              {/* Verified badges */}
-              <div className="pt-6 border-t border-border flex items-center gap-6">
-                <div>
-                  <div className="text-xl font-extrabold text-foreground font-mono">14,200+</div>
-                  <div className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground/50 font-mono">Active Readers</div>
-                </div>
-                <div className="h-8 w-[1px] bg-muted/50"></div>
-                <div>
-                  <div className="text-xl font-extrabold text-foreground font-mono">18+ Hubs</div>
-                  <div className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground/50 font-mono">Verified Campus Hubs</div>
-                </div>
-              </div>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+              <button
+                onClick={scrollToAuth}
+                className="px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white font-medium rounded-md transition-colors w-full sm:w-auto shadow-sm"
+              >
+                Join Premium — ₹999/Yr
+              </button>
+              <button
+                onClick={() => {
+                  document.getElementById('inventory-section')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="px-6 py-3 bg-white hover:bg-slate-50 text-slate-900 border border-slate-200 font-medium rounded-md transition-colors w-full sm:w-auto shadow-sm"
+              >
+                Explore Features
+              </button>
             </div>
 
-            {/* Right side: Smartphone mockup with dynamic catalog dashboard against automated library backdrop */}
-            <div className="lg:col-span-6 relative">
-              <div className="absolute inset-0 bg-gradient-to-tr from-indigo-505/10 to-transparent rounded-3xl blur-2xl"></div>
-
-              {/* Simulated crisp mockup tech fulfillment setup */}
-              <div className="relative bg-background border border-border rounded-3xl p-6 shadow-2xl flex flex-col space-y-4">
-
-                {/* Simulated high-tech Fulfillment Bar background frame overlay */}
-                <div className="absolute bottom-2 right-2 flex items-center space-x-2 bg-muted/50/80 border border-border/60 px-3 py-1.5 rounded-lg text-[9px] font-mono text-muted-foreground shadow-md backdrop-blur-md">
-                  <span className="w-1.5 h-1.5 bg-emerald-505 rounded-full animate-pulse"></span>
-                  <span>Live Hub Inventory: Checked & Verified</span>
-                </div>
-
-                <div className="flex items-center justify-between border-b border-border pb-3">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-2.5 h-2.5 rounded-full bg-red-500"></div>
-                    <div className="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
-                    <div className="w-2.5 h-2.5 rounded-full bg-green-500"></div>
-                  </div>
-                  <span className="text-[9px] font-mono text-muted-foreground/60 tracking-wider">NEEVE_APP_PILOT_MOCK</span>
-                </div>
-
-                {/* Simulated Phone Screen Dashboard */}
-                <div className="bg-muted/50/60 rounded-xl p-4 border border-border space-y-3 font-sans">
-
-                  {/* Top Bar inside design */}
-                  <div className="flex items-center justify-between text-xs pb-1">
-                    <span className="font-mono text-[10px] text-muted-foreground/60">HELLO, 1RV23CS084</span>
-                    <span className="px-2 py-0.5 bg-indigo-950 text-primary font-bold font-mono text-[9px] rounded-md border border-indigo-900/50">LEVEL 3</span>
-                  </div>
-
-                  {/* Active book reservation element inside app */}
-                  <div className="bg-background border border-border/80 rounded-lg p-3 space-y-2">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <span className="text-[8px] font-mono text-muted-foreground/60 font-bold uppercase">RESERVED IN HAND</span>
-                        <h4 className="text-xs font-bold text-foreground/90 truncate max-w-[200px]">Microelectronic Circuits 8th Ed.</h4>
-                        <p className="text-[9px] text-muted-foreground/60">Adel S. Sedra, Kenneth C. Smith</p>
-                      </div>
-                      <span className="text-[9px] font-bold text-amber-400 font-mono">₹1,495 Value</span>
-                    </div>
-
-                    <div className="flex items-center justify-between text-[9px] font-mono text-muted-foreground/50 border-t border-border/60 pt-2">
-                      <span>Holding: 1,495 Credits</span>
-                      <span className="text-emerald-400">⏱ Returning in 8 days</span>
-                    </div>
-                  </div>
-
-                  {/* Map pathfinder widget */}
-                  <div className="bg-background/70 border border-border/50 rounded-lg p-3 space-y-1 text-xs">
-                    <div className="flex items-center justify-between">
-                      <span className="font-mono text-[9px] text-muted-foreground uppercase">Interactive Shelf Route</span>
-                      <span className="text-[9px] font-mono text-primary font-semibold flex items-center">
-                        Active GPS <Radio className="w-2.5 h-2.5 ml-1 animate-pulse" />
-                      </span>
-                    </div>
-                    <div className="p-2 bg-muted/50/70 rounded border border-border font-mono text-[10px] text-muted-foreground">
-                      🏢 RVCE Library &bull; Row 4 &bull; Aisle C &bull; Shelf Level 2
-                    </div>
-                  </div>
-
-                  <div className="pt-2">
-                    <div className="h-1 bg-background w-full rounded-full overflow-hidden">
-                      <div className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 w-3/4"></div>
-                    </div>
-                    <div className="flex justify-between text-[8px] text-muted-foreground/60 font-mono pt-1">
-                      <span>UTILITY SPENT: 3,500 CREDITS</span>
-                      <span>5,000 LIMIT</span>
-                    </div>
-                  </div>
-
-                </div>
+            <div className="pt-8 flex flex-col sm:flex-row items-center justify-center space-y-3 sm:space-y-0 sm:space-x-8 text-sm text-slate-500 font-medium">
+              <div className="flex items-center space-x-2">
+                <CheckCircle className="w-4 h-4 text-slate-400" />
+                <span>Instant verification</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <CheckCircle className="w-4 h-4 text-slate-400" />
+                <span>No security deposits</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <CheckCircle className="w-4 h-4 text-slate-400" />
+                <span>18+ Campus Hubs</span>
               </div>
             </div>
           </section>
 
           {/* Block 3: Categorized Discovery Cards */}
-          <section id="inventory-section" className="space-y-8 scroll-mt-20">
-            <div className="text-center space-y-2 max-w-xl mx-auto">
-              <span className="text-[10px] font-mono uppercase tracking-widest text-primary font-bold font-semibold">Live Automated App Loops</span>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">Centralized Campus Logistics. Flawless Asset Flow.</h2>
-              <p className="text-xs sm:text-sm text-muted-foreground font-light">
+          <section id="inventory-section" className="space-y-10 scroll-mt-20 pt-10">
+            <div className="text-center space-y-3 max-w-xl mx-auto">
+              <span className="text-xs font-semibold text-slate-500 tracking-wide uppercase">Automated Operations</span>
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">Flawless Asset Flow.</h2>
+              <p className="text-base text-slate-600 leading-relaxed">
                 Circulate physical course materials with complete digital precision.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-in fade-in duration-300 font-sans">
-
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-in fade-in duration-300">
               {/* Card 1 — The Request Loop */}
-              <div className="p-6 bg-zinc-90 w-full border border-border rounded-2xl space-y-4 hover:border-primary/50 transition-colors group relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-16 h-16 bg-blue-500/[0.01] rounded-full blur-xl"></div>
-                <div className="w-10 h-10 rounded-xl bg-primary/10 border border-blue-900/60 flex items-center justify-center">
-                  <Layers className="w-5 h-5 text-blue-400" />
+              <div className="p-6 bg-white border border-slate-200 rounded-xl space-y-4 hover:border-slate-300 hover:shadow-sm transition-all group">
+                <div className="w-12 h-12 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center">
+                  <Layers className="w-6 h-6 text-slate-700" />
                 </div>
                 <div className="space-y-2">
-                  <span className="text-[9px] font-mono uppercase text-blue-400 font-bold block">01 / REPLENISHMENT</span>
-                  <h3 className="text-base font-bold text-foreground group-hover:text-blue-400 transition-colors tracking-tight">
-                    The Request Loop
-                  </h3>
-                  <p className="text-xs text-muted-foreground leading-relaxed font-light">
-                    Search the campus catalog and upvote out-of-stock titles so the system knows what to restock. Once demand hits campus thresholds, our logistics team deploys fresh physical textbook copies directly to your local library kiosk.
+                  <span className="text-[10px] font-semibold uppercase text-slate-500 block">01 / Replenishment</span>
+                  <h3 className="text-xl font-bold text-slate-900">Live Campus Bounties</h3>
+                  <p className="text-sm text-slate-600 leading-relaxed">
+                    Don't need your previous semester textbooks? Upload them to the Hub. When a peer needs it, the kiosk requests it and you earn credits to access your own semester requirements.
                   </p>
                 </div>
               </div>
 
-              {/* Card 2 — The Campus Bounty Board */}
-              <div className="p-6 bg-zinc-90 w-full border border-border rounded-2xl space-y-4 hover:border-amber-900/50 transition-colors group relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-16 h-16 bg-amber-500/[0.01] rounded-full blur-xl"></div>
-                <div className="w-10 h-10 rounded-xl bg-amber-955/40 border border-amber-900/60 flex items-center justify-center">
-                  <Radio className="w-5 h-5 text-amber-400" />
+              {/* Card 2 — Kiosk Validation */}
+              <div className="p-6 bg-white border border-slate-200 rounded-xl space-y-4 hover:border-slate-300 hover:shadow-sm transition-all group">
+                <div className="w-12 h-12 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center">
+                  <Cpu className="w-6 h-6 text-slate-700" />
                 </div>
                 <div className="space-y-2">
-                  <span className="text-[9px] font-mono uppercase text-amber-400 font-bold block">02 / INVENTORY ACQUISITION</span>
-                  <h3 className="text-base font-bold text-foreground group-hover:text-amber-400 transition-colors tracking-tight">
-                    The Campus Bounty Board
-                  </h3>
-                  <p className="text-xs text-muted-foreground leading-relaxed font-light">
-                    Scan and drop off unwanted old textbooks at the library desk in exchange for 1 full year of Premium entirely free (securing our inventory for zero cash). Trade in last semester's materials to permanently unlock endless value.
+                  <span className="text-[10px] font-semibold uppercase text-slate-500 block">02 / Authentication</span>
+                  <h3 className="text-xl font-bold text-slate-900">UHF-RFID Secured Scans</h3>
+                  <p className="text-sm text-slate-600 leading-relaxed">
+                    Books are embedded with stealth RFID circuits. To check out, you simply place the item on the Kiosk scanner and tap your College ID card. 200ms authorization.
                   </p>
                 </div>
               </div>
 
-              {/* Card 3 — The Digital Condition Stamp */}
-              <div className="p-6 bg-zinc-90 w-full border border-border rounded-2xl space-y-4 hover:border-purple-900/50 transition-colors group relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-16 h-16 bg-purple-500/[0.01] rounded-full blur-xl"></div>
-                <div className="w-10 h-10 rounded-xl bg-purple-955/40 border border-purple-900/60 flex items-center justify-center">
-                  <ShieldCheck className="w-5 h-5 text-purple-400" />
+              {/* Card 3 — Elastic Economy */}
+              <div className="p-6 bg-white border border-slate-200 rounded-xl space-y-4 hover:border-slate-300 hover:shadow-sm transition-all group">
+                <div className="w-12 h-12 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center">
+                  <ShieldCheck className="w-6 h-6 text-slate-700" />
                 </div>
                 <div className="space-y-2">
-                  <span className="text-[9px] font-mono uppercase text-purple-400 font-bold block">03 / VERIFIED HAND-OFF</span>
-                  <h3 className="text-base font-bold text-foreground group-hover:text-purple-400 transition-colors tracking-tight">
-                    The Digital Condition Stamp
-                  </h3>
-                  <p className="text-xs text-muted-foreground leading-relaxed font-light">
-                    Inform students that the Ambassador captures a high-resolution photo of the book's physical state at checkout. If it is returned clean, the refund is instant. If it is lost or destroyed, the deposit is permanently forfeited to auto-purchase an identical replacement.
+                  <span className="text-[10px] font-semibold uppercase text-slate-500 block">03 / Utility Ledger</span>
+                  <h3 className="text-xl font-bold text-slate-900">Elastic Credit Engine</h3>
+                  <p className="text-sm text-slate-600 leading-relaxed">
+                    Your account is staked with a ₹5,000 credit bar. A book temporarily freezes portion of the bar as collateral. Returning the item instantly restores your full buffer.
                   </p>
                 </div>
               </div>
-
             </div>
 
             {/* High-Visibility text container: The 'Unlimited In-Library' Growth Engine */}
-            <div className="mt-8 p-6 bg-gradient-to-r from-blue-950/40 via-indigo-950/30 to-zinc-950 border border-primary/30 rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative overflow-hidden">
-              <div className="absolute right-0 top-0 bottom-0 w-32 bg-blue-500/[0.02] rounded-full blur-3xl pointer-events-none"></div>
+            <div className="mt-8 p-6 bg-slate-50 border border-slate-200 rounded-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
               <div className="space-y-2 flex-1">
                 <div className="flex items-center space-x-2">
-                  <span className="px-2 py-0.5 bg-indigo-900 text-indigo-300 font-bold font-mono text-[9px] rounded uppercase tracking-wider">Growth Engine</span>
-                  <span className="text-xs text-emerald-400 font-mono font-bold animate-pulse">&bull; Dean's Pilot Favorite</span>
+                  <span className="px-2 py-0.5 bg-slate-200 text-slate-700 font-bold font-mono text-[9px] rounded uppercase tracking-wider">Growth Engine</span>
+                  <span className="text-xs text-green-600 font-medium">&bull; Dean's Pilot Favorite</span>
                 </div>
-                <h4 className="text-lg font-bold text-foreground tracking-tight">Exhausted your credits? Read unlimited in-hub.</h4>
-                <p className="text-xs text-muted-foreground max-w-3xl leading-relaxed">
-                  A student can read any technical reference textbook or handbook in our entire catalog completely free with <strong>zero credit deductions</strong>—as long as they remain inside the physical library building. This is the exact loop that artificially drives library foot-traffic and facility metrics up, winning over College Deans and ensuring swift pilot approvals.
+                <h4 className="text-lg font-bold text-slate-900 tracking-tight">Exhausted your credits? Read unlimited in-hub.</h4>
+                <p className="text-sm text-slate-600 max-w-3xl leading-relaxed">
+                  A student can read any technical reference textbook or handbook in our entire catalog completely free with <strong>zero credit deductions</strong>—as long as they remain inside the physical library building.
                 </p>
               </div>
               <div className="shrink-0">
-                <div className="px-4 py-3 bg-background/80 border border-border/60 rounded-xl text-center font-mono">
-                  <div className="text-xs text-muted-foreground">CREDIT COST</div>
-                  <div className="text-lg font-bold text-foreground uppercase text-emerald-400">₹0 Free</div>
+                <div className="px-4 py-3 bg-white border border-slate-200 rounded-lg text-center">
+                  <div className="text-xs font-medium text-slate-500">CREDIT COST</div>
+                  <div className="text-lg font-bold text-green-600 uppercase">₹0 Free</div>
                 </div>
               </div>
             </div>
@@ -731,7 +581,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                     </div>
                     <span className="text-[10px] font-mono text-zinc-650 font-bold">INFO BLOCK 0{flowStep.step}</span>
                   </div>
-                  <h4 className={`text-xs font-bold font-sans transition-colors ${activeSimulationStep === flowStep.step ? 'text-primary' : 'text-muted-foreground'}`}>
+                  <h4 className={`text-xs font-bold  transition-colors ${activeSimulationStep === flowStep.step ? 'text-primary' : 'text-muted-foreground'}`}>
                     {flowStep.title}
                   </h4>
                   <p className="text-[11px] text-muted-foreground/80 leading-relaxed font-light mt-1.5 font-sans">
@@ -754,7 +604,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                     <span className="text-[9px] font-mono text-emerald-400 uppercase font-bold tracking-widest">LIVE PLAYGROUND INFOGRAPHIC</span>
                   </div>
-                  <h3 className="text-base font-bold text-foreground font-sans">Simulated Student Wallet</h3>
+                  <h3 className="text-base font-bold text-foreground ">Simulated Student Wallet</h3>
                   <p className="text-[11px] text-muted-foreground/80 font-light">
                     Observe how your credit limit behaves as you borrow and return syllabus textbooks underneath the ₹999/year subscription plan.
                   </p>
@@ -786,8 +636,8 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                   </div>
 
                   <div className="flex justify-between items-center text-[9px] font-mono text-muted-foreground/50">
-                    <span>💳 Buffer Expended: ₹{(5000 - simCredits).toLocaleString()}</span>
-                    <span>💯 Fully Restored: ₹5,000 Max Capacity</span>
+                    <span className="inline-flex items-center gap-1"><CreditCard className="w-3 h-3" /> Buffer Expended: ₹{(5000 - simCredits).toLocaleString()}</span>
+                    <span className="inline-flex items-center gap-1"><CheckCircle className="w-3 h-3" /> Fully Restored: ₹5,000 Max Capacity</span>
                   </div>
                 </div>
 
@@ -838,7 +688,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
               <div className="lg:col-span-6 bg-background border border-border p-6 rounded-2xl flex flex-col justify-between space-y-6">
                 <div className="space-y-1 text-left">
                   <span className="text-[9px] font-mono text-primary uppercase font-bold tracking-wider block">INTERACTIVE INSTANT DISPENSER PANEL</span>
-                  <h3 className="text-base font-bold text-foreground font-sans">Campus Library Kiosk Shelf</h3>
+                  <h3 className="text-base font-bold text-foreground ">Campus Library Kiosk Shelf</h3>
                   <p className="text-[11px] text-muted-foreground font-light font-sans">
                     Click to test borrowing textbooks. Our smart shelves detect active weight changes and adjust limits with 100% computational correctness.
                   </p>
@@ -862,7 +712,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                             <span className="text-[8px] font-mono text-muted-foreground/60 uppercase tracking-wider">{catalogBook.code}</span>
                             <span className="text-[9px] font-mono text-amber-500 font-bold font-semibold">{catalogBook.weight} Credits</span>
                           </div>
-                          <h4 className="text-[11px] font-bold text-foreground/90 line-clamp-2 leading-snug font-sans">{catalogBook.title}</h4>
+                          <h4 className="text-[11px] font-bold text-foreground/90 line-clamp-2 leading-snug ">{catalogBook.title}</h4>
                         </div>
 
                         <div className="pt-2 border-t border-border/60 flex items-center justify-between">
@@ -1432,10 +1282,9 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
         <div className="space-y-20 animate-in fade-in duration-500">
 
           {/* Block 1: B2B Hero Area & Value Alignment */}
-          <section className="relative rounded-3xl overflow-hidden border border-border h-[380px] sm:h-[460px] flex flex-col justify-center items-center text-center px-4 bg-background/80 shadow-2xl">
+          <section className="relative rounded-3xl overflow-hidden h-[380px] sm:h-[460px] flex flex-col justify-center items-center text-center px-4 ">
             {/* Futuristic Tech Circulation Totem Backdrop Mock */}
             <div className="absolute inset-0 z-0 opacity-20 filter blur-[3px]">
-              <div className="absolute inset-0 bg-gradient-to-tr from-zinc-950 via-zinc-900/70 to-zinc-950 z-10"></div>
 
               {/* Complex high-traffic tech central circulation totem grid */}
               <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-80 h-80 border border-zinc-500 rounded-full flex items-center justify-center animate-spin" style={{ animationDuration: '40s' }}>
@@ -1446,8 +1295,8 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
             </div>
 
             <div className="relative z-25 max-w-3xl space-y-5 px-4">
-              <span className="inline-flex items-center px-3 py-1 rounded-full bg-muted/50 border border-border/60 text-[10px] font-mono tracking-widest text-muted-foreground font-bold uppercase">
-                🏛️ Institutional Dean Alignment
+              <span className="inline-flex items-center px-3 py-1 rounded-full border border-border/60 text-[10px] font-mono tracking-widest text-muted-foreground font-bold uppercase">
+                Institutional Dean Alignment
               </span>
               <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-foreground leading-tight">
                 Upgrade library space into a Neev study hub. <br />
@@ -1490,7 +1339,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                 <div className="w-10 h-10 rounded-xl bg-background border border-border/60/80 flex items-center justify-center">
                   <Layers className="w-5 h-5 text-muted-foreground" />
                 </div>
-                <h4 className="text-base font-extrabold text-zinc-105 font-sans tracking-tight">
+                <h4 className="text-base font-extrabold text-zinc-105  tracking-tight">
                   Physical Experience
                 </h4>
                 <p className="text-xs leading-relaxed font-light text-muted-foreground">
@@ -1503,7 +1352,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                 <div className="w-10 h-10 rounded-xl bg-background border border-border/60/80 flex items-center justify-center">
                   <User className="w-5 h-5 text-muted-foreground" />
                 </div>
-                <h4 className="text-base font-extrabold text-zinc-105 font-sans tracking-tight">
+                <h4 className="text-base font-extrabold text-zinc-105  tracking-tight">
                   Modern Student Flow
                 </h4>
                 <p className="text-xs leading-relaxed font-light text-muted-foreground">
@@ -1516,7 +1365,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                 <div className="w-10 h-10 rounded-xl bg-background border border-border/60/80 flex items-center justify-center">
                   <ShieldCheck className="w-5 h-5 text-muted-foreground" />
                 </div>
-                <h4 className="text-base font-extrabold text-zinc-105 font-sans tracking-tight">
+                <h4 className="text-base font-extrabold text-zinc-105  tracking-tight">
                   Traceable Handoffs
                 </h4>
                 <p className="text-xs leading-relaxed font-light text-muted-foreground">
@@ -1649,7 +1498,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
 
             {/* Registrar key access trigger option */}
             <div className="pt-4 border-t border-border text-center">
-              <span className="text-[10px] font-mono text-muted-foreground/50 block">✨ Already registered as a partner Campus Registrar?</span>
+              <span className="text-[10px] font-mono text-muted-foreground/50 flex items-center justify-center gap-1"><Sparkles className="w-3 h-3" /> Already registered as a partner Campus Registrar?</span>
               <button
                 type="button"
                 onClick={() => {
@@ -1706,7 +1555,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                     className={`flex-1 pb-3 text-xs font-bold uppercase tracking-wider transition-all relative ${collegeAuthTab === 'signup' ? 'text-foreground' : 'text-muted-foreground/60 hover:text-muted-foreground'
                       }`}
                   >
-                    <span>Sign Up Core Coordinator</span>
+                    <span>Sign Up Admin</span>
                     {collegeAuthTab === 'signup' && (
                       <div className="absolute bottom-[-1px] left-0 right-0 h-0.5 bg-indigo-500 animate-in fade-in duration-200"></div>
                     )}
@@ -1721,7 +1570,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                         <Lock className="w-3 h-3" />
                         <span>Authorized Hub Ingress</span>
                       </div>
-                      <h3 className="text-base font-bold text-foreground font-sans">Access Core Library Console</h3>
+                      <h3 className="text-base font-bold text-foreground ">Access Core Library Console</h3>
                       <p className="text-[11px] text-muted-foreground font-light">
                         Use your assigned university credentials to manage your assigned library's logistics.
                       </p>
@@ -1752,17 +1601,17 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                             <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
                           </svg>
                         )}
-                        <span>{googleLoading ? 'Verifying with SSO...' : 'Sign in as Campus Admin with Google'}</span>
+                        <span>{googleLoading ? 'Verifying with SSO...' : 'Sign in with Google'}</span>
                       </button>
 
                       <div className="flex items-center space-x-2 select-none my-1">
                         <div className="h-[1px] bg-zinc-850 flex-1"></div>
-                        <span className="text-[8px] font-mono text-zinc-650 uppercase">or utilize secure credentials</span>
+                        <span className="text-[8px] font-mono text-zinc-650 uppercase">(Or)</span>
                         <div className="h-[1px] bg-zinc-850 flex-1"></div>
                       </div>
 
                       <div className="space-y-1.5 text-xs">
-                        <label className="text-[10px] font-mono text-muted-foreground uppercase font-bold">University Admin Email:</label>
+                        <label className="text-[10px] font-mono text-muted-foreground uppercase font-bold">Admin Email:</label>
                         <input
                           type="email"
                           required
@@ -1774,149 +1623,93 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                       </div>
 
                       <div className="space-y-1.5 text-xs">
-                        <label className="text-[10px] font-mono text-muted-foreground uppercase font-bold">Secure Access Key:</label>
+                        <label className="text-[10px] font-mono text-muted-foreground uppercase font-bold"> Password:</label>
                         <input
                           type="password"
                           required
                           value={collegePassword}
                           onChange={(e) => setCollegePassword(e.target.value)}
-                          placeholder="••••••••"
+                          placeholder="Password"
                           className="w-full bg-background border border-border rounded-xl p-3 text-zinc-105 font-mono focus:border-border outline-none text-xs"
                         />
-                        <p className="text-[9px] text-muted-foreground/60 font-mono">Password: <span className="text-muted-foreground bg-background px-1 py-0.5 rounded font-mono">password123</span></p>
                       </div>
 
                       <button
                         type="submit"
                         className="w-full py-3 bg-zinc-100 hover:bg-white text-zinc-950 border-t border-white rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-center space-x-1.5 transition mt-2"
                       >
-                        <span>Access Registrar Console &rarr;</span>
+                        <span>Login&rarr;</span>
                       </button>
                     </form>
-
-                    {/* Pre-configured Demo Accounts Fast Path */}
-                    <div className="mt-4 pt-4 border-t border-zinc-90 w-full space-y-2.5">
-                      <div className="flex items-center space-x-1.5 px-2.5 py-1 bg-background border border-border rounded-lg justify-center w-fit mx-auto text-[9px] font-mono text-zinc-405 font-bold uppercase tracking-wider">
-                        <ShieldAlert className="w-3.5 h-3.5 text-primary shrink-0" />
-                        <span>Protected Institutional Authority Desk</span>
-                      </div>
-                      <p className="text-[10px] text-muted-foreground/60 text-center leading-normal">
-                        Direct-clicks have been deactivated for account protection. To access, please type these credentials into the admin fields:
-                      </p>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-[10px]">
-                        {[
-                          { name: "Prof. Sharma (Ambassador)", email: "sharma.ambassador@neev.in" },
-                          { name: "System Admin (Root Ledger)", email: "admin@neev.in" }
-                        ].map((teamUser, index) => (
-                          <div
-                            key={index}
-                            className="p-2.5 bg-background border border-border rounded-xl flex flex-col justify-between text-left space-y-1 font-mono"
-                          >
-                            <span className="text-muted-foreground font-bold">{teamUser.name}</span>
-                            <div className="text-[9px] text-muted-foreground/60 leading-normal">
-                              <div>Email: <span className="text-primary select-all">{teamUser.email}</span></div>
-                              <div>Pass: <span className="text-muted-foreground">password123</span></div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
                   </div>
                 ) : (
-                  /* COLLEGE/HUB SIGNUP FORM */
-                  <div className="space-y-4 animate-in fade-in duration-300">
-                    <div className="space-y-1">
-                      <div className="flex items-center space-x-1.5 text-primary text-[10px] font-mono uppercase font-bold">
+                  /* COLLEGE / HUB / ADMIN SIGNUP FORM */
+                  <div className="space-y-5 animate-in fade-in duration-300">
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-2 text-primary text-[10px] font-mono uppercase font-bold">
                         <School className="w-3 h-3" />
-                        <span>University MoU Node Ingress</span>
+                        <span>Institution Registration</span>
                       </div>
-                      <h3 className="text-base font-bold text-foreground font-sans">Create Coordinator Account</h3>
-                      <p className="text-[11px] text-muted-foreground font-light">
-                        Register a new core representative for your verified university or regional central hub.
+                      <h3 className="text-lg font-semibold text-foreground">Create Institution Administrator Account</h3>
+                      <p className="text-xs text-muted-foreground">
+                        Register your institution and create the primary administrator account responsible for managing books, students, librarians, and circulation operations.
                       </p>
                     </div>
-
                     <form
                       onSubmit={(e) => {
                         e.preventDefault();
-                        if (!collegeName.trim() || !collegeEmail.trim()) return;
-                        onSignUp(
-                          collegeName.trim(),
-                          collegeEmail.trim().toLowerCase(),
-                          true,
-                          collegeBranch,
-                          collegePassword,
-                          collegeRole
-                        );
+                        if (!adminName.trim() || !adminEmail.trim() || !institutionName.trim() || !adminState.trim() || !city.trim() || !password || password !== confirmPassword) return;
+                        onSignUp(adminName.trim(), adminEmail.trim().toLowerCase(), true, institutionName.trim(), password, adminRole);
                       }}
                       className="space-y-4"
                     >
-                      <div className="space-y-1.5 text-xs">
-                        <label className="text-[10px] font-mono text-muted-foreground uppercase font-bold">Full Coordinator Name:</label>
-                        <input
-                          type="text"
-                          required
-                          value={collegeName}
-                          onChange={(e) => setCollegeName(e.target.value)}
-                          placeholder="e.g. Prof. Ramesh Rao"
-                          className="w-full bg-background border border-border rounded-xl p-3 text-foreground/90 focus:border-border outline-none placeholder-zinc-800 text-xs"
-                        />
+                      <div className="border border-border rounded-xl p-4 space-y-3">
+                        <h4 className="text-sm font-semibold text-foreground">Administrator Information</h4>
+                        <input type="text" required value={adminName} onChange={(e) => setAdminName(e.target.value)} placeholder="Full Name" className="w-full rounded-xl border border-border bg-background p-3 text-sm focus:outline-none" />
+                        <input type="email" required value={adminEmail} onChange={(e) => setAdminEmail(e.target.value)} placeholder="Official Email Address" className="w-full rounded-xl border border-border bg-background p-3 text-sm focus:outline-none" />
+                        <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Mobile Number" className="w-full rounded-xl border border-border bg-background p-3 text-sm focus:outline-none" />
+                        <input type="text" value={designation} onChange={(e) => setDesignation(e.target.value)} placeholder="Designation (Librarian, Coordinator, Admin)" className="w-full rounded-xl border border-border bg-background p-3 text-sm focus:outline-none" />
                       </div>
-
-                      <div className="space-y-1.5 text-xs">
-                        <label className="text-[10px] font-mono text-muted-foreground uppercase font-bold">Academic Email Address:</label>
-                        <input
-                          type="email"
-                          required
-                          value={collegeEmail}
-                          onChange={(e) => setCollegeEmail(e.target.value)}
-                          placeholder="e.g. ramesh.rao@university.edu"
-                          className="w-full bg-background border border-border rounded-xl p-3 text-foreground/90 focus:border-border outline-none placeholder-zinc-800 text-xs"
-                        />
-                      </div>
-
-                      <div className="space-y-1.5 text-xs">
-                        <label className="text-[10px] font-mono text-muted-foreground uppercase font-bold">Select Coordinator Rank:</label>
-                        <select
-                          value={collegeRole}
-                          onChange={(e) => setCollegeRole(e.target.value as 'college_ambassador' | 'admin')}
-                          className="w-full bg-background border border-border rounded-xl p-3 text-foreground/90 focus:border-border outline-none text-xs"
-                        >
-                          <option value="college_ambassador">Campus Ambassador / Local Hub Librarian</option>
-                          <option value="admin">Central Administrator / System Operator</option>
+                      <div className="border border-border rounded-xl p-4 space-y-3">
+                        <h4 className="text-sm font-semibold text-foreground">Institution Information</h4>
+                        <input type="text" required value={institutionName} onChange={(e) => setInstitutionName(e.target.value)} placeholder="Institution / College Name" className="w-full rounded-xl border border-border bg-background p-3 text-sm focus:outline-none" />
+                        <select value={institutionType} onChange={(e) => setInstitutionType(e.target.value)} className="w-full rounded-xl border border-border bg-background p-3 text-sm focus:outline-none">
+                          <option value="college">College</option>
+                          <option value="university">University</option>
+                          <option value="public_library">Public Library</option>
+                          <option value="private_library">Private Library</option>
+                          <option value="regional_hub">Regional Hub</option>
                         </select>
                       </div>
-
-                      <div className="space-y-1.5 text-xs">
-                        <label className="text-[10px] font-mono text-muted-foreground uppercase font-bold">Choose Console Password protection:</label>
-                        <input
-                          type="password"
-                          required
-                          value={collegePassword}
-                          onChange={(e) => setCollegePassword(e.target.value)}
-                          placeholder="Create strong secure access password"
-                          className="w-full bg-background border border-border rounded-xl p-3 text-foreground/90 font-mono focus:border-border outline-none placeholder-zinc-800 text-xs"
-                        />
+                      <div className="border border-border rounded-xl p-4 space-y-3">
+                        <h4 className="text-sm font-semibold text-foreground">Location Details</h4>
+                        <input type="text" value={country} onChange={(e) => setCountry(e.target.value)} placeholder="Country" className="w-full rounded-xl border border-border bg-background p-3 text-sm focus:outline-none" />
+                        <div className="grid grid-cols-2 gap-3">
+                          <input type="text" required value={adminState} onChange={(e) => setAdminState(e.target.value)} placeholder="State" className="rounded-xl border border-border bg-background p-3 text-sm focus:outline-none" />
+                          <input type="text" required value={city} onChange={(e) => setCity(e.target.value)} placeholder="City" className="rounded-xl border border-border bg-background p-3 text-sm focus:outline-none" />
+                        </div>
+                        <input type="text" value={district} onChange={(e) => setDistrict(e.target.value)} placeholder="District" className="w-full rounded-xl border border-border bg-background p-3 text-sm focus:outline-none" />
+                        <textarea value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Full Address" rows={3} className="w-full rounded-xl border border-border bg-background p-3 text-sm resize-none focus:outline-none" />
+                        <input type="text" value={postalCode} onChange={(e) => setPostalCode(e.target.value)} placeholder="PIN / Postal Code" className="w-full rounded-xl border border-border bg-background p-3 text-sm focus:outline-none" />
                       </div>
-
-                      <div className="space-y-1.5 text-xs">
-                        <label className="text-[10px] font-mono text-muted-foreground uppercase font-bold">Select Assigned College Branch Node:</label>
-                        <select
-                          value={collegeBranch}
-                          onChange={(e) => setCollegeBranch(e.target.value)}
-                          className="w-full bg-background border border-border rounded-xl p-3 text-zinc-250 focus:border-border outline-none text-xs"
-                        >
-                          <option value="RVCE-BLR">RV College of Engineering, Bengaluru (RVCE-BLR)</option>
-                          <option value="IIT-Hauzkhas">IIT Delhi (IIT-Hauzkhas)</option>
-                          <option value="BITS-Pilani">BITS Pilani (BITS-Pilani)</option>
+                      <div className="space-y-2">
+                        <label className="text-xs font-medium text-muted-foreground">Administrator Role</label>
+                        <select value={adminRole} onChange={(e) => setAdminRole(e.target.value)} className="w-full rounded-xl border border-border bg-background p-3 text-sm focus:outline-none">
+                          <option value="admin">Institution Administrator</option>
+                          <option value="hub_manager">Hub Manager</option>
+                          <option value="librarian">Chief Librarian</option>
                         </select>
                       </div>
-
-                      <button
-                        type="submit"
-                        className="w-full py-3 bg-zinc-100 hover:bg-white text-zinc-950 border-t border-white rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-center space-x-1 transition mt-2"
-                      >
-                        <span>Establish Core Coordinator Session &rarr;</span>
+                      <div className="space-y-3">
+                        <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Create Password" className="w-full rounded-xl border border-border bg-background p-3 text-sm focus:outline-none" />
+                        <input type="password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Confirm Password" className="w-full rounded-xl border border-border bg-background p-3 text-sm focus:outline-none" />
+                      </div>
+                      <label className="flex items-start gap-2 text-xs text-muted-foreground">
+                        <input type="checkbox" required className="mt-1" />
+                        <span>I confirm that I am authorized to create and manage this institution account.</span>
+                      </label>
+                      <button type="submit" className="w-full rounded-xl bg-primary text-primary-foreground py-3 text-sm font-semibold transition hover:opacity-90">
+                        Create Institution Account
                       </button>
                     </form>
                   </div>
@@ -1931,7 +1724,6 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                     Ambassadors use local hub views to configure physical shelves, check book weight sensors, and receive direct checkout deposit alerts on site.
                   </p>
                 </div>
-
                 <div className="p-5 bg-background rounded-2xl border border-border space-y-3">
                   <h4 className="text-xs font-bold text-primary uppercase tracking-wide">MOU Administrative Sovereignty</h4>
                   <p className="text-xs text-muted-foreground leading-relaxed font-light">
@@ -1939,88 +1731,24 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                   </p>
                 </div>
               </div>
-
             </div>
           </section>
-
         </div>
       )}
-
-      {/* Persistent Beautiful Footer with separated visibility metrics */}
-      <footer className="border-t border-border/60 pt-10 pb-6 text-xs text-muted-foreground/60 space-y-6">
-        <div className="grid grid-cols-1 sm:grid-cols-12 gap-8 items-start">
-
-          <div className="sm:col-span-4 space-y-3">
-            <div className="flex items-center space-x-2">
-              <div className="w-6 h-6 rounded-lg bg-muted flex items-center justify-center">
-                <BookOpen className="w-3.5 h-3.5 text-zinc-350" />
-              </div>
-              <span className="font-bold text-foreground tracking-widest text-xs font-mono uppercase">Neev Core Network</span>
-            </div>
-            <p className="font-light text-[11px] text-muted-foreground/80 leading-relaxed">
-              Fusing physical bindings with dynamic digital soul inside India's forward technical college facilities. 100% textbook discoverability verified by load shell grids instantly.
-            </p>
-          </div>
-
-          <div className="sm:col-span-3 space-y-2">
-            <h5 className="font-bold text-muted-foreground font-mono uppercase">Student Portals</h5>
-            <div className="flex flex-col space-y-1.5 text-muted-foreground/60 font-light">
-              <button onClick={() => { setActiveSegment('students'); scrollToAuth(); }} className="text-left hover:text-foreground transition">Verify College Card</button>
-              <button onClick={() => { setActiveSegment('students'); scrollToAuth(); }} className="text-left hover:text-foreground transition font-semibold text-primary">Join Premium Account &rarr;</button>
-              <button onClick={() => { setActiveSegment('students'); setActiveSegment('students'); toggleFaq(0); }} className="text-left hover:text-foreground transition">Refund Deposit Rules</button>
-            </div>
-          </div>
-
-          <div className="sm:col-span-3 space-y-2">
-            <h5 className="font-bold text-muted-foreground font-mono uppercase font-bold">Institutional Access</h5>
-            <div className="flex flex-col space-y-1.5 text-muted-foreground/60 font-light">
-              <button
-                onClick={() => {
-                  setActiveSegment('colleges');
-                  setTimeout(() => {
-                    document.getElementById('b2b-form')?.scrollIntoView({ behavior: 'smooth' });
-                  }, 100);
-                  addXp(15);
-                }}
-                className="text-left text-muted-foreground hover:text-foreground transition font-indigo-505 font-semibold"
-              >
-                Institutional Partners: Zero-Capex Implementation Plan &rarr;
-              </button>
-              <button onClick={() => { setActiveSegment('colleges'); }} className="text-left hover:text-foreground transition">14-Day Rapid Deployment Schema</button>
-              <button onClick={() => { setActiveSegment('colleges'); }} className="text-left hover:text-foreground transition">Unlimited In-Library foot-traffic rules</button>
-            </div>
-          </div>
-
-          <div className="sm:col-span-2 space-y-2 text-right sm:text-left">
-            <h5 className="font-bold text-muted-foreground font-mono uppercase">Standard</h5>
-            <p className="text-[10px] font-mono text-zinc-650 uppercase">ISO 27011 • UHF Telemetry</p>
-            <p className="text-[10px] font-mono text-zinc-650 uppercase">AICTE Curriculum Compliant</p>
-            <p className="text-[10px] font-mono text-zinc-650">© 2026 Neev Labs.</p>
-          </div>
-
-        </div>
-
-        <div className="border-t border-zinc-950 pt-5 text-center flex flex-col sm:flex-row justify-between items-center text-[10px] text-zinc-650 font-mono gap-3">
-          <span>SECURE PROTOCOL OVER LAYER-2 MULTICAST SUITE</span>
-          <span>ESTABLISHED 2025 • BLR • DLH • IN</span>
-        </div>
-      </footer>
 
       {/* Realistic Google One-Tap Style Floating Account Chooser on the Top-Right */}
       {showGoogleModal && (
         <div className="fixed top-14 right-4 md:right-16 z-[100] max-w-[375px] w-full p-4 bg-[#131314] border border-[#3c4043] rounded-2xl shadow-[0_12px_45px_rgba(0,0,0,0.85)] animate-in slide-in-from-top-6 duration-300 text-left font-sans">
 
-          {/* Header styled exactly like 'Sign in to canva.com with google.com' */}
+          {/* Header */}
           <div className="flex items-center justify-between pb-3 border-b border-[#3c4043]/80">
             <div className="flex items-center space-x-2.5">
-              {/* Google Mini Logo */}
               <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
                 <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
                 <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
                 <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
               </svg>
-
               <div className="min-w-0">
                 <h4 className="text-xs font-semibold text-[#e3e3e3] truncate leading-tight">
                   {showGoogleCustomInput ? "Sign in with Google" : "Sign in with google.com"}
@@ -2030,13 +1758,11 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                 </p>
               </div>
             </div>
-
-            {/* Close Button */}
             <button
               type="button"
               onClick={() => setShowGoogleModal(false)}
               className="text-muted-foreground hover:text-foreground p-1 rounded-full hover:bg-muted transition"
-              aria-label="Close Google sign-in window"
+              aria-label="Close"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
@@ -2044,176 +1770,36 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
             </button>
           </div>
 
-          {/* Active Live Google browser-session integration element if configured with a real client ID */}
-          {!showGoogleCustomInput && (() => {
-            const gClientId = (process.env.VITE_GOOGLE_CLIENT_ID || '').trim();
-            const isRealClientId = gClientId && gClientId.includes('.apps.googleusercontent.com') && gClientId.length > 25;
-
-            return isRealClientId ? (
-              <div className="bg-[#1f1f21] border border-[#3c4043]/70 rounded-xl p-3 my-2 space-y-2">
-                <div className="flex items-center space-x-1.5 text-[#8ab4f8]">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
-                  <span className="text-[9px] font-mono uppercase font-bold tracking-wider">Chrome Sync Enabled</span>
-                </div>
-                <div className="flex justify-center">
-                  <div id="google-signin-btn-container-actual" className="w-full"></div>
-                </div>
-              </div>
-            ) : null;
-          })()}
-
           {!showGoogleCustomInput ? (
-            <div className="space-y-0.5 py-1 max-h-[340px] overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-800 pr-0.5">
-              {(() => {
-                const list = [
-                  {
-                    name: "Krishna Vamsi",
-                    email: "nemalekrishnavamsi@gmail.com",
-                    customAvatar: (
-                      <svg className="w-8 h-8 rounded-full shrink-0" viewBox="0 0 40 40">
-                        <defs>
-                          <linearGradient id="sky-sunset" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stopColor="#db2777" />
-                            <stop offset="50%" stopColor="#ea580c" />
-                            <stop offset="100%" stopColor="#eab308" />
-                          </linearGradient>
-                        </defs>
-                        <circle cx="20" cy="20" r="20" fill="url(#sky-sunset)" />
-                        {/* Mountain mountaineer silhouette */}
-                        <polygon points="2,40 22,14 40,40" fill="#12131a" />
-                        <polygon points="12,40 28,10 40,40" fill="#1f2937" opacity="0.8" />
-                        <circle cx="9" cy="9" r="1.5" fill="#ffffff" />
-                        <circle cx="32" cy="12" r="1" fill="#ffffff" opacity="0.6" />
-                      </svg>
-                    )
-                  },
-                  {
-                    name: "Krishna Vamsi",
-                    email: "kvams030@gmail.com",
-                    customAvatar: (
-                      <svg className="w-8 h-8 rounded-full shrink-0" viewBox="0 0 40 40">
-                        <defs>
-                          <linearGradient id="podium-bg" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stopColor="#3b82f6" />
-                            <stop offset="100%" stopColor="#6366f1" />
-                          </linearGradient>
-                        </defs>
-                        <circle cx="20" cy="20" r="20" fill="url(#podium-bg)" />
-                        {/* Speaker presentation outline */}
-                        <circle cx="20" cy="12" r="3.5" fill="#f8fafc" />
-                        <path d="M14,24 c0,-3.5 2.5,-5 6,-5 s6,1.5 6,5 v16 h-12 z" fill="#e2e8f0" />
-                        <rect x="18" y="24" width="4" height="16" fill="#1e293b" />
-                        <rect x="15" y="22" width="10" height="2" fill="#0f172a" rx="0.5" />
-                      </svg>
-                    )
-                  },
-                  {
-                    name: "Mi Hostels",
-                    email: "mihostelss@gmail.com",
-                    customAvatar: (
-                      <svg className="w-8 h-8 rounded-full shrink-0" viewBox="0 0 40 40">
-                        <circle cx="20" cy="20" r="20" fill="#dc2626" />
-                        {/* Styled double hostels peak outline */}
-                        <path d="M9,27 L15,15 L20,25 L25,12 L31,27 Z" fill="#ffffff" />
-                        <path d="M12,28 L17,17 L21,25 L25,14 L30,28" stroke="#dc2626" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                        <rect x="18" y="20" width="2" height="3" fill="#ffffff" />
-                      </svg>
-                    )
-                  },
-                  {
-                    name: "Krishna Vamsi N",
-                    email: "krishnavamsi.n@srujanavani.org",
-                    customAvatar: (
-                      <div className="w-8 h-8 rounded-full bg-[#1e1b4b] border border-primary/30 flex items-center justify-center text-xs font-bold text-[#818cf8] shrink-0">
-                        KN
-                      </div>
-                    )
-                  }
-                ];
-
-                // Add custom user typed accounts saved in localStorage
-                customGoogleAccounts.forEach(acc => {
-                  if (!list.some(item => item.email === acc.email)) {
-                    list.push({
-                      name: acc.name,
-                      email: acc.email,
-                      customAvatar: (
-                        <div className="w-8 h-8 rounded-full bg-indigo-950 border border-indigo-700/50 flex items-center justify-center text-xs font-extrabold text-[#c084fc] shrink-0">
-                          {acc.name.slice(0, 2).toUpperCase()}
-                        </div>
-                      )
-                    });
-                  }
-                });
-
-                return list;
-              })().map((account, index) => (
+            <div className="space-y-0.5 py-1 max-h-[340px] overflow-y-auto pr-0.5">
+              {customGoogleAccounts.map((account, idx) => (
                 <button
+                  key={`custom-${idx}`}
                   type="button"
-                  key={index}
                   onClick={() => handleSelectGoogleAccount(account.email, account.name)}
-                  className="w-full flex items-center justify-between py-2.5 px-2 rounded-xl hover:bg-[#1f1f21] active:bg-[#2a2a2c] transition duration-150 text-left outline-none"
+                  className="w-full flex items-center justify-between py-2 px-2 rounded-lg hover:bg-muted/80 transition text-left outline-none"
                 >
-                  <div className="flex items-center space-x-3 min-w-0">
-                    {account.customAvatar}
+                  <div className="flex items-center space-x-3.5 min-w-0">
+                    <div className="w-7 h-7 rounded-full bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-zinc-300 shrink-0 border border-border">
+                      {account.name.slice(0, 2).toUpperCase()}
+                    </div>
                     <div className="min-w-0">
-                      <div className="text-xs font-medium text-[#e3e3e3] truncate">{account.name}</div>
-                      <div className="text-[11px] text-[#9aa0a6] truncate font-mono mt-0.5">{account.email}</div>
+                      <div className="text-xs font-semibold text-[#b8b8b8] truncate">{account.name}</div>
+                      <div className="text-[10px] text-muted-foreground/60 truncate font-mono mt-0.5">{account.email}</div>
                     </div>
                   </div>
                 </button>
               ))}
-
-              {/* Sandbox and administration roles as alternative quick log-ins */}
-              <div className="pt-2 border-t border-[#3c4043]/50 mt-2 space-y-0.5">
-                <div className="px-2 pb-1 text-[9px] font-mono text-[#9aa0a6] uppercase tracking-wider">
-                  Campus Sandbox Profiles:
-                </div>
-                {[
-                  { name: "Prof. Sharma (Kiosk Ambassador)", email: "sharma.ambassador@neev.in" },
-                  { name: "System Administrator (Global Logistics)", email: "admin@neev.in" }
-                ].map((account, sIdx) => {
-                  const initial = account.name.includes("Sharma") ? "PS" : "SA";
-                  return (
-                    <button
-                      type="button"
-                      key={`sandbox-${sIdx}`}
-                      onClick={() => handleSelectGoogleAccount(account.email, account.name)}
-                      className="w-full flex items-center justify-between py-2 px-2 rounded-lg hover:bg-muted/80 transition text-left outline-none"
-                    >
-                      <div className="flex items-center space-x-3.5 min-w-0">
-                        <div className="w-7 h-7 rounded-full bg-zinc-850 flex items-center justify-center text-[10px] font-bold text-zinc-350 shrink-0 border border-border">
-                          {initial}
-                        </div>
-                        <div className="min-w-0">
-                          <div className="text-xs font-semibold text-[#b8b8b8] truncate">{account.name}</div>
-                          <div className="text-[10px] text-muted-foreground/60 truncate font-mono mt-0.5">{account.email}</div>
-                        </div>
-                      </div>
-                      <div className="text-zinc-650 font-mono text-[8px] uppercase tracking-wide shrink-0">
-                        Admin
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Use Another Account Option */}
-              <div className="pt-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowGoogleCustomInput(true);
-                    setGoogleCustomEmail("");
-                  }}
-                  className="w-full flex items-center space-x-2.5 py-2.5 px-2 rounded-xl text-left hover:bg-[#1f1f21] transition duration-150 text-xs font-medium text-[#8ab4f8]"
-                >
-                  <svg className="w-4 h-4 shrink-0 text-[#8ab4f8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />
-                  </svg>
-                  <span>Use another account</span>
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => { setShowGoogleCustomInput(true); setGoogleCustomEmail(""); }}
+                className="w-full flex items-center space-x-2.5 py-2.5 px-2 rounded-xl text-left hover:bg-[#1f1f21] transition duration-150 text-xs font-medium text-[#8ab4f8]"
+              >
+                <svg className="w-4 h-4 shrink-0 text-[#8ab4f8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />
+                </svg>
+                <span>Use another account</span>
+              </button>
             </div>
           ) : (
             <form
@@ -2228,43 +1814,33 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
               className="space-y-4 py-2 animate-in slide-in-from-right-3 duration-200"
             >
               <div className="space-y-1.5">
-                <label className="text-[10px] font-semibold text-[#9aa0a6] uppercase tracking-wider block">
-                  Email or phone
-                </label>
+                <label className="text-[10px] font-semibold text-[#9aa0a6] uppercase tracking-wider block">Email or phone</label>
                 <input
                   type="email"
                   required
                   placeholder="name@example.com"
                   value={googleCustomEmail}
                   onChange={(e) => setGoogleCustomEmail(e.target.value)}
-                  className="w-full bg-[#131314] border border-[#5f6368] focus:border-[#8ab4f8] focus:ring-1 focus:ring-[#8ab4f8] rounded-xl p-3 text-xs text-[#e3e3e3] outline-none transition"
+                  className="w-full bg-[#131314] border border-[#5f6368] focus:border-[#8ab4f8] rounded-xl p-3 text-xs text-[#e3e3e3] outline-none transition"
                 />
               </div>
               <div className="flex gap-2.5 pt-1">
-                <button
-                  type="button"
-                  onClick={() => setShowGoogleCustomInput(false)}
-                  className="w-1/3 py-2 bg-transparent hover:bg-muted text-[#8ab4f8] border border-[#5f6368] rounded-xl text-[10px] font-bold uppercase tracking-wider transition"
-                >
+                <button type="button" onClick={() => setShowGoogleCustomInput(false)} className="w-1/3 py-2 bg-transparent hover:bg-muted text-[#8ab4f8] border border-[#5f6368] rounded-xl text-[10px] font-bold uppercase tracking-wider transition">
                   Back
                 </button>
-                <button
-                  type="submit"
-                  className="flex-1 py-2 bg-[#8ab4f8] hover:bg-[#93bfff] text-[#131314] font-extrabold rounded-xl text-[10px] uppercase tracking-wider transition text-center"
-                >
+                <button type="submit" className="flex-1 py-2 bg-[#8ab4f8] hover:bg-[#93bfff] text-[#131314] font-extrabold rounded-xl text-[10px] uppercase tracking-wider transition text-center">
                   Next
                 </button>
               </div>
             </form>
           )}
 
-          {/* Privacy footer exactly like Google's disclaimer */}
+          {/* Privacy footer */}
           <div className="pt-3 border-t border-[#3c4043]/50 text-[10px] text-[#9aa0a6] leading-normal font-light">
-            Google will share your name, email address, language preference, and profile picture with Neev Hub. Review Neev's <span className="text-[#8ab4f8] cursor-pointer hover:underline">privacy policy</span> and <span className="text-[#8ab4f8] cursor-pointer hover:underline border-[#8ab4f8]">terms</span>.
+            Google will share your name, email address, language preference, and profile picture with Neev Hub. Review Neev's <span className="text-[#8ab4f8] cursor-pointer hover:underline">privacy policy</span> and <span className="text-[#8ab4f8] cursor-pointer hover:underline">terms</span>.
           </div>
         </div>
       )}
-
 
     </div>
   );

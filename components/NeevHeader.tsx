@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { BookOpen, Map, Wallet, Cpu, Library, School, LogOut, User } from 'lucide-react';
+import { BookOpen, Map, Wallet, Cpu, Library, School, LogOut, User, UserCircle2 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
 interface NeevHeaderProps {
@@ -31,45 +31,42 @@ export const NeevHeader: React.FC<NeevHeaderProps> = ({
     <header className="sticky top-0 z-50 w-full bg-white border-b border-slate-200 transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          
+
           {/* Logo Brand */}
           <div className="flex items-center space-x-3 cursor-pointer group" onClick={() => setActiveTab('overview')}>
-            <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-slate-900 shadow-sm group-hover:scale-105 transition-transform duration-300">
-              <Library className="w-5 h-5 text-white" />
+            <div className="relative flex items-center justify-center w-8 h-8 rounded-lg bg-slate-900 shadow-sm transition-transform duration-300">
+              <Library className="w-4 h-4 text-white" />
             </div>
             <div>
-              <div className="flex items-center space-x-2">
-                <span className="text-lg font-bold tracking-tight text-slate-900 uppercase">NEEV</span>
-                <span className="text-[9px] px-1.5 py-0.5 font-mono uppercase font-bold text-slate-600 bg-slate-100 border border-slate-200 rounded">PHYGITAL</span>
+              <div className="flex items-center space-x-1.5">
+                <span className="text-base font-bold tracking-tight text-slate-900">Neev</span>
+                <span className="text-[10px] px-1.5 py-0.5 font-medium text-slate-600 bg-slate-100 border border-slate-200 rounded">Phygital</span>
               </div>
-              <p className="text-[9px] text-slate-500 font-mono tracking-widest uppercase">BRIDGING PHYSICAL & DIGITAL</p>
             </div>
           </div>
 
           {/* Nav Tabs */}
           {isLoggedIn ? (
-            <nav className="hidden md:flex space-x-1 items-center bg-muted/50 p-1 rounded-xl border border-border/50">
+            <nav className="hidden md:flex space-x-1 items-center">
               {(() => {
                 const tabs = userRole === 'student' ? [
-                  { id: 'student_dashboard', label: 'Student Portal', icon: Library },
-                  { id: 'catalog', label: 'Find a Book', icon: BookOpen },
-                  { id: 'map', label: 'Shelf Finder', icon: Map },
-                  { id: 'member', label: 'My Card', icon: Wallet },
-                  { id: 'scanner', label: 'AI Scanner', icon: Cpu },
+                  { id: 'student_dashboard', label: 'Portal', icon: Library },
+                  { id: 'catalog', label: 'Catalog', icon: BookOpen },
+                  { id: 'map', label: 'Map', icon: Map },
+                  { id: 'member', label: 'Membership', icon: UserCircle2 },
                 ] : (userRole === 'college_ambassador' || userRole === 'admin') ? [
-                  { id: 'college_dashboard', label: 'Kiosk Desk', icon: Cpu },
-                  { id: 'catalog', label: 'Find a Book', icon: BookOpen },
-                  { id: 'map', label: 'Shelf Finder', icon: Map },
-                  { id: 'college', label: 'Hub Management', icon: School },
-                  { id: 'librarian', label: 'System Ledger', icon: SlidersIcon },
+                  { id: 'college_dashboard', label: 'Kiosk', icon: Cpu },
+                  { id: 'catalog', label: 'Catalog', icon: BookOpen },
+                  { id: 'map', label: 'Map', icon: Map },
+                  { id: 'college', label: 'Hub', icon: School },
+                  { id: 'librarian', label: 'Ledger', icon: SlidersIcon },
                 ] : [
-                  { id: 'overview', label: 'Concept', icon: Library },
-                  { id: 'catalog', label: 'Find a Book', icon: BookOpen },
-                  { id: 'map', label: 'Shelf Finder', icon: Map },
+                  { id: 'overview', label: 'Overview', icon: Library },
+                  { id: 'catalog', label: 'Catalog', icon: BookOpen },
+                  { id: 'map', label: 'Map', icon: Map },
                 ];
 
                 return tabs.map((tab) => {
-                  const Icon = tab.icon;
                   const isActive = activeTab === tab.id;
 
                   return (
@@ -77,55 +74,54 @@ export const NeevHeader: React.FC<NeevHeaderProps> = ({
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id)}
                       className={cn(
-                        "flex items-center space-x-2 px-3.5 py-2 rounded-lg text-xs font-semibold tracking-wide transition-all duration-200",
+                        "px-3 py-1.5 rounded-md text-sm font-medium transition-colors duration-200",
                         isActive
-                          ? "bg-background text-foreground shadow-sm border border-border/60"
-                          : "text-muted-foreground hover:text-foreground hover:bg-background/50 border border-transparent"
+                          ? "bg-slate-100 text-slate-900"
+                          : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
                       )}
                     >
-                      <Icon className={cn("w-4 h-4", isActive ? "text-primary" : "text-muted-foreground")} />
-                      <span>{tab.label}</span>
+                      {tab.label}
                     </button>
                   );
                 });
               })()}
             </nav>
           ) : (
-            <nav className="hidden md:flex items-center space-x-6">
-              <button 
+            <nav className="hidden md:flex items-center space-x-2">
+              <button
                 onClick={() => {
                   setLandingSegment?.('students');
                   setActiveTab('landing');
                   window.scrollTo({ top: 0, behavior: 'smooth' });
-                }} 
+                }}
                 className={cn(
-                  "text-xs font-semibold transition-colors",
-                  activeTab !== 'catalog' && landingSegment === 'students' ? "text-foreground border-b-2 border-primary pb-1" : "text-muted-foreground hover:text-foreground"
+                  "px-3 py-1.5 rounded-md text-sm font-medium transition-colors duration-200",
+                  activeTab !== 'catalog' && landingSegment === 'students' ? "bg-slate-100 text-slate-900" : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
                 )}
               >
                 Home
               </button>
-              <button 
+              <button
                 onClick={() => {
                   setActiveTab('catalog');
                   window.scrollTo({ top: 0, behavior: 'smooth' });
-                }} 
+                }}
                 className={cn(
-                  "text-xs font-semibold transition-colors",
-                  activeTab === 'catalog' ? "text-foreground border-b-2 border-primary pb-1" : "text-muted-foreground hover:text-foreground"
+                  "px-3 py-1.5 rounded-md text-sm font-medium transition-colors duration-200",
+                  activeTab === 'catalog' ? "bg-slate-100 text-slate-900" : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
                 )}
               >
-                Find a Book
+                Catalog
               </button>
-              <button 
+              <button
                 onClick={() => {
                   setActiveTab('landing');
                   setLandingSegment?.('students');
                   setTimeout(() => {
                     document.getElementById('about-section')?.scrollIntoView({ behavior: 'smooth' });
                   }, 100);
-                }} 
-                className="text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors"
+                }}
+                className="px-3 py-1.5 rounded-md text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-colors"
               >
                 About
               </button>
@@ -134,21 +130,20 @@ export const NeevHeader: React.FC<NeevHeaderProps> = ({
 
           {/* Right Section: Branch Selector & Live Profile / Logout button */}
           <div className="flex items-center space-x-4">
-            
+
             {/* Campus selector */}
             {isLoggedIn && (
-              <div className="flex items-center space-x-2 bg-muted/40 px-2 py-1.5 rounded-lg border border-border/50">
-                <span className="text-[10px] uppercase font-mono text-muted-foreground hidden lg:inline font-semibold">Campus:</span>
+              <div className="flex items-center space-x-2 px-3 py-1.5 rounded-md border border-slate-200">
                 <select
                   value={branch}
                   onChange={(e) => setBranch(e.target.value)}
-                  className="bg-transparent text-[11px] font-mono text-foreground focus:outline-none select-none cursor-pointer font-bold"
+                  className="bg-transparent text-sm font-medium text-slate-700 focus:outline-none select-none cursor-pointer"
                 >
-                  <option value="RVCE-BLR" className="bg-background">RVCE Bengaluru</option>
-                  <option value="IIT-Hauzkhas" className="bg-background">IIT Delhi</option>
-                  <option value="BITS-Pilani" className="bg-background">BITS Pilani</option>
-                  <option value="Bengaluru-Central" className="bg-background">Central IN-BLR</option>
-                  <option value="Delhi-Hauzkhas" className="bg-background">Central IN-DLH</option>
+                  <option value="RVCE-BLR">RVCE Bengaluru</option>
+                  <option value="IIT-Hauzkhas">IIT Delhi</option>
+                  <option value="BITS-Pilani">BITS Pilani</option>
+                  <option value="Bengaluru-Central">Central IN-BLR</option>
+                  <option value="Delhi-Hauzkhas">Central IN-DLH</option>
                 </select>
               </div>
             )}
@@ -157,15 +152,14 @@ export const NeevHeader: React.FC<NeevHeaderProps> = ({
             {isLoggedIn ? (
               <div className="flex items-center space-x-3">
                 <div className="hidden sm:flex flex-col items-end">
-                  <span className="text-xs font-bold text-foreground capitalize">
+                  <span className="text-sm font-medium text-slate-900 capitalize">
                     {userRole?.replace('_', ' ')}
                   </span>
-                  <span className="text-[9px] font-mono text-muted-foreground tracking-widest uppercase">Verified Session</span>
                 </div>
-                <div className="h-8 w-px bg-border/60 mx-1 hidden sm:block"></div>
+                <div className="h-6 w-px bg-slate-200 mx-1 hidden sm:block"></div>
                 <button
                   onClick={onLogout}
-                  className="flex items-center justify-center w-9 h-9 bg-muted/40 border border-border/50 hover:bg-destructive/10 hover:border-destructive/30 hover:text-destructive rounded-lg text-muted-foreground transition-colors"
+                  className="flex items-center justify-center w-8 h-8 rounded-md text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors"
                   title="Sign Out"
                 >
                   <LogOut className="w-4 h-4" />
@@ -179,7 +173,7 @@ export const NeevHeader: React.FC<NeevHeaderProps> = ({
                     setActiveTab('landing');
                     setTimeout(() => document.getElementById('auth-section')?.scrollIntoView({ behavior: 'smooth' }), 100);
                   }}
-                  className="px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200 text-foreground hover:bg-muted"
+                  className="px-4 py-2 rounded-md text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors"
                 >
                   Log In
                 </button>
@@ -189,7 +183,7 @@ export const NeevHeader: React.FC<NeevHeaderProps> = ({
                     setActiveTab('landing');
                     setTimeout(() => document.getElementById('auth-section')?.scrollIntoView({ behavior: 'smooth' }), 100);
                   }}
-                  className="btn-primary !px-4 !py-2 !text-xs !rounded-lg"
+                  className="px-4 py-2 rounded-md text-sm font-medium text-white bg-slate-900 hover:bg-slate-800 transition-colors"
                 >
                   Get Started
                 </button>
@@ -204,16 +198,16 @@ export const NeevHeader: React.FC<NeevHeaderProps> = ({
 
 // Helper Icon placeholder because Sliders is sometimes separate
 const SlidersIcon = ({ className }: { className?: string }) => (
-  <svg 
-    xmlns="http://www.w3.org/2000/svg" 
-    width="24" 
-    height="24" 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    stroke="currentColor" 
-    strokeWidth="2" 
-    strokeLinecap="round" 
-    strokeLinejoin="round" 
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
     className={className}
   >
     <line x1="4" y1="21" x2="4" y2="14" />
