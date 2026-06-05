@@ -6,14 +6,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/context/auth-context";
 import NotFound from "@/pages/not-found";
-import { Layout } from "@/components/layout/Layout";
 import { StudentAppShell } from "@/components/layout/StudentAppShell";
-import Home from "@/pages/home";
-import Colleges from "@/pages/colleges";
 import Marketplace from "@/pages/marketplace";
-import About from "@/pages/about";
-import SignInPage from "@/pages/sign-in";
-import AnimatedAuthPage from "@/pages/login";
 import HubOverviewPage from "@/pages/hub-overview";
 import HubInventoryPage from "@/pages/hub-inventory";
 import HubBookRequestsPage from "@/pages/hub-requests";
@@ -496,7 +490,7 @@ function App() {
               <Router />
             </WouterRouter>
             <Toaster />
-            <SonnerToaster theme="dark" position="bottom-right" />
+            <SonnerToaster theme="system" position="bottom-right" />
           </TooltipProvider>
         </WalletProvider>
       </AuthProvider>

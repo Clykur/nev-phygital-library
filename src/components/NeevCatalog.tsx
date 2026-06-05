@@ -63,7 +63,7 @@ export const NeevCatalog: React.FC<NeevCatalogProps> = ({
         {/* Header Section */}
         <div className="mb-4 sm:mb-6 border-b border-border/30 pb-4 flex flex-col items-start justify-between gap-4 sm:gap-6 md:flex-row md:items-end">
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#64748B]">
+            <p className="caption-scale font-semibold uppercase tracking-[0.22em] text-foreground-muted">
               Student
             </p>
             <h1 className="mt-1 font-sans text-lg font-bold tracking-tight text-foreground text-balance">
@@ -118,7 +118,7 @@ export const NeevCatalog: React.FC<NeevCatalogProps> = ({
                   <div className="absolute inset-0 flex items-center justify-center p-4">
                     <div className="w-20 h-28 bg-muted/60 rounded flex-shrink-0 relative overflow-hidden flex flex-col justify-between p-2 shadow-sm border border-border/50">
                       <div className="w-1.5 h-full bg-primary absolute left-0 top-0"></div>
-                      <span className="text-[9px] font-bold text-foreground/90 leading-tight line-clamp-3">
+                      <span className="caption-scale font-bold text-foreground/90 leading-tight line-clamp-3">
                         {book.title}
                       </span>
                     </div>
@@ -128,10 +128,10 @@ export const NeevCatalog: React.FC<NeevCatalogProps> = ({
                 {/* Content Area */}
                 <div className="flex flex-1 flex-col p-3 sm:p-4">
                   <div className="mb-2 flex items-start justify-between gap-2">
-                    <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground line-clamp-1">
+                    <span className="caption-scale font-medium uppercase tracking-wider text-muted-foreground line-clamp-1">
                       From hub
                     </span>
-                    <span className="shrink-0 text-[10px] font-medium text-muted-foreground/60">
+                    <span className="shrink-0 caption-scale font-medium text-muted-foreground/60">
                       #{book.isbn.substring(book.isbn.length - 4)}
                     </span>
                   </div>
@@ -145,11 +145,11 @@ export const NeevCatalog: React.FC<NeevCatalogProps> = ({
 
                   <div className="mt-3 flex flex-wrap items-center gap-1.5">
                     {isAvailable ? (
-                      <span className="rounded-sm bg-secondary/10 px-1.5 py-0.5 text-[10px] font-semibold text-secondary dark:text-secondary">
+                      <span className="rounded-sm bg-secondary/10 px-1.5 py-0.5 caption-scale font-semibold text-secondary">
                         Available
                       </span>
                     ) : (
-                      <span className="rounded-sm bg-muted px-1.5 py-0.5 text-[10px] font-semibold text-muted-foreground">
+                      <span className="rounded-sm bg-muted px-1.5 py-0.5 caption-scale font-semibold text-muted-foreground">
                         Checked Out
                       </span>
                     )}

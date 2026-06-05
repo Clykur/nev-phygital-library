@@ -33,6 +33,8 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { adminPanel, adminSelectTrigger } from "@/lib/admin-desk-ui";
+import { PORTAL_PAGE_LEAD, PORTAL_PAGE_TITLE } from "@/lib/portal-typography";
 import { PORTAL_KICKER_COLOR } from "@/lib/student-ui";
 import { ArrowLeft, Loader2 } from "lucide-react";
 
@@ -74,8 +76,6 @@ type DeliveryRow = {
 
 type Hub = { id: string; name: string };
 
-const outline = "rounded-md border border-border bg-background";
-
 function severityClass(s: Severity) {
   if (s === "critical") return "border-destructive/50 bg-destructive/5";
   if (s === "warning") return "border-accent/35 bg-accent/5";
@@ -84,8 +84,8 @@ function severityClass(s: Severity) {
 
 function severityBadgeClass(s: Severity) {
   if (s === "critical") return "border-destructive/50 text-destructive";
-  if (s === "warning") return "border-accent/45 text-foreground dark:bg-accent/10";
-  return "text-muted-foreground";
+  if (s === "warning") return "border-accent/45 bg-accent/10 text-foreground";
+  return "text-foreground-muted";
 }
 
 function fmtAge(iso: string) {
@@ -265,19 +265,19 @@ function SuperAdminOperationsContent() {
       <div className="mb-6 border-b border-border pb-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between lg:gap-6">
           <div className="min-w-0 font-sans">
-            <p className={cn("text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70", PORTAL_KICKER_COLOR)}>
+            <p className={cn("section-kicker", PORTAL_KICKER_COLOR)}>
               Super admin
             </p>
-            <h1 className="mt-1 text-[36px] font-[700] leading-tight tracking-tight text-[#1F2937]">System health & notifications</h1>
-            <p className="mt-2 max-w-2xl text-[14px] font-[400] text-[#1F2937]/70">
+            <h1 className={cn("mt-1", PORTAL_PAGE_TITLE)}>System health & notifications</h1>
+            <p className={cn("mt-2 max-w-2xl", PORTAL_PAGE_LEAD)}>
               Action-first ops panel. Triage issues quickly and retry failed notification deliveries.
             </p>
           </div>
           <div className="grid w-full gap-3 sm:grid-cols-2 lg:w-auto lg:min-w-[28rem]">
             <div>
-              <p className="mb-1 text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70">Severity</p>
+              <p className="mb-1 section-kicker">Severity</p>
               <Select value={severity} onValueChange={(v) => setSeverity(v as "all" | Severity)}>
-                <SelectTrigger className="h-10 rounded-md">
+                <SelectTrigger className={adminSelectTrigger}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -289,9 +289,9 @@ function SuperAdminOperationsContent() {
               </Select>
             </div>
             <div>
-              <p className="mb-1 text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70">Hub (optional)</p>
+              <p className="mb-1 section-kicker">Hub (optional)</p>
               <Select value={hubId} onValueChange={setHubId}>
-                <SelectTrigger className="h-10 rounded-md">
+                <SelectTrigger className={adminSelectTrigger}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -309,20 +309,20 @@ function SuperAdminOperationsContent() {
       </div>
 
       <div className="space-y-6">
-        <section className={cn(outline, "overflow-hidden")} aria-label="Issues">
+        <section className={cn(adminPanel, "overflow-hidden")} aria-label="Issues">
           <div className="border-b border-border px-4 py-3">
-            <h2 className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70">Issues</h2>
+            <h2 className="section-kicker">Issues</h2>
           </div>
           {healthQ.isLoading ? (
             <div className="flex justify-center py-16">
-              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+              <Loader2 className="h-8 w-8 animate-spin text-foreground-muted" />
             </div>
           ) : healthQ.isError ? (
             <p className="p-4 text-sm text-destructive">
               {userFacingErrorMessage(healthQ.error)}
             </p>
           ) : sortedIssues.length === 0 ? (
-            <p className="p-4 text-[14px] font-[400] text-[#1F2937]/70">No actionable issues in scope.</p>
+            <p className="p-4 body-scale text-foreground-muted">No actionable issues in scope.</p>
           ) : (
             <div className="overflow-x-auto">
               <Table>
@@ -348,11 +348,11 @@ function SuperAdminOperationsContent() {
                           {i.severity}
                         </span>
                       </TableCell>
-                      <TableCell className="min-w-[16rem] text-[14px] font-[400] text-[#1F2937]/70">{i.description}</TableCell>
-                      <TableCell className="text-[13px] font-[400] text-[#1F2937]/70">
+                      <TableCell className="min-w-[16rem] body-scale text-foreground-muted">{i.description}</TableCell>
+                      <TableCell className="body-scale font-normal text-foreground-muted">
                         {i.relatedEntity.type}: {i.relatedEntity.label}
                       </TableCell>
-                      <TableCell className="text-[13px] font-[400] text-[#1F2937]/70">{fmtAge(i.startedAt)} ago</TableCell>
+                      <TableCell className="body-scale font-normal text-foreground-muted">{fmtAge(i.startedAt)} ago</TableCell>
                       <TableCell className="pr-4 sm:pr-6">
                         <Button
                           size="sm"
@@ -372,20 +372,20 @@ function SuperAdminOperationsContent() {
           )}
         </section>
 
-        <section className={cn(outline, "overflow-hidden")} aria-label="Notifications">
+        <section className={cn(adminPanel, "overflow-hidden")} aria-label="Notifications">
           <div className="border-b border-border px-4 py-3">
-            <h2 className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70">Notifications</h2>
+            <h2 className="section-kicker">Notifications</h2>
           </div>
           {notifQ.isLoading ? (
             <div className="flex justify-center py-16">
-              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+              <Loader2 className="h-8 w-8 animate-spin text-foreground-muted" />
             </div>
           ) : notifQ.isError ? (
             <p className="p-4 text-sm text-destructive">
               {userFacingErrorMessage(notifQ.error)}
             </p>
           ) : notifications.length === 0 ? (
-            <p className="p-4 text-[14px] font-[400] text-[#1F2937]/70">No recent events in scope.</p>
+            <p className="p-4 body-scale text-foreground-muted">No recent events in scope.</p>
           ) : (
             <div className="overflow-x-auto">
               <Table>
@@ -401,11 +401,11 @@ function SuperAdminOperationsContent() {
                 <TableBody>
                   {notifications.map((d) => (
                     <TableRow key={d.id} className="border-border">
-                      <TableCell className="pl-4 text-[14px] font-[500] sm:pl-6">{eventTypeLabel(d.type)}</TableCell>
-                      <TableCell className="max-w-[28rem] truncate text-[13px] font-[400] text-[#1F2937]/70" title={String(d.payload["body"] ?? "")}>
+                      <TableCell className="pl-4 body-scale font-medium sm:pl-6">{eventTypeLabel(d.type)}</TableCell>
+                      <TableCell className="max-w-[28rem] truncate body-scale font-normal text-foreground-muted" title={String(d.payload["body"] ?? "")}>
                         {String(d.payload["body"] ?? "System event")}
                       </TableCell>
-                      <TableCell className="text-[13px] font-[400] text-[#1F2937]/70">{new Date(d.updatedAt).toLocaleString()}</TableCell>
+                      <TableCell className="body-scale font-normal text-foreground-muted">{new Date(d.updatedAt).toLocaleString()}</TableCell>
                       <TableCell>
                         <span
                           className={cn(
@@ -429,7 +429,7 @@ function SuperAdminOperationsContent() {
                             Retry
                           </Button>
                         ) : (
-                          <span className="text-xs text-muted-foreground">—</span>
+                          <span className="text-xs text-foreground-muted">—</span>
                         )}
                       </TableCell>
                     </TableRow>
@@ -444,8 +444,8 @@ function SuperAdminOperationsContent() {
       <Dialog open={!!reassignIssue} onOpenChange={(open) => !open && setReassignIssue(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="font-sans text-[24px] font-[600] text-[#1F2937]">Reassign request to another hub</DialogTitle>
-            <DialogDescription className="text-[14px] font-[400] text-[#1F2937]/70">Choose the destination hub and apply immediately.</DialogDescription>
+            <DialogTitle className="font-sans h4-scale font-semibold text-foreground">Reassign request to another hub</DialogTitle>
+            <DialogDescription className="body-scale text-foreground-muted">Choose the destination hub and apply immediately.</DialogDescription>
           </DialogHeader>
           <div className="space-y-3">
             <Select value={targetHubId} onValueChange={setTargetHubId}>
@@ -485,8 +485,8 @@ function SuperAdminOperationsContent() {
       <Dialog open={!!assignIssue} onOpenChange={(open) => !open && setAssignIssue(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="font-sans text-[24px] font-[600] text-[#1F2937]">Assign copy confirmation</DialogTitle>
-            <DialogDescription className="text-[14px] font-[400] text-[#1F2937]/70">Have you physically verified this book on shelf?</DialogDescription>
+            <DialogTitle className="font-sans h4-scale font-semibold text-foreground">Assign copy confirmation</DialogTitle>
+            <DialogDescription className="body-scale text-foreground-muted">Have you physically verified this book on shelf?</DialogDescription>
           </DialogHeader>
           <div className="grid gap-2">
             <Button

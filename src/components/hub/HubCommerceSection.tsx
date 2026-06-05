@@ -51,7 +51,7 @@ const outline = "rounded-md border border-border bg-background";
 
 function SectionLabel({ children }: { children: ReactNode }) {
   return (
-    <h2 className="text-[11px] font-bold uppercase tracking-[0.18em] text-foreground">{children}</h2>
+    <h2 className="caption-scale font-bold uppercase tracking-[0.18em] text-foreground">{children}</h2>
   );
 }
 
@@ -162,7 +162,7 @@ export function HubCommerceSection() {
             <div className="flex min-w-0 flex-1 flex-col gap-1.5">
               <Label
                 htmlFor="hub-commerce-scope"
-                className="text-[10px] font-bold uppercase tracking-wide text-foreground"
+                className="caption-scale font-bold uppercase tracking-wide text-foreground"
               >
                 Scope
               </Label>
@@ -184,7 +184,7 @@ export function HubCommerceSection() {
           <div className="flex min-w-0 flex-1 flex-col gap-1.5">
             <Label
               htmlFor="hub-commerce-event-type"
-              className="text-[10px] font-bold uppercase tracking-wide text-foreground"
+              className="caption-scale font-bold uppercase tracking-wide text-foreground"
             >
               Event type
             </Label>
@@ -203,7 +203,7 @@ export function HubCommerceSection() {
           <div className="flex min-w-0 flex-1 flex-col gap-1.5">
             <Label
               htmlFor="hub-commerce-source"
-              className="text-[10px] font-bold uppercase tracking-wide text-foreground"
+              className="caption-scale font-bold uppercase tracking-wide text-foreground"
             >
               Source
             </Label>
@@ -276,7 +276,7 @@ export function HubCommerceSection() {
                       <TableCell className="hidden align-top text-xs text-muted-foreground md:table-cell">
                         {r.atHubName ?? "—"}
                       </TableCell>
-                      <TableCell className="hidden align-top font-mono text-[11px] text-muted-foreground lg:table-cell pr-4 sm:pr-6">
+                      <TableCell className="hidden align-top font-mono caption-scale text-muted-foreground lg:table-cell pr-4 sm:pr-6">
                         {r.actorUserId ? `${r.actorUserId.slice(0, 8)}…` : "—"}
                       </TableCell>
                     </TableRow>

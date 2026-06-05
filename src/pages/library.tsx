@@ -205,12 +205,12 @@ export function CatalogBookCard({
         />
 
         {/* Resting label */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black via-black/80 to-transparent p-4 pt-24 transition-opacity duration-300 group-hover:opacity-0 group-focus-within:opacity-0">
-          <p className="font-serif text-[1.1rem] font-bold leading-snug text-white drop-shadow-sm line-clamp-2">
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-overlay-backdrop via-overlay-backdrop to-transparent p-4 pt-24 transition-opacity duration-300 group-hover:opacity-0 group-focus-within:opacity-0">
+          <p className="font-serif text-[1.1rem] font-bold leading-snug text-on-media drop-shadow-sm line-clamp-2">
             {title}
           </p>
           {!isSample && fromHubName ? (
-            <p className="mt-1.5 text-xs font-medium leading-snug text-white/90 line-clamp-1">
+            <p className="mt-1.5 text-xs font-medium leading-snug text-on-media-muted line-clamp-1">
               From: {fromHubName}
             </p>
           ) : null}
@@ -218,8 +218,8 @@ export function CatalogBookCard({
         </div>
 
         {/* Hover / focus overlay — desktop only (hidden on touch) */}
-        <div className="pointer-events-none absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/92 via-black/55 to-black/25 opacity-0 transition-opacity duration-300 group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100">
-          <div className="space-y-2 p-3 pt-10 text-white">
+        <div className="pointer-events-none absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-overlay-backdrop via-overlay-backdrop to-overlay-scrim opacity-0 transition-opacity duration-300 group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100">
+          <div className="space-y-2 p-3 pt-10 text-on-media">
             <div>
               <p className="font-serif text-lg font-medium leading-snug tracking-tight">{title}</p>
               {isSample && (
@@ -229,9 +229,9 @@ export function CatalogBookCard({
                 </p>
               )}
             </div>
-            <dl className="grid gap-1.5 text-xs text-white/88">
+            <dl className="grid gap-1.5 text-xs text-on-media-muted">
               <div className="flex gap-2">
-                <dt className="shrink-0 text-white/55">
+                <dt className="shrink-0 text-on-media-subtle">
                   <span className="inline-flex items-center gap-1">
                     <MapPin className="h-3 w-3" />
                     Hub
@@ -241,19 +241,19 @@ export function CatalogBookCard({
               </div>
               {fromHubName ? (
                 <div className="flex gap-2">
-                  <dt className="shrink-0 text-white/55">From</dt>
-                  <dd className="min-w-0 text-white/80 leading-snug">{fromHubName}</dd>
+                  <dt className="shrink-0 text-on-media-subtle">From</dt>
+                  <dd className="min-w-0 text-on-media-muted leading-snug">{fromHubName}</dd>
                 </div>
               ) : null}
               <div className="flex gap-2">
-                <dt className="shrink-0 text-white/55">Added</dt>
+                <dt className="shrink-0 text-on-media-subtle">Added</dt>
                 <dd className="font-medium" title={addedAtTitle}>
                   {addedText}
                 </dd>
               </div>
               <div className="flex gap-2">
-                <dt className="shrink-0 text-white/55">Ref</dt>
-                <dd className="font-mono text-[11px] font-semibold tracking-wide" title={fullIdForTitle}>
+                <dt className="shrink-0 text-on-media-subtle">Ref</dt>
+                <dd className="font-mono caption-scale font-semibold tracking-wide" title={fullIdForTitle}>
                   {refDisplay}
                 </dd>
               </div>
@@ -269,7 +269,7 @@ export function CatalogBookCard({
           <div className="flex items-start justify-between gap-2">
             <h3
               className={cn(
-                "font-sans text-[16px] font-[600] leading-snug tracking-tight text-foreground transition-colors group-hover:text-primary",
+                "font-sans text-base font-semibold leading-snug tracking-tight text-foreground transition-colors group-hover:text-primary",
                 sharpCover ? "line-clamp-2" : "line-clamp-3",
               )}
             >
@@ -291,8 +291,8 @@ export function CatalogBookCard({
             )}
           </div>
           {inventoryStats && inventoryStats.total > 0 && (
-            <div className="mt-1.5 space-y-0.5 text-[11px] leading-relaxed text-muted-foreground">
-              <p className="font-[500] text-foreground">
+            <div className="mt-1.5 space-y-0.5 caption-scale leading-relaxed text-muted-foreground">
+              <p className="font-medium text-foreground">
                 {inventoryStats.available > 0 
                   ? `${inventoryStats.available} of ${inventoryStats.total} Copies Available` 
                   : `${inventoryStats.total} Copies Total`}
@@ -386,18 +386,18 @@ export function PeerListingCard({
 
         <div
           className={cn(
-            "pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent px-3 pb-3 transition-opacity duration-300 group-hover:opacity-0 group-focus-within:opacity-0",
+            "pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-overlay-backdrop via-overlay-backdrop to-transparent px-3 pb-3 transition-opacity duration-300 group-hover:opacity-0 group-focus-within:opacity-0",
             "pt-16",
           )}
         >
-          <p className="font-serif text-[0.95rem] font-medium leading-snug text-white drop-shadow-sm line-clamp-2">
+          <p className="font-serif text-[0.95rem] font-medium leading-snug text-on-media drop-shadow-sm line-clamp-2">
             title={title}
           </p>
           {priceOk && (
             <p className="mt-1 font-serif text-sm font-semibold tabular-nums text-amber-200/95">
               {priceDisplay}
               {borrowPriceDisplay ? (
-                <span className="mt-0.5 block text-xs font-medium text-white/85">
+                <span className="mt-0.5 block text-xs font-medium text-on-media-muted">
                   {borrowPriceDisplay}
                 </span>
               ) : null}
@@ -406,8 +406,8 @@ export function PeerListingCard({
           {isSample && <span className={cn(shelfFilterChipOnDarkClass, "mt-1.5")}>Sample</span>}
         </div>
 
-        <div className="pointer-events-none absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/92 via-black/55 to-black/25 opacity-0 transition-opacity duration-300 group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100">
-          <div className="space-y-2 p-3 pt-10 text-white">
+        <div className="pointer-events-none absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-overlay-backdrop via-overlay-backdrop to-overlay-scrim opacity-0 transition-opacity duration-300 group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100">
+          <div className="space-y-2 p-3 pt-10 text-on-media">
             <div>
               <p className="font-serif text-lg font-medium leading-snug tracking-tight">{title}</p>
               {isSample && (
@@ -417,9 +417,9 @@ export function PeerListingCard({
                 </p>
               )}
             </div>
-            <dl className="grid gap-1.5 text-xs text-white/88">
+            <dl className="grid gap-1.5 text-xs text-on-media-muted">
               <div className="flex gap-2">
-                <dt className="shrink-0 text-white/55">
+                <dt className="shrink-0 text-on-media-subtle">
                   <span className="inline-flex items-center gap-1">
                     <ShoppingBag className="h-3 w-3" />
                     Source
@@ -428,17 +428,17 @@ export function PeerListingCard({
                 <dd className="min-w-0 font-medium leading-snug">Peer listing</dd>
               </div>
               <div className="flex flex-wrap items-center gap-2">
-                <dt className="shrink-0 text-white/55">Status</dt>
+                <dt className="shrink-0 text-on-media-subtle">Status</dt>
                 <dd className="m-0">
                   <span className={shelfFilterChipOnDarkClass}>{peerShelfStatusLabel(listingStatus)}</span>
                 </dd>
               </div>
               <div className="flex gap-2">
-                <dt className="shrink-0 text-white/55">Buy</dt>
+                <dt className="shrink-0 text-on-media-subtle">Buy</dt>
                 <dd
                   className={cn(
                     "font-medium tabular-nums",
-                    priceOk ? "text-amber-200/95" : "text-white/55",
+                    priceOk ? "text-amber-200/95" : "text-on-media-subtle",
                   )}
                   title={priceOk ? priceDisplay : undefined}
                 >
@@ -447,20 +447,20 @@ export function PeerListingCard({
               </div>
               {borrowPriceDisplay ? (
                 <div className="flex gap-2">
-                  <dt className="shrink-0 text-white/55">Borrow</dt>
+                  <dt className="shrink-0 text-on-media-subtle">Borrow</dt>
                   <dd className="font-medium tabular-nums text-amber-200/95">{borrowPriceDisplay}</dd>
                 </div>
               ) : null}
               <div className="flex gap-2">
-                <dt className="shrink-0 text-white/55">Added</dt>
+                <dt className="shrink-0 text-on-media-subtle">Added</dt>
                 <dd className="font-medium" title={addedAtTitle}>
                   {addedText}
                 </dd>
               </div>
               <div className="flex gap-2">
-                <dt className="shrink-0 text-white/55">Ref</dt>
+                <dt className="shrink-0 text-on-media-subtle">Ref</dt>
                 <dd
-                  className="font-mono text-[11px] font-semibold tracking-wide"
+                  className="font-mono caption-scale font-semibold tracking-wide"
                   title={fullIdForTitle}
                 >
                   {refDisplay}
@@ -468,7 +468,7 @@ export function PeerListingCard({
               </div>
             </dl>
             <div className="pt-1">
-              <p className="text-center text-xs text-white/75">Click for details</p>
+              <p className="text-center text-xs text-on-media-muted">Click for details</p>
             </div>
           </div>
         </div>
@@ -480,7 +480,7 @@ export function PeerListingCard({
           <div className="flex items-start justify-between gap-2">
             <h3
               className={cn(
-                "font-sans text-[16px] font-[600] leading-snug tracking-tight text-foreground transition-colors group-hover:text-primary",
+                "font-sans text-base font-semibold leading-snug tracking-tight text-foreground transition-colors group-hover:text-primary",
                 sharpCover ? "line-clamp-2" : "line-clamp-3",
               )}
             >
@@ -488,8 +488,8 @@ export function PeerListingCard({
             </h3>
           </div>
           {inventoryStats && inventoryStats.total > 0 && (
-            <div className="mt-1.5 space-y-0.5 text-[11px] leading-relaxed text-muted-foreground">
-              <p className="font-[500] text-foreground">
+            <div className="mt-1.5 space-y-0.5 caption-scale leading-relaxed text-muted-foreground">
+              <p className="font-medium text-foreground">
                 {inventoryStats.available > 0 
                   ? `${inventoryStats.available} of ${inventoryStats.total} Copies Available at Hub` 
                   : `${inventoryStats.total} Copies Total at Hub`}
@@ -604,7 +604,7 @@ export default function LibraryPage() {
           className="mb-6 flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between"
         >
           <div className="min-w-0 flex-1">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.45em] text-accent/90">
+            <p className="caption-scale font-semibold uppercase tracking-[0.45em] text-accent/90">
               {user?.baseRole === "super_admin" ? "Super admin" : inShell ? "Student" : "Catalog"}
             </p>
             <h1 className="mt-3 font-serif text-4xl font-light tracking-tight md:text-[2.75rem]">
@@ -686,7 +686,7 @@ export default function LibraryPage() {
 
         {showSampleLayout && (
           <div className="mb-8 rounded-xl border border-accent/25 bg-accent/5 px-4 py-3 text-sm text-foreground">
-            <span className="font-medium text-accent/80 dark:text-accent/20">Live shelf is empty.</span>{" "}
+            <span className="font-medium text-accent">Live shelf is empty.</span>{" "}
             Tiles below are a sample layout — start the API with{" "}
             <code className="rounded bg-muted px-1 text-xs">AUTO_SEED=1</code> (default in{" "}
             <code className="rounded bg-muted px-1 text-xs">npm run dev</code>) to load real copies.
@@ -726,7 +726,7 @@ export default function LibraryPage() {
                     addedText="—"
                     isSample
                     action={
-                      <p className="text-center text-xs text-white/70">Preview — not a live copy</p>
+                      <p className="text-center text-xs text-on-media-muted">Preview — not a live copy</p>
                     }
                   />
                 ))
@@ -761,7 +761,7 @@ export default function LibraryPage() {
                           {!user && (
                             <Button
                               size="sm"
-                              className="w-full rounded-full bg-accent text-slate-950 hover:bg-accent"
+                              className="w-full rounded-full bg-accent text-accent-foreground hover:bg-accent"
                               asChild
                             >
                               <Link href={signInHref("/library")}>
@@ -786,7 +786,7 @@ export default function LibraryPage() {
                                 <Button
                                   size="sm"
                                   variant="secondary"
-                                  className="w-full rounded-full border border-white/25 bg-white/15 text-white hover:bg-white/25"
+                                  className="w-full rounded-full border border-overlay-glass-border bg-overlay-glass text-on-media hover:bg-overlay-glass"
                                 >
                                   Request via Hub
                                 </Button>
@@ -811,7 +811,7 @@ export default function LibraryPage() {
                           {user && isAvailable && canCheckout && (
                             <Button
                               size="sm"
-                              className="w-full rounded-full bg-accent text-slate-950 hover:bg-accent"
+                              className="w-full rounded-full bg-accent text-accent-foreground hover:bg-accent"
                               onClick={() =>
                                 setCheckout({
                                   item: {

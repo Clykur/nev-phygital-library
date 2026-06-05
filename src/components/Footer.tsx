@@ -15,7 +15,7 @@ export function Footer({ setActiveTab, setLandingSegment }: FooterProps) {
   };
 
   return (
-    <footer className="border-t border-border bg-white">
+    <footer className="border-t border-border bg-background">
       <div className="mx-auto max-w-[1280px] px-6 py-6 md:py-6">
 
         {/* TOP SECTION */}
@@ -42,7 +42,7 @@ export function Footer({ setActiveTab, setLandingSegment }: FooterProps) {
               </div>
             </button>
 
-            <p className="mt-6 pl-2 text-base leading-8 text-[#64748B]">
+            <p className="mt-6 pl-2 text-base leading-8 text-foreground-muted">
               The modern student library network for
               quick access, reduced costs, and better reuse
               across hubs.
@@ -63,7 +63,7 @@ export function Footer({ setActiveTab, setLandingSegment }: FooterProps) {
                     setLandingSegment?.('students');
                     window.scrollTo({ top: 0, behavior: "smooth" });
                   }}
-                  className="flex items-center space-x-2 text-base text-[#334155] transition-colors hover:text-foreground"
+                  className="flex items-center space-x-2 text-base text-foreground-muted transition-colors hover:text-foreground"
                 >
                   <Library className="w-4 h-4" />
                   <span>Home</span>
@@ -76,7 +76,7 @@ export function Footer({ setActiveTab, setLandingSegment }: FooterProps) {
                     setActiveTab?.('catalog');
                     window.scrollTo({ top: 0, behavior: "smooth" });
                   }}
-                  className="flex items-center space-x-2 text-base text-[#334155] transition-colors hover:text-foreground"
+                  className="flex items-center space-x-2 text-base text-foreground-muted transition-colors hover:text-foreground"
                 >
                   <BookOpen className="w-4 h-4" />
                   <span>Find a Book</span>
@@ -90,7 +90,7 @@ export function Footer({ setActiveTab, setLandingSegment }: FooterProps) {
                     setLandingSegment?.('students');
                     setTimeout(() => document.getElementById('about-section')?.scrollIntoView({ behavior: 'smooth' }), 100);
                   }}
-                  className="flex items-center space-x-2 text-base text-[#334155] transition-colors hover:text-foreground"
+                  className="flex items-center space-x-2 text-base text-foreground-muted transition-colors hover:text-foreground"
                 >
                   <Info className="w-4 h-4" />
                   <span>About</span>
@@ -108,7 +108,7 @@ export function Footer({ setActiveTab, setLandingSegment }: FooterProps) {
             <ul className="mt-6 space-y-4">
               <li>
                 <button
-                  className="text-base text-[#334155] transition-colors hover:text-foreground"
+                  className="text-base text-foreground-muted transition-colors hover:text-foreground"
                 >
                   Privacy
                 </button>
@@ -116,7 +116,7 @@ export function Footer({ setActiveTab, setLandingSegment }: FooterProps) {
 
               <li>
                 <button
-                  className="text-base text-[#334155] transition-colors hover:text-foreground"
+                  className="text-base text-foreground-muted transition-colors hover:text-foreground"
                 >
                   Terms
                 </button>
@@ -124,7 +124,7 @@ export function Footer({ setActiveTab, setLandingSegment }: FooterProps) {
 
               <li>
                 <button
-                  className="text-base text-[#334155] transition-colors hover:text-foreground"
+                  className="text-base text-foreground-muted transition-colors hover:text-foreground"
                 >
                   Security
                 </button>
@@ -136,7 +136,7 @@ export function Footer({ setActiveTab, setLandingSegment }: FooterProps) {
         {/* BOTTOM SECTION */}
         <div className="mt-5 md:mt-5 flex flex-col items-start justify-between gap-8 border-t border-border pt-2 md:flex-row md:items-center">
 
-          <p className="text-sm text-[#64748B]">
+          <p className="text-sm text-foreground-muted">
             © {new Date().getFullYear()} Neev. All rights reserved.
           </p>
 
@@ -180,14 +180,14 @@ export function Footer({ setActiveTab, setLandingSegment }: FooterProps) {
                     w-10
                     items-center
                     justify-center
-                    bg-white
+                    bg-surface
                     text-muted-foreground
                     transition-all
                     duration-300
                     hover:-translate-y-1
                     hover:border-primary/20
                     hover:bg-primary
-                    hover:text-white
+                    hover:text-primary-foreground
                     hover:shadow-lg
                     hover:shadow-primary/20
                   "

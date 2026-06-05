@@ -193,7 +193,7 @@ function GridPagination({
         >
           Previous
         </Button>
-        <span className="flex-1 sm:flex-none sm:min-w-[8.5rem] text-center text-[12px] font-[500] leading-normal text-[#1F2937]/70 tabular-nums">
+        <span className="flex-1 sm:flex-none sm:min-w-[8.5rem] text-center caption-scale font-medium text-foreground-muted tabular-nums">
           Page {page} of {totalPages}
         </span>
         <Button
@@ -214,7 +214,7 @@ function GridPagination({
 function CopyLifecycleStrip({ status }: { status: string }) {
   if (["sold", "unavailable", "transfer_pending", "in_transit"].includes(status)) {
     return (
-      <p className="text-[12px] font-[500] leading-normal uppercase tracking-wider text-[#1F2937]/70">
+      <p className="section-kicker">
         Lifecycle: {status.replace(/_/g, " ")}
       </p>
     );
@@ -228,12 +228,12 @@ function CopyLifecycleStrip({ status }: { status: string }) {
     >
       {["Available", "Set aside", "Out"].map((label, i) => (
         <span key={label} className="flex items-center gap-1.5">
-          {i > 0 ? <span className="text-[10px] font-bold text-muted-foreground/30">›</span> : null}
+          {i > 0 ? <span className="caption-scale font-bold text-muted-foreground/30">›</span> : null}
           <span
             className={cn(
-              "max-w-[10rem] truncate rounded-2xl px-2 py-0.5 text-[12px] font-[500] leading-normal transition-colors",
+              "max-w-[10rem] truncate rounded-2xl px-2 py-0.5 caption-scale font-medium transition-colors",
               i < idx
-                ? "bg-secondary/10 text-secondary dark:text-secondary"
+                ? "bg-secondary/10 text-secondary"
                 : i === idx
                   ? "bg-primary/15 text-primary"
                   : "text-muted-foreground/50",
@@ -986,7 +986,7 @@ export default function Marketplace(props?: MarketplaceProps) {
                 <>
                   <div className="flex items-center gap-3 font-sans">
                     <div>
-                      <h1 className="mt-1 text-[36px] font-[700] leading-tight tracking-tight text-[#1F2937] text-balance">
+                      <h1 className="mt-1 h3-scale font-bold tracking-tight text-foreground text-balance">
                         {isBrowseMode ? "Browse books" : studentMode === "sell" ? "Sell" : hero.title}
                       </h1>
                     </div>
@@ -994,11 +994,11 @@ export default function Marketplace(props?: MarketplaceProps) {
                 </>
               ) : (
                 <div className="font-sans">
-                  <p className="text-[12px] font-[500] leading-normal uppercase tracking-wider text-[#1F2937]/70 section-kicker">
+                  <p className="section-kicker section-kicker">
                     {hero.kicker}
                   </p>
                   <div className="mt-4 flex items-center gap-4">
-                    <h1 className="text-[36px] font-[700] leading-tight tracking-tight text-[#1F2937] sm:text-[48px] sm:font-[800] whitespace-nowrap overflow-hidden text-ellipsis">
+                    <h1 className="h3-scale font-bold tracking-tight text-foreground sm:h1-scale sm:font-extrabold whitespace-nowrap overflow-hidden text-ellipsis">
                       {hero.title}{" "}
                       <span className="border-b-2 border-primary pb-0.5">
                         {hero.accent}
@@ -1007,10 +1007,10 @@ export default function Marketplace(props?: MarketplaceProps) {
                   </div>
                   <p
                     className={cn(
-                      "mt-3 sm:mt-4 leading-relaxed text-[#1F2937]/70",
+                      "mt-3 sm:mt-4 leading-relaxed text-foreground-muted",
                       isBrowseMode && !hubDesk && !inShell
-                        ? "max-w-full text-[14px] sm:text-[16px]"
-                        : "max-w-xl text-[14px] sm:text-[16px]",
+                        ? "max-w-full body-scale sm:text-base"
+                        : "max-w-xl body-scale sm:text-base",
                     )}
                   >
                     {hero.body}{" "}
@@ -1023,7 +1023,7 @@ export default function Marketplace(props?: MarketplaceProps) {
                     )}
                     {studentMode === "sell" && inShell && (
                       <>
-                        <Link href={portalPaths.borrow} className="font-[600] text-primary underline-offset-4 hover:underline">
+                        <Link href={portalPaths.borrow} className="font-semibold text-primary underline-offset-4 hover:underline">
                           Browse books
                         </Link>
                       </>
@@ -1188,8 +1188,8 @@ export default function Marketplace(props?: MarketplaceProps) {
               <div className="flex gap-3">
                 <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-destructive" />
                 <div>
-                  <p className="text-[14px] font-[600] leading-relaxed text-[#1F2937]">Couldn’t load peer listings</p>
-                  <p className="mt-1 text-[13px] font-[400] leading-normal text-[#1F2937]/70">
+                  <p className="body-scale font-semibold text-foreground">Couldn’t load peer listings</p>
+                  <p className="mt-1 body-scale font-normal leading-normal text-foreground-muted">
                     Check that the API is running and{" "}
                     <code className="rounded bg-muted px-1">/api/p2p/listings</code> is reachable.
                   </p>
@@ -1207,7 +1207,7 @@ export default function Marketplace(props?: MarketplaceProps) {
           )}
 
           {useDemoPreview && !peerListingsError && (
-            <div className="mb-6 border border-primary/20 bg-[#EFF6FF] px-4 py-3 text-sm text-foreground">
+            <div className="mb-6 border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-foreground">
               <span className="font-semibold text-foreground">No live listings yet.</span>{" "}
               Showing sample covers so guests see how Discover looks — start the API with seeding (e.g.{" "}
               <code className="rounded bg-muted px-1 text-xs">AUTO_SEED=1</code>) or publish a listing
@@ -1232,7 +1232,7 @@ export default function Marketplace(props?: MarketplaceProps) {
                   <div className="flex min-w-0 flex-1 flex-col">
                     <Label
                       className={cn(
-                        "text-[10px] text-muted-foreground",
+                        "caption-scale text-muted-foreground",
                         hubDesk && isBrowseMode && inShell && "font-bold uppercase tracking-wide text-foreground",
                       )}
                     >
@@ -1276,7 +1276,7 @@ export default function Marketplace(props?: MarketplaceProps) {
                   <div className="flex w-[72px] shrink flex-col sm:w-[90px] md:w-[100px]">
                     <Label
                       className={cn(
-                        "text-[10px] text-muted-foreground",
+                        "caption-scale text-muted-foreground",
                         hubDesk && isBrowseMode && inShell && "font-bold uppercase tracking-wide text-foreground",
                       )}
                     >
@@ -1320,7 +1320,7 @@ export default function Marketplace(props?: MarketplaceProps) {
                     >
                       <Label
                         className={cn(
-                          "text-[10px] text-muted-foreground",
+                          "caption-scale text-muted-foreground",
                           hubDesk &&
                           isBrowseMode &&
                           inShell &&
@@ -1358,7 +1358,7 @@ export default function Marketplace(props?: MarketplaceProps) {
                               )}
                             >
                               <BookMarked className="h-4 w-4 text-primary" />
-                              <span className="truncate text-[11px] text-primary sm:text-sm">
+                              <span className="truncate caption-scale text-primary sm:text-sm">
                                 Request a book
                               </span>
                               <span className="text-primary sr-only sm:hidden">Request a book</span>
@@ -1370,7 +1370,7 @@ export default function Marketplace(props?: MarketplaceProps) {
                   )}
                 </div>
                 {hubDesk && !inShell ? (
-                  <p className="mt-2 max-w-xl text-[11px] leading-relaxed text-muted-foreground">
+                  <p className="mt-2 max-w-xl caption-scale leading-relaxed text-muted-foreground">
                     Your managed shelf is in Inventory; this catalog shows peers and other campuses for sourcing.
                   </p>
                 ) : null}
@@ -1394,7 +1394,7 @@ export default function Marketplace(props?: MarketplaceProps) {
                 )}
               >
                 <div className="flex min-w-0 flex-1 flex-col font-sans">
-                  <Label className="text-[12px] font-[500] leading-normal text-[#1F2937]/70">Search</Label>
+                  <Label className="caption-scale font-medium text-foreground-muted">Search</Label>
                   <div
                     className={cn(
                       studentShellBrowse
@@ -1436,7 +1436,7 @@ export default function Marketplace(props?: MarketplaceProps) {
                           key={`recent-${s}`}
                           size="sm"
                           variant="outline"
-                          className="h-7 rounded-xl border-border/80 bg-muted/20 px-2 text-[11px]"
+                          className="h-7 rounded-xl border-border/80 bg-muted/20 px-2 caption-scale"
                           onClick={() => setSearch(s)}
                         >
                           {s}
@@ -1447,7 +1447,7 @@ export default function Marketplace(props?: MarketplaceProps) {
                 </div>
                 {studentMode === "sell" && inShell ? (
                   <div className="flex w-[92px] shrink-0 flex-col sm:w-[120px] font-sans">
-                    <Label className="text-[12px] font-[500] leading-normal text-[#1F2937]/70">Sold to</Label>
+                    <Label className="caption-scale font-medium text-foreground-muted">Sold to</Label>
                     <Select
                       value={soldToFilter}
                       onValueChange={(v) => setSoldToFilter(v as "all" | "peer" | "hub")}
@@ -1563,7 +1563,7 @@ export default function Marketplace(props?: MarketplaceProps) {
                             {studentShellBrowse ? (
                               <div className="mb-2 space-y-1.5 px-1">
                                 <div className="flex flex-col items-start gap-0.5">
-                                  <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                                  <span className="caption-scale font-bold uppercase tracking-kicker text-muted-foreground">
                                     {b.source === "p2p" ? "From student" : "From hub"}
                                   </span>
                                 </div>
@@ -1613,7 +1613,7 @@ export default function Marketplace(props?: MarketplaceProps) {
                                   )}
                                   {user && token && !isAvailable && (
                                     <div className="space-y-2">
-                                      <p className="text-left text-[11px] text-muted-foreground">
+                                      <p className="text-left caption-scale text-muted-foreground">
                                         Why unavailable? {unavailableReason(b.status)}.
                                       </p>
                                       <RequestBookSection
@@ -1696,7 +1696,7 @@ export default function Marketplace(props?: MarketplaceProps) {
                           {studentShellBrowse ? (
                             <div className="mb-2 space-y-1.5 px-1">
                               <div className="flex flex-col items-start gap-0.5">
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                                <span className="caption-scale font-bold uppercase tracking-kicker text-muted-foreground">
                                   From student
                                 </span>
                                 <span
@@ -1752,17 +1752,17 @@ export default function Marketplace(props?: MarketplaceProps) {
                                 <div className="flex flex-col items-start gap-0.5">
                                   <span
                                     className={cn(
-                                      "text-[10px] font-bold uppercase tracking-wider",
+                                      "caption-scale font-bold uppercase tracking-kicker",
                                       l.status === "available" || l.status === "approved"
-                                        ? "text-secondary dark:text-secondary"
+                                        ? "text-secondary"
                                         : l.status === "pending_dropoff"
-                                          ? "text-accent dark:text-accent"
+                                          ? "text-accent"
                                           : l.status === "listed"
                                             ? "text-primary"
                                             : l.status === "sold"
                                               ? "text-accent"
                                               : l.status === "rejected"
-                                                ? "text-destructive dark:text-destructive"
+                                                ? "text-destructive"
                                                 : "text-muted-foreground",
                                     )}
                                   >
@@ -1775,7 +1775,7 @@ export default function Marketplace(props?: MarketplaceProps) {
                                 <p className="text-[10.5px] text-muted-foreground/90">
                                   Pickup hub: <span className="font-medium text-foreground">{hubsQ.data?.hubs.find((h) => h.id === (l.dropoffHubId ?? l.hubId))?.name ?? "Not selected"}</span>
                                 </p>
-                                <p className="text-[10.5px] text-accent/90 dark:text-amber-300/90">
+                                <p className="text-[10.5px] text-accent/90">
                                   Next step: {listingNextStep(l.status)}
                                 </p>
                               </div>
@@ -1963,7 +1963,7 @@ export default function Marketplace(props?: MarketplaceProps) {
                     </div>
 
                     {isDemoListingId(selected.id) && (
-                      <p className="border border-primary/20 bg-[#EFF6FF] px-4 py-3 text-sm leading-relaxed text-foreground">
+                      <p className="border border-primary/20 bg-primary/5 px-4 py-3 text-sm leading-relaxed text-foreground">
                         <span className="font-semibold text-foreground">
                           Sample listing.
                         </span>{" "}
@@ -1981,7 +1981,7 @@ export default function Marketplace(props?: MarketplaceProps) {
                           )}
                         >
                           <div>
-                            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#64748B]">
+                            <p className="section-kicker">
                               Your listing
                             </p>
                             <p className="mt-1 text-sm text-muted-foreground">
@@ -2120,7 +2120,7 @@ export default function Marketplace(props?: MarketplaceProps) {
                           )}
                         >
                           <div>
-                            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#64748B]">
+                            <p className="section-kicker">
                               Drop-off
                             </p>
                             <p className="mt-1 text-sm text-muted-foreground">
@@ -2211,7 +2211,7 @@ export default function Marketplace(props?: MarketplaceProps) {
                     {selected.status === "available" && !user && isDemoListingId(selected.id) && (
                       <Button
                         className={cn(
-                          "h-11 w-full bg-secondary text-white hover:bg-secondary",
+                          "h-11 w-full bg-secondary text-primary-foreground hover:bg-secondary",
                           studentShellFlat ? "rounded-xl" : "",
                         )}
                         onClick={() => {

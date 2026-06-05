@@ -62,7 +62,7 @@ export const NeevMap: React.FC<any> = ({
             {locatedShelfId && (
               <button
                 onClick={onClearLocatedShelf}
-                className="text-[10px] font-mono px-2 py-0.5 bg-muted border border-border text-primary hover:text-foreground rounded transition animate-pulse"
+                className="caption-scale font-mono px-2 py-0.5 bg-muted border border-border text-primary hover:text-foreground rounded transition animate-pulse"
               >
                 ✓ Clear Active Highlight Path
               </button>
@@ -72,7 +72,7 @@ export const NeevMap: React.FC<any> = ({
         </div>
 
         {/* Visual Map Canvas Grid */}
-        <div className="relative w-full aspect-[4/3] bg-[#0c0c0e] border border-border rounded-xl overflow-hidden flex items-center justify-center p-2 group shadow-2xl">
+        <div className="relative w-full aspect-[4/3] overflow-hidden flex items-center justify-center p-2 group shadow-2xl">
           {/* Grid Blueprint Pattern */}
           <div 
             className="absolute inset-0 opacity-[0.05]" 
@@ -239,7 +239,7 @@ export const NeevMap: React.FC<any> = ({
               
               {/* Node meta properties */}
               <div>
-                <span className="text-[10px] uppercase font-mono bg-primary/10 border border-blue-900/40 text-primary px-2 py-0.5 rounded-md">
+                <span className="caption-scale uppercase font-mono bg-primary/10 border border-blue-900/40 text-primary px-2 py-0.5 rounded-md">
                   Active Coordinates: {selectedZone.x}X , {selectedZone.y}Y
                 </span>
                 
@@ -252,7 +252,7 @@ export const NeevMap: React.FC<any> = ({
               </div>
 
               {/* Functional description */}
-              <p className="text-xs text-muted-foreground leading-normal font-light bg-black/40 p-3 rounded-xl border border-border">
+              <p className="caption-scale text-muted-foreground leading-normal font-light bg-overlay-scrim p-3 rounded-xl border border-border">
                 {selectedZone.details}
               </p>
 
@@ -261,7 +261,7 @@ export const NeevMap: React.FC<any> = ({
                 <div className="space-y-3">
                   <div className="flex items-center space-x-2">
                     <Layers className="w-3.5 h-3.5 text-primary hover:rotate-18 hover:text-foreground transition" />
-                    <h4 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground font-mono">Sensors Rack Holdings ({activeShelfBooks.length})</h4>
+                    <h4 className="caption-scale font-bold uppercase tracking-wider text-muted-foreground font-mono">Sensors Rack Holdings ({activeShelfBooks.length})</h4>
                   </div>
 
                   <div className="space-y-2 max-h-[220px] overflow-y-auto pr-1">
@@ -272,11 +272,11 @@ export const NeevMap: React.FC<any> = ({
                       >
                         <div className="min-w-0 pr-2">
                           <h5 className="text-xs font-bold text-foreground truncate group-hover:text-primary transition-colors">{book.title}</h5>
-                          <p className="text-[10px] text-muted-foreground/60 truncate">By {book.author}</p>
+                          <p className="caption-scale text-muted-foreground/60 truncate">By {book.author}</p>
                         </div>
                         
                         <div className="text-right shrink-0">
-                          <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded border ${
+                          <span className={`caption-scale font-mono px-1.5 py-0.5 rounded border ${
                             book.physicalCopiesAvailable > 0
                               ? 'text-secondary bg-emerald-950/20 border-emerald-900/40'
                               : 'text-destructive bg-red-950/20 border-red-900/40'
@@ -288,7 +288,7 @@ export const NeevMap: React.FC<any> = ({
                     ))}
 
                     {activeShelfBooks.length === 0 && (
-                      <p className="text-xs text-zinc-650 italic text-center py-4 bg-muted/50/50 rounded-xl">This shelf doesn't hold any book currently.</p>
+                      <p className="text-xs text-foreground-subtle italic text-center py-4 bg-muted/50/50 rounded-xl">This shelf doesn't hold any book currently.</p>
                     )}
                   </div>
                 </div>
@@ -297,10 +297,10 @@ export const NeevMap: React.FC<any> = ({
                 <div className="space-y-3 pt-2">
                   <div className="flex items-center space-x-2">
                     <Shield className="w-3.5 h-3.5 text-primary" />
-                    <h4 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground font-mono font-semibold">Gateway Diagnostic Feed</h4>
+                    <h4 className="caption-scale font-bold uppercase tracking-wider text-muted-foreground font-mono font-semibold">Gateway Diagnostic Feed</h4>
                   </div>
                   
-                  <div className="bg-background p-3 rounded-xl border border-border space-y-2 font-mono text-[10px] text-muted-foreground">
+                  <div className="bg-background p-3 rounded-xl border border-border space-y-2 font-mono caption-scale text-muted-foreground">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Hardware UUID:</span>
                       <span>neev-{selectedZone.id}-77AX</span>
@@ -329,7 +329,7 @@ export const NeevMap: React.FC<any> = ({
                 <Sparkles className="w-5 h-5 text-primary shrink-0" />
                 <div className="text-xs">
                   <p className="font-bold text-foreground uppercase tracking-tight font-mono">Target Route Active</p>
-                  <p className="text-muted-foreground text-[10px] mt-0.5">Physical pathway is illuminated inside {selectedZone.name.split(' ')[0]}. Follow shelf markers.</p>
+                  <p className="text-muted-foreground caption-scale mt-0.5">Physical pathway is illuminated inside {selectedZone.name.split(' ')[0]}. Follow shelf markers.</p>
                 </div>
               </div>
             )}

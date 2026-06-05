@@ -31,6 +31,8 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 import { hubMembershipRoleLabel } from "@/lib/hub-display";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { adminPanel } from "@/lib/admin-desk-ui";
+import { PORTAL_PAGE_TITLE } from "@/lib/portal-typography";
 import { PORTAL_INLINE_LINK, PORTAL_KICKER_COLOR } from "@/lib/student-ui";
 import { BOOK_COVER_PLACEHOLDER_URL, bookCoverDisplayUrl } from "@/lib/book-cover-display";
 
@@ -92,10 +94,8 @@ type DetailPayload = {
 
 type ConfirmAction = "hold" | "deactivate" | "delete" | null;
 
-const outline = "rounded-md border border-border bg-background";
-
 function SectionLabel({ children }: { children: ReactNode }) {
-  return <h2 className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70">{children}</h2>;
+  return <h2 className="section-kicker">{children}</h2>;
 }
 
 function baseRoleLabel(role: string) {
@@ -208,7 +208,7 @@ function AdminUserDetailContent({ userId }: { userId: string }) {
   if (q.isLoading) {
     return (
       <div className={cn("flex min-h-[40vh] items-center justify-center", topPad)}>
-        <Loader2 className="h-9 w-9 animate-spin text-muted-foreground" />
+        <Loader2 className="h-9 w-9 animate-spin text-foreground-muted" />
       </div>
     );
   }
@@ -225,14 +225,14 @@ function AdminUserDetailContent({ userId }: { userId: string }) {
           <div className="min-w-0">
             <p
               className={cn(
-                "text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70",
+                "section-kicker",
                 PORTAL_KICKER_COLOR,
               )}
             >
               {isSuperAdmin ? "Super admin" : "Hub portal"}
             </p>
-            <h1 className="mt-1 text-[36px] font-[700] leading-tight tracking-tight text-[#1F2937]">{user.name}</h1>
-            <p className="mt-1 text-[13px] font-[400] text-[#1F2937]/70">{user.email}</p>
+            <h1 className={cn("mt-1", PORTAL_PAGE_TITLE)}>{user.name}</h1>
+            <p className="mt-1 body-scale font-normal text-foreground-muted">{user.email}</p>
           </div>
           <div className="flex shrink-0 flex-col gap-2 sm:flex-row sm:items-center">
             <Button variant="outline" className="h-10 w-full gap-1.5 rounded-md sm:w-auto" asChild>
@@ -249,31 +249,31 @@ function AdminUserDetailContent({ userId }: { userId: string }) {
       </div>
 
       <div className="space-y-6">
-        <section className={cn(outline, "overflow-hidden")} aria-label="Details">
+        <section className={cn(adminPanel, "overflow-hidden")} aria-label="Details">
           <div className="border-b border-border px-4 py-3">
             <SectionLabel>Details</SectionLabel>
           </div>
           <div className="grid gap-3 p-4 text-sm sm:grid-cols-2 lg:grid-cols-3">
             <div>
-              <p className="text-[11px] font-[500] uppercase tracking-wider text-[#1F2937]/70">Name</p>
+              <p className="section-kicker">Name</p>
               <p className="mt-1">{user.name}</p>
             </div>
             <div>
-              <p className="text-[11px] font-[500] uppercase tracking-wider text-[#1F2937]/70">Email</p>
+              <p className="section-kicker">Email</p>
               <p className="mt-1 break-all">{user.email}</p>
             </div>
             <div>
-              <p className="text-[11px] font-[500] uppercase tracking-wider text-[#1F2937]/70">Student ID</p>
-              <p className="mt-1 font-mono text-[13px] font-[400]">{user.publicId}</p>
+              <p className="section-kicker">Student ID</p>
+              <p className="mt-1 font-mono body-scale font-normal">{user.publicId}</p>
             </div>
             <div>
-              <p className="text-[11px] font-[500] uppercase tracking-wider text-[#1F2937]/70">Base role</p>
+              <p className="section-kicker">Base role</p>
               <span className={cn(uniformBadgeShape, getStatusColorClasses("approved"), "mt-1 font-normal")}>
                 {baseRoleLabel(user.baseRole)}
               </span>
             </div>
             <div>
-              <p className="text-[11px] font-[500] uppercase tracking-wider text-[#1F2937]/70">Account status</p>
+              <p className="section-kicker">Account status</p>
               <span
                 className={cn(
                   uniformBadgeShape,
@@ -285,14 +285,14 @@ function AdminUserDetailContent({ userId }: { userId: string }) {
               </span>
             </div>
             <div>
-              <p className="text-[11px] font-[500] uppercase tracking-wider text-[#1F2937]/70">Created</p>
+              <p className="section-kicker">Created</p>
               <p className="mt-1">{fmtDate(user.createdAt)}</p>
             </div>
           </div>
         </section>
 
         {memberships.length > 0 ? (
-          <section className={cn(outline, "overflow-hidden")} aria-label="Memberships">
+          <section className={cn(adminPanel, "overflow-hidden")} aria-label="Memberships">
             <div className="border-b border-border px-4 py-3">
               <SectionLabel>Memberships</SectionLabel>
             </div>
@@ -313,7 +313,7 @@ function AdminUserDetailContent({ userId }: { userId: string }) {
                           {m.hubName}
                         </Link>
                       </TableCell>
-                      <TableCell className="text-[#1F2937]/70">{m.hubKind || "other"}</TableCell>
+                      <TableCell className="text-foreground-muted">{m.hubKind || "other"}</TableCell>
                       <TableCell className="pr-4 sm:pr-6">
                         <span className={cn(uniformBadgeShape, getStatusColorClasses("approved"), "font-normal")}>
                           {hubMembershipRoleLabel(m.role)}
@@ -328,7 +328,7 @@ function AdminUserDetailContent({ userId }: { userId: string }) {
         ) : null}
 
         {activity.purchases.length > 0 ? (
-          <section className={cn(outline, "overflow-hidden")} aria-label="Purchases">
+          <section className={cn(adminPanel, "overflow-hidden")} aria-label="Purchases">
             <div className="border-b border-border px-4 py-3">
               <SectionLabel>Purchases</SectionLabel>
             </div>
@@ -362,7 +362,7 @@ function AdminUserDetailContent({ userId }: { userId: string }) {
         ) : null}
 
         {activity.sales.length > 0 ? (
-          <section className={cn(outline, "overflow-hidden")} aria-label="Sales">
+          <section className={cn(adminPanel, "overflow-hidden")} aria-label="Sales">
             <div className="border-b border-border px-4 py-3">
               <SectionLabel>Sales</SectionLabel>
             </div>
@@ -384,7 +384,7 @@ function AdminUserDetailContent({ userId }: { userId: string }) {
                         <CoverCell title={r.title} url={r.coverImageUrl} />
                       </TableCell>
                       <TableCell>₹{r.price.toLocaleString("en-IN")}</TableCell>
-                      <TableCell className="font-mono text-[13px] font-[400]">{r.buyerMasked}</TableCell>
+                      <TableCell className="font-mono body-scale font-normal">{r.buyerMasked}</TableCell>
                       <TableCell>{r.hubName}</TableCell>
                       <TableCell className="pr-4 sm:pr-6">{fmtDate(r.date)}</TableCell>
                     </TableRow>
@@ -396,7 +396,7 @@ function AdminUserDetailContent({ userId }: { userId: string }) {
         ) : null}
 
         {activity.borrowing.length > 0 ? (
-          <section className={cn(outline, "overflow-hidden")} aria-label="Borrowing">
+          <section className={cn(adminPanel, "overflow-hidden")} aria-label="Borrowing">
             <div className="border-b border-border px-4 py-3">
               <SectionLabel>Borrowing</SectionLabel>
             </div>
@@ -437,10 +437,10 @@ function AdminUserDetailContent({ userId }: { userId: string }) {
           </section>
         ) : null}
 
-        <section className={cn(outline, "overflow-hidden")} aria-label="Admin actions">
+        <section className={cn(adminPanel, "overflow-hidden")} aria-label="Admin actions">
           <div className="border-b border-border px-4 py-3">
             <SectionLabel>Admin actions</SectionLabel>
-            <p className="mt-1 text-[13px] font-[400] text-[#1F2937]/70">These actions are destructive and audit-logged.</p>
+            <p className="mt-1 body-scale font-normal text-foreground-muted">These actions are destructive and audit-logged.</p>
           </div>
           <div className="flex flex-wrap gap-2 p-4">
             <Button
@@ -477,8 +477,8 @@ function AdminUserDetailContent({ userId }: { userId: string }) {
       <AlertDialog open={confirmAction != null} onOpenChange={(o) => !o && setConfirmAction(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle className="font-sans text-[24px] font-[600] text-[#1F2937]">{confirmTitle}</AlertDialogTitle>
-            <AlertDialogDescription className="text-[14px] font-[400] text-[#1F2937]/70">{confirmBody}</AlertDialogDescription>
+            <AlertDialogTitle className="font-sans h4-scale font-semibold text-foreground">{confirmTitle}</AlertDialogTitle>
+            <AlertDialogDescription className="body-scale text-foreground-muted">{confirmBody}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>

@@ -67,7 +67,7 @@ export function LocationDiscoveryDialog({ open, onOpenChange, token }: LocationD
 
           {(permissionDenied || locError) && !locLoading && (
             <div className="flex flex-col items-center justify-center py-12 text-center px-4">
-              <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center mb-4">
+              <div className="w-12 h-12 flex items-center justify-center mb-4">
                 <AlertCircle className="w-6 h-6 text-destructive" />
               </div>
               <h3 className="text-lg font-bold text-foreground mb-2">Location Access Denied</h3>
@@ -76,7 +76,7 @@ export function LocationDiscoveryDialog({ open, onOpenChange, token }: LocationD
               </p>
               <button 
                 onClick={requestLocation}
-                className="mt-6 px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors shadow-sm"
+                className="mt-6 px-4 py-2 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors shadow-sm"
               >
                 Try Again
               </button>
@@ -96,13 +96,13 @@ export function LocationDiscoveryDialog({ open, onOpenChange, token }: LocationD
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {hubsQ.data.hubs.slice(0, 4).map((hub) => (
                       <div key={hub.id} className="flex items-start gap-3 p-3 rounded-xl border border-border bg-card hover:border-primary/50 transition-colors cursor-pointer group">
-                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <div className="w-10 h-10 flex items-center justify-center shrink-0">
                           <School className="w-5 h-5 text-primary group-hover:scale-110 transition-transform" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <h5 className="text-sm font-bold text-foreground truncate">{hub.name}</h5>
                           <p className="text-xs text-muted-foreground mt-0.5 capitalize">{hub.kind || 'Campus Hub'}</p>
-                          <div className="mt-2 flex items-center gap-1.5 text-[10px] font-medium text-secondary">
+                          <div className="mt-2 flex items-center gap-1.5 caption-scale font-medium text-secondary">
                             <MapPin className="w-3 h-3" />
                             {getMockDistance(hub.id)} km away
                           </div>
@@ -126,11 +126,11 @@ export function LocationDiscoveryDialog({ open, onOpenChange, token }: LocationD
                       const isAvailable = book.status === 'available';
                       return (
                         <div key={book.id} className="flex items-center gap-4 p-3 rounded-xl border border-border bg-card hover:bg-muted/50 transition-colors">
-                          <div className="w-10 h-14 rounded bg-slate-200 shrink-0 border border-border flex items-center justify-center overflow-hidden">
+                          <div className="w-10 h-14 shrink-0 flex items-center justify-center overflow-hidden">
                             {book.coverImageUrl ? (
                               <img src={book.coverImageUrl} alt={book.title} className="w-full h-full object-cover" />
                             ) : (
-                              <BookOpen className="w-4 h-4 text-slate-400" />
+                              <BookOpen className="w-4 h-4 text-foreground-subtle" />
                             )}
                           </div>
                           <div className="flex-1 min-w-0">
@@ -138,12 +138,12 @@ export function LocationDiscoveryDialog({ open, onOpenChange, token }: LocationD
                             <p className="text-xs text-muted-foreground truncate">{book.author}</p>
                             <div className="mt-1 flex items-center gap-2">
                               <span className={cn(
-                                "text-[10px] px-1.5 py-0.5 rounded font-semibold",
+                                "caption-scale px-1.5 py-0.5 rounded font-semibold",
                                 isAvailable ? "bg-secondary/10 text-secondary" : "bg-muted text-muted-foreground"
                               )}>
                                 {isAvailable ? 'Available' : 'Reserved'}
                               </span>
-                              <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                              <span className="caption-scale text-muted-foreground flex items-center gap-1">
                                 <MapPin className="w-2.5 h-2.5" /> {getMockDistance(book.id)} km
                               </span>
                             </div>

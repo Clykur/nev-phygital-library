@@ -218,7 +218,7 @@ export const NeevCollege: React.FC<any> = ({
         <div className="absolute top-0 right-[5%] w-[300px] h-[300px] bg-primary/5 rounded-full blur-[80px] pointer-events-none"></div>
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10">
           <div className="space-y-2 max-w-2xl">
-            <div className="inline-flex items-center space-x-1.5 px-3 py-1 bg-primary/10 border border-blue-900/60 rounded-full text-[10px] font-mono font-medium text-primary uppercase tracking-widest">
+            <div className="inline-flex items-center space-x-1.5 px-3 py-1 bg-primary/10 border border-blue-900/60 rounded-full caption-scale font-mono font-medium text-primary uppercase tracking-widest">
               <School className="w-3.5 h-3.5 text-primary" />
               <span>University Onboarding & Hub</span>
             </div>
@@ -228,7 +228,7 @@ export const NeevCollege: React.FC<any> = ({
             </p>
           </div>
           <div className="flex shrink-0 gap-3">
-            <span className="text-[11px] font-mono px-3 py-1 bg-zinc-90d border border-border/60 rounded-lg text-muted-foreground">
+            <span className="caption-scale font-mono px-3 py-1 bg-zinc-90d border border-border/60 rounded-lg text-muted-foreground">
               Active Campus Code: <span className="text-foreground font-bold">{activeCollegeInfo?.code || "DEFAULT_IN"}</span>
             </span>
           </div>
@@ -242,10 +242,10 @@ export const NeevCollege: React.FC<any> = ({
             <Layers className="w-5 h-5 text-primary animate-pulse" />
             <div>
               <h3 className="text-xs font-bold text-foreground uppercase tracking-wider font-mono">Gateway Escrow Balance Isolation Protocol</h3>
-              <p className="text-[10px] font-mono text-muted-foreground/50 uppercase font-semibold">Programmatic ledger segregation policy</p>
+              <p className="caption-scale font-mono text-muted-foreground/50 uppercase font-semibold">Programmatic ledger segregation policy</p>
             </div>
           </div>
-          <span className="text-[9px] font-mono px-2 py-0.5 bg-secondary/90 text-secondary rounded border border-emerald-900/40 font-bold uppercase tracking-wider">
+          <span className="caption-scale font-mono px-2 py-0.5 bg-secondary/90 text-secondary rounded border border-emerald-900/40 font-bold uppercase tracking-wider">
             SHIELD STATUS: COLLATERAL LOCKED ✓
           </span>
         </div>
@@ -254,16 +254,16 @@ export const NeevCollege: React.FC<any> = ({
           {/* Ledger A */}
           <div className="p-4 bg-background/40 border border-border rounded-xl space-y-3">
             <div className="flex justify-between items-center">
-              <span className="text-[9px] font-mono bg-primary/90 text-primary px-2 py-0.5 rounded border border-blue-900/40 font-bold">LEDGER A</span>
-              <span className="text-[9px] text-secondary font-mono font-bold uppercase tracking-widest animate-pulse">● Operating proceed active</span>
+              <span className="caption-scale font-mono bg-primary/90 text-primary px-2 py-0.5 rounded border border-blue-900/40 font-bold">LEDGER A</span>
+              <span className="caption-scale text-secondary font-mono font-bold uppercase tracking-widest animate-pulse">● Operating proceed active</span>
             </div>
             <div>
               <h4 className="text-xs font-bold text-foreground/90">Operating Cash Balance (<span className="text-foreground">Annual Membership flat ₹999 fees</span>)</h4>
-              <p className="text-[11px] text-muted-foreground leading-relaxed font-sans font-light mt-1">
+              <p className="caption-scale text-muted-foreground leading-relaxed font-sans font-light mt-1">
                 Proceeds generated from students annual subscription memberships. Safe for general operational burn including campus kiosk hardware deployment, high-density RFID passive scanner tags, and decentralized Campus Ambassador honorariums.
               </p>
             </div>
-            <div className="pt-2 border-t border-border flex justify-between font-mono text-[9px]">
+            <div className="pt-2 border-t border-border flex justify-between font-mono caption-scale">
               <span className="text-muted-foreground/50">Reinvestment Limit:</span>
               <span className="text-primary font-bold uppercase">100% Capitalized Spend</span>
             </div>
@@ -272,16 +272,16 @@ export const NeevCollege: React.FC<any> = ({
           {/* Ledger B */}
           <div className="p-4 bg-background/40 border border-border rounded-xl space-y-3 relative overflow-hidden">
             <div className="flex justify-between items-center">
-              <span className="text-[9px] font-mono bg-accent/90 text-accent px-2 py-0.5 rounded border border-amber-900/40 font-bold">LEDGER B</span>
-              <span className="text-[9px] text-amber-405 font-mono font-bold border border-amber-900/40 px-1.5 py-0.5 rounded uppercase">🔒 FROZEN SECURED COLLATERAL</span>
+              <span className="caption-scale font-mono bg-accent/90 text-accent px-2 py-0.5 rounded border border-amber-900/40 font-bold">LEDGER B</span>
+              <span className="caption-scale text-amber-405 font-mono font-bold border border-amber-900/40 px-1.5 py-0.5 rounded uppercase">🔒 FROZEN SECURED COLLATERAL</span>
             </div>
             <div>
               <h4 className="text-xs font-bold text-foreground/90">Secured Escrow Liability Pool (<span className="text-foreground">UPFRONT BOOK DEPOSITS</span>)</h4>
-              <p className="text-[11px] text-muted-foreground leading-relaxed font-sans font-light mt-1">
+              <p className="caption-scale text-muted-foreground leading-relaxed font-sans font-light mt-1">
                 Holds 100% refund value of textbook deposits. Programmatically isolated and strictly protected from general operating expenses. This serves as a fully liquid collateral layer against physical books in circulation, honoring refunds instant-trigger upon return.
               </p>
             </div>
-            <div className="pt-2 border-t border-border flex justify-between font-mono text-[9px]">
+            <div className="pt-2 border-t border-border flex justify-between font-mono caption-scale">
               <span className="text-muted-foreground/50">Collateral compliance:</span>
               <span className="text-accent font-bold uppercase tracking-wider">ZERO EXPLOIT BURN ALLOWED</span>
             </div>
@@ -296,7 +296,7 @@ export const NeevCollege: React.FC<any> = ({
         <div className="lg:col-span-1 bg-muted/50/30 border border-border/60 rounded-2xl p-5 space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground font-mono">Switch University Library</h3>
-            <span className="text-[10px] font-mono text-zinc-650 font-bold uppercase">Total Kiosk Hand-offs</span>
+            <span className="caption-scale font-mono text-foreground-subtle font-bold uppercase">Total Kiosk Hand-offs</span>
           </div>
 
           <div className="space-y-3">
@@ -317,14 +317,14 @@ export const NeevCollege: React.FC<any> = ({
                       {c.name}
                     </h4>
                     {isActive && (
-                      <span className="text-[9px] font-mono uppercase px-1.5 py-0.5 bg-blue-900/40 text-primary border border-primary/80 rounded shrink-0">
+                      <span className="caption-scale font-mono uppercase px-1.5 py-0.5 bg-blue-900/40 text-primary border border-primary/80 rounded shrink-0">
                         ACTIVE CAMPUS
                       </span>
                     )}
                   </div>
-                  <p className="text-[10px] text-muted-foreground/60 mt-1 italic">{c.location}</p>
+                  <p className="caption-scale text-muted-foreground/60 mt-1 italic">{c.location}</p>
                   
-                  <div className="flex items-center justify-between text-[9px] font-mono text-zinc-650 mt-3 pt-2 border-t border-border/60">
+                  <div className="flex items-center justify-between caption-scale font-mono text-foreground-subtle mt-3 pt-2 border-t border-border/60">
                     <span>Librarian: {c.librarianName}</span>
                     <span className="text-muted-foreground/60 font-bold">{c.code}</span>
                   </div>
@@ -333,7 +333,7 @@ export const NeevCollege: React.FC<any> = ({
             })}
           </div>
 
-          <div className="p-3 bg-background/40 border border-border/60 rounded-xl space-y-1.5 font-mono text-[10px] text-muted-foreground/60">
+          <div className="p-3 bg-background/40 border border-border/60 rounded-xl space-y-1.5 font-mono caption-scale text-muted-foreground/60">
             <p>💡 <strong className="text-muted-foreground">Campus Switch Effect:</strong> Switching colleges will load their specific semester syllabus, student registry parameters, and weight metrics seamlessly inside your session.</p>
           </div>
         </div>
@@ -345,13 +345,13 @@ export const NeevCollege: React.FC<any> = ({
               <School className="w-5 h-5 text-primary" />
               <div>
                 <h3 className="text-sm font-bold text-foreground">Register / Onboard College Campus</h3>
-                <p className="text-[9px] font-mono text-muted-foreground/60 uppercase">Enroll your campus library into Neev Core network</p>
+                <p className="caption-scale font-mono text-muted-foreground/60 uppercase">Enroll your campus library into Neev Core network</p>
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
               <div className="space-y-1">
-                <label className="text-[10px] font-mono text-muted-foreground/60 uppercase font-semibold">College / University Name:</label>
+                <label className="caption-scale font-mono text-muted-foreground/60 uppercase font-semibold">College / University Name:</label>
                 <input
                   type="text"
                   required
@@ -363,7 +363,7 @@ export const NeevCollege: React.FC<any> = ({
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-mono text-muted-foreground/60 uppercase font-semibold">Campus Code Index (Prefix):</label>
+                <label className="caption-scale font-mono text-muted-foreground/60 uppercase font-semibold">Campus Code Index (Prefix):</label>
                 <input
                   type="text"
                   required
@@ -377,7 +377,7 @@ export const NeevCollege: React.FC<any> = ({
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
               <div className="space-y-1">
-                <label className="text-[10px] font-mono text-muted-foreground/60 uppercase font-semibold">Campus City & State Location:</label>
+                <label className="caption-scale font-mono text-muted-foreground/60 uppercase font-semibold">Campus City & State Location:</label>
                 <input
                   type="text"
                   required
@@ -389,7 +389,7 @@ export const NeevCollege: React.FC<any> = ({
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-mono text-muted-foreground/60 uppercase font-semibold">Chief Librarian / Registrar In-Charge:</label>
+                <label className="caption-scale font-mono text-muted-foreground/60 uppercase font-semibold">Chief Librarian / Registrar In-Charge:</label>
                 <input
                   type="text"
                   required
@@ -402,7 +402,7 @@ export const NeevCollege: React.FC<any> = ({
             </div>
 
             <div className="space-y-1 text-xs">
-              <label className="text-[10px] font-mono text-muted-foreground/60 uppercase font-semibold">Library Architectural Layout Preset:</label>
+              <label className="caption-scale font-mono text-muted-foreground/60 uppercase font-semibold">Library Architectural Layout Preset:</label>
               <select
                 value={selectedLayoutType}
                 onChange={(e) => setSelectedLayoutType(e.target.value)}
@@ -446,14 +446,14 @@ export const NeevCollege: React.FC<any> = ({
             <Layers className="w-5 h-5 text-primary" />
             <div>
               <h3 className="text-sm font-bold text-foreground">Dynamic Physical Racks Configurator</h3>
-              <p className="text-[9px] font-mono text-muted-foreground/60 uppercase">Add/Delete Custom Shelf Coordinates on Interactive Map</p>
+              <p className="caption-scale font-mono text-muted-foreground/60 uppercase">Add/Delete Custom Shelf Coordinates on Interactive Map</p>
             </div>
           </div>
 
           <form onSubmit={handleAddCustomShelf} className="space-y-3.5 text-xs">
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1 col-span-2 sm:col-span-1">
-                <label className="text-[10px] font-mono text-muted-foreground/60 uppercase font-semibold">New Shelf Name:</label>
+                <label className="caption-scale font-mono text-muted-foreground/60 uppercase font-semibold">New Shelf Name:</label>
                 <input
                   type="text"
                   required
@@ -465,7 +465,7 @@ export const NeevCollege: React.FC<any> = ({
               </div>
 
               <div className="space-y-1 col-span-2 sm:col-span-1">
-                <label className="text-[10px] font-mono text-muted-foreground/60 uppercase font-semibold">Map Aisle Segment:</label>
+                <label className="caption-scale font-mono text-muted-foreground/60 uppercase font-semibold">Map Aisle Segment:</label>
                 <select
                   value={customShelfAisle}
                   onChange={(e) => setCustomShelfAisle(e.target.value as any)}
@@ -483,7 +483,7 @@ export const NeevCollege: React.FC<any> = ({
             {/* Coordinates slider inputs */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1 bg-background/40 p-2.5 rounded-xl border border-border">
-                <div className="flex justify-between text-[10px] font-mono text-muted-foreground/50">
+                <div className="flex justify-between caption-scale font-mono text-muted-foreground/50">
                   <span>Horizontal Axis (X):</span>
                   <span className="text-primary font-bold">{customShelfX}%</span>
                 </div>
@@ -498,7 +498,7 @@ export const NeevCollege: React.FC<any> = ({
               </div>
 
               <div className="space-y-1 bg-background/40 p-2.5 rounded-xl border border-border">
-                <div className="flex justify-between text-[10px] font-mono text-muted-foreground/50">
+                <div className="flex justify-between caption-scale font-mono text-muted-foreground/50">
                   <span>Vertical Axis (Y):</span>
                   <span className="text-primary font-bold">{customShelfY}%</span>
                 </div>
@@ -514,7 +514,7 @@ export const NeevCollege: React.FC<any> = ({
             </div>
 
             <div className="space-y-1">
-              <label className="text-[10px] font-mono text-muted-foreground/60 uppercase font-semibold">Custom Rack Details & Sensors:</label>
+              <label className="caption-scale font-mono text-muted-foreground/60 uppercase font-semibold">Custom Rack Details & Sensors:</label>
               <input
                 type="text"
                 value={customShelfDetails}
@@ -545,15 +545,15 @@ export const NeevCollege: React.FC<any> = ({
 
           {/* List of custom registered shelves to delete/see list */}
           <div className="space-y-2 pt-2 border-t border-border">
-            <h4 className="text-[10px] font-mono font-bold uppercase tracking-wider text-muted-foreground">Configured Racks list ({zones.filter(z => z.type === 'shelf').length})</h4>
+            <h4 className="caption-scale font-mono font-bold uppercase tracking-wider text-muted-foreground">Configured Racks list ({zones.filter(z => z.type === 'shelf').length})</h4>
             <div className="max-h-[140px] overflow-y-auto space-y-1.5 pr-1">
               {zones.filter(z => z.type === 'shelf').map((z) => (
-                <div key={z.id} className="p-2 bg-background/80 border border-border rounded-lg flex items-center justify-between text-[11px] font-mono">
+                <div key={z.id} className="p-2 bg-background/80 border border-border rounded-lg flex items-center justify-between caption-scale font-mono">
                   <span className="text-zinc-305 truncate uppercase">
                     Aisle {z.aisle || 'A'}: <strong className="text-foreground">{z.name.replace(/\(Aisle.*?\)/g, '')}</strong>
                   </span>
                   <div className="flex items-center space-x-3 shrink-0">
-                    <span className="text-[10px] text-muted-foreground/50">Loc: {z.x}X, {z.y}Y</span>
+                    <span className="caption-scale text-muted-foreground/50">Loc: {z.x}X, {z.y}Y</span>
                     {/* Delete shelf */}
                     {z.id.startsWith("shelf-") && z.id !== "shelf-A" && z.id !== "shelf-B" && z.id !== "shelf-C" && z.id !== "shelf-D" && z.id !== "shelf-E" && (
                       <button
@@ -577,14 +577,14 @@ export const NeevCollege: React.FC<any> = ({
             <ClipboardList className="w-5 h-5 text-secondary" />
             <div>
               <h3 className="text-sm font-bold text-foreground">Curriculum / Solved Papers Registry</h3>
-              <p className="text-[9px] font-mono text-muted-foreground/60 uppercase">Publish Indian college core syllabus to active catalog</p>
+              <p className="caption-scale font-mono text-muted-foreground/60 uppercase">Publish Indian college core syllabus to active catalog</p>
             </div>
           </div>
 
           <form onSubmit={handleAddSyllabusBook} className="space-y-3.5 text-xs">
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1 col-span-2 sm:col-span-1">
-                <label className="text-[10px] font-mono text-muted-foreground/60 uppercase font-semibold">Curriculum Textbook Name:</label>
+                <label className="caption-scale font-mono text-muted-foreground/60 uppercase font-semibold">Curriculum Textbook Name:</label>
                 <input
                   type="text"
                   required
@@ -596,7 +596,7 @@ export const NeevCollege: React.FC<any> = ({
               </div>
 
               <div className="space-y-1 col-span-2 sm:col-span-1">
-                <label className="text-[10px] font-mono text-muted-foreground/60 uppercase font-semibold">Author or Publisher Node:</label>
+                <label className="caption-scale font-mono text-muted-foreground/60 uppercase font-semibold">Author or Publisher Node:</label>
                 <input
                   type="text"
                   required
@@ -610,7 +610,7 @@ export const NeevCollege: React.FC<any> = ({
 
             <div className="grid grid-cols-3 gap-2">
               <div className="space-y-1">
-                <label className="text-[10px] font-mono text-muted-foreground/60 uppercase font-semibold">Branch/Dept:</label>
+                <label className="caption-scale font-mono text-muted-foreground/60 uppercase font-semibold">Branch/Dept:</label>
                 <select
                   value={syllabusDept}
                   onChange={(e) => setSyllabusDept(e.target.value)}
@@ -624,7 +624,7 @@ export const NeevCollege: React.FC<any> = ({
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-mono text-muted-foreground/60 uppercase font-semibold">Semester Level:</label>
+                <label className="caption-scale font-mono text-muted-foreground/60 uppercase font-semibold">Semester Level:</label>
                 <select
                   value={syllabusSem}
                   onChange={(e) => setSyllabusSem(e.target.value)}
@@ -642,7 +642,7 @@ export const NeevCollege: React.FC<any> = ({
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-mono text-muted-foreground/60 uppercase font-semibold">Shelf Location:</label>
+                <label className="caption-scale font-mono text-muted-foreground/60 uppercase font-semibold">Shelf Location:</label>
                 <select
                   value={targetShelf}
                   onChange={(e) => setTargetShelf(e.target.value)}
@@ -656,7 +656,7 @@ export const NeevCollege: React.FC<any> = ({
             </div>
 
             <div className="space-y-1">
-              <div className="flex justify-between items-center text-[10px] font-mono text-muted-foreground/60">
+              <div className="flex justify-between items-center caption-scale font-mono text-muted-foreground/60">
                 <label className="uppercase font-semibold">Registered ISBN-IN Code:</label>
                 <button
                   type="button"

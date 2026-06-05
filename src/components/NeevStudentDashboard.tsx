@@ -126,20 +126,20 @@ export const NeevStudentDashboard: React.FC<any> = () => {
     <div className="space-y-8 animate-in fade-in duration-500">
 
       {/* Top Banner Alert for Student */}
-      <div className="p-4 bg-white border border-border rounded-xl flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="p-4 bg-surface border border-border rounded-xl flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center space-x-3 text-center sm:text-left">
-          <div className="w-10 h-10 rounded-lg bg-muted border border-border flex items-center justify-center text-foreground shrink-0">
+          <div className="w-10 h-10 flex items-center justify-center text-foreground shrink-0">
             <Sparkles className="w-5 h-5" />
           </div>
           <div>
-            <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">Authenticated student portal</span>
+            <span className="caption-scale font-semibold text-muted-foreground uppercase tracking-widest">Authenticated student portal</span>
             <div className="flex items-center space-x-2">
             <h2 className="text-lg font-semibold text-foreground">Welcome back, {user?.name}</h2>
             {user?.premiumActive && (
-              <span className="px-2 py-0.5 bg-primary/80 text-blue-300 rounded text-[9px] font-mono font-semibold tracking-wider">PREMIUM</span>
+              <span className="px-2 py-0.5 bg-primary/80 text-blue-300 rounded caption-scale font-mono font-semibold tracking-wider">PREMIUM</span>
             )}
             {user?.hubMemberships && user.hubMemberships.length > 0 && (
-              <span className="px-2 py-0.5 bg-accent text-accent-foreground rounded text-[9px] font-mono font-semibold tracking-wider">HUB MEMBER</span>
+              <span className="px-2 py-0.5 bg-accent text-accent-foreground rounded caption-scale font-mono font-semibold tracking-wider">HUB MEMBER</span>
             )}
           </div>
           </div>
@@ -162,20 +162,20 @@ export const NeevStudentDashboard: React.FC<any> = () => {
           <div className={`bento-card p-6 space-y-5 relative ${flashReconciliation ? 'border-success ring-2 ring-success/10 bg-success/10' : ''}`}>
 
             {flashReconciliation && (
-              <div className="absolute top-3 right-3 px-2 py-0.5 bg-secondary/90 border border-secondary/30 text-secondary text-[9px] font-semibold font-mono rounded animate-pulse">
+              <div className="absolute top-3 right-3 px-2 py-0.5 bg-secondary/90 border border-secondary/30 text-secondary caption-scale font-semibold font-mono rounded animate-pulse">
                 ✔ CAPACITY RECLAIMED
               </div>
             )}
 
             <div className="space-y-1">
-              <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground block">
+              <span className="caption-scale font-semibold uppercase tracking-widest text-muted-foreground block">
                 Neev Elastic Kiosk Credit Buffer
               </span>
-              <h3 className="text-[32px] font-[700] text-foreground flex items-baseline gap-1.5">
+              <h3 className="h3-scale font-bold text-foreground flex items-baseline gap-1.5">
                 ₹{availableCredits.toLocaleString()}
                 <span className="text-xs text-muted-foreground font-normal">Available Credits</span>
               </h3>
-              <p className="text-[11px] text-muted-foreground">5,000 Total Student Buffer Limit</p>
+              <p className="caption-scale text-muted-foreground">5,000 Total Student Buffer Limit</p>
             </div>
 
             {/* Elastic Cap Progress Bar representation */}
@@ -183,7 +183,7 @@ export const NeevStudentDashboard: React.FC<any> = () => {
               <div className="w-full h-3 bg-muted/50 border border-border rounded-lg overflow-hidden flex relative">
                 {/* Spent Segment */}
                 <div
-                  className="h-full bg-slate-300 transition-all duration-700 border-r border-border"
+                  className="h-full bg-muted transition-all duration-700 border-r border-border"
                   style={{ width: `${utilizationPercentage}%` }}
                 ></div>
                 {/* Remaining Available Credit segment */}
@@ -194,7 +194,7 @@ export const NeevStudentDashboard: React.FC<any> = () => {
                 ></div>
               </div>
 
-              <div className="flex justify-between items-center text-[10px] font-medium text-muted-foreground uppercase">
+              <div className="flex justify-between items-center caption-scale font-medium text-muted-foreground uppercase">
                 <span>BLOCKED: {totalBorrowedValue} CR</span>
                 <span className="text-primary font-semibold">CAP OVERALL: {availableCredits} CR</span>
               </div>
@@ -219,10 +219,10 @@ export const NeevStudentDashboard: React.FC<any> = () => {
                 <Calendar className="w-5 h-5 text-primary" />
                 <div>
                   <h3 className="text-lg font-semibold text-foreground tracking-tight">Active Book Leases</h3>
-                  <p className="text-[10px] font-mono text-muted-foreground/60 uppercase font-semibold">Track remaining rental days before return deadlines</p>
+                  <p className="caption-scale font-mono text-muted-foreground/60 uppercase font-semibold">Track remaining rental days before return deadlines</p>
                 </div>
               </div>
-              <span className="text-[10px] font-mono px-2 py-0.5 bg-background border border-border text-muted-foreground rounded-md">
+              <span className="caption-scale font-mono px-2 py-0.5 bg-background border border-border text-muted-foreground rounded-md">
                 {activeCheckouts.length} checked out
               </span>
             </div>
@@ -231,7 +231,7 @@ export const NeevStudentDashboard: React.FC<any> = () => {
               <div className="p-8 text-center bg-background/40 border border-border/60 rounded-xl space-y-2">
                 <BookOpen className="w-8 h-8 text-muted-foreground mx-auto" />
                 <p className="text-xs text-muted-foreground">No active book rentals currently checked out to your card.</p>
-                <p className="text-[11px] text-muted-foreground/50">Navigate to the Catalog of syllabus titles to borrow items instantly.</p>
+                <p className="caption-scale text-muted-foreground/50">Navigate to the Catalog of syllabus titles to borrow items instantly.</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -247,16 +247,16 @@ export const NeevStudentDashboard: React.FC<any> = () => {
                     >
                       <div className="space-y-1">
                         <div className="flex items-center justify-between">
-                          <span className="text-[9px] font-mono bg-zinc-90 w-full text-zinc-405 border border-border/60 rounded px-1.5 py-0.5">
+                          <span className="caption-scale font-mono bg-zinc-90 w-full text-zinc-405 border border-border/60 rounded px-1.5 py-0.5">
                             {creditValue} Credits Blocked
                           </span>
-                          <span className={`text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded ${isCloseToDeadline ? 'bg-accent/90 text-accent border border-amber-900/40' : 'bg-primary/90 text-primary border border-blue-900/40'
+                          <span className={`caption-scale font-mono font-semibold px-1.5 py-0.5 rounded ${isCloseToDeadline ? 'bg-accent/90 text-accent border border-amber-900/40' : 'bg-primary/90 text-primary border border-blue-900/40'
                             }`}>
                             {checkout.daysRemaining} days left
                           </span>
                         </div>
                         <h4 className="text-xs font-semibold text-foreground mt-1 line-clamp-1">{checkout.title}</h4>
-                        <p className="text-[10px] text-muted-foreground/60 mt-0.5 font-light">by {checkout.author}</p>
+                        <p className="caption-scale text-muted-foreground/60 mt-0.5 font-light">by {checkout.author}</p>
                       </div>
 
                       <div className="pt-2 border-t border-border flex justify-between items-center">
@@ -264,7 +264,7 @@ export const NeevStudentDashboard: React.FC<any> = () => {
                         <button
                           type="button"
                           onClick={() => handleTriggerReturnWithFlash(checkout.id, checkout.bookId)}
-                          className="px-2.5 py-1 bg-muted/50 hover:bg-zinc-850 text-[10px] text-muted-foreground hover:text-foreground border border-border/60 rounded transition font-semibold"
+                          className="px-2.5 py-1 bg-muted/50 hover:bg-zinc-850 caption-scale text-muted-foreground hover:text-foreground border border-border/60 rounded transition font-semibold"
                         >
                           Return Kiosk
                         </button>
@@ -283,7 +283,7 @@ export const NeevStudentDashboard: React.FC<any> = () => {
                 <BookOpen className="w-5 h-5 text-primary" />
                 <div>
                   <h3 className="text-lg font-semibold text-foreground tracking-tight">Campus Bounty Board</h3>
-                  <p className="text-[10px] font-mono text-zinc-505 uppercase font-semibold">Syllabus items currently wanted by the hub for free premium trades</p>
+                  <p className="caption-scale font-mono text-zinc-505 uppercase font-semibold">Syllabus items currently wanted by the hub for free premium trades</p>
                 </div>
               </div>
 
@@ -315,7 +315,7 @@ export const NeevStudentDashboard: React.FC<any> = () => {
 
             {/* Request form submission widget */}
             <form onSubmit={handleCustomRequestSubmit} className="p-4 bg-background/40 border border-border/60 rounded-xl space-y-3">
-              <h4 className="text-[11px] font-semibold font-mono text-muted-foreground uppercase">Submit a Syllabus Book request / Upvote request</h4>
+              <h4 className="caption-scale font-semibold font-mono text-muted-foreground uppercase">Submit a Syllabus Book request / Upvote request</h4>
               <div className="flex gap-2">
                 <input
                   type="text"
@@ -333,13 +333,13 @@ export const NeevStudentDashboard: React.FC<any> = () => {
                 </button>
               </div>
               {requestSubmittedMessage && (
-                <p className="text-[10px] font-mono text-emerald-450 animate-pulse">{requestSubmittedMessage}</p>
+                <p className="caption-scale font-mono text-emerald-450 animate-pulse">{requestSubmittedMessage}</p>
               )}
             </form>
 
             {/* List User's Active Requests */}
             <div className="space-y-2.5">
-              <span className="text-[10px] font-mono text-primary font-semibold uppercase tracking-wider block">Your Live Requests</span>
+              <span className="caption-scale font-mono text-primary font-semibold uppercase tracking-wider block">Your Live Requests</span>
               
               {myRequests.length === 0 ? (
                 <div className="p-4 text-center bg-background/40 border border-border/60 rounded-xl space-y-2">
@@ -353,14 +353,14 @@ export const NeevStudentDashboard: React.FC<any> = () => {
                       className="p-3.5 bg-background border border-border rounded-xl flex items-center justify-between gap-3"
                     >
                       <div className="space-y-1 text-left">
-                        <div className="flex items-center space-x-2 text-[9px] font-mono">
+                        <div className="flex items-center space-x-2 caption-scale font-mono">
                           <span className="uppercase bg-zinc-90 w-full text-muted-foreground/50 border border-border/60 rounded px-1.5 py-0.5">
                             STATUS: {req.status}
                           </span>
                         </div>
                         <h4 className="text-xs font-semibold text-foreground leading-normal">{req.bookTitle}</h4>
                       </div>
-                      <span className="px-2.5 py-1 bg-muted/50 border border-border/60 text-[10px] font-mono text-muted-foreground rounded-lg">
+                      <span className="px-2.5 py-1 bg-muted/50 border border-border/60 caption-scale font-mono text-muted-foreground rounded-lg">
                         {new Date(req.createdAt).toLocaleDateString()}
                       </span>
                     </div>

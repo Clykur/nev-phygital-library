@@ -1,21 +1,21 @@
 import { cn } from "@/lib/utils";
 
 // Standardized visual shape for all status badges everywhere
-export const uniformBadgeShape = "inline-flex items-center justify-center whitespace-nowrap px-2.5 py-0.5 rounded-none text-[11px] font-semibold tracking-wide uppercase";
+export const uniformBadgeShape = "inline-flex items-center justify-center whitespace-nowrap px-2.5 py-0.5 rounded-md caption-scale font-semibold tracking-kicker uppercase";
 
 // Keep this around for backwards compatibility where the cover shape was expected,
 // but now just map it to the new uniform shape + backdrop blur.
-export const shelfFilterChipOnCoverClass = "shadow-sm backdrop-blur-md bg-opacity-90 dark:bg-opacity-90";
+export const shelfFilterChipOnCoverClass = "shadow-sm backdrop-blur-md bg-opacity-90";
 
 export const shelfFilterChipClass = cn(uniformBadgeShape, "border border-border bg-background text-foreground shadow-sm");
-export const shelfFilterChipOnDarkClass = cn(uniformBadgeShape, "border border-white/20 bg-black/60 text-white shadow-sm backdrop-blur-md");
+export const shelfFilterChipOnDarkClass = cn(uniformBadgeShape, "border border-overlay-glass-border bg-overlay-backdrop text-on-media shadow-sm backdrop-blur-md");
 
 export function getStatusColorClasses(status: string): string {
   const s = status.toLowerCase();
   
   // Available (Emerald)
   if (["available", "ready", "on marketplace"].includes(s)) {
-    return "border border-secondary/30 bg-secondary/10 text-secondary/80 dark:text-secondary/20";
+    return "border border-success/30 bg-success/10 text-success";
   }
   
   // Approved (Sky)
@@ -25,7 +25,7 @@ export function getStatusColorClasses(status: string): string {
   
   // Set Aside (Amber)
   if (["set aside", "reserved", "fulfilled", "borrowed"].includes(s)) {
-    return "border border-accent/35 bg-accent/10 text-accent/90 dark:text-accent/20";
+    return "border border-accent/35 bg-accent/10 text-accent";
   }
   
   // Checked Out (Violet)
@@ -35,7 +35,7 @@ export function getStatusColorClasses(status: string): string {
   
   // Overdue (Rose)
   if (["overdue", "timed out"].includes(s)) {
-    return "border border-rose-500/30 bg-rose-500/10 text-rose-900 dark:text-destructive/20";
+    return "border border-destructive/30 bg-destructive/10 text-destructive";
   }
   
   // Rejected (Red)

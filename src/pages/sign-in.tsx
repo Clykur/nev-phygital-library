@@ -101,7 +101,7 @@ export default function SignInPage() {
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex min-h-[100dvh] items-start justify-center overflow-y-auto bg-[#0F172A]/55 px-4 py-10 pb-16 backdrop-blur-[3px] sm:items-center sm:py-12"
+      className="fixed inset-0 z-[100] flex min-h-[100dvh] items-start justify-center overflow-y-auto bg-neutral-900/55 px-4 py-10 pb-16 backdrop-blur-sm sm:items-center sm:py-12"
       role="dialog"
       aria-modal="true"
       aria-labelledby="sign-in-title"
@@ -118,7 +118,7 @@ export default function SignInPage() {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-        className="relative z-10 w-full max-w-[440px] border border-border bg-card shadow-2xl ring-1 ring-black/[0.06] dark:ring-white/[0.06]"
+        className="relative z-10 w-full max-w-[440px] border border-border bg-card shadow-2xl ring-1 ring-surface-ring"
       >
         <div className="absolute right-3 top-3 z-20 flex gap-1">
           <Button
@@ -134,7 +134,7 @@ export default function SignInPage() {
         </div>
 
         <div className="px-6 pb-8 pt-10 sm:px-8 sm:pb-10 sm:pt-11">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#64748B]">
+          <p className="section-kicker">
             Neev
           </p>
           <h1

@@ -3,6 +3,7 @@ import { useAuth } from "@/context/auth-context"
 import { useLocation, Link } from "wouter"
 import { useToast } from "@/hooks/use-toast"
 import { ApiError } from "@/lib/api"
+import { cn } from "@/lib/utils"
 import { afterAuthPath } from "@/lib/sign-in-return"
 import { Loader2, ArrowLeft, ChevronDown } from "lucide-react"
 import { HUB_KIND_OPTIONS, type HubKindValue } from "@/lib/hub-display"
@@ -13,6 +14,10 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Input } from "@/components/ui/input"
+
+const loginInputClass =
+    "h-auto rounded-xl border-2 border-border bg-background-secondary/50 px-5 py-4 font-bold shadow-sm hover:border-primary/50 focus-visible:border-primary focus-visible:bg-surface focus-visible:ring-0"
 
 export default function AnimatedAuthPage() {
     const { toast } = useToast()
@@ -123,10 +128,10 @@ export default function AnimatedAuthPage() {
     }
 
     return (
-        <div className="min-h-screen bg-white flex items-center justify-center overflow-hidden selection:bg-primary/30">
+        <div className="min-h-screen bg-background flex items-center justify-center overflow-hidden selection:bg-primary/30">
             <div className={`relative w-full min-h-screen lg:h-screen overflow-hidden flex flex-col lg:flex-row ${mode === 'login' ? '' : 'lg:flex-row-reverse'}`}>
                 {/* Global Gradient Overlay - Subtle */}
-                <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary to-white opacity-[0.01] pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary to-surface opacity-[0.01] pointer-events-none" />
                 
                 <Link href="/">
                     <button className="absolute top-6 left-6 z-50 flex items-center gap-2 text-primary hover:opacity-80 transition-opacity backdrop-blur-sm px-4 py-2 ">
@@ -139,7 +144,7 @@ export default function AnimatedAuthPage() {
                 <motion.div
                     layout
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                    className="relative z-10 flex-1 flex flex-col items-center py-12 px-8 lg:px-20 lg:py-16 lg:h-screen lg:overflow-y-auto bg-white"
+                    className="relative z-10 flex-1 flex flex-col items-center py-12 px-8 lg:px-20 lg:py-16 lg:h-screen lg:overflow-y-auto bg-surface"
                 >
                     <div className="w-full max-w-md my-auto relative">
                         {/* Header Section */}
@@ -159,7 +164,7 @@ export default function AnimatedAuthPage() {
                             <button
                                 onClick={() => setRole('student')}
                                 className={`relative flex-1 py-3.5 text-sm font-bold transition-all duration-300 z-10 ${role === 'student'
-                                    ? 'text-white'
+                                    ? 'text-primary-foreground'
                                     : 'text-muted-foreground hover:text-muted-foreground'
                                     }`}
                             >
@@ -176,7 +181,7 @@ export default function AnimatedAuthPage() {
                             <button
                                 onClick={() => setRole('hubOwner')}
                                 className={`relative flex-1 py-3.5 text-sm font-bold transition-all duration-300 z-10 ${role === 'hubOwner'
-                                    ? 'text-white'
+                                    ? 'text-primary-foreground'
                                     : 'text-muted-foreground hover:text-muted-foreground'
                                     }`}
                             >
@@ -202,32 +207,32 @@ export default function AnimatedAuthPage() {
                                         transition={{ type: "spring", stiffness: 400, damping: 40 }}
                                         className="space-y-2"
                                     >
-                                        <label className="text-[11px] font-bold uppercase tracking-widest text-primary ml-1">
+                                        <label className="caption-scale font-bold uppercase tracking-widest text-primary ml-1">
                                             Full Name
                                         </label>
-                                        <input
+                                        <Input
                                             type="text"
                                             value={name}
                                             onChange={(e) => setName(e.target.value)}
                                             placeholder="Enter your full name"
                                             required
-                                            className="w-full rounded-none bg-slate-50/50 border-2 border-white hover:border-primary/50 focus:border-primary focus:bg-white px-5 py-4 outline-none transition-all text-foreground font-bold shadow-sm"
+                                            className={loginInputClass}
                                         />
                                     </motion.div>
                                 )}
                             </AnimatePresence>
 
                             <div className="space-y-2">
-                                <label className="text-[11px] font-bold uppercase tracking-widest text-primary ml-1">
+                                <label className="caption-scale font-bold uppercase tracking-widest text-primary ml-1">
                                     Email Address
                                 </label>
-                                <input
+                                <Input
                                     type="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     placeholder="Enter your email"
                                     required
-                                    className="w-full rounded-none bg-slate-50/50 border-2 border-white hover:border-primary/50 focus:border-primary focus:bg-white px-5 py-4 outline-none transition-all text-foreground font-bold shadow-sm"
+                                    className={loginInputClass}
                                 />
                             </div>
 
@@ -241,51 +246,51 @@ export default function AnimatedAuthPage() {
                                         className="space-y-6"
                                     >
                                         <div className="space-y-2">
-                                            <label className="text-[11px] font-bold uppercase tracking-widest text-primary ml-1">
+                                            <label className="caption-scale font-bold uppercase tracking-widest text-primary ml-1">
                                                 Hub Name
                                             </label>
-                                            <input
+                                            <Input
                                                 type="text"
                                                 value={hubName}
                                                 onChange={(e) => setHubName(e.target.value)}
                                                 placeholder="e.g. Central Library"
                                                 required
-                                                className="w-full rounded-none bg-slate-50/50 border-2 border-white hover:border-primary/50 focus:border-primary focus:bg-white px-5 py-4 outline-none transition-all text-foreground font-bold shadow-sm"
+                                                className={loginInputClass}
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-[11px] font-bold uppercase tracking-widest text-primary ml-1">
+                                            <label className="caption-scale font-bold uppercase tracking-widest text-primary ml-1">
                                                 Hub Location
                                             </label>
-                                            <input
+                                            <Input
                                                 type="text"
                                                 value={hubLocation}
                                                 onChange={(e) => setHubLocation(e.target.value)}
                                                 placeholder="City or Campus"
                                                 required
-                                                className="w-full rounded-none bg-slate-50/50 border-2 border-white hover:border-primary/50 focus:border-primary focus:bg-white px-5 py-4 outline-none transition-all text-foreground font-bold shadow-sm"
+                                                className={loginInputClass}
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-[11px] font-bold uppercase tracking-widest text-primary ml-1">
+                                            <label className="caption-scale font-bold uppercase tracking-widest text-primary ml-1">
                                                 Hub Type
                                             </label>
                                             <DropdownMenu>
                                                 <DropdownMenuTrigger asChild>
                                                     <button
                                                         type="button"
-                                                        className="w-full flex items-center justify-between rounded-none bg-slate-50/50 border-2 border-white hover:border-primary/50 focus:border-primary focus:bg-white px-5 py-4 outline-none transition-all text-foreground text-left font-bold shadow-sm"
+                                                        className={cn(loginInputClass, "flex items-center justify-between text-left")}
                                                     >
                                                         {HUB_KIND_OPTIONS.find(opt => opt.value === hubKind)?.label || "Select hub type"}
                                                         <ChevronDown className="h-4 w-4 opacity-50" />
                                                     </button>
                                                 </DropdownMenuTrigger>
-                                                <DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)] bg-white rounded-none border border-border shadow-xl p-1">
+                                                <DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)] bg-surface rounded-xl border border-border shadow-xl p-1">
                                                     {HUB_KIND_OPTIONS.map((opt) => (
                                                         <DropdownMenuItem
                                                             key={opt.value}
                                                             onSelect={() => setHubKind(opt.value as HubKindValue)}
-                                                            className="px-5 py-3 focus:bg-primary/5 focus:text-primary cursor-pointer font-bold rounded-none"
+                                                            className="px-5 py-3 focus:bg-primary/5 focus:text-primary cursor-pointer font-bold rounded-xl"
                                                         >
                                                             {opt.label}
                                                         </DropdownMenuItem>
@@ -298,16 +303,16 @@ export default function AnimatedAuthPage() {
                             </AnimatePresence>
 
                             <div className="space-y-2">
-                                <label className="text-[11px] font-bold uppercase tracking-widest text-primary ml-1">
+                                <label className="caption-scale font-bold uppercase tracking-widest text-primary ml-1">
                                     Password
                                 </label>
-                                <input
+                                <Input
                                     type="password"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     placeholder="Enter your password"
                                     required
-                                    className="w-full rounded-none bg-slate-50/50 border-2 border-white hover:border-primary/50 focus:border-primary focus:bg-white px-5 py-4 outline-none transition-all text-foreground font-bold shadow-sm"
+                                    className={loginInputClass}
                                 />
                             </div>
 
@@ -320,16 +325,16 @@ export default function AnimatedAuthPage() {
                                         transition={{ type: "spring", stiffness: 400, damping: 40 }}
                                         className="space-y-2"
                                     >
-                                        <label className="text-[11px] font-bold uppercase tracking-widest text-primary ml-1">
+                                        <label className="caption-scale font-bold uppercase tracking-widest text-primary ml-1">
                                             Confirm Password
                                         </label>
-                                        <input
+                                        <Input
                                             type="password"
                                             value={confirmPassword}
                                             onChange={(e) => setConfirmPassword(e.target.value)}
                                             placeholder="Confirm password"
                                             required
-                                            className="w-full rounded-none bg-slate-50/50 border-2 border-white hover:border-primary/50 focus:border-primary focus:bg-white px-5 py-4 outline-none transition-all text-foreground font-bold shadow-sm"
+                                            className={loginInputClass}
                                         />
                                     </motion.div>
                                 )}
@@ -338,7 +343,7 @@ export default function AnimatedAuthPage() {
                             <button
                                 type="submit"
                                 disabled={busy}
-                                className="w-full flex items-center justify-center gap-3 rounded-none py-5 font-black uppercase tracking-widest text-xs bg-primary text-white hover:bg-primary transition-all duration-300 disabled:opacity-50 disabled:hover:scale-100 relative overflow-hidden group shadow-lg"
+                                className="w-full flex items-center justify-center gap-3 rounded-xl py-5 font-black uppercase tracking-widest text-xs bg-primary text-primary-foreground hover:bg-primary transition-all duration-300 disabled:opacity-50 disabled:hover:scale-100 relative overflow-hidden group shadow-lg"
                             >
                                 {busy && <Loader2 className="h-4 w-4 animate-spin" />}
                                 <span className="relative z-10">{mode === 'login' ? 'Login' : 'Create Account'}</span>
@@ -364,7 +369,7 @@ export default function AnimatedAuthPage() {
                     </div>
                     
                     <div className="mt-12 text-center opacity-30">
-                        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">
+                        <p className="caption-scale font-black uppercase tracking-[0.4em] text-primary">
                             Neev Phygital System &copy; 2026
                         </p>
                     </div>
@@ -376,8 +381,8 @@ export default function AnimatedAuthPage() {
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
                     className="relative flex-1 overflow-hidden hidden lg:flex items-center justify-center lg:h-screen bg-muted transition-colors duration-500"
                 >
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-none -mr-32 -mt-32" />
-                    <div className="absolute bottom-0 left-0 w-96 h-96 bg-primary/5 rounded-none -ml-48 -mb-48" />
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-xl -mr-32 -mt-32" />
+                    <div className="absolute bottom-0 left-0 w-96 h-96 bg-primary/5 rounded-xl -ml-48 -mb-48" />
 
                     <div className="relative z-10 flex flex-col items-center text-center px-20">
                         <div className="relative w-full max-w-[480px] mb-12">

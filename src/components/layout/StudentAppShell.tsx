@@ -74,8 +74,8 @@ function UnifiedAppShell({
               href={shellHome}
               className="font-[var(--font-display)] text-xl font-extrabold tracking-tight text-foreground flex items-center"
             >
-              <div className="relative flex items-center justify-center w-6 h-6 mr-2 rounded-md bg-primary shadow-sm">
-                <Library className="w-3.5 h-3.5 text-white" />
+              <div className="relative flex items-center justify-center w-6 h-6 mr-2 shadow-sm">
+                <Library className="w-3.5 h-3.5 text-primary-foreground" />
               </div>
               Neev
             </Link>
@@ -99,11 +99,11 @@ function UnifiedAppShell({
               })}
             </nav>
           </div>
-          <div className="flex items-center justify-end gap-4">
+          <div className="flex items-center justify-end gap-2">
             <Link href={profileHref} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
               <div className="hidden flex-col items-end sm:flex">
                 <span className="text-sm font-semibold text-foreground leading-none">{user?.name}</span>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mt-1">
+                <span className="caption-scale font-bold uppercase tracking-kicker text-muted-foreground mt-1">
                   {portalName}
                 </span>
               </div>
@@ -131,9 +131,9 @@ function UnifiedAppShell({
           >
             Neev
           </Link>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <Link href={profileHref} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+              <span className="caption-scale font-bold uppercase tracking-kicker text-muted-foreground">
                 {portalName}
               </span>
               <ProfileAvatar name={user?.name || ""} size="sm" />
@@ -178,7 +178,7 @@ function UnifiedAppShell({
                 )}
               >
                 <Icon className={cn("h-5 w-5", active ? "text-primary" : "")} />
-                <span className={cn("text-[10px]", active ? "font-semibold" : "font-medium")}>{item.label}</span>
+                <span className={cn("caption-scale", active ? "font-semibold" : "font-medium")}>{item.label}</span>
               </Link>
             );
           })}

@@ -7,25 +7,25 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useWallet } from "@/context/wallet-context";
 import { format } from "date-fns";
+import { PORTAL_PAGE_CONTAINER } from "@/lib/student-ui";
+import {
+  PORTAL_PAGE_LEAD,
+  PORTAL_PAGE_TITLE,
+  PORTAL_SECTION_LABEL,
+  PORTAL_STAT_VALUE,
+} from "@/lib/portal-typography";
+import { cn } from "@/lib/utils";
 
 const fadeInUp = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5 },
-  },
+  hidden: { opacity: 0, y: 16 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
 };
 
 export default function StudentWalletPage() {
-  const {
-    balance,
-    transactions,
-    subscription,
-    subscribe,
-  } = useWallet();
+  const { balance, transactions, subscription, subscribe } = useWallet();
 
   const totalEarned = transactions
     .filter((t) => t.type === "credit")
@@ -36,350 +36,242 @@ export default function StudentWalletPage() {
     .reduce((sum, t) => sum + t.amount, 0);
 
   return (
-    <div className="max-w-7xl mx-auto px-6 lg:px-8 py-8 space-y-8 font-sans text-foreground">
-
-      {/* Header */}
-      <div className="pb-8 border-b border-border">
-        <div className="flex items-center gap-3 mb-3">
-          <WalletIcon className="h-8 w-8 text-primary" />
-
-          <h1 className="text-4xl font-bold tracking-tight text-foreground">
-            Wallet
-          </h1>
+    <div className={cn(PORTAL_PAGE_CONTAINER, "space-y-8 py-8")}>
+      <header className="border-b border-border pb-6">
+        <div className="mb-2 flex items-center gap-3">
+          <WalletIcon className="h-7 w-7 text-primary" aria-hidden />
+          <h1 className={PORTAL_PAGE_TITLE}>Wallet</h1>
         </div>
-
-        <p className="max-w-2xl text-base text-muted-foreground">
-          Manage credits, track transactions, and unlock premium membership
-          benefits.
+        <p className={cn(PORTAL_PAGE_LEAD, "max-w-2xl")}>
+          Manage credits, track transactions, and unlock premium membership benefits.
         </p>
-      </div>
+      </header>
 
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
-
-        {/* Left */}
-        <div className="xl:col-span-7 space-y-6">
-
-          {/* Balance */}
-          <motion.div
-            variants={fadeInUp}
-            initial="hidden"
-            animate="visible"
-          >
-            <div className="relative overflow-hidden rounded-3xl border bg-card p-8 shadow-sm">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5" />
-
-              <div className="relative z-10">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground mb-3">
-                  Available Credits
+      <div className="grid grid-cols-1 gap-8 xl:grid-cols-12">
+        <div className="space-y-6 xl:col-span-7">
+          <motion.div variants={fadeInUp} initial="hidden" animate="visible">
+            <Card variant="bento" className="relative overflow-hidden">
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5" />
+              <CardHeader className="relative pb-2">
+                <p className={cn(PORTAL_SECTION_LABEL, "text-foreground-muted")}>Available credits</p>
+              </CardHeader>
+              <CardContent className="relative pt-0">
+                <p className={PORTAL_STAT_VALUE}>{balance.toLocaleString()}</p>
+                <p className="mt-2 body-scale text-foreground-muted">
+                  Available for borrowing, marketplace purchases, and member services.
                 </p>
-
-                <h2 className="text-5xl font-bold tracking-tight text-foreground">
-                  {balance.toLocaleString()}
-                </h2>
-
-                <p className="mt-3 text-sm text-muted-foreground">
-                  Available for borrowing, marketplace purchases, and member
-                  services.
-                </p>
-              </div>
-
-              <WalletIcon className="absolute right-8 top-8 h-20 w-20 text-primary/10" />
-            </div>
+              </CardContent>
+              <WalletIcon
+                className="pointer-events-none absolute right-6 top-6 h-16 w-16 text-primary/10"
+                aria-hidden
+              />
+            </Card>
           </motion.div>
 
-          {/* Insights */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="rounded-2xl border bg-card p-5">
-              <p className="text-xs uppercase tracking-wider text-muted-foreground">
-                Total Earned
-              </p>
-
-              <p className="mt-2 text-2xl font-semibold text-foreground">
-                {totalEarned.toLocaleString()}
-              </p>
-            </div>
-
-            <div className="rounded-2xl border bg-card p-5">
-              <p className="text-xs uppercase tracking-wider text-muted-foreground">
-                Total Spent
-              </p>
-
-              <p className="mt-2 text-2xl font-semibold text-foreground">
-                {totalSpent.toLocaleString()}
-              </p>
-            </div>
+            <Card variant="default">
+              <CardContent className="p-6">
+                <p className={PORTAL_SECTION_LABEL}>Total earned</p>
+                <p className={cn(PORTAL_STAT_VALUE, "mt-2")}>{totalEarned.toLocaleString()}</p>
+              </CardContent>
+            </Card>
+            <Card variant="default">
+              <CardContent className="p-6">
+                <p className={PORTAL_SECTION_LABEL}>Total spent</p>
+                <p className={cn(PORTAL_STAT_VALUE, "mt-2")}>{totalSpent.toLocaleString()}</p>
+              </CardContent>
+            </Card>
           </div>
 
-          {/* Rewards */}
-          <div className="rounded-3xl border bg-gradient-to-r from-primary/5 to-accent/5 p-6">
-            <div className="flex items-center gap-4">
-              <Sparkles className="h-6 w-6 text-primary" />
-
+          <Card variant="default" className="border-primary/20 bg-primary/5">
+            <CardContent className="flex items-start gap-4 p-6">
+              <Sparkles className="h-6 w-6 shrink-0 text-primary" aria-hidden />
               <div>
-                <h3 className="font-semibold text-foreground">
-                  Earn More Credits
-                </h3>
-
-                <p className="text-sm text-muted-foreground">
-                  Borrow books, write reviews, participate in community events,
-                  and earn rewards.
+                <h3 className="h4-scale font-semibold text-foreground">Earn more credits</h3>
+                <p className="mt-1 body-scale text-foreground-muted">
+                  Borrow books, write reviews, participate in community events, and earn rewards.
                 </p>
               </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
 
-          {/* Transactions */}
-          <section>
-            <h3 className="text-xl font-semibold mb-4 text-foreground">
-              Transaction History
-            </h3>
-
-            <div className="space-y-4">
-              {transactions.length > 0 ? (
-                transactions.map((t, i) => (
+          <section className="space-y-4">
+            <h2 className="h4-scale font-semibold text-foreground">Transaction history</h2>
+            {transactions.length > 0 ? (
+              <div className="space-y-3">
+                {transactions.map((t, i) => (
                   <motion.div
                     key={t.id}
                     variants={fadeInUp}
                     initial="hidden"
                     animate="visible"
-                    transition={{
-                      delay: 0.1 + i * 0.05,
-                    }}
-                    className="
-                  group
-                  flex
-                  items-center
-                  justify-between
-                  rounded-2xl
-                  border
-                  bg-card
-                  p-5
-                  transition-all
-                  duration-200
-                  hover:shadow-md
-                  hover:border-primary/20
-                "
+                    transition={{ delay: 0.05 + i * 0.03 }}
                   >
-                    <div className="flex items-center gap-4">
-
-                      <div
-                        className={`p-3 rounded-full ${t.type === "credit"
-                          ? "bg-emerald-500/10 text-emerald-600"
-                          : "bg-muted text-foreground"
-                          }`}
-                      >
-                        {t.type === "credit" ? (
-                          <ArrowDownRight className="w-5 h-5" />
-                        ) : (
-                          <ArrowUpRight className="w-5 h-5" />
-                        )}
-                      </div>
-
-                      <div>
-                        <p className="font-medium text-foreground">
-                          {t.description}
-                        </p>
-
-                        <p className="text-xs text-muted-foreground">
-                          {format(
-                            new Date(t.createdAt),
-                            "MMM d, yyyy • h:mm a"
-                          )}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div
-                      className={`text-lg font-semibold ${t.type === "credit"
-                        ? "text-emerald-600"
-                        : "text-foreground"
-                        }`}
+                    <Card
+                      variant="default"
+                      interactive
+                      className="flex flex-row items-center justify-between gap-4 p-6"
                     >
-                      {t.type === "credit" ? "+" : "-"}
-                      {t.amount.toLocaleString()}
-                    </div>
+                      <div className="flex min-w-0 items-center gap-4">
+                        <div
+                          className={cn(
+                            "rounded-full p-3",
+                            t.type === "credit"
+                              ? "bg-success/10 text-success"
+                              : "bg-muted text-foreground-muted",
+                          )}
+                        >
+                          {t.type === "credit" ? (
+                            <ArrowDownRight className="h-5 w-5" aria-hidden />
+                          ) : (
+                            <ArrowUpRight className="h-5 w-5" aria-hidden />
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="body-scale font-medium text-foreground">{t.description}</p>
+                          <p className="caption-scale text-foreground-muted">
+                            {format(new Date(t.createdAt), "MMM d, yyyy • h:mm a")}
+                          </p>
+                        </div>
+                      </div>
+                      <p
+                        className={cn(
+                          "shrink-0 font-mono h4-scale font-semibold tabular-nums",
+                          t.type === "credit" ? "text-success" : "text-foreground",
+                        )}
+                      >
+                        {t.type === "credit" ? "+" : "-"}
+                        {t.amount.toLocaleString()}
+                      </p>
+                    </Card>
                   </motion.div>
-                ))
-              ) : (
-                <div className="rounded-2xl border border-dashed p-10 text-center">
-                  <p className="text-muted-foreground">
-                    No transactions yet.
-                  </p>
-                </div>
-              )}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <Card variant="default" className="border-dashed">
+                <CardContent className="p-10 text-center">
+                  <p className="body-scale text-foreground-muted">No transactions yet.</p>
+                </CardContent>
+              </Card>
+            )}
           </section>
         </div>
 
-        {/* Right */}
-        <div className="xl:col-span-5 space-y-6">
+        <aside className="space-y-6 xl:col-span-5">
+          <Card variant="elevated">
+            <CardHeader>
+              <p className={PORTAL_SECTION_LABEL}>Membership status</p>
+              <CardTitle>
+                {subscription === "pro" ? "Pro member" : "Free member"}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="body-scale text-foreground-muted">
+                {subscription === "pro"
+                  ? "Premium borrowing and delivery benefits are active."
+                  : "Upgrade to unlock premium benefits and bonus credits."}
+              </p>
+            </CardContent>
+          </Card>
 
-          {/* Membership */}
-          <div className="rounded-3xl border bg-card p-6">
-            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-2">
-              Membership Status
-            </p>
+          <section className="space-y-4">
+            <h2 className="h4-scale flex items-center gap-2 font-semibold text-foreground">
+              <Sparkles className="h-5 w-5 text-primary" aria-hidden />
+              Subscription plans
+            </h2>
 
-            <h3 className="text-xl font-semibold text-foreground">
-              {subscription === "pro"
-                ? "Pro Member"
-                : "Free Member"}
-            </h3>
-
-            <p className="mt-2 text-sm text-muted-foreground">
-              {subscription === "pro"
-                ? "Premium borrowing and delivery benefits are active."
-                : "Upgrade to unlock premium benefits and bonus credits."}
-            </p>
-          </div>
-
-          <section>
-            <h3 className="text-xl font-semibold flex items-center gap-2 mb-4">
-              <Sparkles className="h-5 w-5 text-primary" />
-              Subscription Plans
-            </h3>
-
-            <div className="space-y-4">
-
-              {/* Free */}
-              <div
-                className={`
-              rounded-3xl
-              border
-              bg-card
-              p-6
-              transition-all
-              duration-300
-              hover:shadow-md
-              ${subscription === "free"
-                    ? "border-primary ring-2 ring-primary/10"
-                    : ""
-                  }
-            `}
-              >
-                <div className="flex justify-between items-start mb-5">
+            <Card
+              variant="default"
+              className={cn(
+                subscription === "free" && "border-primary ring-2 ring-primary/10",
+              )}
+            >
+              <CardContent className="p-6">
+                <div className="mb-5 flex items-start justify-between gap-3">
                   <div>
-                    <h4 className="text-xl font-semibold text-foreground">
-                      Free Tier
-                    </h4>
-
-                    <p className="text-3xl font-bold mt-2 text-foreground">
+                    <h3 className="h4-scale font-semibold text-foreground">Free tier</h3>
+                    <p className={cn(PORTAL_STAT_VALUE, "mt-2")}>
                       ₹0
-                      <span className="text-sm font-normal text-muted-foreground ml-1">
-                        /month
-                      </span>
+                      <span className="ml-1 body-scale font-normal text-foreground-muted">/month</span>
                     </p>
                   </div>
-
-                  {subscription === "free" && (
-                    <CheckCircle2 className="h-6 w-6 text-primary" />
-                  )}
+                  {subscription === "free" ? (
+                    <CheckCircle2 className="h-6 w-6 shrink-0 text-primary" aria-hidden />
+                  ) : null}
                 </div>
-
-                <ul className="space-y-3 mb-6 text-sm">
+                <ul className="mb-6 space-y-3 body-scale text-foreground-muted">
                   <li className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-primary" />
+                    <CheckCircle2 className="h-4 w-4 text-primary" aria-hidden />
                     Browse catalog
                   </li>
-
                   <li className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-primary" />
+                    <CheckCircle2 className="h-4 w-4 text-primary" aria-hidden />
                     Pay-per-book access
                   </li>
                 </ul>
-
                 <Button
-                  variant={
-                    subscription === "free"
-                      ? "secondary"
-                      : "outline"
-                  }
-                  className="w-full h-11 rounded-xl"
+                  variant={subscription === "free" ? "secondary" : "outline"}
+                  className="h-11 w-full rounded-xl"
                   disabled={subscription === "free"}
                   onClick={() => subscribe("free")}
                 >
-                  {subscription === "free"
-                    ? "Current Plan"
-                    : "Downgrade"}
+                  {subscription === "free" ? "Current plan" : "Downgrade"}
                 </Button>
-              </div>
+              </CardContent>
+            </Card>
 
-              {/* Pro */}
-              <div
-                className={`
-              relative
-              overflow-hidden
-              rounded-3xl
-              border
-              bg-card
-              p-6
-              transition-all
-              duration-300
-              hover:shadow-lg
-              ${subscription === "pro"
-                    ? "border-primary ring-2 ring-primary/10"
-                    : ""
-                  }
-            `}
-              >
-                <div className="absolute top-4 right-4 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
-                  Most Popular
-                </div>
-
-                <div className="flex justify-between items-start mb-5">
+            <Card
+              variant="bento"
+              className={cn(
+                "relative overflow-hidden",
+                subscription === "pro" && "border-primary ring-2 ring-primary/10",
+              )}
+            >
+              <span className="absolute right-4 top-4 rounded-full bg-primary px-3 py-1 caption-scale font-semibold uppercase tracking-kicker text-primary-foreground">
+                Most popular
+              </span>
+              <CardContent className="p-6">
+                <div className="mb-5 flex items-start justify-between gap-3">
                   <div>
-                    <h4 className="text-xl font-semibold text-foreground">
-                      Pro Tier
-                    </h4>
-
-                    <p className="mt-2 text-4xl font-bold tracking-tight text-foreground">
+                    <h3 className="h4-scale font-semibold text-foreground">Pro tier</h3>
+                    <p className={cn(PORTAL_STAT_VALUE, "mt-2")}>
                       ₹999
-                      <span className="ml-1 text-sm font-normal text-muted-foreground">
-                        /month
-                      </span>
+                      <span className="ml-1 body-scale font-normal text-foreground-muted">/month</span>
                     </p>
                   </div>
-
-                  {subscription === "pro" && (
-                    <CheckCircle2 className="h-6 w-6 text-primary" />
-                  )}
+                  {subscription === "pro" ? (
+                    <CheckCircle2 className="h-6 w-6 shrink-0 text-primary" aria-hidden />
+                  ) : null}
                 </div>
-
-                <ul className="space-y-3 mb-6 text-sm">
+                <ul className="mb-6 space-y-3 body-scale text-foreground-muted">
                   <li className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-primary" />
+                    <CheckCircle2 className="h-4 w-4 text-primary" aria-hidden />
                     Unlimited browsing
                   </li>
-
                   <li className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-primary" />
+                    <CheckCircle2 className="h-4 w-4 text-primary" aria-hidden />
                     Priority waitlist
                   </li>
-
                   <li className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-primary" />
+                    <CheckCircle2 className="h-4 w-4 text-primary" aria-hidden />
                     Zero delivery fees
                   </li>
-
                   <li className="flex items-start gap-2 font-medium text-primary">
-                    <Sparkles className="h-4 w-4 mt-0.5" />
-                    +5,000 Credits instantly on signup
+                    <Sparkles className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+                    +5,000 credits instantly on signup
                   </li>
                 </ul>
-
                 <Button
-                  className="w-full h-11 rounded-xl"
+                  className="h-11 w-full rounded-xl"
                   disabled={subscription === "pro"}
                   onClick={() => subscribe("pro")}
                 >
-                  {subscription === "pro"
-                    ? "Current Plan"
-                    : "Upgrade to Pro"}
+                  {subscription === "pro" ? "Current plan" : "Upgrade to Pro"}
                 </Button>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           </section>
-        </div>
+        </aside>
       </div>
     </div>
   );

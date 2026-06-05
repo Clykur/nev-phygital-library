@@ -70,7 +70,7 @@ export const NeevOverview: React.FC<NeevOverviewProps> = ({ branch, setActiveTab
       
       {/* Immersive Tag Line */}
       <section className="text-center max-w-4xl mx-auto space-y-4">
-        <div className="inline-flex items-center space-x-2 px-3 py-1 bg-primary/10 border border-blue-900/60 rounded-full text-[10px] font-mono font-medium text-primary uppercase tracking-widest">
+        <div className="inline-flex items-center space-x-2 px-3 py-1 bg-primary/10 border border-blue-900/60 rounded-full caption-scale font-mono font-medium text-primary uppercase tracking-widest">
           <Zap className="w-3 h-3 text-primary animate-pulse" />
           <span>Neev Foundation Launch</span>
         </div>
@@ -87,7 +87,7 @@ export const NeevOverview: React.FC<NeevOverviewProps> = ({ branch, setActiveTab
         <div className="flex flex-wrap items-center justify-center gap-3 pt-4">
           <button
             onClick={() => setActiveTab('catalog')}
-            className="px-6 py-2.5 bg-white text-zinc-950 hover:bg-zinc-200 rounded-xl font-bold text-xs tracking-wide transition shadow shadow-white/5 flex items-center space-x-2"
+            className="px-6 py-2.5 bg-surface text-zinc-950 hover:bg-zinc-200 rounded-xl font-bold text-xs tracking-wide transition shadow shadow-white/5 flex items-center space-x-2"
           >
             <span>Explore Smart Catalog</span>
             <Compass className="w-3.5 h-3.5" />
@@ -111,39 +111,39 @@ export const NeevOverview: React.FC<NeevOverviewProps> = ({ branch, setActiveTab
 
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
           <div className="bg-muted/50/30 border border-border/60 p-4 rounded-xl flex flex-col justify-between">
-            <span className="text-[10px] font-mono text-muted-foreground/60 uppercase">Active Readers</span>
+            <span className="caption-scale font-mono text-muted-foreground/60 uppercase">Active Readers</span>
             <span className="text-2xl font-bold text-foreground mt-1 tracking-tight">{stats.activeUsers}</span>
-            <span className="text-[9px] font-mono text-secondary mt-2">● Checked in now</span>
+            <span className="caption-scale font-mono text-secondary mt-2">● Checked in now</span>
           </div>
 
           <div className="bg-muted/50/30 border border-border/60 p-4 rounded-xl flex flex-col justify-between">
-            <span className="text-[10px] font-mono text-muted-foreground/60 uppercase">Catalog Size</span>
+            <span className="caption-scale font-mono text-muted-foreground/60 uppercase">Catalog Size</span>
             <span className="text-2xl font-bold text-foreground mt-1 tracking-tight">{stats.booksCount}</span>
-            <span className="text-[9px] font-mono text-muted-foreground/60 mt-2">Physical + Digital</span>
+            <span className="caption-scale font-mono text-muted-foreground/60 mt-2">Physical + Digital</span>
           </div>
 
           <div className="bg-muted/50/30 border border-border/60 p-4 rounded-xl flex flex-col justify-between">
-            <span className="text-[10px] font-mono text-muted-foreground/60 uppercase">Physical Borrows</span>
+            <span className="caption-scale font-mono text-muted-foreground/60 uppercase">Physical Borrows</span>
             <span className="text-2xl font-bold text-primary mt-1 tracking-tight">{stats.activeBorrows}</span>
-            <span className="text-[9px] font-mono text-primary mt-2">NFC Wallet Managed</span>
+            <span className="caption-scale font-mono text-primary mt-2">NFC Wallet Managed</span>
           </div>
 
           <div className="bg-muted/50/30 border border-border/60 p-4 rounded-xl flex flex-col justify-between">
-            <span className="text-[10px] font-mono text-muted-foreground/60 uppercase">Daily Entry Rate</span>
+            <span className="caption-scale font-mono text-muted-foreground/60 uppercase">Daily Entry Rate</span>
             <span className="text-2xl font-bold text-foreground mt-1 tracking-tight">{stats.dailyVisits}</span>
-            <span className="text-[9px] font-mono text-muted-foreground/60 mt-2">Avg. visits / day</span>
+            <span className="caption-scale font-mono text-muted-foreground/60 mt-2">Avg. visits / day</span>
           </div>
 
           <div className="bg-muted/50/30 border border-border/60 p-4 rounded-xl flex flex-col justify-between col-span-1">
-            <span className="text-[10px] font-mono text-muted-foreground/60 uppercase">Vault Humidity</span>
+            <span className="caption-scale font-mono text-muted-foreground/60 uppercase">Vault Humidity</span>
             <span className="text-xl font-bold text-muted-foreground mt-1">{stats.humidity}</span>
-            <span className="text-[9px] font-mono text-secondary mt-2">✓ Preservation Optimal</span>
+            <span className="caption-scale font-mono text-secondary mt-2">✓ Preservation Optimal</span>
           </div>
 
           <div className="bg-muted/50/30 border border-border/60 p-4 rounded-xl flex flex-col justify-between col-span-1">
-            <span className="text-[10px] font-mono text-muted-foreground/60 uppercase">Air Metrics</span>
+            <span className="caption-scale font-mono text-muted-foreground/60 uppercase">Air Metrics</span>
             <span className="text-xs font-mono font-medium text-amber-300 mt-2 leading-none">{stats.airQuality}</span>
-            <span className="text-[9px] font-mono text-muted-foreground/60 mt-2">HEPA filtrated</span>
+            <span className="caption-scale font-mono text-muted-foreground/60 mt-2">HEPA filtrated</span>
           </div>
         </div>
       </section>
@@ -183,7 +183,7 @@ export const NeevOverview: React.FC<NeevOverviewProps> = ({ branch, setActiveTab
             <div className={`p-6 rounded-2xl bg-gradient-to-br ${specifications[selectedSpec].color} border border-border/60/40 relative overflow-hidden flex flex-col justify-between h-full`}>
               <div className="space-y-4">
                 <div>
-                  <span className="text-[9px] font-mono uppercase font-bold text-primary tracking-wider">
+                  <span className="caption-scale font-mono uppercase font-bold text-primary tracking-wider">
                     {specifications[selectedSpec].subtitle}
                   </span>
                   <h3 className="text-base md:text-lg font-bold text-foreground mt-1 border-b border-border/60/60 pb-2">
@@ -218,7 +218,7 @@ export const NeevOverview: React.FC<NeevOverviewProps> = ({ branch, setActiveTab
       {/* Spatial Workflow Flowchart */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-muted/50/10 border border-border/60 p-6 rounded-2xl space-y-2">
-          <div className="w-8 h-8 rounded-full bg-primary/90 flex items-center justify-center text-xs font-mono font-bold text-primary border border-blue-800/60">01</div>
+          <div className="w-8 h-8 flex items-center justify-center text-xs font-mono font-bold text-primary">01</div>
           <h3 className="text-sm font-bold text-foreground uppercase tracking-tight">Active Scan/Discover</h3>
           <p className="text-xs text-muted-foreground leading-relaxed">
             Search physical checkouts from home or inside aisles. Click "Locate on Map" to initiate wayfinding and see accurate path lines mapped directly from your standing position to the exact shelf.
@@ -226,7 +226,7 @@ export const NeevOverview: React.FC<NeevOverviewProps> = ({ branch, setActiveTab
         </div>
 
         <div className="bg-muted/50/10 border border-border/60 p-6 rounded-2xl space-y-2">
-          <div className="w-8 h-8 rounded-full bg-primary/90 flex items-center justify-center text-xs font-mono font-bold text-primary border border-indigo-800/60">02</div>
+          <div className="w-8 h-8 flex items-center justify-center text-xs font-mono font-bold text-primary">02</div>
           <h3 className="text-sm font-bold text-foreground uppercase tracking-tight">Frictionless Grabbing</h3>
           <p className="text-xs text-muted-foreground leading-relaxed">
             Lift the textbook from its tray. Micro-strain weight plates detect removal, notifying the local hub. Hover a standard smartphone to pair reading logs or check matching digital editions.
@@ -234,7 +234,7 @@ export const NeevOverview: React.FC<NeevOverviewProps> = ({ branch, setActiveTab
         </div>
 
         <div className="bg-muted/50/10 border border-border/60 p-6 rounded-2xl space-y-2">
-          <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-xs font-mono font-bold text-primary border border-primary/40">03</div>
+          <div className="w-8 h-8 flex items-center justify-center text-xs font-mono font-bold text-primary">03</div>
           <h3 className="text-sm font-bold text-foreground uppercase tracking-tight">Walk Out NFC Checkout</h3>
           <p className="text-xs text-muted-foreground leading-relaxed">
             Walk past security thresholds with books in your bag. The dual UHF active gates log physical tag matches against your smartphone’s active ticket. Borrows check out instantly!

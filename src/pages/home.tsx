@@ -106,7 +106,7 @@ export default function Home() {
   };
 
   return (
-    <div className="w-full bg-[#FAFAFA] font-sans selection:bg-primary/20 selection:text-primary">
+    <div className="w-full bg-background font-sans selection:bg-primary/20 selection:text-primary">
 
       {/* 1. HERO SECTION */}
       <section id="hero" ref={heroRef} className="relative min-h-[100dvh] flex flex-col justify-center items-center overflow-hidden bg-primary">
@@ -122,7 +122,7 @@ export default function Home() {
             <source src="/14543425-uhd_3840_2160_24fps.mp4" type="video/mp4" />
           </video>
           {/* Overlay for contrast */}
-          <div className="absolute inset-0 bg-slate-950/40" />
+          <div className="absolute inset-0 bg-neutral-950/40" />
         </div>
 
         <Container className="relative z-10">
@@ -137,7 +137,7 @@ export default function Home() {
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-                className="text-[120px] md:text-[220px] font-black leading-none tracking-tighter text-primary drop-shadow-[0_0_30px_rgba(var(--primary-rgb),0.3)]"
+                className="hero-xl md:hero-xl font-black leading-none tracking-tighter text-primary drop-shadow-[0_0_30px_rgba(var(--primary-rgb),0.3)]"
               >
                 Neev
               </motion.span>
@@ -145,7 +145,7 @@ export default function Home() {
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 1, delay: 0.5 }}
-                className="mt-[-10px] md:mt-[-30px] text-2xl md:text-5xl font-[var(--font-display)] italic tracking-[0.2em] md:tracking-[0.3em] text-white uppercase"
+                className="mt-[-10px] md:mt-[-30px] text-2xl md:text-5xl font-[var(--font-display)] italic tracking-[0.2em] md:tracking-[0.3em] text-on-media uppercase"
               >
                 Phygital Library
               </motion.span>
@@ -157,8 +157,8 @@ export default function Home() {
               transition={{ delay: 1 }}
               className="mt-20 flex flex-col items-center gap-6"
             >
-              <div className="h-px w-24 bg-white/20" />
-              <p className="text-white/60 uppercase tracking-[0.4em] text-[10px] font-bold">Bridging Physical & Digital</p>
+              <div className="h-px w-24 bg-overlay-glass-border" />
+              <p className="text-on-media-muted uppercase tracking-[0.4em] caption-scale font-bold">Bridging Physical & Digital</p>
             </motion.div>
           </motion.div>
         </Container>
@@ -173,15 +173,15 @@ export default function Home() {
             repeatType: "reverse",
             ease: "easeInOut"
           }}
-          className="absolute bottom-12 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 text-white/50"
+          className="absolute bottom-12 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 text-on-media-subtle"
         >
-          <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Scroll to explore</span>
+          <span className="caption-scale font-bold uppercase tracking-[0.2em]">Scroll to explore</span>
           <ChevronDown className="h-6 w-6" />
         </motion.div>
       </section>
 
       {/* INTRO SECTION */}
-      <section className="relative bg-white pt-20 pb-12 md:pt-32 md:pb-24">
+      <section className="relative bg-surface pt-20 pb-12 md:pt-32 md:pb-24">
         <Container>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
             {/* Left Column: Typography & CTA */}
@@ -258,12 +258,12 @@ export default function Home() {
 
               <motion.div variants={stagger} className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
                 <motion.div variants={fadeUp} className="w-full sm:w-auto">
-                  <Link href="/login" className="magnetic-btn flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-6 py-3 small-scale font-bold text-white shadow-sm transition-all hover:bg-primary hover:-translate-y-0.5">
+                  <Link href="/login" className="magnetic-btn flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-6 py-3 small-scale font-bold text-primary-foreground shadow-sm transition-all hover:bg-primary hover:-translate-y-0.5">
                     Explore Network <ArrowRight className="h-4 w-4" />
                   </Link>
                 </motion.div>
                 <motion.div variants={fadeUp} className="w-full sm:w-auto">
-                  <Link href="/colleges" className="magnetic-btn flex w-full items-center justify-center gap-2 rounded-2xl border border-border bg-white px-6 py-3 small-scale font-bold text-foreground shadow-sm transition-all hover:border-border hover:bg-muted hover:-translate-y-0.5">
+                  <Link href="/colleges" className="magnetic-btn flex w-full items-center justify-center gap-2 rounded-2xl border border-border bg-surface px-6 py-3 small-scale font-bold text-foreground shadow-sm transition-all hover:border-border hover:bg-muted hover:-translate-y-0.5">
                     Partner With Us
                   </Link>
                 </motion.div>
@@ -273,7 +273,7 @@ export default function Home() {
                 <div className="flex items-center gap-2">
                   <div className="flex -space-x-2">
                     {[1, 2, 3, 4].map((i) => (
-                      <div key={i} className="h-7 w-7 rounded-full border-2 border-white bg-muted/50 overflow-hidden">
+                      <div key={i} className="h-7 w-7 rounded-full border-2 border-surface bg-muted/50 overflow-hidden">
                         <img src={`https://i.pravatar.cc/100?img=${i + 10}`} alt="User" className="h-full w-full object-cover" />
                       </div>
                     ))}
@@ -307,7 +307,7 @@ export default function Home() {
                 <motion.div
                   animate={{ y: [0, -10, 0], rotateX: [10, 11, 10], rotateY: [-15, -13, -15] }}
                   transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                  className="relative w-[280px] h-[380px] rounded-2xl shadow-xl overflow-visible border border-border bg-white"
+                  className="relative w-[280px] h-[380px] rounded-2xl shadow-xl overflow-visible border border-border bg-surface"
                 >
                   <img
                     src="/literary_poet_portrait.png"
@@ -325,13 +325,13 @@ export default function Home() {
                       ease: "easeInOut",
                       delay: 1,
                     }}
-                    className="absolute -top-6 -left-14 bento-card p-3 flex items-center gap-2.5 w-[160px] z-30 shadow-2xl bg-white border-border"
+                    className="absolute -top-6 -left-14 bento-card p-3 flex items-center gap-2.5 w-[160px] z-30 shadow-2xl bg-surface border-border"
                   >
                     <div className="h-8 w-8 rounded-2xl flex items-center justify-center">
                       <BookOpen className="h-4 w-4 text-primary" />
                     </div>
                     <div>
-                      <p className="text-[8px] font-bold text-muted-foreground uppercase tracking-[0.15em]">AVAILABLE NOW</p>
+                      <p className="caption-scale font-bold text-muted-foreground uppercase tracking-[0.15em]">AVAILABLE NOW</p>
                       <p className="flex items-baseline gap-1 text-base font-bold text-foreground leading-none">
                         <span className="text-primary">12,450+</span>
                         <span>Titles</span>
@@ -343,13 +343,13 @@ export default function Home() {
                   <motion.div
                     animate={{ y: [0, -10, 0] }}
                     transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-                    className="absolute -bottom-8 -right-10 bento-card p-3 flex items-center gap-2.5 w-[160px] z-30 shadow-2xl bg-white border-border"
+                    className="absolute -bottom-8 -right-10 bento-card p-3 flex items-center gap-2.5 w-[160px] z-30 shadow-2xl bg-surface border-border"
                   >
                     <div className="h-8 w-8 rounded-2xl flex items-center justify-center">
                       <Network className="h-4 w-4 text-primary" />
                     </div>
                     <div>
-                      <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider">Hub Network</p>
+                      <p className="caption-scale font-bold text-muted-foreground uppercase tracking-wider">Hub Network</p>
                       <p className="small-scale font-bold text-foreground leading-none">Connected</p>
                     </div>
                   </motion.div>
@@ -361,7 +361,7 @@ export default function Home() {
       </section>
 
       {/* FLOATING FEATURE CARDS */}
-      <section className="relative overflow-hidden py-24 md:py-32 bg-[#FAFAFA]">
+      <section className="relative overflow-hidden py-24 md:py-32 bg-background">
         <Container>
           <motion.div
             variants={stagger}
@@ -421,7 +421,7 @@ export default function Home() {
         overflow-hidden
         border border-primary/10
         shadow-sm
-        bg-white
+        bg-surface
         z-10
       "
                 >
@@ -431,10 +431,10 @@ export default function Home() {
                     className="absolute inset-0 w-full h-full object-cover"
                   />
 
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-overlay-backdrop to-transparent" />
 
                   <div className="absolute bottom-0 left-0 right-0 p-4">
-                    <div className="rounded-2xl bg-white/90 backdrop-blur-xl p-5">
+                    <div className="rounded-2xl bg-surface/90 backdrop-blur-xl p-5">
                       <h3 className="h3-scale text-foreground mb-2.5">
                         The Explorers
                       </h3>
@@ -469,7 +469,7 @@ export default function Home() {
         overflow-hidden
         border border-primary/10
         shadow-lg
-        bg-white
+        bg-surface
         z-30
       "
                 >
@@ -479,10 +479,10 @@ export default function Home() {
                     className="absolute inset-0 w-full h-full object-cover"
                   />
 
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/65 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-overlay-backdrop to-transparent" />
 
                   <div className="absolute bottom-0 left-0 right-0 p-5">
-                    <div className="rounded-2xl bg-white/90 backdrop-blur-xl p-6">
+                    <div className="rounded-2xl bg-surface/90 backdrop-blur-xl p-6">
                       <h3 className="h3-scale text-foreground mb-3">
                         The Knowledge Builder
                       </h3>
@@ -520,7 +520,7 @@ export default function Home() {
         overflow-hidden
         border border-primary/10
         shadow-sm
-        bg-white
+        bg-surface
         z-10
       "
                 >
@@ -530,10 +530,10 @@ export default function Home() {
                     className="absolute inset-0 w-full h-full object-cover"
                   />
 
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-overlay-backdrop to-transparent" />
 
                   <div className="absolute bottom-0 left-0 right-0 p-4">
-                    <div className="rounded-2xl bg-white/90 backdrop-blur-xl p-5">
+                    <div className="rounded-2xl bg-surface/90 backdrop-blur-xl p-5">
                       <h3 className="h3-scale text-foreground mb-2.5">
                         The Readers
                       </h3>
@@ -565,16 +565,16 @@ export default function Home() {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true, margin: "-50px" }}
                         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                        className="relative h-[420px] rounded-2xl overflow-hidden border border-primary/10 shadow-sm bg-white"
+                        className="relative h-[420px] rounded-2xl overflow-hidden border border-primary/10 shadow-sm bg-surface"
                       >
                         <img
                           src={SHOWCASE_BOOKS[4]}
                           alt=""
                           className="absolute inset-0 w-full h-full object-cover"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-overlay-backdrop to-transparent" />
                         <div className="absolute bottom-0 left-0 right-0 p-4">
-                          <div className="rounded-2xl bg-white/90 backdrop-blur-xl p-5">
+                          <div className="rounded-2xl bg-surface/90 backdrop-blur-xl p-5">
                             <h3 className="h3-scale text-foreground mb-2.5">The Explorers</h3>
                             <p className="body-scale text-muted-foreground">Discover curated libraries and premium reading spaces.</p>
                           </div>
@@ -589,16 +589,16 @@ export default function Home() {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true, margin: "-50px" }}
                         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                        className="relative h-[420px] rounded-2xl overflow-hidden border border-primary/10 shadow-sm bg-white"
+                        className="relative h-[420px] rounded-2xl overflow-hidden border border-primary/10 shadow-sm bg-surface"
                       >
                         <img
                           src={SHOWCASE_BOOKS[5]}
                           alt=""
                           className="absolute inset-0 w-full h-full object-cover"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/65 to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-overlay-backdrop to-transparent" />
                         <div className="absolute bottom-0 left-0 right-0 p-5">
-                          <div className="rounded-2xl bg-white/90 backdrop-blur-xl p-6">
+                          <div className="rounded-2xl bg-surface/90 backdrop-blur-xl p-6">
                             <h3 className="h3-scale text-foreground mb-3">The Knowledge Builder</h3>
                             <p className="body-scale text-muted-foreground">Intelligent discovery, reading analytics, and seamless library management.</p>
                           </div>
@@ -613,16 +613,16 @@ export default function Home() {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true, margin: "-50px" }}
                         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                        className="relative h-[420px] rounded-2xl overflow-hidden border border-primary/10 shadow-sm bg-white"
+                        className="relative h-[420px] rounded-2xl overflow-hidden border border-primary/10 shadow-sm bg-surface"
                       >
                         <img
                           src={SHOWCASE_BOOKS[6]}
                           alt=""
                           className="absolute inset-0 w-full h-full object-cover"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-overlay-backdrop to-transparent" />
                         <div className="absolute bottom-0 left-0 right-0 p-4">
-                          <div className="rounded-2xl bg-white/90 backdrop-blur-xl p-5">
+                          <div className="rounded-2xl bg-surface/90 backdrop-blur-xl p-5">
                             <h3 className="h3-scale text-foreground mb-2.5">The Readers</h3>
                             <p className="body-scale text-muted-foreground">Build habits, share highlights, and grow your reading network.</p>
                           </div>
@@ -642,7 +642,7 @@ export default function Home() {
                         "h-1.5 rounded-2xl transition-all duration-300",
                         current === i + 1
                           ? "w-8 bg-primary"
-                          : "w-2 bg-slate-300 hover:bg-slate-400"
+                          : "w-2 bg-neutral-300 hover:bg-neutral-400"
                       )}
                       aria-label={`Go to slide ${i + 1}`}
                     />
@@ -655,7 +655,7 @@ export default function Home() {
       </section>
 
       {/* 3. ANIMATED BOOK SHOWCASE */}
-      <section className="py-16 overflow-hidden bg-white border-y border-border">
+      <section className="py-16 overflow-hidden bg-surface border-y border-border">
         <motion.div
           variants={fadeUp}
           className="mb-8 font-[var(--font-display)] text-foreground text-center"
@@ -667,8 +667,8 @@ export default function Home() {
 
         {/* Infinite Scroll Container */}
         <div className="relative w-full flex overflow-hidden">
-          <div className="absolute left-0 top-0 bottom-0 w-32 z-10 bg-gradient-to-r from-white to-transparent pointer-events-none" />
-          <div className="absolute right-0 top-0 bottom-0 w-32 z-10 bg-gradient-to-l from-white to-transparent pointer-events-none" />
+          <div className="absolute left-0 top-0 bottom-0 w-32 z-10 bg-gradient-to-r from-surface to-transparent pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-32 z-10 bg-gradient-to-l from-surface to-transparent pointer-events-none" />
 
           <motion.div
             className="flex gap-8 px-4"
@@ -683,10 +683,10 @@ export default function Home() {
                 className="group relative w-[160px] h-[230px] shrink-0 rounded-2xl overflow-hidden shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-sm cursor-pointer"
               >
                 <img src={src} alt="Book Mockup" className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-gradient-to-t from-neutral-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-                  <p className="text-white font-bold small-scale truncate">Premium Title</p>
-                  <p className="text-white/80 caption-scale">Available at 3 Hubs</p>
+                  <p className="text-on-media font-bold small-scale truncate">Premium Title</p>
+                  <p className="text-on-media-muted caption-scale">Available at 3 Hubs</p>
                 </div>
               </div>
             ))}
@@ -695,7 +695,7 @@ export default function Home() {
       </section>
 
       {/* PREMIUM STORYTELLING SECTION */}
-      <section className="py-16 md:py-20 bg-[#FAFAFA] overflow-hidden">
+      <section className="py-16 md:py-20 bg-background overflow-hidden">
         <Container>
           <motion.div
             variants={stagger}
@@ -825,13 +825,13 @@ export default function Home() {
         </Container>
       </section>
 
-      <section id="roadmap" className="py-12 md:py-24 bg-[#FAFAFA] overflow-hidden relative">
+      <section id="roadmap" className="py-12 md:py-24 bg-background overflow-hidden relative">
         <motion.div
           variants={stagger}
           initial="hidden"
           whileInView="visible"
           viewport={viewportOnce}
-          className="group rounded-2xl border-y border-border bg-white py-16 md:py-24 shadow-sm relative overflow-hidden transition-all duration-500 hover:shadow-sm hover:border-primary/10"
+          className="group rounded-2xl border-y border-border bg-surface py-16 md:py-24 shadow-sm relative overflow-hidden transition-all duration-500 hover:shadow-sm hover:border-primary/10"
         >
           {/* Background Accents */}
           <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 blur-[140px] rounded-full pointer-events-none -translate-y-1/2 translate-x-1/4 group-hover:bg-primary/10 transition-colors duration-700" />
@@ -880,7 +880,7 @@ export default function Home() {
       </section>
 
       {/* PREMIUM PRICING SECTION */}
-      <section className="relative overflow-hidden py-20 bg-[#FAFAFA]">
+      <section className="relative overflow-hidden py-20 bg-background">
 
         {/* Ambient Glow */}
         <div className="
@@ -941,7 +941,7 @@ export default function Home() {
         overflow-hidden
         border
         border-border 200/60
-        bg-white
+        bg-surface
         shadow-sm
       ">
 
@@ -1078,7 +1078,7 @@ export default function Home() {
                 py-3
                 small-scale
                 font-bold
-                text-white
+                text-primary-foreground
                 shadow-sm
                 transition-all
                 duration-300
@@ -1102,8 +1102,8 @@ export default function Home() {
             p-8
             md:p-10
             bg-gradient-to-b
-            from-white
-            to-slate-50
+            from-surface
+            to-background-secondary
           "
               >
 
@@ -1119,7 +1119,7 @@ export default function Home() {
               font-bold
               uppercase
               tracking-widest
-              text-white
+              text-primary-foreground
             ">
                     Retail & Peer-to-Peer
                   </div>
@@ -1177,7 +1177,7 @@ export default function Home() {
                     rounded-2xl
                     border
                     border-border 200/60
-                    bg-white
+                    bg-surface
                     p-5
                   "
                       >
@@ -1210,7 +1210,7 @@ export default function Home() {
                 rounded-md
                 border
                 border-border
-                bg-white
+                bg-surface
                 px-6
                 py-3
                 small-scale
@@ -1234,7 +1234,7 @@ export default function Home() {
         </Container>
       </section>
       {/* PREMIUM FAQ SECTION */}
-      <section className="relative overflow-hidden bg-[#FAFAFA] py-16 md:py-24">
+      <section className="relative overflow-hidden bg-background py-16 md:py-24">
         <motion.div
           variants={stagger}
           initial="hidden"
@@ -1337,7 +1337,7 @@ export default function Home() {
       </section>
 
       {/* PREMIUM FINAL CTA */}
-      <section className="relative overflow-hidden py-16 md:py-20 bg-[#07111F]">
+      <section className="relative overflow-hidden py-16 md:py-20 bg-neutral-950">
 
         {/* Ambient Background */}
         <div className="
@@ -1395,7 +1395,7 @@ export default function Home() {
     max-w-4xl
     font-[var(--font-display)]
     h1-scale
-    text-white
+    text-on-media
   "
             >
               Join the phygital network.
@@ -1409,7 +1409,7 @@ export default function Home() {
           max-w-2xl
           mx-auto
           small-scale
-          text-slate-300
+          text-neutral-300
         "
             >
               Join the premium campus reading ecosystem built
@@ -1441,7 +1441,7 @@ export default function Home() {
               items-center
               gap-2
               rounded-2xl
-              bg-white
+              bg-surface
               px-6
               py-3
               small-scale
@@ -1483,17 +1483,17 @@ export default function Home() {
               gap-2
               rounded-2xl
               border
-              border-white/10
-              bg-white/5
+              border-overlay-glass-border
+              bg-overlay-glass
               backdrop-blur-xl
               px-6
               py-3
               small-scale
               font-bold
-              text-white
+              text-on-media
               transition-all
               duration-300
-              hover:bg-white/10
+              hover:bg-overlay-glass
             "
                 >
                   Explore Ecosystem

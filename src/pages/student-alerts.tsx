@@ -3,7 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/context/auth-context";
 import { apiFetch, ApiError } from "@/lib/api";
 import { useStudentShell } from "@/components/layout/StudentAppShell";
-import { PORTAL_PAGE_CONTAINER } from "@/lib/student-ui";
+import { PORTAL_INLINE_LINK, PORTAL_PAGE_CONTAINER, PORTAL_PANEL_SURFACE } from "@/lib/student-ui";
+import { PORTAL_PAGE_LEAD, PORTAL_PAGE_TITLE } from "@/lib/portal-typography";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
@@ -106,11 +107,9 @@ function resolveAlertNav(n: NotifRow, activity: string, borrow: string): AlertNa
   };
 }
 
-const outline = "rounded-md border border-border bg-background";
-
 function FlatStatus({ label }: { label: string }) {
   return (
-    <span className="inline-flex h-6 items-center whitespace-nowrap rounded-md border border-border bg-muted/30 px-2.5 text-[9px] font-semibold uppercase tracking-[0.03em] text-foreground">
+    <span className="inline-flex h-6 items-center whitespace-nowrap rounded-md border border-border bg-muted/30 px-2.5 caption-scale font-semibold uppercase tracking-kicker text-foreground">
       {label}
     </span>
   );
@@ -166,32 +165,31 @@ export default function StudentAlertsPage() {
   return (
     <div className={cn("min-h-[100dvh] bg-background pb-20", top)}>
       <div className={cn("mx-auto", pageWrap)}>
-        <div className="mb-8 border-b border-border/30 pb-6">
-          <h1 className="mt-1 font-[var(--font-display)] text-lg font-bold tracking-tight text-foreground">
-            Alerts
-          </h1>
-          <p className="mt-1 text-xs text-muted-foreground">
+        <header className="mb-8 border-b border-border pb-6">
+          <h1 className={PORTAL_PAGE_TITLE}>Alerts</h1>
+          <p className={cn(PORTAL_PAGE_LEAD, "mt-2")}>
             Prioritized for pickup, request updates, and purchase confirmations.
           </p>
-        </div>
+        </header>
 
         <section aria-label="Notifications">
-          <div className={cn(outline, "overflow-hidden")}>
-            <div className="border-b border-border px-5 py-3">
-              <h3 className="text-sm font-semibold tracking-tight text-foreground">Hub notifications</h3>
+          <div className={cn(PORTAL_PANEL_SURFACE, "overflow-hidden")}>
+            <div className="border-b border-border px-6 py-4">
+              <h3 className="h4-scale font-semibold text-foreground">Hub notifications</h3>
             </div>
-            <div className="p-4">
+            <div className="p-6">
               {notifQ.isLoading ? (
-                <p className="text-sm text-muted-foreground">Loading…</p>
+                <p className="body-scale text-foreground-muted">Loading…</p>
               ) : notifQ.isError ? (
-                <p className="text-sm text-destructive">
+                <p className="body-scale text-destructive">
                   {notifQ.error instanceof ApiError ? notifQ.error.message : "Could not load notifications."}
                 </p>
               ) : notifications.length === 0 ? (
-                <p className="text-sm text-muted-foreground">
-                  No alerts yet. <Link href={portalPaths.borrow} className="underline underline-offset-2">Browse books</Link>,{" "}
-                  <Link href={portalPaths.activity} className="underline underline-offset-2">request a book</Link>, or{" "}
-                  <Link href={portalPaths.sell} className="underline underline-offset-2">list a book</Link>.
+                <p className="body-scale text-foreground-muted">
+                  No alerts yet.{" "}
+                  <Link href={portalPaths.borrow} className={PORTAL_INLINE_LINK}>Browse books</Link>,{" "}
+                  <Link href={portalPaths.activity} className={PORTAL_INLINE_LINK}>request a book</Link>, or{" "}
+                  <Link href={portalPaths.sell} className={PORTAL_INLINE_LINK}>list a book</Link>.
                 </p>
               ) : (
                 <div className="space-y-6">
@@ -203,7 +201,7 @@ export default function StudentAlertsPage() {
                   ).map((bucket) =>
                     bucket.rows.length > 0 ? (
                       <div key={bucket.label}>
-                        <p className="mb-2 pl-1 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+                        <p className="mb-2 pl-1 section-kicker text-foreground-muted">
                           {bucket.label}
                         </p>
 
@@ -215,14 +213,14 @@ export default function StudentAlertsPage() {
                               <div
                                 key={n.id}
                                 className={cn(
-                                  "rounded-lg border border-border p-3 text-sm",
+                                  "rounded-xl border border-border bg-card p-4 body-scale shadow-sm",
                                   !n.readAt && "border-border 500/30",
                                 )}
                               >
                                 <div className="flex flex-wrap items-center justify-between gap-2">
                                   <FlatStatus label={fmtKindLabel(n.kind)} />
                                   {n.createdAt && (
-                                    <span className="text-[10px] text-muted-foreground">
+                                    <span className="caption-scale text-foreground-muted">
                                       {fmtDateShort(n.createdAt)}
                                     </span>
                                   )}
@@ -250,13 +248,13 @@ export default function StudentAlertsPage() {
                           <TableBody>
                             {bucket.rows.map((n) => (
                               <TableRow key={n.id} className={cn(rowStripe, "align-top")}>
-                                <TableCell className="whitespace-nowrap pl-5 py-3 align-top text-[11px] text-muted-foreground">
+                                <TableCell className="whitespace-nowrap pl-5 py-3 align-top caption-scale text-foreground-muted">
                                   {fmtDateShort(n.createdAt) || null}
                                 </TableCell>
                                 <TableCell className="py-3 align-top">
                                   <FlatStatus label={fmtKindLabel(n.kind)} />
                                 </TableCell>
-                                <TableCell className="min-w-[200px] pr-5 py-3 align-top text-sm leading-relaxed text-foreground">
+                                <TableCell className="min-w-[200px] pr-5 py-3 align-top body-scale leading-relaxed text-foreground">
                                   <div className="space-y-1">
                                     <p>{n.body}</p>
                                     <Link href={resolveAlertNav(n, portalPaths.activity, portalPaths.borrow).href}>

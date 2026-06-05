@@ -15,6 +15,8 @@ import { useStudentShell } from "@/components/layout/StudentAppShell";
 import { useAuth } from "@/context/auth-context";
 import { apiFetch, ApiError, apiPublicUrl } from "@/lib/api";
 import { portalPathsForUser } from "@/lib/app-paths";
+import { adminPanel, adminSearchInput, adminSelectTrigger } from "@/lib/admin-desk-ui";
+import { PORTAL_PAGE_LEAD, PORTAL_PAGE_TITLE } from "@/lib/portal-typography";
 import { PORTAL_INLINE_LINK, PORTAL_KICKER_COLOR, PORTAL_PAGE_GUTTER_X } from "@/lib/student-ui";
 import { cn } from "@/lib/utils";
 import { p2pShelfStatusRank } from "@/lib/catalog-sort";
@@ -40,11 +42,9 @@ type P2pListingRow = {
   updatedAt: string;
 };
 
-const outline = "rounded-md border border-border bg-background";
-
 function SectionLabel({ children }: { children: ReactNode }) {
   return (
-    <h2 className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70">{children}</h2>
+    <h2 className="section-kicker">{children}</h2>
   );
 }
 
@@ -59,7 +59,7 @@ function P2pPipelineProgress({ status }: { status: string }) {
   if (status === "rejected" || status === "cancelled") {
     return (
       <div className="mt-3 space-y-1 w-full text-left">
-        <p className="text-[10px] font-medium text-destructive/90">Pipeline ended ({status})</p>
+        <p className="caption-scale font-medium text-destructive">Pipeline ended ({status})</p>
       </div>
     );
   }
@@ -73,13 +73,13 @@ function P2pPipelineProgress({ status }: { status: string }) {
             key={s}
             className={cn(
               "h-1 flex-1 rounded-sm transition-colors",
-              idx >= i ? "bg-primary/80" : "bg-white/20"
+              idx >= i ? "bg-primary/80" : "bg-overlay-glass"
             )}
             title={s}
           />
         ))}
       </div>
-      <div className="flex justify-between text-[9px] font-medium text-white/70 px-0.5">
+      <div className="flex justify-between caption-scale font-medium text-primary-foreground/70 px-0.5">
         <span>Listed</span>
         <span>Drop-off</span>
         <span>Shelf</span>
@@ -98,9 +98,6 @@ export default function HubDeskP2pListingsPage() {
   const [q, setQ] = useState("");
 
   const topPad = inShell ? "" : "pt-24";
-  const selectTriggerClass = "h-10 w-full text-primary rounded-md border-border bg-background";
-  const inputClass = "h-10 w-full rounded-md border-border bg-background text-sm";
-
   const overviewHubId =
     user && user.hubStaffHubIds.length === 1 ? user.hubStaffHubIds[0]! : hubId === "all" ? undefined : hubId;
 
@@ -168,7 +165,7 @@ export default function HubDeskP2pListingsPage() {
   if (loading) {
     return (
       <div className={cn("flex min-h-[50dvh] items-center justify-center", topPad)}>
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <Loader2 className="h-8 w-8 animate-spin text-foreground-muted" />
       </div>
     );
   }
@@ -176,11 +173,11 @@ export default function HubDeskP2pListingsPage() {
   if (!user?.hubStaffHubIds.length) {
     return (
       <div className={cn("mx-auto max-w-lg pb-20 text-center", PORTAL_PAGE_GUTTER_X, inShell ? "pt-8" : "pt-28")}>
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-border/60 bg-muted/30">
-          <Shield className="h-7 w-7 text-muted-foreground" />
+        <div className="mx-auto flex h-14 w-14 items-center justify-center">
+          <Shield className="h-7 w-7 text-foreground-muted" />
         </div>
-        <h1 className="mt-6 text-[24px] font-[600] text-[#1F2937]">Restricted</h1>
-        <p className="mt-2 text-[14px] font-[400] text-[#1F2937]/70">Hub staff only.</p>
+        <h1 className="mt-6 h4-scale font-semibold text-foreground">Restricted</h1>
+        <p className="mt-2 body-scale text-foreground-muted">Hub staff only.</p>
         <Button asChild className="mt-8 rounded-full">
           <Link href={user ? portalPathsForUser(user).overview : "/library"}>Back</Link>
         </Button>
@@ -202,18 +199,18 @@ export default function HubDeskP2pListingsPage() {
     <div className={cn(topPad, "pb-10 lg:pb-10")}>
       <div className="mb-6 w-full min-w-0 border-b border-border pb-5">
         <div className="w-full min-w-0 max-w-none">
-          <h1 className="mt-1 text-[36px] font-[700] leading-tight tracking-tight text-[#1F2937]">P2P Listings</h1>
-          <p className="mt-2 w-full max-w-none text-[14px] font-[400] leading-relaxed text-[#1F2937]/70">
-            Peer <span className="font-[600] text-[#1F2937]">listings that do not have a physical copy yet</span>{" "}
+          <h1 className={cn("mt-1", PORTAL_PAGE_TITLE)}>P2P Listings</h1>
+          <p className={cn("mt-2 w-full max-w-none", PORTAL_PAGE_LEAD)}>
+            Peer <span className="font-semibold text-foreground">listings that do not have a physical copy yet</span>{" "}
             (pipeline only, e.g. listed, awaiting drop-off). This is <span className="italic">not</span> on-shelf
             inventory. For physically verifiable stock, use{" "}
             <Link href={p.inventory} className={PORTAL_INLINE_LINK}>
               All copies
             </Link>
-            . Typical path: <span className="font-mono text-[12px] font-[500]">listed</span> →
-            <span className="font-mono text-[12px] font-[500]"> pending_dropoff</span> → staff approve →
-            <span className="font-mono text-[12px] font-[500]"> available</span> (copy on shelf) → sold or borrow.
-            Rejection ends the pipeline before a physical <span className="font-mono text-[12px] font-[500]">books</span> row exists.
+            . Typical path: <span className="font-mono caption-scale font-medium">listed</span> →
+            <span className="font-mono caption-scale font-medium"> pending_dropoff</span> → staff approve →
+            <span className="font-mono caption-scale font-medium"> available</span> (copy on shelf) → sold or borrow.
+            Rejection ends the pipeline before a physical <span className="font-mono caption-scale font-medium">books</span> row exists.
           </p>
         </div>
 
@@ -221,13 +218,13 @@ export default function HubDeskP2pListingsPage() {
           <div className="flex min-w-0 w-full flex-[3] flex-col gap-1.5 sm:min-w-[20rem] lg:min-w-[28rem]">
             <Label
               htmlFor="p2p-desk-search"
-              className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70"
+              className="section-kicker"
             >
               Search title
             </Label>
             <Input
               id="p2p-desk-search"
-              className={inputClass}
+              className={adminSearchInput}
               placeholder="Contains…"
               value={q}
               onChange={(e) => setQ(e.target.value)}
@@ -237,7 +234,7 @@ export default function HubDeskP2pListingsPage() {
             <div className="flex min-w-0 flex-1 flex-col gap-1.5">
               <Label
                 htmlFor="p2p-desk-scope"
-                className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70"
+                className="section-kicker"
               >
                 Scope
               </Label>
@@ -247,7 +244,7 @@ export default function HubDeskP2pListingsPage() {
                   setHubId(v);
                 }}
               >
-                <SelectTrigger id="p2p-desk-scope" className={selectTriggerClass}>
+                <SelectTrigger id="p2p-desk-scope" className={cn(adminSelectTrigger, "text-primary")}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -264,12 +261,12 @@ export default function HubDeskP2pListingsPage() {
           <div className="flex min-w-0 flex-1 flex-col gap-1.5">
             <Label
               htmlFor="p2p-desk-status"
-              className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70"
+              className="section-kicker"
             >
               Status
             </Label>
             <Select value={statusQ} onValueChange={setStatusQ}>
-              <SelectTrigger id="p2p-desk-status" className={selectTriggerClass}>
+              <SelectTrigger id="p2p-desk-status" className={cn(adminSelectTrigger, "text-primary")}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -295,14 +292,14 @@ export default function HubDeskP2pListingsPage() {
         </div>
       </div>
 
-      <section className={cn(outline, "overflow-hidden")} aria-label="P2P pipeline listings">
+      <section className={cn(adminPanel, "overflow-hidden")} aria-label="P2P pipeline listings">
         <div className="border-b border-border px-4 py-3">
           <SectionLabel>Pipeline (no physical copy yet)</SectionLabel>
-          <p className="mt-1 text-[12px] font-[500] text-[#1F2937]/70">
+          <p className="mt-1 caption-scale font-medium text-foreground-muted">
             {listQ.isLoading
               ? "…"
               : `${filtered.length} shown · ${rows.length} in scope`}
-            . Excludes any listing that already has a row in <span className="font-[600] text-[#1F2937]">Inventory</span>.
+            . Excludes any listing that already has a row in <span className="font-semibold text-foreground">Inventory</span>.
           </p>
         </div>
         {listQ.isError ? (
@@ -311,10 +308,10 @@ export default function HubDeskP2pListingsPage() {
           </p>
         ) : listQ.isLoading ? (
           <div className="flex justify-center py-24">
-            <Loader2 className="h-9 w-9 animate-spin text-muted-foreground" />
+            <Loader2 className="h-9 w-9 animate-spin text-foreground-muted" />
           </div>
         ) : filtered.length === 0 ? (
-          <div className="px-4 py-12 text-center text-[14px] font-[400] text-[#1F2937]/70 sm:px-6">
+          <div className="px-4 py-12 text-center body-scale text-foreground-muted sm:px-6">
             <p>
               {rows.length === 0
                 ? "No pipeline listings in this scope. Every P2P listing here is still pre–physical book."
@@ -352,13 +349,13 @@ export default function HubDeskP2pListingsPage() {
                     action={
                       canManage ? (
                         <div className="space-y-2 text-left">
-                          <p className="text-[13px] font-[500] leading-snug text-primary/20">
+                          <p className="body-scale font-medium leading-snug text-primary/20">
                             Action required
                           </p>
                           <div className="flex flex-wrap items-center gap-2">
                             <Button
                               size="sm"
-                              className="h-auto rounded-md px-2.5 py-1 text-[13px] font-[400]"
+                              className="h-auto rounded-md px-2.5 py-1 body-scale font-normal"
                               onClick={() =>
                                 updateStatusMutation.mutate({
                                   listingId: l.id,
@@ -372,7 +369,7 @@ export default function HubDeskP2pListingsPage() {
                             <Button
                               size="sm"
                               variant="destructive"
-                              className="h-auto rounded-md px-2.5 py-1 text-[13px] font-[400]"
+                              className="h-auto rounded-md px-2.5 py-1 body-scale font-normal"
                               onClick={() =>
                                 updateStatusMutation.mutate({
                                   listingId: l.id,
@@ -386,8 +383,8 @@ export default function HubDeskP2pListingsPage() {
                           </div>
                         </div>
                       ) : (
-                        <div className="space-y-2 text-left text-[13px] font-[400] text-white/90">
-                          <p className="font-[500] leading-snug text-primary/20">
+                        <div className="space-y-2 text-left body-scale font-normal text-on-media-muted">
+                          <p className="font-medium leading-snug text-primary/20">
                             Peer pipeline (no physical copy yet)
                           </p>
                           {l.type ? (
@@ -397,7 +394,7 @@ export default function HubDeskP2pListingsPage() {
                               </span>
                             </div>
                           ) : null}
-                          <p className="font-[500] tabular-nums">
+                          <p className="font-medium tabular-nums">
                             ₹{l.borrowPrice.toLocaleString("en-IN")} borrow · ₹
                             {l.price.toLocaleString("en-IN")} buy
                           </p>

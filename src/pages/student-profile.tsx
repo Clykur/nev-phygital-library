@@ -17,7 +17,9 @@ import { hubKindLabel, hubMembershipRoleLabel } from "@/lib/hub-display";
 import { isHubAccount } from "@/lib/app-paths";
 import { isPremiumOk } from "@/lib/rbac";
 import { STATUS_CHIP_EMERALD } from "@/lib/status-chip-tones";
+import { Card, CardContent } from "@/components/ui/card";
 import { PORTAL_PAGE_CONTAINER } from "@/lib/student-ui";
+import { PORTAL_DIALOG_DESC, PORTAL_DIALOG_TITLE, PORTAL_PAGE_TITLE } from "@/lib/portal-typography";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { Building2, Camera, Loader2, Sparkles } from "lucide-react";
@@ -53,8 +55,6 @@ export default function StudentProfilePage() {
 
   const top = inShell ? "" : "pt-24";
   const pageWrap = inShell ? "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8" : cn(PORTAL_PAGE_CONTAINER, "py-8 space-y-8");
-  const outline = "rounded-md border border-border bg-background";
-
   const runUpgrade = async () => {
     setUpgradeBusy(true);
     try {
@@ -121,13 +121,12 @@ export default function StudentProfilePage() {
   return (
     <div className={cn("min-h-[100dvh] bg-background font-sans text-foreground", top)}>
       <div className={cn("mx-auto w-full", pageWrap)}>
-        <div className="border-b border-border/30 pb-6 font-sans">
-          <h1 className="mt-1 text-[36px] font-[700] leading-tight tracking-tight text-[#1F2937]">
-            Profile
-          </h1>
-        </div>
+        <header className="border-b border-border pb-6 font-sans">
+          <h1 className={PORTAL_PAGE_TITLE}>Profile</h1>
+        </header>
 
-        <section className={cn(outline, "overflow-hidden p-6 sm:p-8")}>
+        <Card variant="default" className="overflow-hidden">
+          <CardContent className="p-6 sm:p-8">
           <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-start">
             <div className="relative shrink-0">
               <ProfileAvatar name={user.name} size="lg" className="ring-2 ring-border/50" />
@@ -155,18 +154,20 @@ export default function StudentProfilePage() {
               </Button>
             </div>
             <div className="min-w-0 flex-1 text-center sm:text-left">
-              <h2 className="text-[24px] font-[600] leading-snug text-[#1F2937]">{user.name}</h2>
-              <p className="mt-1 text-[14px] font-[400] leading-relaxed text-[#1F2937]/70">{user.email}</p>
-              <p className="mt-3 text-[13px] font-[400] leading-normal text-[#1F2937]/70">
+              <h2 className="h4-scale font-semibold leading-snug text-foreground">{user.name}</h2>
+              <p className="mt-1 body-scale text-foreground-muted leading-relaxed">{user.email}</p>
+              <p className="mt-3 body-scale font-normal leading-normal text-foreground-muted">
                 JPEG, PNG, WebP, or GIF · up to 5&nbsp;MB. Replaces your previous photo.
               </p>
             </div>
           </div>
-        </section>
+          </CardContent>
+        </Card>
 
         {user.hubMemberships.length > 0 ? (
-          <section className={cn(outline, "overflow-hidden p-6 sm:p-8")}>
-            <h3 className="flex items-center gap-2 text-[12px] font-[500] leading-normal uppercase tracking-wider text-[#1F2937]/70">
+          <Card variant="default" className="overflow-hidden">
+            <CardContent className="p-6 sm:p-8">
+            <h3 className="flex items-center gap-2 section-kicker">
               <Building2 className="h-3.5 w-3.5" />
               Library desk access
             </h3>
@@ -174,59 +175,61 @@ export default function StudentProfilePage() {
               {user.hubMemberships.map((m) => {
                 const hub = hubsQ.data?.hubs.find((h) => h.id === m.hubId);
                 return (
-                  <li key={`${m.hubId}-${m.role}`} className="rounded-md border border-border bg-muted/20 px-3 py-2 text-[14px] font-[400] leading-relaxed">
-                    <span className="font-[600] text-[#1F2937]">{hub?.name ?? "Hub"}</span>
-                    <span className="mt-0.5 block text-[12px] font-[500] leading-normal text-[#1F2937]/70">
+                  <li key={`${m.hubId}-${m.role}`} className="rounded-md border border-border bg-muted/20 px-3 py-2 body-scale font-normal leading-relaxed">
+                    <span className="font-semibold text-foreground">{hub?.name ?? "Hub"}</span>
+                    <span className="mt-0.5 block caption-scale font-medium text-foreground-muted">
                       {hubKindLabel(hub?.kind)} · {hubMembershipRoleLabel(m.role)}
                     </span>
                   </li>
                 );
               })}
             </ul>
-          </section>
+            </CardContent>
+          </Card>
         ) : null}
 
-        <section className={cn(outline, "overflow-hidden p-6 sm:p-8 font-sans")}>
-          <h3 className="text-[12px] font-[500] leading-normal uppercase tracking-wider text-[#1F2937]/70">
+        <Card variant="default" className="overflow-hidden font-sans">
+          <CardContent className="p-6 sm:p-8">
+          <h3 className="section-kicker">
             Details
           </h3>
-          <dl className="mt-4 space-y-4 text-[14px] font-[400] leading-relaxed">
+          <dl className="mt-4 space-y-4 body-scale font-normal leading-relaxed">
             <div className="flex flex-col gap-1 border-b border-border/50 pb-4 sm:flex-row sm:items-center sm:justify-between">
-              <dt className="text-[#1F2937]/70">Phone</dt>
-              <dd className="font-[600] text-[#1F2937]">{user.phone || "—"}</dd>
+              <dt className="text-foreground-muted">Phone</dt>
+              <dd className="font-semibold text-foreground">{user.phone || "—"}</dd>
             </div>
             <div className="flex flex-col gap-1 border-b border-border/50 pb-4 sm:flex-row sm:items-center sm:justify-between">
-              <dt className="text-[#1F2937]/70">Registration date</dt>
-              <dd className="font-[600] text-[#1F2937]">
+              <dt className="text-foreground-muted">Registration date</dt>
+              <dd className="font-semibold text-foreground">
                 {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "—"}
               </dd>
             </div>
             <div className="flex flex-col gap-1 border-b border-border/50 pb-4 sm:flex-row sm:items-center sm:justify-between">
-              <dt className="text-[#1F2937]/70">Account status</dt>
+              <dt className="text-foreground-muted">Account status</dt>
               <dd>
                 <span className={cn(
-                  "inline-flex h-7 items-center rounded-md border px-3 text-[12px] font-[500] leading-normal uppercase tracking-wide",
-                  user.accountStatus === "active" ? STATUS_CHIP_EMERALD : "border-border bg-muted text-[#1F2937]"
+                  "inline-flex h-7 items-center rounded-md border px-3 caption-scale font-medium uppercase tracking-wide",
+                  user.accountStatus === "active" ? STATUS_CHIP_EMERALD : "border-border bg-muted text-foreground"
                 )}>
                   {user.accountStatus}
                 </span>
               </dd>
             </div>
             <div className="flex flex-col gap-1 border-b border-border/50 pb-4 sm:flex-row sm:items-center sm:justify-between">
-              <dt className="text-[#1F2937]/70">Role</dt>
+              <dt className="text-foreground-muted">Role</dt>
               <dd>
-                <span className="inline-flex h-7 items-center rounded-md border border-border bg-muted/30 px-3 text-[12px] font-[500] leading-normal uppercase tracking-wide text-[#1F2937]">
+                <span className="inline-flex h-7 items-center rounded-md border border-border bg-muted/30 px-3 caption-scale font-medium uppercase tracking-wide text-foreground">
                   {user.baseRole}
                 </span>
               </dd>
             </div>
             <div className="flex flex-col gap-1 border-b border-border/50 pb-4 sm:flex-row sm:items-center sm:justify-between">
-              <dt className="text-[#1F2937]/70">Premium</dt>
+              <dt className="text-foreground-muted">Premium</dt>
               <dd>
                 <span
                   className={cn(
-                    "inline-flex h-7 items-center rounded-md border px-3 text-[12px] font-[500] leading-normal uppercase tracking-wide",
-                    isPremiumOk(user) ? STATUS_CHIP_EMERALD : "border-border bg-muted text-[#1F2937]",
+                    "inline-flex h-7 items-center rounded-md border px-3 caption-scale font-medium uppercase tracking-wide",
+                    isPremiumOk(user) ? STATUS_CHIP_EMERALD : "border-border bg-muted text-foreground",
                   )}
                 >
                   {isPremiumOk(user)
@@ -238,12 +241,12 @@ export default function StudentProfilePage() {
               </dd>
             </div>
             <div className="flex flex-col gap-1 border-b border-border/50 pb-4 sm:flex-row sm:items-center sm:justify-between">
-              <dt className="text-[#1F2937]/70">Current plan</dt>
-              <dd className="font-[600] text-[#1F2937]">{isPremiumOk(user) ? "Premium" : "Free"}</dd>
+              <dt className="text-foreground-muted">Current plan</dt>
+              <dd className="font-semibold text-foreground">{isPremiumOk(user) ? "Premium" : "Free"}</dd>
             </div>
             <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-              <dt className="text-[#1F2937]/70">Premium until</dt>
-              <dd className="font-[600] text-[#1F2937]">
+              <dt className="text-foreground-muted">Premium until</dt>
+              <dd className="font-semibold text-foreground">
                 {user.baseRole === "super_admin" && !user.premiumActive
                   ? "— (all features)"
                   : user.premiumUntil
@@ -265,16 +268,15 @@ export default function StudentProfilePage() {
               Upgrade to Premium
             </Button>
           )}
-        </section>
+          </CardContent>
+        </Card>
       </div>
 
       <Dialog open={upgradeOpen} onOpenChange={setUpgradeOpen}>
         <DialogContent className="font-sans w-[calc(100%-32px)] sm:w-full rounded-2xl sm:max-w-sm">
           <DialogHeader>
-            <DialogTitle className="text-[20px] font-[600] leading-snug tracking-tight text-[#1F2937]">
-              Demo premium
-            </DialogTitle>
-            <DialogDescription className="text-[14px] font-[400] leading-relaxed text-[#1F2937]/70">
+            <DialogTitle className={PORTAL_DIALOG_TITLE}>Demo premium</DialogTitle>
+            <DialogDescription className={PORTAL_DIALOG_DESC}>
               Unlock borrow, requests, and peer buy/sell for this prototype session.
             </DialogDescription>
           </DialogHeader>

@@ -261,7 +261,7 @@ export function DeskSidebarNav({
     <div className="flex flex-col gap-0">
       {headerTitle ? (
         <div className="mb-3 px-1">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+          <p className="caption-scale font-semibold uppercase tracking-[0.2em] text-muted-foreground">
             {headerTitle}
           </p>
         </div>
@@ -271,10 +271,10 @@ export function DeskSidebarNav({
         <div key={group.id}>
           {gi > 0 ? <div className="mb-2 border-t border-border/60 pt-3" aria-hidden /> : null}
           <div className="mb-1.5 px-1">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground/90">
+            <p className="caption-scale font-semibold uppercase tracking-[0.16em] text-muted-foreground/90">
               {group.title}
             </p>
-            <p className="text-[9px] text-muted-foreground/65">{group.subtitle}</p>
+            <p className="caption-scale text-muted-foreground/65">{group.subtitle}</p>
           </div>
           <div className="flex flex-col gap-0.5">
             {group.tabs.map((tab) => {
@@ -288,7 +288,7 @@ export function DeskSidebarNav({
                   className={cn(
                     "group flex items-center gap-3 rounded-lg px-2 py-2 text-sm font-medium transition-colors",
                     active
-                      ? "bg-primary/10 text-foreground dark:bg-primary/15"
+                      ? "bg-primary/10 text-foreground"
                       : "text-muted-foreground hover:bg-muted/70 hover:text-foreground",
                   )}
                 >
@@ -303,7 +303,7 @@ export function DeskSidebarNav({
                     <span className="truncate">{tab.label}</span>
                     <span
                       className={cn(
-                        "truncate text-[10px] font-normal",
+                        "truncate caption-scale font-normal",
                         active ? "text-primary/75" : "text-muted-foreground/90",
                       )}
                     >
@@ -347,7 +347,7 @@ export function HubDeskMobileTabStrip() {
               className={cn(
                 "flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
                 active
-                  ? "border-primary/35 bg-primary/10 text-foreground dark:border-primary/40 dark:bg-primary/12"
+                  ? "border-primary/35 bg-primary/10 text-foreground"
                   : "border-border/50 text-muted-foreground hover:border-primary/25 hover:bg-muted/50 hover:text-foreground",
               )}
             >

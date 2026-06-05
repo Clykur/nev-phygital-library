@@ -141,7 +141,7 @@ export default function Colleges() {
     visible: { transition: { staggerChildren: reduceMotion ? 0 : 0.08, delayChildren: reduceMotion ? 0 : 0.1 } },
   };
 
-  const card = "bento-card border border-primary/20 bg-white p-6 md:p-8 rounded-2xl transition-all hover:shadow-lg hover:-translate-y-1";
+  const card = "bento-card border border-primary/20 bg-surface p-6 md:p-8 rounded-2xl transition-all hover:shadow-lg hover:-translate-y-1";
 
   const handlePartnerSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -155,13 +155,13 @@ export default function Colleges() {
         <DialogContent className="w-[calc(100%-32px)] sm:w-full max-h-[min(90vh,760px)] max-w-[440px] gap-0 overflow-y-auto rounded-2xl p-0">
           <div className="px-6 pb-8 pt-10 sm:px-8 sm:pb-10 sm:pt-11">
             <DialogHeader className="space-y-3 text-left">
-              <p className="caption-scale font-bold uppercase tracking-[0.22em] text-[#64748B]">
+              <p className="caption-scale font-bold uppercase tracking-[0.22em] text-foreground-muted">
                 Partner colleges
               </p>
               <DialogTitle className="font-[var(--font-display)] h3-scale font-extrabold leading-tight tracking-tight text-foreground sm:text-[1.65rem]">
                 Pilot a hub with Neev
               </DialogTitle>
-              <DialogDescription className="body-scale leading-relaxed text-[#64748B]">
+              <DialogDescription className="body-scale leading-relaxed text-foreground-muted">
                 Share a few details. Our partnerships team typically responds within two business days.
               </DialogDescription>
             </DialogHeader>
@@ -241,7 +241,7 @@ export default function Colleges() {
         </DialogContent>
       </Dialog>
 
-      <div className="w-full bg-[#FAFAFA] font-sans selection:bg-primary/20 selection:text-primary">
+      <div className="w-full bg-background font-sans selection:bg-primary/20 selection:text-primary">
         {/* 1. HERO SECTION WITH VIDEO BACKGROUND */}
         <section id="hero" ref={heroRef} className="relative h-[100dvh] w-full overflow-hidden bg-primary">
           {/* Video Background */}
@@ -256,7 +256,7 @@ export default function Colleges() {
           </video>
 
           {/* Dark Overlay */}
-          <div className="absolute inset-0 bg-slate-950/40 z-10" />
+          <div className="absolute inset-0 bg-neutral-950/40 z-10" />
 
           <Container className="relative z-20 h-full flex items-center px-4 md:px-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-12 items-center w-full">
@@ -269,17 +269,17 @@ export default function Colleges() {
               >
                 <motion.h1
                   variants={fadeUp}
-                  className="mt-4 text-balance font-[var(--font-display)] hero-title font-bold text-white"
+                  className="mt-4 text-balance font-[var(--font-display)] hero-title font-bold text-on-media"
                 >
                   Upgrade library space into a <br />
 
-                  <span className="mt-4 inline-block bg-white p-2 text-primary">
+                  <span className="mt-4 inline-block bg-surface p-2 text-primary">
                     Neev study hub.
                   </span>
                 </motion.h1>
                 <motion.p
                   variants={fadeUp}
-                  className="mt-6 body-scale text-white/90 max-w-xl"
+                  className="mt-6 body-scale text-on-media-muted max-w-xl"
                 >
                   Start with zero upfront capex. We align on space, traffic, and operations, then scale when your institution is ready.
                 </motion.p>
@@ -289,7 +289,7 @@ export default function Colleges() {
                     <Button
                       size="lg"
                       onClick={() => setPartnerDialogOpen(true)}
-                      className="magnetic-btn flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-10 h-16 small-scale font-bold text-white shadow-sm transition-all hover:bg-primary hover:-translate-y-0.5"
+                      className="magnetic-btn flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-10 h-16 small-scale font-bold text-primary-foreground shadow-sm transition-all hover:bg-primary hover:-translate-y-0.5"
                     >
                       Schedule a Conversation <ArrowRight className="h-5 w-5" />
                     </Button>
@@ -309,14 +309,14 @@ export default function Colleges() {
               repeatType: "reverse",
               ease: "easeInOut"
             }}
-            className="absolute bottom-12 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 text-white/50"
+            className="absolute bottom-12 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 text-on-media-subtle"
           >
-            <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Scroll to explore</span>
+            <span className="caption-scale font-bold uppercase tracking-[0.2em]">Scroll to explore</span>
             <ChevronDown className="h-6 w-6" />
           </motion.div>
         </section>
 
-        <section className="py-24 bg-white border-y border-border overflow-hidden">
+        <section className="py-24 bg-surface border-y border-border overflow-hidden">
           <Container>
             <motion.div
               initial="hidden"
@@ -390,7 +390,7 @@ export default function Colleges() {
                         },
                       },
                     }}
-                    className="group relative bg-white border border-border px-8 py-10 md:py-12 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl"
+                    className="group relative bg-surface border border-border px-8 py-10 md:py-12 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl"
                   >
                     {/* Glow */}
                     <div className="absolute inset-0 bg-gradient-to-b from-blue-50/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
@@ -422,7 +422,7 @@ export default function Colleges() {
           </Container>
         </section>
 
-        <section className="relative overflow-hidden bg-white py-24 md:py-32">
+        <section className="relative overflow-hidden bg-background py-24 md:py-32">
           <Container>
             {/* HEADER */}
             <motion.div
@@ -542,7 +542,7 @@ export default function Colleges() {
 
                       {/* CARD CONTENT */}
                       <div className="relative z-10 w-full md:w-[45%] group">
-                        <div className={`relative bg-white border p-6 md:p-8 transition-all duration-500 rounded-2xl overflow-hidden h-full
+                        <div className={`relative bg-surface border p-6 md:p-8 transition-all duration-500 rounded-2xl overflow-hidden h-full
                           ${isHovered ? 'shadow-2xl border-primary/30 -translate-y-1' : 'border-primary/10 shadow-[0_4px_20px_rgba(0,0,0,0.02)]'}`}>
 
                           {/* Number Badge */}
@@ -584,8 +584,8 @@ export default function Colleges() {
         </section>
 
         <section className="relative overflow-hidden bg-primary py-24 md:py-32">
-          <div className="absolute top-0 left-0 w-96 h-96 bg-white/10 blur-[120px] rounded-full pointer-events-none" />
-          <div className="absolute bottom-0 right-0 w-64 h-64 bg-white/5 blur-[80px] rounded-full pointer-events-none" />
+          <div className="absolute top-0 left-0 w-96 h-96 bg-overlay-glass blur-[120px] rounded-full pointer-events-none" />
+          <div className="absolute bottom-0 right-0 w-64 h-64 bg-overlay-glass blur-[80px] rounded-full pointer-events-none" />
 
           <Container>
             <motion.div
@@ -594,17 +594,17 @@ export default function Colleges() {
               viewport={viewportOnce}
               className="relative z-10 max-w-4xl mx-auto text-center"
             >
-              <h2 className="font-[var(--font-display)] h1-scale text-white mb-8">
+              <h2 className="font-[var(--font-display)] h1-scale text-on-media mb-8">
                 Ready to talk about one pilot hub?
               </h2>
-              <p className="body-scale text-white/80 mb-12 max-w-2xl mx-auto">
+              <p className="body-scale text-on-media-muted mb-12 max-w-2xl mx-auto">
                 We walk through space, staffing, and timelines, and only scale when your institution is comfortable.
               </p>
               <div className="flex flex-col sm:flex-row justify-center gap-6">
                 <Button
                   size="lg"
                   onClick={() => setPartnerDialogOpen(true)}
-                  className="bg-white text-primary hover:bg-muted h-16 px-10 rounded-2xl font-bold small-scale transition-all hover:-translate-y-1 shadow-xl"
+                  className="bg-surface text-primary hover:bg-muted h-16 px-10 rounded-2xl font-bold small-scale transition-all hover:-translate-y-1 shadow-xl"
                 >
                   Schedule a Conversation
                   <span>
@@ -615,7 +615,7 @@ export default function Colleges() {
                   <Button
                     size="lg"
                     variant="outline"
-                    className="border-white/30 bg-white/10 text-white hover:bg-white/20 h-16 px-10 rounded-2xl font-bold small-scale backdrop-blur-md transition-all hover:-translate-y-1"
+                    className="border-overlay-glass-border bg-overlay-glass text-on-media hover:bg-overlay-glass h-16 px-10 rounded-2xl font-bold small-scale backdrop-blur-md transition-all hover:-translate-y-1"
                   >
                     Learn More About Neev
                   </Button>

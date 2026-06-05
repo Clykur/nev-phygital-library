@@ -29,6 +29,8 @@ import {
 import { HUB_KIND_VALUES, hubKindLabel } from "@/lib/hub-display";
 import { useDebouncedValue } from "@/lib/use-debounced-value";
 import { cn } from "@/lib/utils";
+import { adminPanel, adminSearchInput, adminSelectTrigger } from "@/lib/admin-desk-ui";
+import { PORTAL_PAGE_LEAD, PORTAL_PAGE_TITLE } from "@/lib/portal-typography";
 import { PORTAL_INLINE_LINK, PORTAL_KICKER_COLOR } from "@/lib/student-ui";
 import { Loader2 } from "lucide-react";
 
@@ -48,12 +50,9 @@ type HubRow = {
 type StatusFilter = "all" | "active" | "inactive";
 type KindFilter = "all" | (typeof HUB_KIND_VALUES)[number];
 
-/** One border, flat panel — matches All copies (hub inventory) and Users. */
-const outline = "rounded-md border border-border bg-background";
-
 function SectionLabel({ children }: { children: ReactNode }) {
   return (
-    <h2 className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70">{children}</h2>
+    <h2 className="section-kicker">{children}</h2>
   );
 }
 
@@ -92,9 +91,6 @@ function AdminHubsContent() {
     setKindFilter("all");
   };
 
-  const selectTriggerClass = "h-10 w-full rounded-md border-border bg-background";
-  const inputClass = "h-10 w-full rounded-md border-border bg-background text-sm";
-
   return (
     <div className={cn(topPad)}>
       <div className="mb-6 border-b border-border pb-5">
@@ -102,19 +98,19 @@ function AdminHubsContent() {
           <div className="min-w-0 font-sans">
             <p
               className={cn(
-                "text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70",
+                "section-kicker",
                 PORTAL_KICKER_COLOR,
               )}
             >
               {isSuperAdmin ? "Super admin" : "Hub portal"}
             </p>
-            <h1 className="mt-1 text-[36px] font-[700] leading-tight tracking-tight text-[#1F2937]">Hubs</h1>
+            <h1 className={cn("mt-1", PORTAL_PAGE_TITLE)}>Hubs</h1>
             {isSuperAdmin ? (
-              <p className="mt-2 max-w-2xl text-[14px] font-[400] leading-relaxed text-[#1F2937]/70">
+              <p className={cn("mt-2 max-w-2xl", PORTAL_PAGE_LEAD)}>
                 Sites, capacity, and member counts. Open a row to edit. Use{" "}
-                <span className="font-[600] text-[#1F2937]">Status</span>,{" "}
-                <span className="font-[600] text-[#1F2937]">Type</span>, and{" "}
-                <span className="font-[600] text-[#1F2937]">Search</span> to narrow the list. For physical
+                <span className="font-semibold text-foreground">Status</span>,{" "}
+                <span className="font-semibold text-foreground">Type</span>, and{" "}
+                <span className="font-semibold text-foreground">Search</span> to narrow the list. For physical
                 stock, use{" "}
                 <Link
                   href={user ? portalPathsForUser(user).inventory : "/library"}
@@ -133,12 +129,12 @@ function AdminHubsContent() {
           <div className="flex w-full min-w-0 flex-col gap-1.5 sm:w-[12rem]">
             <Label
               htmlFor="admin-hubs-status"
-              className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70"
+              className="section-kicker"
             >
               Status
             </Label>
             <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as StatusFilter)}>
-              <SelectTrigger id="admin-hubs-status" className={selectTriggerClass}>
+              <SelectTrigger id="admin-hubs-status" className={adminSelectTrigger}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -151,12 +147,12 @@ function AdminHubsContent() {
           <div className="flex w-full min-w-0 flex-col gap-1.5 sm:w-[12rem]">
             <Label
               htmlFor="admin-hubs-type"
-              className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70"
+              className="section-kicker"
             >
               Type
             </Label>
             <Select value={kindFilter} onValueChange={(v) => setKindFilter(v as KindFilter)}>
-              <SelectTrigger id="admin-hubs-type" className={selectTriggerClass}>
+              <SelectTrigger id="admin-hubs-type" className={adminSelectTrigger}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -172,13 +168,13 @@ function AdminHubsContent() {
           <div className="min-w-0 flex-1 basis-[14rem]">
             <Label
               htmlFor="admin-hubs-search"
-              className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70"
+              className="section-kicker"
             >
               Search
             </Label>
             <Input
               id="admin-hubs-search"
-              className={cn("mt-1.5", inputClass)}
+              className={adminSearchInput}
               placeholder="Name, place, or kind…"
               value={rawQuery}
               onChange={(e) => setRawQuery(e.target.value)}
@@ -196,10 +192,10 @@ function AdminHubsContent() {
         </div>
       </div>
 
-      <section className={cn(outline, "overflow-hidden")} aria-label="All hubs">
+      <section className={cn(adminPanel, "overflow-hidden")} aria-label="All hubs">
         {q.isLoading ? (
           <div className="flex justify-center py-24">
-            <Loader2 className="h-9 w-9 animate-spin text-muted-foreground" />
+            <Loader2 className="h-9 w-9 animate-spin text-foreground-muted" />
           </div>
         ) : q.isError ? (
           <p className="px-4 py-10 text-sm text-destructive">
@@ -209,16 +205,16 @@ function AdminHubsContent() {
           <>
             <div className="border-b border-border px-4 py-3">
               <SectionLabel>All hubs</SectionLabel>
-              <p className="mt-1 text-[12px] font-[500] text-[#1F2937]/70">
+              <p className="mt-1 caption-scale font-medium text-foreground-muted">
                 {filteredHubs.length === rows.length
                   ? `${rows.length} in scope${q.data && q.data.total > rows.length ? ` · ${q.data.total} match search` : ""}`
                   : `${filteredHubs.length} shown · ${rows.length} in search scope`}
               </p>
             </div>
             {!rows.length ? (
-              <p className="px-4 py-10 text-[14px] font-[400] text-[#1F2937]/70 sm:px-4">No hubs match this search.</p>
+              <p className="px-4 py-10 body-scale text-foreground-muted sm:px-4">No hubs match this search.</p>
             ) : !filteredHubs.length ? (
-              <p className="px-4 py-10 text-[14px] font-[400] text-[#1F2937]/70 sm:px-4">No hubs match the filters.</p>
+              <p className="px-4 py-10 body-scale text-foreground-muted sm:px-4">No hubs match the filters.</p>
             ) : (
               <div className="overflow-x-auto">
                 <Table>
@@ -237,28 +233,28 @@ function AdminHubsContent() {
                   <TableBody>
                     {filteredHubs.map((h) => (
                       <TableRow key={h.id} className="cursor-pointer border-border">
-                        <TableCell className="pl-4 font-[500] sm:pl-6">
+                        <TableCell className="pl-4 font-medium sm:pl-6">
                           <Link href={adminHubPath(h.id)} className={PORTAL_INLINE_LINK}>
                             {h.name}
                           </Link>
-                          <p className="mt-0.5 font-mono text-[12px] font-[500] text-[#1F2937]/70">
+                          <p className="mt-0.5 font-mono caption-scale font-medium text-foreground-muted">
                             {h.publicId ?? h.id.slice(0, 8)}
                           </p>
                         </TableCell>
-                        <TableCell className="text-[#1F2937]/70">{h.location}</TableCell>
+                        <TableCell className="text-foreground-muted">{h.location}</TableCell>
                         <TableCell>
                           <span className={cn(uniformBadgeShape, getStatusColorClasses("approved"), "font-normal")}>
                             {hubKindLabel(h.kind)}
                           </span>
                         </TableCell>
-                        <TableCell className="tabular-nums text-[#1F2937]/70">{h.memberCount}</TableCell>
-                        <TableCell className="text-right font-mono tabular-nums text-[#1F2937]/70">
+                        <TableCell className="tabular-nums text-foreground-muted">{h.memberCount}</TableCell>
+                        <TableCell className="text-right font-mono tabular-nums text-foreground-muted">
                           {h.bookCount}
                         </TableCell>
-                        <TableCell className="text-right font-mono tabular-nums text-[#1F2937]/70">
+                        <TableCell className="text-right font-mono tabular-nums text-foreground-muted">
                           {h.activeRequestCount}
                         </TableCell>
-                        <TableCell className="text-[13px] font-[400] text-[#1F2937]/70">
+                        <TableCell className="body-scale font-normal text-foreground-muted">
                           {h.bookCount <= 0
                             ? "—"
                             : h.activeRequestCount / Math.max(1, h.bookCount) > 0.2

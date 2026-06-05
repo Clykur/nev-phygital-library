@@ -44,38 +44,38 @@ export function HubStudentAnalytics({ overviewHubId }: { overviewHubId: string }
   return (
     <section aria-label="Student Analytics" className="rounded-md border border-border bg-background overflow-hidden">
       <div className="border-b border-border px-4 py-3">
-        <h2 className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70">
+        <h2 className="section-kicker">
           Student Analytics
         </h2>
       </div>
       <div className="grid grid-cols-2 divide-x divide-y divide-border sm:grid-cols-3 lg:grid-cols-5">
         <div className="p-3">
-          <p className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70">Total Students</p>
-          <p className="mt-1 font-mono text-[24px] font-[600] tracking-tight text-[#1F2937]">
+          <p className="section-kicker">Total Students</p>
+          <p className="mt-1 font-mono h4-scale font-semibold tracking-tight text-foreground">
             {data.totalStudents}
           </p>
         </div>
         <div className="p-3">
-          <p className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70">Active Subs</p>
-          <p className="mt-1 font-mono text-[24px] font-[600] tracking-tight text-[#1F2937]">
+          <p className="section-kicker">Active Subs</p>
+          <p className="mt-1 font-mono h4-scale font-semibold tracking-tight text-foreground">
             {data.activeSubscriptions}
           </p>
         </div>
         <div className="p-3">
-          <p className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70">Expired Subs</p>
-          <p className="mt-1 font-mono text-[24px] font-[600] tracking-tight text-[#1F2937]">
+          <p className="section-kicker">Expired Subs</p>
+          <p className="mt-1 font-mono h4-scale font-semibold tracking-tight text-foreground">
             {data.expiredSubscriptions}
           </p>
         </div>
         <div className="p-3">
-          <p className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70">Credits Issued</p>
-          <p className="mt-1 font-mono text-[24px] font-[600] tracking-tight text-[#1F2937]">
+          <p className="section-kicker">Credits Issued</p>
+          <p className="mt-1 font-mono h4-scale font-semibold tracking-tight text-foreground">
             {data.totalCreditsIssued}
           </p>
         </div>
         <div className="p-3">
-          <p className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70">Credits Spent</p>
-          <p className="mt-1 font-mono text-[24px] font-[600] tracking-tight text-[#1F2937]">
+          <p className="section-kicker">Credits Spent</p>
+          <p className="mt-1 font-mono h4-scale font-semibold tracking-tight text-foreground">
             {data.totalCreditsRedeemed}
           </p>
         </div>
@@ -109,7 +109,7 @@ export function HubStudentsSection({ overviewHubId }: { overviewHubId: string })
   return (
     <section aria-label="Associated Students" className="rounded-md border border-border bg-background overflow-hidden">
       <div className="border-b border-border px-4 py-3">
-        <h2 className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70">
+        <h2 className="section-kicker">
           Associated Students
         </h2>
       </div>
@@ -117,7 +117,7 @@ export function HubStudentsSection({ overviewHubId }: { overviewHubId: string })
       <div className="overflow-x-auto">
         <Table className="min-w-[600px] w-full text-sm">
           <TableHeader>
-            <TableRow className="border-b border-border text-left text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]">
+            <TableRow className="border-b border-border text-left section-kicker text-foreground">
               <TableHead className="w-[30%] px-4 py-2">Student</TableHead>
               <TableHead className="w-[20%] hidden md:table-cell px-4 py-2">Contact</TableHead>
               <TableHead className="w-[15%] px-4 py-2">Status</TableHead>
@@ -128,7 +128,7 @@ export function HubStudentsSection({ overviewHubId }: { overviewHubId: string })
           <TableBody>
             {data.students.length === 0 ? (
               <TableRow className="border-b border-border">
-                <TableCell colSpan={5} className="h-32 text-center text-[#1F2937]/70">
+                <TableCell colSpan={5} className="h-32 text-center text-foreground-muted">
                   No students associated with this hub yet.
                 </TableCell>
               </TableRow>
@@ -136,19 +136,19 @@ export function HubStudentsSection({ overviewHubId }: { overviewHubId: string })
               data.students.map((student: any) => (
                 <TableRow key={student.id} className="border-b border-border last:border-0 hover:bg-muted/30">
                   <TableCell className="align-top py-3 px-4">
-                    <div className="font-[500] text-[#1F2937] whitespace-nowrap">{student.name || "Unknown Student"}</div>
-                    <div className="text-[12px] font-[500] text-[#1F2937]/70 font-mono mt-0.5">{student.publicId}</div>
-                    <div className="text-[12px] font-[500] text-[#1F2937]/70 mt-1.5 md:hidden space-y-0.5">
+                    <div className="font-medium text-foreground whitespace-nowrap">{student.name || "Unknown Student"}</div>
+                    <div className="caption-scale font-medium text-foreground-muted font-mono mt-0.5">{student.publicId}</div>
+                    <div className="caption-scale font-medium text-foreground-muted mt-1.5 md:hidden space-y-0.5">
                       <div className="truncate max-w-[150px]">{student.email || "No email"}</div>
                       <div className="capitalize">{student.subscriptionPlan || "No active plan"}</div>
                     </div>
                   </TableCell>
                   <TableCell className="hidden md:table-cell align-top py-3 px-4">
-                    <div className="text-[13px] text-[#1F2937] truncate max-w-[180px]">{student.email || "-"}</div>
-                    {student.phone && <div className="text-[12px] font-[500] text-[#1F2937]/70 mt-0.5">{student.phone}</div>}
+                    <div className="body-scale text-foreground truncate max-w-[180px]">{student.email || "-"}</div>
+                    {student.phone && <div className="caption-scale font-medium text-foreground-muted mt-0.5">{student.phone}</div>}
                   </TableCell>
                   <TableCell className="align-top py-3 px-4">
-                    <Badge variant={student.accountStatus === 'active' ? 'default' : 'secondary'} className="capitalize rounded-sm px-2 py-0.5 text-[11px] font-semibold">
+                    <Badge variant={student.accountStatus === 'active' ? 'default' : 'secondary'} className="capitalize rounded-sm px-2 py-0.5 caption-scale font-semibold">
                       {student.accountStatus || 'Unknown'}
                     </Badge>
                   </TableCell>
@@ -156,18 +156,18 @@ export function HubStudentsSection({ overviewHubId }: { overviewHubId: string })
                     <div className="flex flex-col gap-1 items-start">
                       <Badge variant="outline" className={
                         student.subscriptionStatus === 'active'
-                          ? "border-green-500/30 text-success dark:text-success bg-green-500/10 rounded-sm px-2 py-0.5 text-[11px] font-semibold capitalize"
-                          : "border-border text-[#1F2937]/70 rounded-sm px-2 py-0.5 text-[11px] font-semibold capitalize"
+                          ? "border-success/30 text-success bg-success/10 rounded-sm px-2 py-0.5 caption-scale font-semibold capitalize"
+                          : "border-border text-foreground-muted rounded-sm px-2 py-0.5 caption-scale font-semibold capitalize"
                       }>
                         {student.subscriptionStatus || 'Inactive'}
                       </Badge>
-                      <span className="text-[12px] font-[500] text-[#1F2937]/70 capitalize">{student.subscriptionPlan || "No active plan"}</span>
+                      <span className="caption-scale font-medium text-foreground-muted capitalize">{student.subscriptionPlan || "No active plan"}</span>
                     </div>
                   </TableCell>
                   <TableCell className="text-right align-top py-3 px-4">
-                    <div className="font-mono font-[600] text-[14px] text-[#1F2937]">{student.walletBalance ?? 0} cr</div>
-                    <div className="text-[12px] font-[500] text-[#1F2937]/70 mt-0.5 whitespace-nowrap">
-                      <span className="text-success dark:text-success">+{student.creditsEarned ?? 0}</span> / <span className="text-destructive">-{student.creditsSpent ?? 0}</span>
+                    <div className="font-mono font-semibold body-scale text-foreground">{student.walletBalance ?? 0} cr</div>
+                    <div className="caption-scale font-medium text-foreground-muted mt-0.5 whitespace-nowrap">
+                      <span className="text-success">+{student.creditsEarned ?? 0}</span> / <span className="text-destructive">-{student.creditsSpent ?? 0}</span>
                     </div>
                   </TableCell>
                 </TableRow>

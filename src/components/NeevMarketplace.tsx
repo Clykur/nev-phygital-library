@@ -72,7 +72,7 @@ export const NeevMarketplace: React.FC<any> = ({
         {/* Header Section */}
         <div className="mb-4 sm:mb-6 border-b border-border/30 pb-4 flex flex-col items-start justify-between gap-4 sm:gap-6 md:flex-row md:items-end">
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#64748B]">
+            <p className="caption-scale font-semibold uppercase tracking-[0.22em] text-foreground-muted">
               Student
             </p>
             <h1 className="mt-1  text-lg font-bold tracking-tight text-foreground text-balance">
@@ -85,8 +85,8 @@ export const NeevMarketplace: React.FC<any> = ({
         <div className="mb-8 border-b border-border/30 pb-6">
           <div className="flex w-full items-end gap-2 min-w-0">
             <div className="flex min-w-0 flex-1 flex-col">
-              <label className="text-[10px] text-muted-foreground mb-1">Search</label>
-              <div className="mt-1.5 flex h-10 items-center gap-2 rounded-lg border border-border bg-white px-3 focus-within:ring-2 focus-within:ring-slate-900 focus-within:border-transparent transition-all">
+              <label className="caption-scale text-muted-foreground mb-1">Search</label>
+              <div className="mt-1.5 flex h-10 items-center gap-2 rounded-lg border border-border bg-surface px-3 focus-within:ring-2 focus-within:ring-slate-900 focus-within:border-transparent transition-all">
                 <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
                 <input
                   type="search"
@@ -99,7 +99,7 @@ export const NeevMarketplace: React.FC<any> = ({
             </div>
 
             <div className="flex w-[100px] shrink-0 flex-col sm:w-[120px]">
-              <label className="text-[10px] text-muted-foreground mb-1">Source</label>
+              <label className="caption-scale text-muted-foreground mb-1">Source</label>
               <div className="relative mt-1.5">
                 <select
                   value={sourceFilter}
@@ -107,7 +107,7 @@ export const NeevMarketplace: React.FC<any> = ({
                     setSourceFilter(e.target.value as any);
                     setBrowsePage(1); // Reset page on filter
                   }}
-                  className="h-10 w-full appearance-none rounded-lg border border-border bg-white px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all pr-8"
+                  className="h-10 w-full appearance-none rounded-lg border border-border bg-surface px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all pr-8"
                 >
                   <option value="all">All</option>
                   <option value="hub">Hubs</option>
@@ -118,13 +118,13 @@ export const NeevMarketplace: React.FC<any> = ({
             </div>
 
             <div className="flex w-auto shrink flex-col">
-              <label className="text-[10px] text-muted-foreground mb-1">Request</label>
+              <label className="caption-scale text-muted-foreground mb-1">Request</label>
               <button
-                className="mt-1.5 flex h-10 items-center justify-center gap-2 rounded-lg border border-border bg-muted px-4 text-sm font-medium transition-colors hover:bg-muted/50 text-foreground"
+                className="mt-1.5 flex h-10 items-center justify-center gap-2 px-4 text-sm font-medium transition-colors hover:bg-muted/50 text-foreground"
                 onClick={() => alert("Book Request Modal triggered")}
               >
                 <BookMarked className="h-4 w-4 text-foreground" />
-                <span className="truncate text-[11px] sm:text-sm">Request a book</span>
+                <span className="truncate caption-scale sm:text-sm">Request a book</span>
               </button>
             </div>
           </div>
@@ -141,7 +141,7 @@ export const NeevMarketplace: React.FC<any> = ({
                   <div className="absolute inset-0 flex items-center justify-center p-4">
                     <div className="w-20 h-28 bg-muted/60 rounded flex-shrink-0 relative overflow-hidden flex flex-col justify-between p-2 shadow-sm border border-border/50">
                       <div className="w-1.5 h-full bg-primary absolute left-0 top-0"></div>
-                      <span className="text-[9px] font-bold text-foreground/90 leading-tight line-clamp-3">
+                      <span className="caption-scale font-bold text-foreground/90 leading-tight line-clamp-3">
                         {book.title}
                       </span>
                     </div>
@@ -151,10 +151,10 @@ export const NeevMarketplace: React.FC<any> = ({
                 {/* Content Area */}
                 <div className="flex flex-1 flex-col p-3 sm:p-4">
                   <div className="mb-2 flex items-start justify-between gap-2">
-                    <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground line-clamp-1">
+                    <span className="caption-scale font-medium uppercase tracking-wider text-muted-foreground line-clamp-1">
                       {book.source === 'hub' ? 'From Hub' : 'From Peer'}
                     </span>
-                    <span className="shrink-0 text-[10px] font-medium text-muted-foreground/60">
+                    <span className="shrink-0 caption-scale font-medium text-muted-foreground/60">
                       #{book.isbn.substring(Math.max(0, book.isbn.length - 4))}
                     </span>
                   </div>
@@ -168,11 +168,11 @@ export const NeevMarketplace: React.FC<any> = ({
 
                   <div className="mt-3 flex flex-wrap items-center gap-1.5">
                     {isAvailable ? (
-                      <span className="rounded-sm bg-secondary/10 px-1.5 py-0.5 text-[10px] font-semibold text-secondary dark:text-secondary">
+                      <span className="rounded-sm bg-secondary/10 px-1.5 py-0.5 caption-scale font-semibold text-secondary">
                         Available
                       </span>
                     ) : (
-                      <span className="rounded-sm bg-muted px-1.5 py-0.5 text-[10px] font-semibold text-muted-foreground">
+                      <span className="rounded-sm bg-muted px-1.5 py-0.5 caption-scale font-semibold text-muted-foreground">
                         Checked Out
                       </span>
                     )}
@@ -184,7 +184,7 @@ export const NeevMarketplace: React.FC<any> = ({
                         onLocateOnMap(book.shelfLocation.shelfId);
                         addXp(10);
                       }}
-                      className="flex-1 inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-white px-3 py-2 text-xs font-medium text-foreground transition-colors hover:bg-muted"
+                      className="flex-1 inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-surface px-3 py-2 text-xs font-medium text-foreground transition-colors hover:bg-muted"
                     >
                       <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
                       Locate
@@ -192,7 +192,7 @@ export const NeevMarketplace: React.FC<any> = ({
                     <button
                       onClick={() => addXp(40)}
                       className={`flex-1 inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs font-medium transition-colors ${isAvailable
-                          ? 'bg-primary text-white hover:bg-[#152A45]'
+                          ? 'bg-primary text-primary-foreground hover:bg-primary-hover'
                           : 'bg-muted/50 text-muted-foreground cursor-not-allowed'
                         }`}
                     >
@@ -225,7 +225,7 @@ export const NeevMarketplace: React.FC<any> = ({
               >
                 Previous
               </button>
-              <span className="flex-1 sm:flex-none sm:min-w-[8.5rem] text-center text-[10px] sm:text-xs text-muted-foreground tabular-nums">
+              <span className="flex-1 sm:flex-none sm:min-w-[8.5rem] text-center caption-scale sm:text-xs text-muted-foreground tabular-nums">
                 Page {browsePage} of {browseTotalPages}
               </span>
               <button

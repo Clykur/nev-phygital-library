@@ -1,0 +1,148 @@
+/**
+ * Neev Design System — Core Tokens
+ * Single source of truth for colors, typography, spacing, shadows, and motion.
+ */
+
+/* ─── Slate Neutral Scale ─── */
+:root {
+  --neutral-50: #f8fafc;
+  --neutral-100: #f1f5f9;
+  --neutral-200: #e2e8f0;
+  --neutral-300: #cbd5e1;
+  --neutral-400: #94a3b8;
+  --neutral-500: #64748b;
+  --neutral-600: #475569;
+  --neutral-700: #334155;
+  --neutral-800: #1e293b;
+  --neutral-900: #0f172a;
+  --neutral-950: #020617;
+
+  /* ─── Brand ─── */
+  --brand-primary: #2563eb;
+  --brand-primary-hover: #1d4ed8;
+  --brand-accent: #f97316;
+  --brand-accent-hover: #ea580c;
+
+  /* ─── Semantic Colors (Light) ─── */
+  --background: var(--neutral-50);
+  --background-secondary: var(--neutral-100);
+  --surface: #ffffff;
+  --surface-elevated: #ffffff;
+  --card: #ffffff;
+  --card-hover: var(--neutral-50);
+  --border: var(--neutral-200);
+  --border-subtle: var(--neutral-100);
+  --foreground: var(--neutral-900);
+  --foreground-muted: var(--neutral-600);
+  --foreground-subtle: var(--neutral-500);
+
+  --primary: var(--brand-primary);
+  --primary-hover: var(--brand-primary-hover);
+  --primary-foreground: #ffffff;
+
+  --accent: var(--brand-accent);
+  --accent-hover: var(--brand-accent-hover);
+  --accent-foreground: #ffffff;
+
+  --secondary: var(--neutral-100);
+  --secondary-foreground: var(--neutral-900);
+
+  --muted: var(--neutral-100);
+  --muted-foreground: var(--neutral-500);
+
+  --destructive: #ef4444;
+  --destructive-hover: #dc2626;
+  --destructive-foreground: #ffffff;
+
+  --success: #10b981;
+  --success-foreground: #ffffff;
+  --warning: #f59e0b;
+  --warning-foreground: var(--neutral-900);
+  --error: #ef4444;
+  --error-foreground: #ffffff;
+  --info: #3b82f6;
+  --info-foreground: #ffffff;
+
+  --popover: #ffffff;
+  --popover-foreground: var(--neutral-900);
+  --card-foreground: var(--neutral-900);
+
+  --input: var(--neutral-200);
+  --ring: var(--brand-primary);
+
+  /* ─── On-media / overlay (hero, book covers, image overlays) ─── */
+  --on-media: #ffffff;
+  --on-media-muted: color-mix(in srgb, var(--on-media) 88%, transparent);
+  --on-media-subtle: color-mix(in srgb, var(--on-media) 55%, transparent);
+  --overlay-scrim: color-mix(in srgb, var(--neutral-950) 40%, transparent);
+  --overlay-backdrop: color-mix(in srgb, var(--neutral-950) 60%, transparent);
+  --overlay-glass: color-mix(in srgb, var(--surface) 15%, transparent);
+  --overlay-glass-border: color-mix(in srgb, var(--on-media) 25%, transparent);
+  --modal-overlay: color-mix(in srgb, var(--neutral-900) 55%, transparent);
+  --surface-ring: color-mix(in srgb, var(--foreground) 6%, transparent);
+
+  /* ─── Typography ─── */
+  --app-font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --app-font-display: "Manrope", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  --app-font-mono: "JetBrains Mono", "Fira Code", "Cascadia Code", "Consolas", monospace;
+
+  /* Type scale */
+  --text-hero-xl: 4.5rem;   /* 72px */
+  --text-hero-lg: 4rem;     /* 64px */
+  --text-hero-md: 3.5rem;   /* 56px */
+  --text-h1: 3rem;          /* 48px */
+  --text-h2: 2.5rem;        /* 40px */
+  --text-h3: 2rem;          /* 32px */
+  --text-h4: 1.5rem;        /* 24px */
+  --text-body-lg: 1.125rem; /* 18px */
+  --text-body: 1rem;        /* 16px */
+  --text-body-sm: 0.875rem; /* 14px */
+  --text-meta: 0.75rem;     /* 12px */
+
+  --leading-hero: 1.1;
+  --leading-heading: 1.2;
+  --leading-body: 1.6;
+  --leading-meta: 1.5;
+
+  --tracking-tight: -0.025em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.05em;
+  --tracking-kicker: 0.12em;
+
+  /* ─── Spacing Scale ─── */
+  --space-1: 0.25rem;  /* 4 */
+  --space-2: 0.5rem;   /* 8 */
+  --space-3: 0.75rem;  /* 12 */
+  --space-4: 1rem;     /* 16 */
+  --space-5: 1.25rem;  /* 20 */
+  --space-6: 1.5rem;   /* 24 */
+  --space-8: 2rem;     /* 32 */
+  --space-10: 2.5rem;  /* 40 */
+  --space-12: 3rem;    /* 48 */
+  --space-16: 4rem;    /* 64 */
+  --space-20: 5rem;    /* 80 */
+  --space-24: 6rem;    /* 96 */
+
+  /* ─── Radius ─── */
+  --radius-sm: 0.5rem;   /* 8px */
+  --radius-md: 0.75rem;  /* 12px */
+  --radius-lg: 1rem;     /* 16px */
+  --radius-xl: 1.5rem;   /* 24px */
+  --radius-2xl: 2rem;    /* 32px */
+
+  /* ─── Shadows ─── */
+  --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 10px 30px rgba(15, 23, 42, 0.1);
+  --shadow-xl: 0 20px 60px rgba(15, 23, 42, 0.12);
+  --shadow-card-hover: 0 10px 30px rgba(37, 99, 235, 0.08);
+
+  /* ─── Motion ─── */
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 350ms;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+}
+

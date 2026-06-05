@@ -113,8 +113,8 @@ export default function Student() {
                         </div>
                         
                         <div className="flex justify-between items-start mb-6 relative z-10">
-                          <div className="w-12 h-14 bg-primary rounded-sm flex items-center justify-center shadow-sm">
-                            <BookOpen className="w-5 h-5 text-slate-50" />
+                          <div className="w-12 h-14 flex items-center justify-center shadow-sm">
+                            <BookOpen className="w-5 h-5 text-on-media" />
                           </div>
                           <span className={cn(uniformBadgeShape, getStatusColorClasses("set aside"))}>
                             Due in {book.due}
@@ -155,7 +155,7 @@ export default function Student() {
                     <motion.div layout initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} key={`ret-${book.id}`}>
                       <div className="glass-card bg-muted/30 p-4 rounded-xl flex items-center justify-between opacity-70">
                         <div className="flex items-center gap-4">
-                          <div className="w-8 h-10 bg-slate-200 dark:bg-slate-800 rounded-sm border border-border flex items-center justify-center">
+                          <div className="w-8 h-10 flex items-center justify-center">
                              <CheckCircle2 className="w-4 h-4 text-secondary" />
                           </div>
                           <div>
@@ -180,7 +180,7 @@ export default function Student() {
                   <motion.div key={book.id} initial="hidden" animate="visible" variants={fadeInUp} transition={{ delay: 0.2 + (i * 0.1) }}>
                     <div className="glass-card bg-card/60 p-4 rounded-xl flex items-center justify-between hover:bg-card/80 transition-colors">
                       <div className="flex items-center gap-4">
-                        <div className="w-10 h-12 bg-slate-200 dark:bg-slate-800 rounded-sm border border-border flex items-center justify-center">
+                        <div className="w-10 h-12 flex items-center justify-center">
                            <BookOpen className="w-4 h-4 text-muted-foreground" />
                         </div>
                         <div>
@@ -216,12 +216,12 @@ export default function Student() {
           <div className="lg:col-span-4 space-y-6">
             {/* ID Card */}
             <motion.div initial="hidden" animate="visible" variants={fadeInUp}>
-              <div className="rounded-2xl p-6 bg-slate-950 text-slate-50 relative overflow-hidden shadow-xl">
+              <div className="rounded-2xl p-6 bg-neutral-950 text-on-media relative overflow-hidden shadow-xl">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-accent/20 rounded-full blur-2xl pointer-events-none" />
                 <div className="relative z-10">
                   <div className="flex justify-between items-start mb-8">
                     <span className="font-serif italic text-accent">PSLN Member</span>
-                    <div className="w-8 h-8 rounded bg-slate-800 flex items-center justify-center">
+                    <div className="w-8 h-8 flex items-center justify-center">
                        <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 text-muted-foreground">
                          <path d="M4 19.5V4.5C4 3.67157 4.67157 3 5.5 3H10.5C11.3284 3 12 3.67157 12 4.5V19.5C12 20.3284 11.3284 21 10.5 21H5.5C4.67157 21 4 20.3284 4 19.5Z" stroke="currentColor" strokeWidth="1.5"/>
                          <path d="M12 4.5C12 3.67157 12.6716 3 13.5 3H18.5C19.3284 3 20 3.67157 20 4.5V19.5C20 20.3284 19.3284 21 18.5 21H13.5C12.6716 21 12 20.3284 12 19.5V4.5Z" stroke="currentColor" strokeWidth="1.5"/>

@@ -59,14 +59,14 @@ export function ImageCarousel({
                 type="button"
                 aria-label={`Go to slide ${i + 1}`}
                 className={cn(
-                  minimal ? "h-1 w-8 border-0" : "h-2 w-2 border border-border bg-white",
+                  minimal ? "h-1 w-8 border-0" : "h-2 w-2 border border-border bg-surface",
                   minimal
                     ? i === index
                       ? "bg-primary"
-                      : "bg-[#CBD5E1]"
+                      : "bg-neutral-300"
                     : i === index
-                      ? "bg-[#2563EB] border-[#2563EB]"
-                      : "bg-white",
+                      ? "bg-primary border-primary"
+                      : "bg-surface",
                 )}
                 onClick={() => setIndex(i)}
               />
@@ -78,7 +78,7 @@ export function ImageCarousel({
             <button
               type="button"
               className={cn(
-                "flex items-center justify-center border border-border bg-white text-foreground",
+                "flex items-center justify-center border border-border bg-surface text-foreground",
                 minimal ? "h-8 w-8 text-lg leading-none" : "h-10 w-10",
               )}
               aria-label="Previous slide"
@@ -89,7 +89,7 @@ export function ImageCarousel({
             <button
               type="button"
               className={cn(
-                "flex items-center justify-center border border-border bg-white text-foreground",
+                "flex items-center justify-center border border-border bg-surface text-foreground",
                 minimal ? "h-8 w-8 text-lg leading-none" : "h-10 w-10",
               )}
               aria-label="Next slide"

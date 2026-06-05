@@ -253,7 +253,7 @@ function RequestProgress({ status }: { status: string }) {
           />
         ))}
       </div>
-      <p className="text-[10px] text-muted-foreground">
+      <p className="caption-scale text-muted-foreground">
         {steps[Math.max(0, Math.min(idx, steps.length - 1))] ?? "Requested"}
       </p>
     </div>
@@ -270,9 +270,9 @@ function FlatStatus({
   return (
     <span
       className={cn(
-        "inline-flex h-7 items-center whitespace-nowrap rounded-sm border px-3 text-[10px] font-semibold uppercase tracking-wide",
+        "inline-flex h-7 items-center whitespace-nowrap rounded-sm border px-3 caption-scale font-semibold uppercase tracking-kicker",
         tone === "emerald" && STATUS_CHIP_EMERALD,
-        tone === "amber" && "border-primary/30 bg-primary/10 text-foreground dark:bg-primary/15",
+        tone === "amber" && "border-primary/30 bg-primary/10 text-foreground",
         tone === "destructive" && "border-destructive/30 bg-destructive/10 text-destructive",
         tone === "neutral" && "border-border bg-muted/40 text-foreground",
       )}
@@ -293,7 +293,7 @@ function SectionHeading({
 }) {
   return (
     <div className="mb-3">
-      <p className="text-[10px] font-semibold uppercase tracking-[0.35em] text-muted-foreground">{kicker}</p>
+      <p className="caption-scale font-semibold uppercase tracking-kicker text-muted-foreground">{kicker}</p>
       <h2 className="mt-1 font-serif text-lg font-light tracking-tight text-foreground">{title}</h2>
       {description ? (
         <p className="mt-1 max-w-2xl text-xs leading-relaxed text-muted-foreground">{description}</p>
@@ -607,7 +607,7 @@ export default function StudentTrackingPage() {
     <div className={cn("min-h-[100dvh] bg-background pb-20", top)}>
       <div className={cn("mx-auto", pageWrap)}>
         <div className="mb-8 border-b border-border/30 pb-2">
-          <h1 className="mt-1 text-[36px] font-[700] leading-tight tracking-tight text-[#1F2937]">
+          <h1 className="mt-1 h3-scale font-bold tracking-tight text-foreground">
             Activity
           </h1>
         </div>
@@ -694,7 +694,7 @@ export default function StudentTrackingPage() {
               <div className="mt-4 space-y-3">
                 {nextActions.pickupReady.length > 0 ? (
                   <div className="rounded-md border border-secondary/25 bg-secondary/5 p-3 text-sm">
-                    <p className="text-[10px] font-bold uppercase tracking-wide text-secondary/80 dark:text-emerald-200/90">
+                    <p className="caption-scale font-bold uppercase tracking-kicker text-success text-success">
                       Pickup pending
                     </p>
                     <ul className="mt-2 list-inside list-disc text-muted-foreground">
@@ -711,7 +711,7 @@ export default function StudentTrackingPage() {
                 ) : null}
                 {nextActions.returnSoon.length > 0 ? (
                   <div className="rounded-md border border-primary/25 bg-primary/5 p-3 text-sm">
-                    <p className="text-[10px] font-bold uppercase tracking-wide text-foreground">
+                    <p className="caption-scale font-bold uppercase tracking-kicker text-foreground">
                       Return due or overdue
                     </p>
                     <ul className="mt-2 list-inside list-disc text-muted-foreground">
@@ -764,22 +764,22 @@ export default function StudentTrackingPage() {
                               <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
                                 <span
                                   className={cn(
-                                    "inline-flex h-7 items-center whitespace-nowrap rounded-sm border px-3 text-[10px] font-semibold uppercase tracking-wide",
+                                    "inline-flex h-7 items-center whitespace-nowrap rounded-sm border px-3 caption-scale font-semibold uppercase tracking-kicker",
                                     a.severity === "critical"
                                       ? "border-destructive/30 bg-destructive/10 text-destructive"
                                       : a.severity === "warning"
-                                        ? "border-primary/30 bg-primary/10 text-foreground dark:bg-primary/15"
+                                        ? "border-primary/30 bg-primary/10 text-foreground"
                                         : "border-border bg-muted/40 text-foreground"
                                   )}
                                 >
                                   {a.severity ?? "warning"}
                                 </span>
-                                <span className="min-w-0 text-[14px] font-[400] text-[#1F2937] dark:text-foreground">
+                                <span className="min-w-0 body-scale font-normal text-foreground">
                                   {a.message}
                                 </span>
                               </div>
                               {a.count != null ? (
-                                <span className="font-mono text-[14px] tabular-nums text-[#1F2937]/70 dark:text-muted-foreground">
+                                <span className="font-mono body-scale tabular-nums text-foreground-muted">
                                   {a.count}
                                 </span>
                               ) : null}
@@ -828,7 +828,7 @@ export default function StudentTrackingPage() {
                               <TableCell className="pl-5 align-top font-medium">
                                 <span className="line-clamp-2">{b.title}</span>
                                 {hubLabel(b.hubId) ? (
-                                  <p className="mt-1 font-mono text-[10px] text-muted-foreground md:hidden">
+                                  <p className="mt-1 font-mono caption-scale text-muted-foreground md:hidden">
                                     {hubLabel(b.hubId)}
                                   </p>
                                 ) : null}
@@ -925,7 +925,7 @@ export default function StudentTrackingPage() {
                                 <TableCell className="min-w-0 align-top">
                                   <span className="line-clamp-2 font-medium">{row.hub.title}</span>
                                   {hubLabel(row.hub.hubId) ? (
-                                    <p className="mt-1 text-[10px] text-muted-foreground md:hidden">
+                                    <p className="mt-1 caption-scale text-muted-foreground md:hidden">
                                       {hubLabel(row.hub.hubId)}
                                     </p>
                                   ) : null}
@@ -950,7 +950,7 @@ export default function StudentTrackingPage() {
                                 <TableCell className="min-w-0 align-top">
                                   <span className="line-clamp-2 font-medium">{row.peer.bookTitle}</span>
                                   {hubLabel(row.peer.dropoffHubId) ? (
-                                    <p className="mt-1 text-[10px] text-muted-foreground md:hidden">
+                                    <p className="mt-1 caption-scale text-muted-foreground md:hidden">
                                       {hubLabel(row.peer.dropoffHubId)}
                                     </p>
                                   ) : null}
@@ -1008,7 +1008,7 @@ export default function StudentTrackingPage() {
                                 ) : null}
                                 <RequestProgress status={r.status} />
                                 {hubLabel(r.hubId) ? (
-                                  <p className="mt-1 text-[10px] text-muted-foreground lg:hidden">
+                                  <p className="mt-1 caption-scale text-muted-foreground lg:hidden">
                                     {hubLabel(r.hubId)}
                                   </p>
                                 ) : null}
@@ -1038,7 +1038,7 @@ export default function StudentTrackingPage() {
                                     }
                                   />
                                 </div>
-                                <p className="mt-2 text-left text-[11px] text-muted-foreground sm:text-right">
+                                <p className="mt-2 text-left caption-scale text-muted-foreground sm:text-right">
                                   {requestNextText(r.status)}
                                 </p>
                               </TableCell>
@@ -1110,7 +1110,7 @@ export default function StudentTrackingPage() {
                               <TableCell className="min-w-0 pl-5 align-top font-medium">
                                 <span className="line-clamp-2">{l.bookTitle}</span>
                               </TableCell>
-                              <TableCell className="hidden align-top font-mono text-[11px] text-muted-foreground sm:table-cell">
+                              <TableCell className="hidden align-top font-mono caption-scale text-muted-foreground sm:table-cell">
                                 {l.refId ?? "—"}
                               </TableCell>
                               <TableCell className="align-top text-right tabular-nums">₹{fmtInr(l.price)}</TableCell>
@@ -1186,7 +1186,7 @@ export default function StudentTrackingPage() {
                             <TableCell className="min-w-0 pl-5 align-top">
                               <span className="line-clamp-2 font-medium">{l.bookTitle}</span>
                               {hubLabel(l.dropoffHubId) ? (
-                                <p className="mt-1 text-[10px] text-muted-foreground sm:hidden">
+                                <p className="mt-1 caption-scale text-muted-foreground sm:hidden">
                                   {hubLabel(l.dropoffHubId)}
                                 </p>
                               ) : null}

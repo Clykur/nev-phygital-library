@@ -90,14 +90,14 @@ const outline = "rounded-md border border-border bg-background";
 
 function SectionLabel({ children }: { children: ReactNode }) {
   return (
-    <h2 className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70">{children}</h2>
+    <h2 className="section-kicker">{children}</h2>
   );
 }
 
 function CopyLifecycleStrip({ status }: { status: string }) {
   if (["sold", "unavailable", "transfer_pending", "in_transit"].includes(status)) {
     return (
-      <p className="text-[11px] font-[500] uppercase tracking-wider text-[#1F2937]/70">
+      <p className="section-kicker">
         Lifecycle: {status.replace(/_/g, " ")}
       </p>
     );
@@ -111,12 +111,12 @@ function CopyLifecycleStrip({ status }: { status: string }) {
     >
       {["Available", "Set aside (reserved)", "Out (on loan)"].map((label, i) => (
         <span key={label} className="flex items-center gap-1.5">
-          {i > 0 ? <span className="text-[11px] text-[#1F2937]/50">→</span> : null}
+          {i > 0 ? <span className="caption-scale text-foreground-subtle">→</span> : null}
           <span
             className={cn(
-              "max-w-[10rem] truncate rounded px-1 py-0.5 text-[11px] font-[500]",
+              "max-w-[10rem] truncate rounded px-1 py-0.5 caption-scale font-medium",
               i < idx
-                ? "text-emerald-800/80 dark:text-emerald-200/80"
+                ? "text-success/80"
                 : i === idx
                   ? "bg-primary/15 text-foreground"
                   : "text-muted-foreground/50",
@@ -161,7 +161,7 @@ function InventoryPaginationBar({
       >
         Previous
       </Button>
-      <span className="min-w-[6.5rem] text-center text-[12px] font-[500] tabular-nums text-[#1F2937]/70" aria-current="page">
+      <span className="min-w-[6.5rem] text-center caption-scale font-medium tabular-nums text-foreground-muted" aria-current="page">
         Page {page + 1} / {totalPages}
       </span>
       <Button
@@ -519,7 +519,7 @@ export default function HubInventoryPage() {
   if (!user?.hubStaffHubIds.length) {
     return (
       <div className={cn("mx-auto max-w-lg pb-20 text-center", PORTAL_PAGE_GUTTER_X, inShell ? "pt-8" : "pt-28")}>
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-border/60 bg-muted/30">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center">
           <Shield className="h-7 w-7 text-muted-foreground" />
         </div>
         <h1 className="mt-6 font-serif text-2xl font-light tracking-tight">Inventory restricted</h1>
@@ -547,26 +547,26 @@ export default function HubInventoryPage() {
       <div className="mb-6 border-b border-border pb-5">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
           <div className="min-w-0 font-sans">
-            <h1 className="mt-1 text-[36px] font-[700] leading-tight tracking-tight text-[#1F2937]">Inventory</h1>
+            <h1 className="mt-1 h3-scale font-bold tracking-tight text-foreground">Inventory</h1>
             {isSuperAdmin ? (
-              <p className="mt-2 w-full text-[14px] font-[400] leading-relaxed text-[#1F2937]/70">
-                Every row is a <span className="font-[600] text-[#1F2937]">physical copy</span> (hub stock or student
+              <p className="mt-2 w-full body-scale text-foreground-muted leading-relaxed">
+                Every row is a <span className="font-semibold text-foreground">physical copy</span> (hub stock or student
                 consignment on shelf). P2P listings that are not a copy yet are not mixed in here; open{" "}
                 {deskPaths ? (
                   <Link href={deskPaths.p2pListings} className={PORTAL_INLINE_LINK}>
                     P2P Listings
                   </Link>
                 ) : (
-                  <span className="font-[600] text-[#1F2937]">P2P Listings</span>
+                  <span className="font-semibold text-foreground">P2P Listings</span>
                 )}{" "}
-                for the pre–drop-off pipeline. Use <span className="font-[600] text-[#1F2937]">Scope</span>,{" "}
-                <span className="font-[600] text-[#1F2937]">Source</span>, and{" "}
-                <span className="font-[600] text-[#1F2937]">Status</span> to filter.
+                for the pre–drop-off pipeline. Use <span className="font-semibold text-foreground">Scope</span>,{" "}
+                <span className="font-semibold text-foreground">Source</span>, and{" "}
+                <span className="font-semibold text-foreground">Status</span> to filter.
               </p>
             ) : (
-              <p className="mt-2 w-full text-[14px] font-[400] leading-relaxed text-[#1F2937]/70">
+              <p className="mt-2 w-full body-scale text-foreground-muted leading-relaxed">
                 On-shelf and consigned physical copies for your managed hubs. Use{" "}
-                <span className="font-[600] text-[#1F2937]">Source</span> to separate hub stock from student consignment
+                <span className="font-semibold text-foreground">Source</span> to separate hub stock from student consignment
                 on shelf. Pre–drop-off peer listings are under{" "}
                 {deskPaths ? (
                   <Link href={deskPaths.p2pListings} className={PORTAL_INLINE_LINK}>
@@ -601,7 +601,7 @@ export default function HubInventoryPage() {
 
         <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
           <div className="flex w-full min-w-0 flex-col gap-1.5 sm:w-full sm:flex-[3] sm:min-w-[20rem] lg:min-w-[28rem]">
-            <Label htmlFor="hub-inv-search" className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70">
+            <Label htmlFor="hub-inv-search" className="section-kicker">
               Search title or ref
             </Label>
             <Input
@@ -619,7 +619,7 @@ export default function HubInventoryPage() {
             <div className="flex w-full flex-col gap-1.5 sm:min-w-[10rem] sm:shrink-0 sm:flex-1">
               <Label
                 htmlFor="hub-inv-scope"
-                className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70"
+                className="section-kicker"
               >
                 Scope
               </Label>
@@ -645,7 +645,7 @@ export default function HubInventoryPage() {
             </div>
           ) : null}
           <div className="flex min-w-[10rem] shrink-0 flex-1 flex-col gap-1.5">
-            <Label htmlFor="hub-inv-source" className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70">
+            <Label htmlFor="hub-inv-source" className="section-kicker">
               Source
             </Label>
             <Select
@@ -666,7 +666,7 @@ export default function HubInventoryPage() {
             </Select>
           </div>
           <div className="flex min-w-[10rem] shrink-0 flex-1 flex-col gap-1.5">
-            <Label htmlFor="hub-inv-status" className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70">
+            <Label htmlFor="hub-inv-status" className="section-kicker">
               Status
             </Label>
             <Select
@@ -714,8 +714,8 @@ export default function HubInventoryPage() {
             <div className="border-b border-border px-4 py-3">
               <SectionLabel>Inventory</SectionLabel>
               <div className="mt-2 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
-                <p className="text-[12px] font-[500] text-[#1F2937]/70">
-                  <span className="font-[600] text-[#1F2937]">{total}</span>{" "}
+                <p className="caption-scale font-medium text-foreground-muted">
+                  <span className="font-semibold text-foreground">{total}</span>{" "}
                   {total === 1 ? "copy" : "copies"} in this view
                   {isSuperAdmin && !overviewHubId
                     ? " · every hub"
@@ -735,7 +735,7 @@ export default function HubInventoryPage() {
               </div>
             </div>
             {rows.length === 0 ? (
-              <div className="px-4 py-12 text-center text-[14px] font-[400] text-[#1F2937]/70">
+              <div className="px-4 py-12 text-center body-scale text-foreground-muted">
                 <p>No copies match these filters.</p>
                 {source !== "all" || status !== "all" || q.trim() !== "" ? (
                   <Button
@@ -778,15 +778,15 @@ export default function HubInventoryPage() {
                       <div className="flex min-w-0 items-center justify-between gap-2">
                         <span
                           className={cn(
-                            "inline-flex items-center text-left text-[12px] font-[500] uppercase tracking-wider",
-                            ownership.isHub ? "text-[#1F2937]" : "text-[#1F2937]/70",
+                            "inline-flex items-center text-left section-kicker",
+                            ownership.isHub ? "text-foreground" : "text-foreground-muted",
                           )}
                         >
                           {ownership.label}
                         </span>
                         {b.source === "hub_inventory" ? (
                           <span
-                            className="shrink-0 font-mono text-[12px] font-[500] tabular-nums text-[#1F2937]/70"
+                            className="shrink-0 font-mono caption-scale font-medium tabular-nums text-foreground-muted"
                             title={b.id}
                           >
                             {refShort}
@@ -795,8 +795,8 @@ export default function HubInventoryPage() {
                       </div>
                       <CopyLifecycleStrip status={b.status} />
                       {b.inventoryStats && b.inventoryStats.total > 0 && (
-                        <div className="mt-1 space-y-0.5 text-[11px] leading-relaxed text-[#1F2937]/70">
-                          <p className="font-[500] text-[#1F2937]">
+                        <div className="mt-1 space-y-0.5 caption-scale leading-relaxed text-foreground-muted">
+                          <p className="font-medium text-foreground">
                             {b.inventoryStats.available > 0
                               ? `${b.inventoryStats.available} of ${b.inventoryStats.total} Copies Available at this Hub`
                               : `${b.inventoryStats.total} Copies Total at this Hub`}
@@ -811,25 +811,25 @@ export default function HubInventoryPage() {
                           <div className="flex items-center gap-2">
                             <p
                               className={cn(
-                                "rounded px-1.5 py-0.5 text-[12px] font-[500] uppercase tracking-wider",
+                                "rounded px-1.5 py-0.5 section-kicker",
                                 b.request.assignmentVerified
-                                  ? "bg-secondary/20 text-secondary/90 dark:text-secondary/20"
-                                  : "bg-primary/15 text-[#1F2937]",
+                                  ? "bg-secondary/20 text-secondary"
+                                  : "bg-primary/15 text-foreground",
                               )}
                             >
                               {b.request.assignmentVerified ? "Verified" : "Unverified"}
                             </p>
-                            <p className="text-[#1F2937]/70">
+                            <p className="text-foreground-muted">
                               Assigned to request{" "}
                               <Link
                                 to={`${deskPaths?.requests ?? ""}?q=${b.request.id.slice(0, 8)}`}
-                                className="font-[600] text-[#1F2937] underline-offset-2 hover:underline"
+                                className="font-semibold text-foreground underline-offset-2 hover:underline"
                               >
                                 {b.request.id.slice(0, 8)}…
                               </Link>
                             </p>
                           </div>
-                          <p className="text-[#1F2937]/70">
+                          <p className="text-foreground-muted">
                             by {b.request.assignedBy ?? "system"}
                             {b.request.assignedAt ? ` at ${new Date(b.request.assignedAt).toLocaleString()}` : ""}
                           </p>
@@ -849,24 +849,24 @@ export default function HubInventoryPage() {
                         isSample={false}
                         shelfStatus={b.status}
                         action={
-                          <div className="mt-3 w-full space-y-2 text-left text-[13px] font-[400] text-[#1F2937] md:text-white/90">
+                          <div className="mt-3 w-full space-y-2 text-left body-scale font-normal text-foreground md:text-on-media-muted">
                             {inInterHubTransfer && b.targetHubName ? (
-                              <p className="font-[500] leading-snug text-[#1F2937] md:text-primary/20">
+                              <p className="font-medium leading-snug text-foreground md:text-primary/20">
                                 Transferring to {b.targetHubName}
                               </p>
                             ) : null}
-                            <p className="font-[500] tabular-nums">
+                            <p className="font-medium tabular-nums">
                               ₹{b.borrowPrice.toLocaleString("en-IN")} borrow · ₹
                               {b.buyPrice.toLocaleString("en-IN")} buy
                             </p>
                             <div className="flex flex-wrap items-center gap-1.5">
-                              <span className="inline-flex h-5 items-center rounded-sm bg-muted px-1.5 text-[11px] font-[500] uppercase tracking-wider text-[#1F2937] md:bg-black/40 md:text-white/90">
+                              <span className="inline-flex h-5 items-center rounded-sm bg-muted px-1.5 caption-scale font-medium uppercase tracking-wider text-foreground md:bg-overlay-backdrop md:text-on-media-muted">
                                 {sourceLabel(b.source)}
                               </span>
-                              <span className="inline-flex h-5 items-center rounded-sm bg-muted px-1.5 text-[11px] font-[500] uppercase tracking-wider text-[#1F2937] md:bg-black/40 md:text-white/90">
+                              <span className="inline-flex h-5 items-center rounded-sm bg-muted px-1.5 caption-scale font-medium uppercase tracking-wider text-foreground md:bg-overlay-backdrop md:text-on-media-muted">
                                 {b.condition.replace(/_/g, " ")}
                               </span>
-                              <span className="inline-flex h-5 items-center rounded-sm bg-muted px-1.5 text-[11px] font-[500] uppercase tracking-wider text-[#1F2937] md:bg-black/40 md:text-white/90">
+                              <span className="inline-flex h-5 items-center rounded-sm bg-muted px-1.5 caption-scale font-medium uppercase tracking-wider text-foreground md:bg-overlay-backdrop md:text-on-media-muted">
                                 {b.status === "available"
                                   ? "Available"
                                   : b.status === "reserved"
@@ -910,7 +910,7 @@ export default function HubInventoryPage() {
                               <Button
                                 type="button"
                                 size="sm"
-                                className="h-8 w-full rounded-md border border-accent/50 bg-accent/90 text-[11px] text-accent-foreground shadow-sm hover:bg-accent"
+                                className="h-8 w-full rounded-md border border-accent/50 bg-accent/90 caption-scale text-accent-foreground shadow-sm hover:bg-accent"
                                 disabled={adminForceRelease.isPending}
                                 onClick={() => {
                                   if (
@@ -969,7 +969,7 @@ export default function HubInventoryPage() {
                               <Button
                                 type="button"
                                 size="sm"
-                                className="h-8 w-full rounded-md border border-primary/40 bg-primary/20 text-[11px] text-black sm:text-white hover:bg-primary/30"
+                                className="h-8 w-full rounded-md border border-primary/40 bg-primary/20 caption-scale text-foreground sm:text-on-media hover:bg-primary/30"
                                 disabled={convertP2pToHub.isPending}
                                 onClick={() => {
                                   if (
@@ -989,7 +989,7 @@ export default function HubInventoryPage() {
                                 type="button"
                                 size="sm"
                                 variant="secondary"
-                                className="h-8 w-full rounded-md text-[11px]"
+                                className="h-8 w-full rounded-md caption-scale"
                                 asChild
                               >
                                 <Link href={portalPathsForUser(user).inventory + `?q=${encodeURIComponent(b.title)}`}>
@@ -998,7 +998,7 @@ export default function HubInventoryPage() {
                               </Button>
                             ) : null}
                             <p
-                              className="font-mono text-[11px] font-[500] text-[#1F2937]/50"
+                              className="font-mono caption-scale font-medium text-foreground-subtle"
                               title={new Date(b.updatedAt).toLocaleString()}
                             >
                               Updated · {new Date(b.updatedAt).toLocaleDateString()}
@@ -1042,10 +1042,10 @@ export default function HubInventoryPage() {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="font-sans text-[24px] font-[600] text-[#1F2937]">New shelf copy</DialogTitle>
-            <DialogDescription className="text-[14px] font-[400] text-[#1F2937]/70">
-              Register one hub-owned copy on the shelf. Set a <strong className="font-[600] text-[#1F2937]">buy</strong> price and a{" "}
-              <strong className="font-[600] text-[#1F2937]">borrow</strong> fee (whole rupees; borrow may be ₹0). Book photo is optional same as
+            <DialogTitle className="font-sans h4-scale font-semibold text-foreground">New shelf copy</DialogTitle>
+            <DialogDescription className="body-scale text-foreground-muted">
+              Register one hub-owned copy on the shelf. Set a <strong className="font-semibold text-foreground">buy</strong> price and a{" "}
+              <strong className="font-semibold text-foreground">borrow</strong> fee (whole rupees; borrow may be ₹0). Book photo is optional same as
               student listings.
             </DialogDescription>
           </DialogHeader>
@@ -1101,8 +1101,8 @@ export default function HubInventoryPage() {
                                 )}
                               />
                               <span className="flex min-w-0 flex-col gap-0.5 text-left">
-                                <span className="truncate font-[500]">{h.name}</span>
-                                <span className="truncate text-[12px] font-[500] text-[#1F2937]/70">
+                                <span className="truncate font-medium">{h.name}</span>
+                                <span className="truncate caption-scale font-medium text-foreground-muted">
                                   {hubKindLabel(h.kind)}
                                 </span>
                               </span>
@@ -1136,7 +1136,7 @@ export default function HubInventoryPage() {
                 onChange={(e) => setAddBuy(e.target.value.replace(/[^\d]/g, ""))}
               />
               {!addBuyValid && addBuy.trim() !== "" ? (
-                <p className="text-[12px] font-[500] text-destructive">Enter a whole number ₹0 or more.</p>
+                <p className="caption-scale font-medium text-destructive">Enter a whole number ₹0 or more.</p>
               ) : null}
             </div>
             <div className="space-y-2">
@@ -1151,7 +1151,7 @@ export default function HubInventoryPage() {
                 onChange={(e) => setAddBorrow(e.target.value.replace(/[^\d]/g, ""))}
               />
               {!addBorrowValid && addBorrow.trim() !== "" ? (
-                <p className="text-[12px] font-[500] text-destructive">Enter a whole number ₹0 or more.</p>
+                <p className="caption-scale font-medium text-destructive">Enter a whole number ₹0 or more.</p>
               ) : null}
             </div>
             <div className="space-y-2">
@@ -1174,7 +1174,7 @@ export default function HubInventoryPage() {
                   e.target.value = "";
                 }}
               />
-              <p className="text-[12px] font-[500] text-[#1F2937]/70">JPEG, PNG, WebP, or GIF · up to 5&nbsp;MB</p>
+              <p className="caption-scale font-medium text-foreground-muted">JPEG, PNG, WebP, or GIF · up to 5&nbsp;MB</p>
               <BookCoverImage
                 src={addCoverPreview}
                 alt={addCoverPreview ? "Cover preview" : "Default book cover"}

@@ -38,6 +38,8 @@ import {
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { adminPanel } from "@/lib/admin-desk-ui";
+import { PORTAL_PAGE_TITLE, PORTAL_STAT_VALUE } from "@/lib/portal-typography";
 import { PORTAL_KICKER_COLOR } from "@/lib/student-ui";
 import { BOOK_COVER_PLACEHOLDER_URL, bookCoverDisplayUrl } from "@/lib/book-cover-display";
 import { hubKindLabel, hubMembershipRoleLabel } from "@/lib/hub-display";
@@ -114,17 +116,15 @@ type HubDetailPayload = {
 
 type ConfirmAction = "enable" | "disable" | "delete" | null;
 
-const outline = "rounded-md border border-border bg-background";
-
 function SectionLabel({ children }: { children: ReactNode }) {
-  return <h2 className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70">{children}</h2>;
+  return <h2 className="section-kicker">{children}</h2>;
 }
 
 function MetricCard({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-md border border-border bg-background px-3 py-3">
-      <p className="text-[11px] font-[500] uppercase tracking-wider text-[#1F2937]/70">{label}</p>
-      <p className="mt-1 text-[24px] font-[600] tabular-nums text-[#1F2937]">{value}</p>
+    <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
+      <p className="section-kicker">{label}</p>
+      <p className={cn("mt-1", PORTAL_STAT_VALUE)}>{value}</p>
     </div>
   );
 }
@@ -218,7 +218,7 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
   if (q.isLoading) {
     return (
       <div className={cn("flex min-h-[40vh] items-center justify-center", topPad)}>
-        <Loader2 className="h-9 w-9 animate-spin text-muted-foreground" />
+        <Loader2 className="h-9 w-9 animate-spin text-foreground-muted" />
       </div>
     );
   }
@@ -237,14 +237,14 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
           <div className="min-w-0">
             <p
               className={cn(
-                "text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70",
+                "section-kicker",
                 PORTAL_KICKER_COLOR,
               )}
             >
               {isSuperAdmin ? "Super admin" : "Hub portal"}
             </p>
-            <h1 className="mt-1 text-[36px] font-[700] leading-tight tracking-tight text-[#1F2937]">{hub.name}</h1>
-            <p className="mt-1 text-[13px] font-[400] text-[#1F2937]/70">
+            <h1 className={cn("mt-1", PORTAL_PAGE_TITLE)}>{hub.name}</h1>
+            <p className="mt-1 body-scale font-normal text-foreground-muted">
               {memberCount} staff member{memberCount === 1 ? "" : "s"} · Hub ID {hub.publicId}
             </p>
           </div>
@@ -263,36 +263,36 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
       </div>
 
       <div className="space-y-6">
-        <section className={cn(outline, "overflow-hidden")} aria-label="Hub details">
+        <section className={cn(adminPanel, "overflow-hidden")} aria-label="Hub details">
           <div className="border-b border-border px-4 py-3">
             <SectionLabel>Hub details</SectionLabel>
           </div>
           <div className="grid gap-3 p-4 text-sm sm:grid-cols-2 lg:grid-cols-3">
             <div>
-              <p className="text-[11px] font-[500] uppercase tracking-wider text-[#1F2937]/70">Hub name</p>
+              <p className="section-kicker">Hub name</p>
               <p className="mt-1">{hub.name}</p>
             </div>
             <div>
-              <p className="text-[11px] font-[500] uppercase tracking-wider text-[#1F2937]/70">Hub ID</p>
-              <p className="mt-1 font-mono text-[13px] font-[400]">{hub.publicId}</p>
+              <p className="section-kicker">Hub ID</p>
+              <p className="mt-1 font-mono body-scale font-normal">{hub.publicId}</p>
             </div>
             <div>
-              <p className="text-[11px] font-[500] uppercase tracking-wider text-[#1F2937]/70">Kind</p>
-              <span className={cn(uniformBadgeShape, getStatusColorClasses("approved"), "mt-1 font-[500]")}>
+              <p className="section-kicker">Kind</p>
+              <span className={cn(uniformBadgeShape, getStatusColorClasses("approved"), "mt-1 font-medium")}>
                 {hubKindLabel(hub.kind)}
               </span>
             </div>
             <div>
-              <p className="text-[11px] font-[500] uppercase tracking-wider text-[#1F2937]/70">Location</p>
+              <p className="section-kicker">Location</p>
               <p className="mt-1">{hub.location || "—"}</p>
             </div>
             <div>
-              <p className="text-[11px] font-[500] uppercase tracking-wider text-[#1F2937]/70">Status</p>
+              <p className="section-kicker">Status</p>
               <span
                 className={cn(
                   uniformBadgeShape,
                   getStatusColorClasses(hub.isActive ? "available" : "cancelled"),
-                  "mt-1 font-[500]"
+                  "mt-1 font-medium"
                 )}
               >
                 {hub.isActive ? "Active" : "Disabled"}
@@ -300,14 +300,14 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
             </div>
             {hub.capacity != null ? (
               <div>
-                <p className="text-[11px] font-[500] uppercase tracking-wider text-[#1F2937]/70">Capacity</p>
+                <p className="section-kicker">Capacity</p>
                 <p className="mt-1">{hub.capacity}</p>
               </div>
             ) : null}
           </div>
         </section>
 
-        <section className={cn(outline, "overflow-hidden")} aria-label="Metrics">
+        <section className={cn(adminPanel, "overflow-hidden")} aria-label="Metrics">
           <div className="border-b border-border px-4 py-3">
             <SectionLabel>Metrics</SectionLabel>
           </div>
@@ -321,7 +321,7 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
         </section>
 
         {members.length > 0 ? (
-          <section className={cn(outline, "overflow-hidden")} aria-label="Staff">
+          <section className={cn(adminPanel, "overflow-hidden")} aria-label="Staff">
             <div className="border-b border-border px-4 py-3">
               <SectionLabel>Staff & memberships</SectionLabel>
             </div>
@@ -329,8 +329,8 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
               {members.map((m) => (
                 <div key={m.userId} className="flex flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-[500]">{m.name}</p>
-                    <p className="truncate text-[13px] font-[400] text-[#1F2937]/70">{m.email}</p>
+                    <p className="truncate text-sm font-medium">{m.name}</p>
+                    <p className="truncate body-scale font-normal text-foreground-muted">{m.email}</p>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className={cn(uniformBadgeShape, getStatusColorClasses("approved"), "font-normal")}>
@@ -346,7 +346,7 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
           </section>
         ) : null}
 
-        <section className={cn(outline, "overflow-hidden")} aria-label="Inventory summary">
+        <section className={cn(adminPanel, "overflow-hidden")} aria-label="Inventory summary">
           <div className="flex items-center justify-between gap-2 border-b border-border px-4 py-3">
             <SectionLabel>Inventory summary</SectionLabel>
             <Button variant="outline" className="h-9 rounded-md" asChild>
@@ -362,7 +362,7 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
         </section>
 
         {activity.owned.length > 0 ? (
-          <section className={cn(outline, "overflow-hidden")} aria-label="Owned books">
+          <section className={cn(adminPanel, "overflow-hidden")} aria-label="Owned books">
             <div className="border-b border-border px-4 py-3">
               <SectionLabel>Owned books</SectionLabel>
             </div>
@@ -387,7 +387,7 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
                           {r.status.replace(/_/g, " ")}
                         </span>
                       </TableCell>
-                      <TableCell className="text-[#1F2937]/70">
+                      <TableCell className="text-foreground-muted">
                         {r.source === "hub_inventory" ? "Hub owned" : r.source}
                       </TableCell>
                       <TableCell className="pr-4 sm:pr-6">{fmtDate(r.updatedAt)}</TableCell>
@@ -400,7 +400,7 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
         ) : null}
 
         {activity.rented.length > 0 ? (
-          <section className={cn(outline, "overflow-hidden")} aria-label="Books given on rent">
+          <section className={cn(adminPanel, "overflow-hidden")} aria-label="Books given on rent">
             <div className="border-b border-border px-4 py-3">
               <SectionLabel>Books given on rent</SectionLabel>
             </div>
@@ -420,9 +420,9 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
                       <TableCell className="pl-4 sm:pl-6">
                         <CoverCell title={r.title} url={r.coverImageUrl} />
                       </TableCell>
-                      <TableCell className="font-mono text-[13px] font-[400]">{r.borrowerMasked}</TableCell>
+                      <TableCell className="font-mono body-scale font-normal">{r.borrowerMasked}</TableCell>
                       <TableCell>
-                        <span className={cn(uniformBadgeShape, getStatusColorClasses(r.status.toLowerCase() === "active" || r.status.toLowerCase() === "checked_out" ? "checked out" : r.status.toLowerCase() === "overdue" ? "overdue" : "available"), "font-[500]")}>
+                        <span className={cn(uniformBadgeShape, getStatusColorClasses(r.status.toLowerCase() === "active" || r.status.toLowerCase() === "checked_out" ? "checked out" : r.status.toLowerCase() === "overdue" ? "overdue" : "available"), "font-medium")}>
                           {r.status.replace(/_/g, " ")}
                         </span>
                       </TableCell>
@@ -436,7 +436,7 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
         ) : null}
 
         {activity.sold.length > 0 ? (
-          <section className={cn(outline, "overflow-hidden")} aria-label="Sold books">
+          <section className={cn(adminPanel, "overflow-hidden")} aria-label="Sold books">
             <div className="border-b border-border px-4 py-3">
               <SectionLabel>Sold books</SectionLabel>
             </div>
@@ -458,10 +458,10 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
                         <CoverCell title={r.title} url={r.coverImageUrl} />
                       </TableCell>
                       <TableCell>₹{r.price.toLocaleString("en-IN")}</TableCell>
-                      <TableCell className="text-[#1F2937]/70">
+                      <TableCell className="text-foreground-muted">
                         {r.source === "hub_inventory" ? "Hub owned" : "Peer consignment"}
                       </TableCell>
-                      <TableCell className="font-mono text-[13px] font-[400]">{r.buyerMasked}</TableCell>
+                      <TableCell className="font-mono body-scale font-normal">{r.buyerMasked}</TableCell>
                       <TableCell className="pr-4 sm:pr-6">{fmtDate(r.soldAt)}</TableCell>
                     </TableRow>
                   ))}
@@ -471,7 +471,7 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
           </section>
         ) : null}
 
-        <section className={cn(outline, "overflow-hidden")} aria-label="Requests summary">
+        <section className={cn(adminPanel, "overflow-hidden")} aria-label="Requests summary">
           <div className="flex items-center justify-between gap-2 border-b border-border px-4 py-3">
             <SectionLabel>Requests summary</SectionLabel>
             <Button variant="outline" className="h-9 rounded-md" asChild>
@@ -490,7 +490,7 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
           </div>
         </section>
 
-        <section className={cn(outline, "overflow-hidden")} aria-label="Commerce summary">
+        <section className={cn(adminPanel, "overflow-hidden")} aria-label="Commerce summary">
           <div className="flex items-center justify-between gap-2 border-b border-border px-4 py-3">
             <SectionLabel>Commerce summary</SectionLabel>
             <Button variant="outline" className="h-9 rounded-md" asChild>
@@ -505,12 +505,12 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
           </div>
         </section>
 
-        <section className={cn(outline, "overflow-hidden")} aria-label="Admin actions">
+        <section className={cn(adminPanel, "overflow-hidden")} aria-label="Admin actions">
           <div className="border-b border-border px-4 py-3">
             <SectionLabel>Admin actions</SectionLabel>
           </div>
           <div className="space-y-3 p-4">
-            <p className="text-[13px] font-[400] text-[#1F2937]/70">
+            <p className="body-scale font-normal text-foreground-muted">
               Actions here are operational controls only. Inventory, requests, and commerce remain source-specific pages.
             </p>
             <div className="flex flex-wrap gap-2">
@@ -556,14 +556,14 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle className="font-sans text-[24px] font-[600] text-[#1F2937]">
+            <AlertDialogTitle className="font-sans h4-scale font-semibold text-foreground">
               {confirmAction === "enable"
                 ? "Enable this hub?"
                 : confirmAction === "disable"
                   ? "Disable this hub?"
                   : "Delete this hub permanently?"}
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-[14px] font-[400] text-[#1F2937]/70">
+            <AlertDialogDescription className="body-scale text-foreground-muted">
               {confirmAction === "enable" && "The hub will return to active operations."}
               {confirmAction === "disable" && "The hub will be marked disabled and deprioritized in operations."}
               {confirmAction === "delete" &&

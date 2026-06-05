@@ -3,7 +3,9 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/context/auth-context";
 import { apiFetch } from "@/lib/api";
 import { useStudentShell } from "@/components/layout/StudentAppShell";
-import { PORTAL_PAGE_CONTAINER } from "@/lib/student-ui";
+import { CardContent } from "@/components/ui/card";
+import { PORTAL_PAGE_CONTAINER, PORTAL_PANEL_SURFACE, STUDENT_CARD_CHROME } from "@/lib/student-ui";
+import { PORTAL_PAGE_LEAD, PORTAL_PAGE_TITLE, PORTAL_DIALOG_TITLE } from "@/lib/portal-typography";
 import {
   Table,
   TableBody,
@@ -94,7 +96,7 @@ function StatusChip({ state }: { state: "active" | "soon" | "overdue" }) {
   return (
     <span
       className={cn(
-        "inline-flex h-7 items-center rounded-sm border px-3 text-[10px] font-semibold uppercase tracking-wide",
+        "inline-flex h-7 items-center rounded-sm border px-3 caption-scale font-semibold uppercase tracking-kicker",
         state === "active" && STATUS_CHIP_EMERALD,
         state === "soon" && STATUS_CHIP_AMBER_SOFT,
         state === "overdue" && STATUS_CHIP_DESTRUCTIVE_SOFT,
@@ -122,16 +124,22 @@ function Section({
   }>;
 }) {
   return (
-    <section className="rounded-md border border-border bg-background">
-      <div className="border-b border-border px-5 py-3">
-        <h3 className="text-sm font-semibold tracking-tight text-foreground">{title}</h3>
+    <section className={cn(PORTAL_PANEL_SURFACE, "overflow-hidden")}>
+      <div className="border-b border-border px-6 py-4">
+        <h3 className="h4-scale font-semibold text-foreground">{title}</h3>
       </div>
       {rows.length === 0 ? (
-        <div className="px-5 py-6 text-sm text-muted-foreground">
-          No items here yet. <Link href="/student/borrow" className="underline underline-offset-2">Browse books</Link>.
-        </div>
+        <CardContent className="px-6 py-8">
+          <p className="body-scale text-foreground-muted">
+            No items here yet.{" "}
+            <Link href="/student/borrow" className="font-medium text-primary underline-offset-2 hover:underline">
+              Browse books
+            </Link>
+            .
+          </p>
+        </CardContent>
       ) : (
-        <div className="overflow-x-auto pb-4 pt-3">
+        <div className="overflow-x-auto px-2 pb-4 pt-2">
           <Table>
             <TableHeader>
               <TableRow className="border-border/50 hover:bg-transparent">
@@ -311,15 +319,13 @@ export default function StudentLibraryPage() {
   return (
     <div className={cn("min-h-[100dvh] bg-background pb-20", top)}>
       <div className={cn("mx-auto", pageWrap)}>
-        <div className="mb-8 border-b border-border/30 pb-6">
-          <h1 className="mt-1 font-[var(--font-display)] text-lg font-bold tracking-tight text-foreground">
-            My library
-          </h1>
-          <p className="mt-1 text-xs text-muted-foreground">
+        <header className="mb-8 border-b border-border pb-6">
+          <h1 className={PORTAL_PAGE_TITLE}>My library</h1>
+          <p className={cn(PORTAL_PAGE_LEAD, "mt-2")}>
             Active responsibilities only: rentals and pickup-pending items.
           </p>
-        </div>
-        <section className="space-y-8">
+        </header>
+        <section className="space-y-6">
           <Section title="Borrowed from hub" rows={borrowedFromHub} />
           <Section title="Peer borrows" rows={peerBorrows} />
           <Section title="Purchased (not yet picked up)" rows={pendingPickupPurchases} />
@@ -330,29 +336,25 @@ export default function StudentLibraryPage() {
         <DialogContent className="gap-0 p-0 sm:max-w-md">
           <div className="p-6 pb-0">
             <DialogHeader className="space-y-3 text-left">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                Return book
-              </p>
-              <DialogTitle className="font-[var(--font-display)] text-xl font-bold tracking-tight text-foreground">
-                Confirm return
-              </DialogTitle>
-              <DialogDescription className="text-sm leading-relaxed">
+              <p className="section-kicker text-foreground-muted">Return book</p>
+              <DialogTitle className={PORTAL_DIALOG_TITLE}>Confirm return</DialogTitle>
+              <DialogDescription className="body-scale leading-relaxed text-foreground-muted">
                 Hand the physical copy to the hub desk, then confirm here so your loan clears in Neev.
               </DialogDescription>
             </DialogHeader>
           </div>
 
           {confirmReturn ? (
-            <div className="mx-6 mt-5 flex gap-3 rounded-md border border-border bg-muted/25 p-4">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-border bg-background text-primary">
+            <div className={cn("mx-6 mt-5 flex gap-3 p-4", STUDENT_CARD_CHROME, "bg-muted/25")}>
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center text-primary">
                 <RotateCcw className="h-5 w-5" aria-hidden />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                <p className="caption-scale font-semibold uppercase tracking-kicker text-foreground-muted">
                   {confirmReturn.type === "hub" ? "Borrowed from hub" : "Peer borrow · drop-off hub"}
                 </p>
                 <p className="mt-1.5 font-medium leading-snug text-foreground">{confirmReturn.title}</p>
-                <p className="mt-2 text-sm text-muted-foreground">
+                <p className="mt-2 body-scale text-foreground-muted">
                   <span className="font-medium text-foreground">{confirmReturn.hubName}</span>
                 </p>
               </div>

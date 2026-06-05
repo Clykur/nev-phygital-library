@@ -34,7 +34,7 @@ export function MockCheckoutDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 mb-4">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center mb-4">
             <ShieldCheck className="h-6 w-6 text-primary" />
           </div>
           <DialogTitle className="text-center text-xl">Secure Checkout</DialogTitle>

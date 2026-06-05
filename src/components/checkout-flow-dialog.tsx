@@ -188,7 +188,7 @@ export function CheckoutFlowDialog({
                     )}
                   >
                     <span className="font-medium">Borrow</span>
-                    <span className="tabular-nums text-primary dark:text-primary">
+                    <span className="tabular-nums text-primary">
                       {fmtInr(item.borrowPrice)}
                     </span>
                   </button>
@@ -203,7 +203,7 @@ export function CheckoutFlowDialog({
                     )}
                   >
                     <span className="font-medium">Buy</span>
-                    <span className="tabular-nums text-primary dark:text-primary">
+                    <span className="tabular-nums text-primary">
                       {fmtInr(item.buyPrice)}
                     </span>
                   </button>
@@ -229,19 +229,19 @@ export function CheckoutFlowDialog({
                         ))}
                       </SelectContent>
                     </Select>
-                    <p className="text-[11px] leading-relaxed text-muted-foreground">
+                    <p className="caption-scale leading-relaxed text-muted-foreground">
                       Hub desk buy moves the on-shelf copy into this hub’s inventory as hub-owned stock
                       (other hubs and peer consignment).
                     </p>
                   </div>
                 ) : (
-                  <p className="rounded-lg border border-border/60 bg-muted/30 px-3 py-2 text-[11px] leading-relaxed text-muted-foreground">
+                  <p className="rounded-lg border border-border/60 bg-muted/30 px-3 py-2 caption-scale leading-relaxed text-muted-foreground">
                     Buying adds this copy to <span className="font-medium text-foreground">{deskAcquireHubs[0]!.name}</span>{" "}
                     shelf inventory as hub-owned stock.
                   </p>
                 ))}
               <Button
-                className="h-11 w-full rounded-2xl bg-primary/90 text-slate-950 hover:bg-primary-400"
+                className="h-11 w-full rounded-2xl bg-primary/90 text-accent-foreground hover:bg-primary-400"
                 onClick={() => setStep("payment")}
               >
                 Continue to payment
@@ -304,7 +304,7 @@ export function CheckoutFlowDialog({
 
           {step === "success" && (
             <div className="flex flex-col items-center gap-4 py-2 text-center">
-              <CheckCircle2 className="h-14 w-14 text-secondary dark:text-secondary" aria-hidden />
+              <CheckCircle2 className="h-14 w-14 text-secondary" aria-hidden />
               <div className="w-full rounded-md border border-border bg-muted/20 p-3 text-left">
                 <p className="text-sm font-medium text-foreground">Pick up at {hubLine}</p>
                 <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
@@ -313,10 +313,10 @@ export function CheckoutFlowDialog({
                     ? " Returns are processed at the same hub desk."
                     : " Staff will confirm handover before completion."}
                 </p>
-                <p className="mt-2 font-mono text-xs text-accent/80 dark:text-accent/20">
+                <p className="mt-2 font-mono text-xs text-accent">
                   Pickup ref: {pickupRef}
                 </p>
-                <p className="mt-1 text-[11px] text-muted-foreground">QR support can be added on top of this ref in the next phase.</p>
+                <p className="mt-1 caption-scale text-muted-foreground">QR support can be added on top of this ref in the next phase.</p>
               </div>
               <Button
                 className="w-full rounded-2xl"

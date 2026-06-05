@@ -172,7 +172,7 @@ export default function About() {
     visible: { transition: { staggerChildren: reduceMotion ? 0 : 0.08, delayChildren: reduceMotion ? 0 : 0.1 } },
   };
 
-  const card = "bento-card border border-primary/20 bg-white p-6 md:p-8 rounded-2xl transition-all hover:shadow-lg hover:-translate-y-1";
+  const card = "bento-card border border-primary/20 bg-surface p-6 md:p-8 rounded-2xl transition-all hover:shadow-lg hover:-translate-y-1";
 
   const handleContactSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -186,11 +186,11 @@ export default function About() {
         <DialogContent className="w-[calc(100%-32px)] sm:w-full max-h-[min(90vh,720px)] max-w-[440px] gap-0 overflow-y-auto rounded-2xl p-0">
           <div className="px-6 pb-8 pt-10 sm:px-8 sm:pb-10 sm:pt-11">
             <DialogHeader className="space-y-3 text-left">
-              <p className="text-xs tracking-[0.2em] font-bold uppercase text-[#64748B]">Get in touch</p>
+              <p className="text-xs tracking-[0.2em] font-bold uppercase text-foreground-muted">Get in touch</p>
               <DialogTitle className="font-[var(--font-display)] text-xl md:text-2xl font-extrabold leading-tight tracking-tight text-foreground">
                 Contact Neev
               </DialogTitle>
-              <DialogDescription className="text-base md:text-lg leading-relaxed text-[#64748B]">
+              <DialogDescription className="text-base md:text-lg leading-relaxed text-foreground-muted">
                 We typically reply within one to two business days.
               </DialogDescription>
             </DialogHeader>
@@ -244,7 +244,7 @@ export default function About() {
         </DialogContent>
       </Dialog>
 
-      <div className="w-full bg-[#FAFAFA] font-sans selection:bg-primary/20 selection:text-primary">
+      <div className="w-full bg-background font-sans selection:bg-primary/20 selection:text-primary">
         {/* 1. HERO SECTION WITH VIDEO BACKGROUND */}
         <section id="hero" ref={heroRef} className="relative h-[100dvh] w-full overflow-hidden bg-primary">
           <video
@@ -258,7 +258,7 @@ export default function About() {
           </video>
 
           {/* Dark Overlay for Readability */}
-          <div className="absolute inset-0 bg-slate-950/40 z-0" />
+          <div className="absolute inset-0 bg-neutral-950/40 z-0" />
 
           <motion.div style={{ opacity: opacityParallax }} className="relative z-10 w-full h-full">
             <Container className="flex h-full items-center justify-center">
@@ -266,7 +266,7 @@ export default function About() {
                 <motion.div variants={stagger} initial="hidden" animate="visible">
                   <motion.h1
                     variants={fadeUp}
-                    className="text-balance font-[var(--font-display)] hero-title font-bold text-white"
+                    className="text-balance font-[var(--font-display)] hero-title font-bold text-on-media"
                   >
                     {"Affordable textbooks through ".split(" ").map((word, i) => (
                       <motion.span
@@ -308,14 +308,14 @@ export default function About() {
 
                   <motion.p
                     variants={fadeUp}
-                    className="mt-8 body-scale text-white/90 max-w-2xl mx-auto leading-relaxed font-medium"
+                    className="mt-8 body-scale text-on-media-muted max-w-2xl mx-auto leading-relaxed font-medium"
                   >
                     Neev builds the physical and software layer so borrowing, peer exchanges, and retail pickup stay local, traceable, and grounded in campus life.
                   </motion.p>
 
                   <motion.div variants={stagger} className="mt-12 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-6">
                     <motion.div variants={fadeUp} className="w-full sm:w-auto">
-                      <Link href="/marketplace" className="magnetic-btn flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-12 h-16 text-base md:text-lg font-bold text-white shadow-2xl transition-all hover:bg-primary hover:-translate-y-1">
+                      <Link href="/marketplace" className="magnetic-btn flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-12 h-16 text-base md:text-lg font-bold text-primary-foreground shadow-2xl transition-all hover:bg-primary hover:-translate-y-1">
                         Browse Marketplace <ArrowRight className="h-5 w-5" />
                       </Link>
                     </motion.div>
@@ -323,7 +323,7 @@ export default function About() {
                       <Button
                         variant="outline"
                         onClick={() => setContactDialogOpen(true)}
-                        className="magnetic-btn flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-white/20 bg-white/10 backdrop-blur-md px-12 h-16 text-base md:text-lg font-bold text-white transition-all hover:bg-white/20 hover:-translate-y-1"
+                        className="magnetic-btn flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-overlay-glass-border bg-overlay-glass backdrop-blur-md px-12 h-16 text-base md:text-lg font-bold text-on-media transition-all hover:bg-overlay-glass hover:-translate-y-1"
                       >
                         <MessageSquare className="h-5 w-5" />
                         Contact Us
@@ -345,14 +345,14 @@ export default function About() {
               repeatType: "reverse",
               ease: "easeInOut"
             }}
-            className="absolute bottom-12 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 text-white/70"
+            className="absolute bottom-12 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 text-on-media-muted"
           >
-            <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Scroll to explore</span>
+            <span className="caption-scale font-bold uppercase tracking-[0.2em]">Scroll to explore</span>
             <ChevronDown className="h-6 w-6" />
           </motion.div>
         </section>
 
-        <section className="overflow-hidden border-y border-border bg-white py-24">
+        <section className="overflow-hidden border-y border-border bg-surface py-24">
           <Container>
             <motion.div
               variants={stagger}
@@ -404,7 +404,7 @@ export default function About() {
 
         <section
           ref={infraRef}
-          className="relative overflow-hidden bg-[#FAFAFA] py-20 md:py-24"
+          className="relative overflow-hidden bg-background py-20 md:py-24"
         >
           <Container>
             {/* HEADER */}
@@ -432,7 +432,7 @@ export default function About() {
             <div className="relative mx-auto max-w-5xl">
 
               {/* background line */}
-              <div className="absolute left-5 top-[80px] bottom-[200px] w-px bg-slate-200 md:left-1/2 md:-translate-x-1/2" />
+              <div className="absolute left-5 top-[80px] bottom-[200px] w-px bg-neutral-200 md:left-1/2 md:-translate-x-1/2" />
 
               {/* progress line */}
               <motion.div
@@ -464,7 +464,7 @@ export default function About() {
                   >
 
                     {/* node */}
-                    <div className="absolute left-5 top-[80px] z-20 hidden h-4 w-4 -translate-x-1/2 rounded-full border-4 border-white bg-primary shadow-sm md:block md:left-1/2" />
+                    <div className="absolute left-5 top-[80px] z-20 hidden h-4 w-4 -translate-x-1/2 rounded-full border-4 border-surface bg-primary shadow-sm md:block md:left-1/2" />
 
                     {/* CARD */}
                     <div
@@ -476,7 +476,7 @@ export default function About() {
                 overflow-hidden
                 border
                 border-border
-                bg-white
+                bg-surface
                 p-6
                 md:p-8
                 shadow-sm
@@ -521,7 +521,7 @@ export default function About() {
           </Container>
         </section>
 
-        <section ref={valuesRef} className="relative h-[400vh] bg-white">
+        <section ref={valuesRef} className="relative h-[400vh] bg-background">
           <div className="sticky top-0 h-screen flex items-center justify-center overflow-hidden">
             {/* Background Accent */}
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-blue-50/30 to-transparent pointer-events-none" />
@@ -602,8 +602,8 @@ export default function About() {
         </section>
 
         <section className="relative overflow-hidden bg-primary py-24 md:py-32">
-          <div className="absolute top-0 left-0 w-96 h-96 bg-white/10 blur-[120px] rounded-full pointer-events-none" />
-          <div className="absolute bottom-0 right-0 w-64 h-64 bg-white/5 blur-[80px] rounded-full pointer-events-none" />
+          <div className="absolute top-0 left-0 w-96 h-96 bg-overlay-glass blur-[120px] rounded-full pointer-events-none" />
+          <div className="absolute bottom-0 right-0 w-64 h-64 bg-overlay-glass blur-[80px] rounded-full pointer-events-none" />
 
           <Container>
             <motion.div
@@ -612,17 +612,17 @@ export default function About() {
               viewport={viewportOnce}
               className="relative z-10 max-w-4xl mx-auto text-center"
             >
-              <h2 className="font-[var(--font-display)] h1-scale text-white mb-8">
+              <h2 className="font-[var(--font-display)] h1-scale text-on-media mb-8">
                 Want to collaborate?
               </h2>
-              <p className="text-base md:text-lg text-white/80 mb-12 max-w-2xl mx-auto">
+              <p className="text-base md:text-lg text-on-media-muted mb-12 max-w-2xl mx-auto">
                 Reach out for partnerships, campus questions, or reader support. Colleges can also start on the pilot path below.
               </p>
               <div className="flex flex-col sm:flex-row justify-center gap-6">
                 <Button
                   size="lg"
                   onClick={() => setContactDialogOpen(true)}
-                  className="bg-white text-primary hover:bg-muted h-16 px-10 rounded-2xl font-bold text-sm md:text-base transition-all hover:-translate-y-1 shadow-xl"
+                  className="bg-surface text-primary hover:bg-muted h-16 px-10 rounded-2xl font-bold text-sm md:text-base transition-all hover:-translate-y-1 shadow-xl"
                 >
                   Contact Us
                   <span>
@@ -633,7 +633,7 @@ export default function About() {
                   <Button
                     size="lg"
                     variant="outline"
-                    className="border-white/30 bg-white/10 text-white hover:bg-white/20 h-16 px-10 rounded-2xl font-bold text-sm md:text-base backdrop-blur-md transition-all hover:-translate-y-1"
+                    className="border-overlay-glass-border bg-overlay-glass text-on-media hover:bg-overlay-glass h-16 px-10 rounded-2xl font-bold text-sm md:text-base backdrop-blur-md transition-all hover:-translate-y-1"
                   >
                     Partner with Neev
                   </Button>

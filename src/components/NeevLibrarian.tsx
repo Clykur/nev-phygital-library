@@ -141,10 +141,10 @@ export const NeevLibrarian: React.FC = () => {
               <UserCheck className="w-5 h-5 text-primary" />
               <div>
                 <h2 className="text-sm font-bold text-foreground tracking-tight">Kiosk Ambassador Hand-off Desk</h2>
-                <p className="text-[10px] font-mono text-muted-foreground/60 uppercase font-semibold">Enforced digital condition checklist protocol</p>
+                <p className="caption-scale font-mono text-muted-foreground/60 uppercase font-semibold">Enforced digital condition checklist protocol</p>
               </div>
             </div>
-            <span className="text-[9px] font-mono px-2 py-0.5 bg-primary/90 text-primary rounded-md border border-indigo-900/40 font-bold">STAFFED COUNTER</span>
+            <span className="caption-scale font-mono px-2 py-0.5 bg-primary/90 text-primary rounded-md border border-indigo-900/40 font-bold">STAFFED COUNTER</span>
           </div>
 
           {/* Idle state */}
@@ -155,7 +155,7 @@ export const NeevLibrarian: React.FC = () => {
                   <span className="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
                   <h4 className="text-xs font-bold text-foreground/90 uppercase font-mono">1 Student Reservation Hold Pending at Counter</h4>
                 </div>
-                <p className="text-[11px] text-muted-foreground font-sans">Student: <span className="text-foreground/90 font-semibold">{activeStudent}</span> &bull; Asset: <span className="text-foreground/90 italic">{activeBook}</span></p>
+                <p className="caption-scale text-muted-foreground font-sans">Student: <span className="text-foreground/90 font-semibold">{activeStudent}</span> &bull; Asset: <span className="text-foreground/90 italic">{activeBook}</span></p>
               </div>
               <button
                 type="button"
@@ -173,9 +173,9 @@ export const NeevLibrarian: React.FC = () => {
             <div className="p-5 bg-background/40 border border-border rounded-xl space-y-4 animate-in fade-in duration-300">
               <div className="flex items-start justify-between">
                 <div className="space-y-1">
-                  <span className="text-[9px] font-mono bg-primary/90 text-primary border border-primary/80 px-1.5 py-0.5 rounded uppercase font-bold">QR Barcode Verified ✓</span>
+                  <span className="caption-scale font-mono bg-primary/90 text-primary border border-primary/80 px-1.5 py-0.5 rounded uppercase font-bold">QR Barcode Verified ✓</span>
                   <h4 className="text-xs font-semibold text-foreground/90 mt-1">Book: <span className="text-foreground font-bold">{activeBook}</span></h4>
-                  <p className="text-[10px] text-muted-foreground/60 font-mono">ISBN: {activeIsbn} &bull; Retail Value: {activePrice}</p>
+                  <p className="caption-scale text-muted-foreground/60 font-mono">ISBN: {activeIsbn} &bull; Retail Value: {activePrice}</p>
                 </div>
                 <div className="p-2 bg-indigo-950/30 rounded-lg border border-indigo-900/50">
                   <QrCode className="w-5 h-5 text-primary" />
@@ -183,7 +183,7 @@ export const NeevLibrarian: React.FC = () => {
               </div>
 
               {/* Warnings and blocking protocol */}
-              <div className="p-3 bg-amber-950/10 border border-amber-900/40 rounded-xl flex items-start space-x-2.5 text-[11px] text-accent/95 leading-relaxed font-sans font-normal">
+              <div className="p-3 bg-amber-950/10 border border-amber-900/40 rounded-xl flex items-start space-x-2.5 caption-scale text-accent/95 leading-relaxed font-sans font-normal">
                 <AlertTriangle className="w-4 h-4 text-accent shrink-0 mt-0.5 animate-pulse" />
                 <p>
                   <strong className="text-amber-450 font-bold">MANDATORY CAMERA INTERACTION DECK BLOCK:</strong> To protect cash flow and prevent student disputes during eventual deposit returns, you must capture one clear visual stamp of the physical spine and front layout before checking out the textbook to {activeStudent}.
@@ -205,8 +205,8 @@ export const NeevLibrarian: React.FC = () => {
 
           {/* Fullscreen Camera Overlay simulator state */}
           {handoffStep === 'capturing_spine' && (
-            <div className="p-4 bg-[#0a0a0c] border border-zinc-805 rounded-xl space-y-4 animate-in zoom-in-95 duration-300">
-              <div className="flex items-center justify-between bg-background border border-border rounded-lg px-3 py-1.5 font-mono text-[9px] text-muted-foreground/60">
+            <div className="p-4 bg-neutral-950 border border-border rounded-xl space-y-4 animate-in zoom-in-95 duration-300">
+              <div className="flex items-center justify-between bg-background border border-border rounded-lg px-3 py-1.5 font-mono caption-scale text-muted-foreground/60">
                 <div className="flex items-center space-x-1">
                   <span className="w-1.5 h-1.5 bg-destructive rounded-full animate-ping"></span>
                   <span className="text-muted-foreground font-bold uppercase">LIVE KIOSK DESK SENSOR CAM FEED</span>
@@ -227,14 +227,14 @@ export const NeevLibrarian: React.FC = () => {
                 {/* Simulated physical textbook sitting on workbench desk */}
                 <div className="z-10 text-center space-y-2">
                   <div className="mx-auto w-36 h-16 bg-zinc-850/95 border border-border shadow-xl rounded flex flex-col justify-between p-2">
-                    <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-tighter text-center">Spine Cover Grid</span>
-                    <span className="text-[7px] font-mono text-muted-foreground/60 font-bold">ISBN-9781617294433</span>
+                    <span className="caption-scale font-bold text-muted-foreground uppercase tracking-tighter text-center">Spine Cover Grid</span>
+                    <span className="caption-scale font-mono text-muted-foreground/60 font-bold">ISBN-9781617294433</span>
                   </div>
-                  <p className="text-[8px] font-mono text-secondary font-bold tracking-widest uppercase animate-pulse">Target aligned inside sensor matrix</p>
+                  <p className="caption-scale font-mono text-secondary font-bold tracking-widest uppercase animate-pulse">Target aligned inside sensor matrix</p>
                 </div>
 
                 {/* Telemetry labels */}
-                <div className="absolute bottom-2 left-2 text-[8px] font-mono text-muted-foreground/50">
+                <div className="absolute bottom-2 left-2 caption-scale font-mono text-muted-foreground/50">
                   AUTO_FOCUS: LOCKED &bull; RETINA_STAMP_CALIBRATION_READY
                 </div>
               </div>
@@ -265,10 +265,10 @@ export const NeevLibrarian: React.FC = () => {
               <div className="flex flex-col sm:flex-row justify-between sm:items-start gap-4">
                 <div className="space-y-1.5 flex-1">
                   <div className="flex items-center space-x-2">
-                    <span className="px-1.5 py-0.5 bg-secondary/90 border border-secondary/25 text-secondary font-mono text-[9px] font-bold rounded">
+                    <span className="px-1.5 py-0.5 bg-secondary/90 border border-secondary/25 text-secondary font-mono caption-scale font-bold rounded">
                       DIGITAL STAMP SECURED
                     </span>
-                    <span className="text-muted-foreground/60 font-mono text-[9px]">VISUAL_MD5: md5_7a2f_9b4e_2026</span>
+                    <span className="text-muted-foreground/60 font-mono caption-scale">VISUAL_MD5: md5_7a2f_9b4e_2026</span>
                   </div>
                   <h4 className="text-xs font-bold text-foreground font-mono">Spine condition report optimized and locked to database transaction!</h4>
                   <p className="text-[10.5px] text-muted-foreground font-sans leading-normal">
@@ -313,10 +313,10 @@ export const NeevLibrarian: React.FC = () => {
               </div>
               <div className="space-y-1">
                 <h4 className="text-xs font-bold text-foreground uppercase tracking-wider font-mono">Book Ownership Transferred Successfully</h4>
-                <p className="text-[11px] text-muted-foreground leading-normal max-w-sm mx-auto font-sans">
+                <p className="caption-scale text-muted-foreground leading-normal max-w-sm mx-auto font-sans">
                   Asset <span className="text-emerald-300 italic font-medium font-semibold">{activeBook}</span> was legally checked out and assigned to student <span className="text-foreground/90 font-bold">{activeStudent}</span>'s active holdings ledger.
                 </p>
-                <p className="text-[9px] text-emerald-450 font-mono mt-3 animate-pulse">🔒 SPINE PASSIVE TAG VERIFIED • KIOSK HAND-OFF PROTOCOL SAVED</p>
+                <p className="caption-scale text-emerald-450 font-mono mt-3 animate-pulse">🔒 SPINE PASSIVE TAG VERIFIED • KIOSK HAND-OFF PROTOCOL SAVED</p>
               </div>
             </div>
           )}
@@ -330,7 +330,7 @@ export const NeevLibrarian: React.FC = () => {
               <Activity className="w-4 h-4 text-secondary animate-pulse" />
               <h2 className="text-sm font-bold text-foreground tracking-tight">Active RFID Corridor & Shelf Sensor Logs</h2>
             </div>
-            <span className="text-[9px] font-mono bg-emerald-950/20 text-secondary border border-secondary/80 px-2 py-0.5 rounded-full">RECEIVING LIVE FEED</span>
+            <span className="caption-scale font-mono bg-emerald-950/20 text-secondary border border-secondary/80 px-2 py-0.5 rounded-full">RECEIVING LIVE FEED</span>
           </div>
 
           {/* Scrolling ticker stack */}
@@ -340,8 +340,8 @@ export const NeevLibrarian: React.FC = () => {
                 key={evt.id} 
                 className="p-3 bg-background/40 border border-border hover:border-border/60 rounded-xl space-y-1.5 font-mono text-xs transition duration-150"
               >
-                <div className="flex justify-between items-center text-[10px]">
-                  <span className={`px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider ${
+                <div className="flex justify-between items-center caption-scale">
+                  <span className={`px-1.5 py-0.5 rounded caption-scale font-bold uppercase tracking-wider ${
                     evt.type === 'gate_pass' 
                       ? 'bg-primary/90 text-primary border border-primary/80' 
                       : evt.type === 'shelf_lift'
@@ -353,17 +353,17 @@ export const NeevLibrarian: React.FC = () => {
                     {evt.type.replace('_', ' ')}
                   </span>
                   <span className="text-muted-foreground/50 flex items-center space-x-1">
-                    <Clock className="w-3 h-3 text-zinc-650" />
+                    <Clock className="w-3 h-3 text-foreground-subtle" />
                     <span>{evt.timestamp}</span>
                   </span>
                 </div>
 
-                <div className="text-[11px] leading-relaxed">
+                <div className="caption-scale leading-relaxed">
                   <span className="text-muted-foreground/60">Target Resource:</span> <span className="text-foreground/90 font-bold">{evt.bookTitle}</span>
                 </div>
 
-                <div className="text-[10px] text-muted-foreground leading-normal flex items-start gap-1">
-                  <span className="text-zinc-650 shrink-0">Details:</span>
+                <div className="caption-scale text-muted-foreground leading-normal flex items-start gap-1">
+                  <span className="text-foreground-subtle shrink-0">Details:</span>
                   <span>{evt.details} <span className="text-muted-foreground font-light">• Trace: {evt.userMeta}</span></span>
                 </div>
               </div>
@@ -398,7 +398,7 @@ export const NeevLibrarian: React.FC = () => {
                     ></div>
                   </div>
 
-                  <p className="text-[9px] text-muted-foreground font-mono text-center tracking-tight uppercase">Ratio: {metrics.percentage}% loaded</p>
+                  <p className="caption-scale text-muted-foreground font-mono text-center tracking-tight uppercase">Ratio: {metrics.percentage}% loaded</p>
                 </div>
               );
             })}
@@ -415,7 +415,7 @@ export const NeevLibrarian: React.FC = () => {
             <PlusCircle className="w-5 h-5 text-primary" />
             <div>
               <h3 className="text-sm font-bold text-foreground">Curation RFID Registry</h3>
-              <p className="text-[9px] font-mono text-muted-foreground/60 uppercase">Insert physical inventory</p>
+              <p className="caption-scale font-mono text-muted-foreground/60 uppercase">Insert physical inventory</p>
             </div>
           </div>
 
@@ -423,7 +423,7 @@ export const NeevLibrarian: React.FC = () => {
           <div className="space-y-3.5 text-xs">
             {/* Title */}
             <div className="space-y-1">
-              <label className="text-[10px] font-mono text-muted-foreground/60 uppercase font-semibold">Book Title:</label>
+              <label className="caption-scale font-mono text-muted-foreground/60 uppercase font-semibold">Book Title:</label>
               <input
                 type="text"
                 required
@@ -436,7 +436,7 @@ export const NeevLibrarian: React.FC = () => {
 
             {/* Author */}
             <div className="space-y-1">
-              <label className="text-[10px] font-mono text-muted-foreground/60 uppercase font-semibold">Author Name:</label>
+              <label className="caption-scale font-mono text-muted-foreground/60 uppercase font-semibold">Author Name:</label>
               <input
                 type="text"
                 required
@@ -450,7 +450,7 @@ export const NeevLibrarian: React.FC = () => {
             {/* ISBN and Pages */}
             <div className="grid grid-cols-2 gap-2">
               <div className="space-y-1">
-                <label className="text-[10px] font-mono text-muted-foreground/60 uppercase font-semibold">ISBN-13 Bar:</label>
+                <label className="caption-scale font-mono text-muted-foreground/60 uppercase font-semibold">ISBN-13 Bar:</label>
                 <input
                   type="text"
                   required
@@ -462,7 +462,7 @@ export const NeevLibrarian: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-mono text-muted-foreground/60 uppercase font-semibold">Aisle Shelf ID:</label>
+                <label className="caption-scale font-mono text-muted-foreground/60 uppercase font-semibold">Aisle Shelf ID:</label>
                 <input
                   type="text"
                   required
@@ -477,7 +477,7 @@ export const NeevLibrarian: React.FC = () => {
             {/* Genre and Year */}
             <div className="grid grid-cols-2 gap-2">
               <div className="space-y-1">
-                <label className="text-[10px] font-mono text-muted-foreground/60 uppercase font-semibold">Genre Class:</label>
+                <label className="caption-scale font-mono text-muted-foreground/60 uppercase font-semibold">Genre Class:</label>
                 <select
                   value={genre}
                   onChange={(e) => setGenre(e.target.value as any)}
@@ -492,7 +492,7 @@ export const NeevLibrarian: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-mono text-muted-foreground/60 uppercase font-semibold">Row Level (1-4):</label>
+                <label className="caption-scale font-mono text-muted-foreground/60 uppercase font-semibold">Row Level (1-4):</label>
                 <input
                   type="number"
                   min={1}
@@ -506,7 +506,7 @@ export const NeevLibrarian: React.FC = () => {
 
             {/* Summary synopsis description */}
             <div className="space-y-1">
-              <label className="text-[10px] font-mono text-muted-foreground/60 uppercase font-semibold">Summary Details:</label>
+              <label className="caption-scale font-mono text-muted-foreground/60 uppercase font-semibold">Summary Details:</label>
               <textarea
                 value={summary}
                 onChange={(e) => setSummary(e.target.value)}

@@ -17,7 +17,14 @@ import { useAuth } from "@/context/auth-context";
 import { apiFetch } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { hubKindLabel } from "@/lib/hub-display";
-import { PORTAL_INLINE_LINK, PORTAL_KICKER_COLOR, PORTAL_PAGE_GUTTER_X } from "@/lib/student-ui";
+import {
+  PORTAL_INLINE_LINK,
+  PORTAL_KICKER_COLOR,
+  PORTAL_PAGE_GUTTER_X,
+  PORTAL_PANEL_SURFACE,
+} from "@/lib/student-ui";
+import { PORTAL_PAGE_LEAD, PORTAL_PAGE_TITLE, PORTAL_STAT_VALUE } from "@/lib/portal-typography";
+import { adminSelectTrigger } from "@/lib/admin-desk-ui";
 import { portalPathsForUser } from "@/lib/app-paths";
 import {
   BookOpen,
@@ -172,12 +179,9 @@ const REQUEST_KEYS = [
   "cancelled",
 ] as const;
 
-/** One border, no card chrome — sections read as flat panels. */
-const outline = "rounded-md border border-border bg-background";
-
 function SectionLabel({ children }: { children: ReactNode }) {
   return (
-    <h2 className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70">
+    <h2 className="section-kicker">
       {children}
     </h2>
   );
@@ -198,14 +202,14 @@ function DeskQuickLink({
     <Link
       href={href}
       className={cn(
-        outline,
-        "flex items-start gap-3 p-3 transition-colors hover:bg-muted/30",
+        PORTAL_PANEL_SURFACE,
+        "flex items-start gap-3 p-4 transition-colors hover:bg-muted/30",
       )}
     >
-      <Icon className="mt-0.5 h-4 w-4 shrink-0 text-[#1F2937]/70" aria-hidden />
+      <Icon className="mt-0.5 h-4 w-4 shrink-0 text-foreground-muted" aria-hidden />
       <div className="min-w-0">
-        <p className="text-[14px] font-[600] leading-tight text-[#1F2937]">{title}</p>
-        <p className="mt-0.5 text-[12px] font-[500] leading-snug text-[#1F2937]/70">{hint}</p>
+        <p className="body-scale font-semibold leading-tight text-foreground">{title}</p>
+        <p className="mt-0.5 caption-scale font-medium leading-snug text-foreground-muted">{hint}</p>
       </div>
     </Link>
   );
@@ -223,11 +227,9 @@ function StatCell({
 }) {
   return (
     <div className="p-3">
-      <p className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70">{label}</p>
-      <p className="mt-1 font-mono text-[24px] font-[600] tracking-tight text-[#1F2937]">
-        {value}
-      </p>
-      {sub ? <p className="mt-1 text-[12px] font-[500] text-[#1F2937]/50">{sub}</p> : null}
+      <p className="section-kicker">{label}</p>
+      <p className={cn("mt-1", PORTAL_STAT_VALUE)}>{value}</p>
+      {sub ? <p className="mt-1 caption-scale font-medium text-foreground-subtle">{sub}</p> : null}
     </div>
   );
 }
@@ -315,7 +317,7 @@ export default function HubOverviewPage() {
   if (loading) {
     return (
       <div className={cn("flex min-h-[50dvh] items-center justify-center", topPad)}>
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <Loader2 className="h-8 w-8 animate-spin text-foreground-muted" />
       </div>
     );
   }
@@ -328,10 +330,10 @@ export default function HubOverviewPage() {
             "mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-border/60 bg-muted/30",
           )}
         >
-          <Shield className="h-7 w-7 text-muted-foreground" />
+          <Shield className="h-7 w-7 text-foreground-muted" />
         </div>
-        <h1 className="mt-6 font-serif text-[32px] font-[700] tracking-tight">Dashboard restricted</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
+        <h1 className="mt-6 h3-scale font-bold tracking-tight">Dashboard restricted</h1>
+        <p className="mt-2 text-sm text-foreground-muted">
           Hub staff memberships unlock this dashboard.
         </p>
         <Button asChild className="mt-8 rounded-md">
@@ -366,16 +368,16 @@ export default function HubOverviewPage() {
       <div className="mb-6 border-b border-border pb-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between lg:gap-8">
           <div className="min-w-0 flex-1 font-sans">
-            <h1 className="mt-1 text-[36px] font-[700] leading-tight tracking-tight text-[#1F2937]">
+            <h1 className={cn("mt-1", PORTAL_PAGE_TITLE)}>
               {isSuperAdmin ? "Network overview" : "Dashboard"}
             </h1>
-            <p className="mt-2 max-w-2xl text-[14px] font-[400] leading-relaxed text-[#1F2937]/70">
+            <p className={cn("mt-2 max-w-2xl", PORTAL_PAGE_LEAD)}>
               Manage and monitor your hub's inventory, requests, and student activity.
             </p>
             {isSuperAdmin ? (
-              <p className="mt-2 max-w-2xl text-[14px] font-[400] leading-relaxed text-[#1F2937]/70">
+              <p className={cn("mt-2 max-w-2xl", PORTAL_PAGE_LEAD)}>
                 Prioritized queues, network KPIs, and rates. Not a product catalog. Use{" "}
-                <span className="font-[600] text-[#1F2937]">Scope</span> to focus one hub.
+                <span className="font-semibold text-foreground">Scope</span> to focus one hub.
               </p>
             ) : null}
           </div>
@@ -391,7 +393,7 @@ export default function HubOverviewPage() {
             <div className="flex min-w-0 flex-col gap-1.5">
               <Label
                 htmlFor="hub-overview-period"
-                className="text-[12px] text-muted-foreground font-[500] uppercase tracking-wider"
+                className="section-kicker"
               >
                 Period
               </Label>
@@ -401,7 +403,7 @@ export default function HubOverviewPage() {
               >
                 <SelectTrigger
                   id="hub-overview-period"
-                  className="h-10 w-full text-primary rounded-md border-border bg-background"
+                  className={cn(adminSelectTrigger, "text-primary")}
                 >
                   <SelectValue />
                 </SelectTrigger>
@@ -416,14 +418,14 @@ export default function HubOverviewPage() {
               <div className="flex min-w-0 flex-col gap-1.5">
                 <Label
                   htmlFor="hub-overview-scope"
-                  className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70"
+                  className="section-kicker"
                 >
                   Network scope
                 </Label>
                 <Select value={overviewHubId} onValueChange={setOverviewHubId}>
                   <SelectTrigger
                     id="hub-overview-scope"
-                    className="h-10 w-full rounded-md border-border bg-background"
+                    className={adminSelectTrigger}
                   >
                     <SelectValue />
                   </SelectTrigger>
@@ -449,7 +451,7 @@ export default function HubOverviewPage() {
 
       {overviewQ.isLoading ? (
         <div className="flex justify-center py-24">
-          <Loader2 className="h-9 w-9 animate-spin text-muted-foreground" />
+          <Loader2 className="h-9 w-9 animate-spin text-foreground-muted" />
         </div>
       ) : overviewQ.isError ? (
         <p className="rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
@@ -459,32 +461,32 @@ export default function HubOverviewPage() {
         <div className="space-y-6">
           {isSuperAdmin && network && executive ? (
             <>
-              <section className={cn(outline, "px-4 py-3")} aria-label="System health strip">
+              <section className={cn(PORTAL_PANEL_SURFACE, "px-4 py-3")} aria-label="System health strip">
                 <SectionLabel>Health</SectionLabel>
                 <div className="mt-2 grid grid-cols-1 gap-2 text-sm sm:grid-cols-3">
-                  <p className="text-[#1F2937]/70">
-                    Queue backlog: <span className="font-mono text-[#1F2937]">{execFunnel.needAction}</span>
+                  <p className="text-foreground-muted">
+                    Queue backlog: <span className="font-mono text-foreground">{execFunnel.needAction}</span>
                   </p>
-                  <p className="text-muted-foreground">
+                  <p className="text-foreground-muted">
                     Stale requests:{" "}
                     <span className="font-mono text-foreground">{ov.requestBreakdown["expired"] ?? 0}</span>
                   </p>
                 </div>
               </section>
-              <header className={cn(outline, "p-4 md:p-5")}>
-                <h1 className="text-[20px] font-[600] tracking-tight text-[#1F2937] md:text-[24px]">
+              <header className={cn(PORTAL_PANEL_SURFACE, "p-4 md:p-5")}>
+                <h1 className="h4-scale font-semibold text-foreground">
                   Business control tower
                 </h1>
                 <div className="mt-2 max-w-full overflow-x-auto overflow-y-hidden pb-0.5">
-                  <p className="w-max whitespace-nowrap text-[13px] font-[400] text-[#1F2937]/70">
-                    <span className="font-[500] text-[#1F2937]">{ov.hubScope.label}</span>
+                  <p className="w-max whitespace-nowrap body-scale font-normal text-foreground-muted">
+                    <span className="font-medium text-foreground">{ov.hubScope.label}</span>
                     {" · "}
                     {rangeLabel}. Queue scores rank hubs by pending desk, ready pickup, and peer drop-off backlog.
                   </p>
                 </div>
               </header>
 
-              <section aria-label="Network footprint" className={cn(outline, "overflow-hidden")}>
+              <section aria-label="Network footprint" className={cn(PORTAL_PANEL_SURFACE, "overflow-hidden")}>
                 <div className="border-b border-border px-4 py-3">
                   <SectionLabel>Network</SectionLabel>
                 </div>
@@ -498,10 +500,10 @@ export default function HubOverviewPage() {
                 </div>
               </section>
 
-              <section aria-label="Derived KPIs" className={cn(outline, "overflow-hidden")}>
+              <section aria-label="Derived KPIs" className={cn(PORTAL_PANEL_SURFACE, "overflow-hidden")}>
                 <div className="border-b border-border px-4 py-3">
                   <SectionLabel>Health · {rangeLabel.toLowerCase()}</SectionLabel>
-                  <p className="mt-1 text-[11px] font-[500] text-[#1F2937]/70">
+                  <p className="mt-1 caption-scale font-medium text-foreground-muted">
                     Terminal desk success = picked ÷ (picked + expired + cancelled).
                   </p>
                 </div>
@@ -540,17 +542,17 @@ export default function HubOverviewPage() {
               </section>
 
               {executive.hubAttention.length > 0 ? (
-                <section className={cn(outline, "overflow-hidden")} aria-label="Hubs by operational load">
+                <section className={cn(PORTAL_PANEL_SURFACE, "overflow-hidden")} aria-label="Hubs by operational load">
                   <div className="border-b border-border px-4 py-3">
                     <SectionLabel>Where to act first</SectionLabel>
-                    <p className="mt-1 text-[11px] font-[500] text-[#1F2937]/70">
+                    <p className="mt-1 caption-scale font-medium text-foreground-muted">
                       Score = 3×pending + 2×ready + 2×P2P drop-off (higher = more load).
                     </p>
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full min-w-[40rem] text-sm">
                       <thead>
-                        <tr className="border-b border-border text-left text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]">
+                        <tr className="border-b border-border text-left section-kicker text-foreground">
                           <th className="px-4 py-2">Hub</th>
                           <th className="px-4 py-2">Score</th>
                           <th className="px-4 py-2">Pending</th>
@@ -564,8 +566,8 @@ export default function HubOverviewPage() {
                         {executive.hubAttention.map((row) => (
                           <tr key={row.hubId} className="border-b border-border last:border-0">
                             <td className="px-4 py-2 align-top">
-                              <div className="text-[#1F2937]">{row.hubName}</div>
-                              <div className="text-[12px] font-[500] text-[#1F2937]/70">
+                              <div className="text-foreground">{row.hubName}</div>
+                              <div className="caption-scale font-medium text-foreground-muted">
                                 {hubKindLabel(row.kind)}
                                 {row.isActive ? "" : " · inactive"}
                               </div>
@@ -611,7 +613,7 @@ export default function HubOverviewPage() {
             </>
           ) : !isSuperAdmin ? (
             <>
-              <section className={cn(outline, "px-4 py-3")} aria-label="What to do next">
+              <section className={cn(PORTAL_PANEL_SURFACE, "px-4 py-3")} aria-label="What to do next">
                 <SectionLabel>What to do next</SectionLabel>
                 <div className="mt-2 grid gap-2 sm:grid-cols-2">
                   {ov.metrics.pendingRequests > 0 ? (
@@ -619,19 +621,19 @@ export default function HubOverviewPage() {
                       Pending requests need action ({ov.metrics.pendingRequests}) → Open Requests
                     </Link>
                   ) : (
-                    <p className="text-[13px] font-[400] text-[#1F2937]/70">Request queue is healthy.</p>
+                    <p className="body-scale font-normal text-foreground-muted">Request queue is healthy.</p>
                   )}
                   {ov.metrics.totalBooks === 0 ? (
                     <Link href={d.inventory} className={cn("text-sm", PORTAL_INLINE_LINK)}>
                       No inventory yet → Open Inventory
                     </Link>
                   ) : (
-                    <p className="text-[13px] font-[400] text-[#1F2937]/70">Inventory is populated.</p>
+                    <p className="body-scale font-normal text-foreground-muted">Inventory is populated.</p>
                   )}
                 </div>
               </section>
 
-              <section className={cn(outline, "overflow-hidden")} aria-label="Metrics">
+              <section className={cn(PORTAL_PANEL_SURFACE, "overflow-hidden")} aria-label="Metrics">
                 <div className="border-b border-border px-4 py-3">
                   <SectionLabel>Metrics</SectionLabel>
                 </div>
@@ -654,15 +656,15 @@ export default function HubOverviewPage() {
               </section>
             </>
           ) : (
-            <p className={cn(outline, "px-4 py-3 text-sm text-muted-foreground")}>
+            <p className={cn(PORTAL_PANEL_SURFACE, "px-4 py-3 text-sm text-foreground-muted")}>
               Executive analytics did not load. Refresh the page or update the API.
             </p>
           )}
 
-          <section className={cn(outline, "overflow-hidden")}>
+          <section className={cn(PORTAL_PANEL_SURFACE, "overflow-hidden")}>
             <div className="border-b border-border px-4 py-3">
               <SectionLabel>Request pipeline</SectionLabel>
-              <p className="mt-1 text-[11px] font-[500] text-[#1F2937]/70">
+              <p className="mt-1 caption-scale font-medium text-foreground-muted">
                 By stage.{" "}
                 <Link href={d.requests} className="underline underline-offset-2">
                   Open requests
@@ -672,10 +674,10 @@ export default function HubOverviewPage() {
             <div className="grid grid-cols-2 divide-x divide-y divide-border sm:grid-cols-4 lg:grid-cols-7">
               {REQUEST_KEYS.map((key) => (
                 <div key={key} className="p-3 text-center">
-                  <p className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]">
+                  <p className="section-kicker text-foreground">
                     {pipelineBarLabel(key)}
                   </p>
-                  <p className="mt-1 font-mono text-[16px] tabular-nums text-[#1F2937]">
+                  <p className="mt-1 font-mono text-base tabular-nums text-foreground">
                     {ov.requestBreakdown[key] ?? 0}
                   </p>
                 </div>
@@ -684,10 +686,10 @@ export default function HubOverviewPage() {
           </section>
 
           {ov.topRequestedTitles && ov.topRequestedTitles.length > 0 ? (
-            <section className={cn(outline, "overflow-hidden")} aria-label="Top requested titles">
+            <section className={cn(PORTAL_PANEL_SURFACE, "overflow-hidden")} aria-label="Top requested titles">
               <div className="border-b border-border px-4 py-3">
                 <SectionLabel>Top requested titles</SectionLabel>
-                <p className="mt-1 text-[11px] font-[500] text-[#1F2937]/70">
+                <p className="mt-1 caption-scale font-medium text-foreground-muted">
                   By volume in {rangeLabel.toLowerCase()}. Fulfilment is tracked on{" "}
                   <Link href={d.requests} className="underline underline-offset-2">
                     Book requests
@@ -701,8 +703,8 @@ export default function HubOverviewPage() {
                     key={t.title}
                     className="flex items-center justify-between gap-3 px-4 py-2.5 text-sm"
                   >
-                    <span className="min-w-0 text-[#1F2937]">{t.title}</span>
-                    <span className="shrink-0 font-mono tabular-nums text-[#1F2937]/70">{t.count}</span>
+                    <span className="min-w-0 text-foreground">{t.title}</span>
+                    <span className="shrink-0 font-mono tabular-nums text-foreground-muted">{t.count}</span>
                   </li>
                 ))}
               </ul>

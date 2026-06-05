@@ -28,6 +28,8 @@ import {
 } from "@/components/ui/table";
 import { useDebouncedValue } from "@/lib/use-debounced-value";
 import { cn } from "@/lib/utils";
+import { adminPanel, adminSearchInput, adminSelectTrigger } from "@/lib/admin-desk-ui";
+import { PORTAL_PAGE_LEAD, PORTAL_PAGE_TITLE } from "@/lib/portal-typography";
 import { PORTAL_INLINE_LINK, PORTAL_KICKER_COLOR } from "@/lib/student-ui";
 import { Loader2 } from "lucide-react";
 
@@ -44,12 +46,9 @@ type UserRow = {
 type RoleFilter = "all" | "user" | "hub" | "super_admin";
 type StatusFilter = "all" | "active" | "held" | "deactivated";
 
-/** One border, flat panel — matches All copies (hub inventory). */
-const outline = "rounded-md border border-border bg-background";
-
 function SectionLabel({ children }: { children: ReactNode }) {
   return (
-    <h2 className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70">{children}</h2>
+    <h2 className="section-kicker">{children}</h2>
   );
 }
 
@@ -93,9 +92,6 @@ function AdminUsersContent() {
     setStatusFilter("all");
   };
 
-  const selectTriggerClass = "h-10 w-full rounded-md border-border bg-background";
-  const inputClass = "h-10 w-full rounded-md border-border bg-background text-sm";
-
   return (
     <div className={cn(topPad)}>
       <div className="mb-6 border-b border-border pb-5">
@@ -103,16 +99,16 @@ function AdminUsersContent() {
           <div className="min-w-0 font-sans">
             <p
               className={cn(
-                "text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70",
+                "section-kicker",
                 PORTAL_KICKER_COLOR,
               )}
             >
               {isSuperAdmin ? "Super admin" : "Hub portal"}
             </p>
-            <h1 className="mt-1 text-[36px] font-[700] leading-tight tracking-tight text-[#1F2937]">Users</h1>
+            <h1 className={cn("mt-1", PORTAL_PAGE_TITLE)}>Users</h1>
             {isSuperAdmin ? (
-              <p className="mt-2 text-[14px] font-[400] leading-relaxed text-[#1F2937]/70 sm:whitespace-nowrap">
-                Filter with <span className="font-[600] text-[#1F2937]">Role</span> and <span className="font-[600] text-[#1F2937]">Search</span>; open a row for profile, roles, and hub memberships; open{" "}
+              <p className={cn("mt-2 sm:whitespace-nowrap", PORTAL_PAGE_LEAD)}>
+                Filter with <span className="font-semibold text-foreground">Role</span> and <span className="font-semibold text-foreground">Search</span>; open a row for profile, roles, and hub memberships; open{" "}
                 <Link
                   href={user ? portalPathsForUser(user).inventory : "/library"}
                   className={PORTAL_INLINE_LINK}
@@ -130,12 +126,12 @@ function AdminUsersContent() {
           <div className="flex w-full min-w-0 flex-col gap-1.5 sm:w-[12rem]">
             <Label
               htmlFor="admin-users-role"
-              className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70"
+              className="section-kicker"
             >
               Role
             </Label>
             <Select value={roleFilter} onValueChange={(v) => setRoleFilter(v as RoleFilter)}>
-              <SelectTrigger id="admin-users-role" className={selectTriggerClass}>
+              <SelectTrigger id="admin-users-role" className={adminSelectTrigger}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -149,12 +145,12 @@ function AdminUsersContent() {
           <div className="flex w-full min-w-0 flex-col gap-1.5 sm:w-[12rem]">
             <Label
               htmlFor="admin-users-status"
-              className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70"
+              className="section-kicker"
             >
               Status
             </Label>
             <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as StatusFilter)}>
-              <SelectTrigger id="admin-users-status" className={selectTriggerClass}>
+              <SelectTrigger id="admin-users-status" className={adminSelectTrigger}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -168,13 +164,13 @@ function AdminUsersContent() {
           <div className="min-w-0 flex-1 basis-[14rem]">
             <Label
               htmlFor="admin-users-search"
-              className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70"
+              className="section-kicker"
             >
               Search
             </Label>
             <Input
               id="admin-users-search"
-              className={cn("mt-1.5", inputClass)}
+              className={adminSearchInput}
               placeholder="Name or email…"
               value={rawQuery}
               onChange={(e) => setRawQuery(e.target.value)}
@@ -192,10 +188,10 @@ function AdminUsersContent() {
         </div>
       </div>
 
-      <section className={cn(outline, "overflow-hidden")} aria-label="All users">
+      <section className={cn(adminPanel, "overflow-hidden")} aria-label="All users">
         {q.isLoading ? (
           <div className="flex justify-center py-24">
-            <Loader2 className="h-9 w-9 animate-spin text-muted-foreground" />
+            <Loader2 className="h-9 w-9 animate-spin text-foreground-muted" />
           </div>
         ) : q.isError ? (
           <p className="px-4 py-10 text-sm text-destructive">
@@ -205,16 +201,16 @@ function AdminUsersContent() {
           <>
             <div className="border-b border-border px-4 py-3">
               <SectionLabel>All users</SectionLabel>
-              <p className="mt-1 text-[12px] font-[500] text-[#1F2937]/70">
+              <p className="mt-1 caption-scale font-medium text-foreground-muted">
                 {filteredUsers.length === rows.length
                   ? `${rows.length} in scope${q.data && q.data.total > rows.length ? ` · ${q.data.total} match search` : ""}`
                   : `${filteredUsers.length} shown · ${rows.length} in search scope`}
               </p>
             </div>
             {!rows.length ? (
-              <p className="px-4 py-10 text-[14px] font-[400] text-[#1F2937]/70 sm:px-4">No users match this search.</p>
+              <p className="px-4 py-10 body-scale text-foreground-muted sm:px-4">No users match this search.</p>
             ) : !filteredUsers.length ? (
-              <p className="px-4 py-10 text-[14px] font-[400] text-[#1F2937]/70 sm:px-4">No users match the role filter.</p>
+              <p className="px-4 py-10 body-scale text-foreground-muted sm:px-4">No users match the role filter.</p>
             ) : (
               <div className="overflow-x-auto">
                 <Table>
@@ -230,36 +226,36 @@ function AdminUsersContent() {
                   <TableBody>
                     {filteredUsers.map((u) => (
                       <TableRow key={u.id} className="cursor-pointer border-border">
-                        <TableCell className="pl-4 font-[500] sm:pl-6">
+                        <TableCell className="pl-4 font-medium sm:pl-6">
                           <Link href={adminUserPath(u.id)} className={PORTAL_INLINE_LINK}>
                             {u.name}
                           </Link>
-                          <p className="mt-0.5 font-mono text-[12px] font-[500] text-[#1F2937]/70">
+                          <p className="mt-0.5 font-mono caption-scale font-medium text-foreground-muted">
                             {u.publicId ?? u.id.slice(0, 8)}
                           </p>
                         </TableCell>
-                        <TableCell className="text-[#1F2937]/70">{u.email}</TableCell>
+                        <TableCell className="text-foreground-muted">{u.email}</TableCell>
                         <TableCell>
                           <span
                             className={cn(
                               uniformBadgeShape,
                               "font-normal",
                               u.baseRole === "super_admin"
-                                ? "border border-destructive/20 bg-destructive/10 text-destructive dark:border-red-900/40 dark:bg-red-950/30 dark:text-red-300"
+                                ? "border border-destructive/20 bg-destructive/10 text-destructive"
                                 : u.baseRole === "hub"
-                                  ? "border border-accent/20 bg-accent/10 text-accent dark:border-amber-900/40 dark:bg-amber-950/30 dark:text-amber-300"
-                                  : "border border-primary/20 bg-primary/10 text-primary dark:border-blue-900/40 dark:bg-blue-950/30 dark:text-blue-300",
+                                  ? "border border-accent/20 bg-accent/10 text-accent"
+                                  : "border border-primary/20 bg-primary/10 text-primary",
                             )}
                           >
                             {baseRoleLabel(u.baseRole)}
                           </span>
                         </TableCell>
-                        <TableCell className="text-[#1F2937]/70">
+                        <TableCell className="text-foreground-muted">
                           {(u.accountStatus ?? "active") === "held"
                             ? "Suspended"
                             : (u.accountStatus ?? "active").replace(/_/g, " ")}
                         </TableCell>
-                        <TableCell className="pr-4 text-[#1F2937]/70 sm:pr-6">
+                        <TableCell className="pr-4 text-foreground-muted sm:pr-6">
                           {new Date(u.createdAt).toLocaleDateString()}
                         </TableCell>
                       </TableRow>

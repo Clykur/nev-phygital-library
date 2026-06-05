@@ -64,7 +64,7 @@ export function ProfileAvatar({
   return (
     <div
       className={cn(
-        "flex items-center justify-center rounded-full bg-accent/15 font-semibold text-accent/80 ring-2 ring-border/60 dark:text-accent/20",
+        "flex items-center justify-center rounded-full bg-accent/15 font-semibold text-accent ring-2 ring-border/60",
         dim,
         className,
       )}
