@@ -147,7 +147,7 @@ export default function AnimatedAuthPage() {
                             <h1 className="text-4xl font-bold tracking-tighter text-foreground mb-3">
                                 {mode === 'login' ? 'Welcome Back' : 'Create Account'}
                             </h1>
-                            <p className="text-muted-foreground font-medium text-[15px]">
+                            <p className="text-muted-foreground font-medium text-base">
                                 {mode === 'login'
                                     ? 'Login to continue your learning journey.'
                                     : 'Register to access your hub dashboard.'}

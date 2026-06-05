@@ -1,144 +1,380 @@
 import { motion } from "framer-motion";
-import { Wallet as WalletIcon, ArrowUpRight, ArrowDownRight, Sparkles, CheckCircle2 } from "lucide-react";
+import {
+  Wallet as WalletIcon,
+  ArrowUpRight,
+  ArrowDownRight,
+  Sparkles,
+  CheckCircle2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useWallet } from "@/context/wallet-context";
 import { format } from "date-fns";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5 },
+  },
 };
 
 export default function StudentWalletPage() {
-  const { balance, transactions, subscription, subscribe } = useWallet();
+  const {
+    balance,
+    transactions,
+    subscription,
+    subscribe,
+  } = useWallet();
+
+  const totalEarned = transactions
+    .filter((t) => t.type === "credit")
+    .reduce((sum, t) => sum + t.amount, 0);
+
+  const totalSpent = transactions
+    .filter((t) => t.type === "debit")
+    .reduce((sum, t) => sum + t.amount, 0);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <div className="max-w-7xl mx-auto px-6 lg:px-8 py-8 space-y-8 font-sans text-foreground">
+
       {/* Header */}
-      <div className="border-b border-border/50 pb-6">
-        <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-2 flex items-center gap-3">
-          <WalletIcon className="h-8 w-8 text-primary" /> Wallet
-        </h1>
-        <p className="text-muted-foreground text-lg">
-          Manage your credits, view transactions, and upgrade your subscription.
+      <div className="pb-8 border-b border-border">
+        <div className="flex items-center gap-3 mb-3">
+          <WalletIcon className="h-8 w-8 text-primary" />
+
+          <h1 className="text-4xl font-bold tracking-tight text-foreground">
+            Wallet
+          </h1>
+        </div>
+
+        <p className="max-w-2xl text-base text-muted-foreground">
+          Manage credits, track transactions, and unlock premium membership
+          benefits.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
-        {/* Left Column: Balance & Transactions */}
-        <div className="md:col-span-7 space-y-8">
-          
-          <motion.div variants={fadeInUp} initial="hidden" animate="visible">
-            <div className="p-8 rounded-3xl bg-gradient-to-br from-primary/20 to-background border border-primary/20 relative overflow-hidden">
-              <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
-                <WalletIcon className="w-48 h-48" />
-              </div>
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
+
+        {/* Left */}
+        <div className="xl:col-span-7 space-y-6">
+
+          {/* Balance */}
+          <motion.div
+            variants={fadeInUp}
+            initial="hidden"
+            animate="visible"
+          >
+            <div className="relative overflow-hidden rounded-3xl border bg-card p-8 shadow-sm">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5" />
+
               <div className="relative z-10">
-                <p className="text-sm font-semibold uppercase tracking-wider text-primary mb-2">Available Credits</p>
-                <h2 className="text-5xl md:text-7xl font-extrabold tracking-tighter text-foreground mb-6">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground mb-3">
+                  Available Credits
+                </p>
+
+                <h2 className="text-5xl font-bold tracking-tight text-foreground">
                   {balance.toLocaleString()}
                 </h2>
-                <div className="flex gap-4">
-                  <Button className="rounded-full px-8">Buy Credits</Button>
-                  <Button variant="outline" className="rounded-full px-8 bg-background/50 backdrop-blur">Redeem</Button>
-                </div>
+
+                <p className="mt-3 text-sm text-muted-foreground">
+                  Available for borrowing, marketplace purchases, and member
+                  services.
+                </p>
               </div>
+
+              <WalletIcon className="absolute right-8 top-8 h-20 w-20 text-primary/10" />
             </div>
           </motion.div>
 
+          {/* Insights */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="rounded-2xl border bg-card p-5">
+              <p className="text-xs uppercase tracking-wider text-muted-foreground">
+                Total Earned
+              </p>
+
+              <p className="mt-2 text-2xl font-semibold text-foreground">
+                {totalEarned.toLocaleString()}
+              </p>
+            </div>
+
+            <div className="rounded-2xl border bg-card p-5">
+              <p className="text-xs uppercase tracking-wider text-muted-foreground">
+                Total Spent
+              </p>
+
+              <p className="mt-2 text-2xl font-semibold text-foreground">
+                {totalSpent.toLocaleString()}
+              </p>
+            </div>
+          </div>
+
+          {/* Rewards */}
+          <div className="rounded-3xl border bg-gradient-to-r from-primary/5 to-accent/5 p-6">
+            <div className="flex items-center gap-4">
+              <Sparkles className="h-6 w-6 text-primary" />
+
+              <div>
+                <h3 className="font-semibold text-foreground">
+                  Earn More Credits
+                </h3>
+
+                <p className="text-sm text-muted-foreground">
+                  Borrow books, write reviews, participate in community events,
+                  and earn rewards.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Transactions */}
           <section>
-            <h3 className="text-xl font-bold mb-4">Transaction History</h3>
+            <h3 className="text-xl font-semibold mb-4 text-foreground">
+              Transaction History
+            </h3>
+
             <div className="space-y-4">
-              {transactions.length > 0 ? transactions.map((t, i) => (
-                <motion.div 
-                  key={t.id} 
-                  variants={fadeInUp} 
-                  initial="hidden" 
-                  animate="visible" 
-                  transition={{ delay: 0.1 + i * 0.05 }}
-                  className="flex items-center justify-between p-4 rounded-xl border border-border bg-card hover:bg-muted/50 transition-colors"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className={`p-3 rounded-full ${t.type === 'credit' ? 'bg-emerald-500/10 text-secondary' : 'bg-rose-500/10 text-destructive'}`}>
-                      {t.type === 'credit' ? <ArrowDownRight className="w-5 h-5" /> : <ArrowUpRight className="w-5 h-5" />}
+              {transactions.length > 0 ? (
+                transactions.map((t, i) => (
+                  <motion.div
+                    key={t.id}
+                    variants={fadeInUp}
+                    initial="hidden"
+                    animate="visible"
+                    transition={{
+                      delay: 0.1 + i * 0.05,
+                    }}
+                    className="
+                  group
+                  flex
+                  items-center
+                  justify-between
+                  rounded-2xl
+                  border
+                  bg-card
+                  p-5
+                  transition-all
+                  duration-200
+                  hover:shadow-md
+                  hover:border-primary/20
+                "
+                  >
+                    <div className="flex items-center gap-4">
+
+                      <div
+                        className={`p-3 rounded-full ${t.type === "credit"
+                          ? "bg-emerald-500/10 text-emerald-600"
+                          : "bg-muted text-foreground"
+                          }`}
+                      >
+                        {t.type === "credit" ? (
+                          <ArrowDownRight className="w-5 h-5" />
+                        ) : (
+                          <ArrowUpRight className="w-5 h-5" />
+                        )}
+                      </div>
+
+                      <div>
+                        <p className="font-medium text-foreground">
+                          {t.description}
+                        </p>
+
+                        <p className="text-xs text-muted-foreground">
+                          {format(
+                            new Date(t.createdAt),
+                            "MMM d, yyyy • h:mm a"
+                          )}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-semibold">{t.description}</p>
-                      <p className="text-xs text-muted-foreground">{format(new Date(t.createdAt), 'MMM d, yyyy • h:mm a')}</p>
+
+                    <div
+                      className={`text-lg font-semibold ${t.type === "credit"
+                        ? "text-emerald-600"
+                        : "text-foreground"
+                        }`}
+                    >
+                      {t.type === "credit" ? "+" : "-"}
+                      {t.amount.toLocaleString()}
                     </div>
-                  </div>
-                  <div className={`font-bold text-lg ${t.type === 'credit' ? 'text-secondary' : 'text-foreground'}`}>
-                    {t.type === 'credit' ? '+' : '-'}{t.amount.toLocaleString()}
-                  </div>
-                </motion.div>
-              )) : (
-                <div className="p-8 text-center border border-dashed rounded-xl bg-muted/30">
-                  <p className="text-muted-foreground">No transactions yet.</p>
+                  </motion.div>
+                ))
+              ) : (
+                <div className="rounded-2xl border border-dashed p-10 text-center">
+                  <p className="text-muted-foreground">
+                    No transactions yet.
+                  </p>
                 </div>
               )}
             </div>
           </section>
-
         </div>
 
-        {/* Right Column: Subscriptions */}
-        <div className="md:col-span-5 space-y-6">
-          <section>
-            <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-accent" /> Subscription Plans
+        {/* Right */}
+        <div className="xl:col-span-5 space-y-6">
+
+          {/* Membership */}
+          <div className="rounded-3xl border bg-card p-6">
+            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-2">
+              Membership Status
+            </p>
+
+            <h3 className="text-xl font-semibold text-foreground">
+              {subscription === "pro"
+                ? "Pro Member"
+                : "Free Member"}
             </h3>
-            
+
+            <p className="mt-2 text-sm text-muted-foreground">
+              {subscription === "pro"
+                ? "Premium borrowing and delivery benefits are active."
+                : "Upgrade to unlock premium benefits and bonus credits."}
+            </p>
+          </div>
+
+          <section>
+            <h3 className="text-xl font-semibold flex items-center gap-2 mb-4">
+              <Sparkles className="h-5 w-5 text-primary" />
+              Subscription Plans
+            </h3>
+
             <div className="space-y-4">
-              {/* Free Plan */}
-              <div className={`p-6 rounded-2xl border-2 transition-all ${subscription === 'free' ? 'border-primary bg-primary/5' : 'border-border bg-card'}`}>
-                <div className="flex justify-between items-start mb-4">
+
+              {/* Free */}
+              <div
+                className={`
+              rounded-3xl
+              border
+              bg-card
+              p-6
+              transition-all
+              duration-300
+              hover:shadow-md
+              ${subscription === "free"
+                    ? "border-primary ring-2 ring-primary/10"
+                    : ""
+                  }
+            `}
+              >
+                <div className="flex justify-between items-start mb-5">
                   <div>
-                    <h4 className="font-bold text-lg">Free Tier</h4>
-                    <p className="text-2xl font-extrabold mt-1">₹0 <span className="text-sm font-normal text-muted-foreground">/mo</span></p>
+                    <h4 className="text-xl font-semibold text-foreground">
+                      Free Tier
+                    </h4>
+
+                    <p className="text-3xl font-bold mt-2 text-foreground">
+                      ₹0
+                      <span className="text-sm font-normal text-muted-foreground ml-1">
+                        /month
+                      </span>
+                    </p>
                   </div>
-                  {subscription === 'free' && <CheckCircle2 className="w-6 h-6 text-primary" />}
+
+                  {subscription === "free" && (
+                    <CheckCircle2 className="h-6 w-6 text-primary" />
+                  )}
                 </div>
-                <ul className="space-y-2 mb-6 text-sm text-muted-foreground">
-                  <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-secondary" /> Browse catalog</li>
-                  <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-secondary" /> Pay-per-book</li>
+
+                <ul className="space-y-3 mb-6 text-sm">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-primary" />
+                    Browse catalog
+                  </li>
+
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-primary" />
+                    Pay-per-book access
+                  </li>
                 </ul>
-                <Button 
-                  variant={subscription === 'free' ? "secondary" : "outline"} 
-                  className="w-full rounded-full" 
-                  disabled={subscription === 'free'}
-                  onClick={() => subscribe('free')}
+
+                <Button
+                  variant={
+                    subscription === "free"
+                      ? "secondary"
+                      : "outline"
+                  }
+                  className="w-full h-11 rounded-xl"
+                  disabled={subscription === "free"}
+                  onClick={() => subscribe("free")}
                 >
-                  {subscription === 'free' ? 'Current Plan' : 'Downgrade to Free'}
+                  {subscription === "free"
+                    ? "Current Plan"
+                    : "Downgrade"}
                 </Button>
               </div>
 
-              {/* Pro Plan */}
-              <div className={`p-6 rounded-2xl border-2 transition-all relative overflow-hidden ${subscription === 'pro' ? 'border-accent bg-amber-500/5' : 'border-border bg-card'}`}>
-                <div className="absolute top-0 right-0 bg-accent text-accent/90 text-[10px] font-bold px-3 py-1 rounded-bl-lg uppercase tracking-wider">
-                  Recommended
+              {/* Pro */}
+              <div
+                className={`
+              relative
+              overflow-hidden
+              rounded-3xl
+              border
+              bg-card
+              p-6
+              transition-all
+              duration-300
+              hover:shadow-lg
+              ${subscription === "pro"
+                    ? "border-primary ring-2 ring-primary/10"
+                    : ""
+                  }
+            `}
+              >
+                <div className="absolute top-4 right-4 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
+                  Most Popular
                 </div>
-                <div className="flex justify-between items-start mb-4">
+
+                <div className="flex justify-between items-start mb-5">
                   <div>
-                    <h4 className="font-bold text-lg flex items-center gap-2">Pro Tier</h4>
-                    <p className="text-2xl font-extrabold mt-1">₹999 <span className="text-sm font-normal text-muted-foreground">/mo</span></p>
+                    <h4 className="text-xl font-semibold text-foreground">
+                      Pro Tier
+                    </h4>
+
+                    <p className="mt-2 text-4xl font-bold tracking-tight text-foreground">
+                      ₹999
+                      <span className="ml-1 text-sm font-normal text-muted-foreground">
+                        /month
+                      </span>
+                    </p>
                   </div>
-                  {subscription === 'pro' && <CheckCircle2 className="w-6 h-6 text-accent" />}
+
+                  {subscription === "pro" && (
+                    <CheckCircle2 className="h-6 w-6 text-primary" />
+                  )}
                 </div>
-                <ul className="space-y-2 mb-6 text-sm text-muted-foreground">
-                  <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-secondary" /> Unlimited browsing</li>
-                  <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-secondary" /> Priority waitlist</li>
-                  <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-secondary" /> Zero delivery fees</li>
-                  <li className="flex items-start gap-2 text-accent font-medium">
-                    <Sparkles className="w-4 h-4 mt-0.5 shrink-0" />
+
+                <ul className="space-y-3 mb-6 text-sm">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-primary" />
+                    Unlimited browsing
+                  </li>
+
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-primary" />
+                    Priority waitlist
+                  </li>
+
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-primary" />
+                    Zero delivery fees
+                  </li>
+
+                  <li className="flex items-start gap-2 font-medium text-primary">
+                    <Sparkles className="h-4 w-4 mt-0.5" />
                     +5,000 Credits instantly on signup
                   </li>
                 </ul>
-                <Button 
-                  className={`w-full rounded-full ${subscription === 'pro' ? 'bg-amber-500/20 text-accent hover:bg-amber-500/30' : 'bg-accent text-accent/90 hover:bg-accent'}`}
-                  disabled={subscription === 'pro'}
-                  onClick={() => subscribe('pro')}
+
+                <Button
+                  className="w-full h-11 rounded-xl"
+                  disabled={subscription === "pro"}
+                  onClick={() => subscribe("pro")}
                 >
-                  {subscription === 'pro' ? 'Current Plan' : 'Upgrade to Pro'}
+                  {subscription === "pro"
+                    ? "Current Plan"
+                    : "Upgrade to Pro"}
                 </Button>
               </div>
             </div>

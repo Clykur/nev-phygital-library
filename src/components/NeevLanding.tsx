@@ -25,13 +25,14 @@ import {
   ShieldAlert,
   Key,
   RefreshCw,
-  CreditCard
+  CreditCard,
+  Badge
 } from 'lucide-react';
 import { CredentialResponse, GoogleLogin } from '@react-oauth/google';
 
 interface NeevLandingProps {
   onLogin: (email: string, password?: string, isGoogleAuth?: boolean) => void;
-  onGoogleLogin: (token: string) => void;
+  onGoogleLogin: (token: string, extra?: { accountType?: string, hubLocation?: string, hubName?: string, hubKind?: string }) => void;
   onSignUp: (name: string, email: string, isPremium: boolean, hubLocationId: string, password?: string, role?: string, hubName?: string, hubKind?: string) => void;
   addXp: (amount: number) => void;
   activeSegment: 'students' | 'colleges';
@@ -298,7 +299,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
               setActiveSegment('students');
               addXp(15);
             }}
-            className={`flex items-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-bold font-sans tracking-wide transition-all duration-300 ${activeSegment === 'students'
+            className={`flex items-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-semibold font-sans tracking-wide transition-all duration-300 ${activeSegment === 'students'
               ? 'bg-muted/50 border border-border/60 text-foreground shadow-xl scale-100'
               : 'text-muted-foreground hover:text-foreground hover:bg-muted/50/30'
               }`}
@@ -313,7 +314,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
               setActiveSegment('colleges');
               addXp(15);
             }}
-            className={`flex items-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-bold font-sans tracking-wide transition-all duration-300 ${activeSegment === 'colleges'
+            className={`flex items-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-semibold font-sans tracking-wide transition-all duration-300 ${activeSegment === 'colleges'
               ? 'bg-muted/50 border border-border/60 text-foreground shadow-xl scale-100'
               : 'text-muted-foreground hover:text-foreground hover:bg-muted/50/30'
               }`}
@@ -340,13 +341,13 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
             </h1>
 
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              No shipping delays. No screen fatigue. Access thousands of premium engineering and technical reference books directly from the Neev Smart Kiosk inside your college library.
+              No shipping delays. No screen fatigue. Access thousands of premium engineering and technical reference books directly from the Neev Smart Hub inside your college library.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
               <button
                 onClick={scrollToAuth}
-                className="px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white font-medium rounded-md transition-colors w-full sm:w-auto shadow-sm"
+                className="px-6 py-3 bg-primary hover:bg-[#152A45] text-white font-medium rounded-md transition-colors w-full sm:w-auto shadow-sm"
               >
                 Join Premium — ₹999/Yr
               </button>
@@ -394,23 +395,23 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                 </div>
                 <div className="space-y-2">
                   <span className="text-[10px] font-semibold uppercase text-muted-foreground block">01 / Replenishment</span>
-                  <h3 className="text-xl font-bold text-foreground">Live Campus Bounties</h3>
+                  <h3 className="h4-scale text-foreground">Live Campus Bounties</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    Don't need your previous semester textbooks? Upload them to the Hub. When a peer needs it, the kiosk requests it and you earn credits to access your own semester requirements.
+                    Don't need your previous semester textbooks? Upload them to the Hub. When a peer needs it, the Hub requests it and you earn credits to access your own semester requirements.
                   </p>
                 </div>
               </div>
 
-              {/* Card 2 — Kiosk Validation */}
+              {/* Card 2 — Hub Validation */}
               <div className="p-6 bg-white border border-border rounded-xl space-y-4 hover:border-border hover:shadow-sm transition-all group">
                 <div className="w-12 h-12 rounded-lg bg-muted border border-border flex items-center justify-center">
                   <Cpu className="w-6 h-6 text-foreground" />
                 </div>
                 <div className="space-y-2">
                   <span className="text-[10px] font-semibold uppercase text-muted-foreground block">02 / Authentication</span>
-                  <h3 className="text-xl font-bold text-foreground">UHF-RFID Secured Scans</h3>
+                  <h3 className="h4-scale text-foreground">UHF-RFID Secured Scans</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    Books are embedded with stealth RFID circuits. To check out, you simply place the item on the Kiosk scanner and tap your College ID card. 200ms authorization.
+                    Books are embedded with stealth RFID circuits. To check out, you simply place the item on the Hub scanner and tap your College ID card. 200ms authorization.
                   </p>
                 </div>
               </div>
@@ -422,7 +423,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                 </div>
                 <div className="space-y-2">
                   <span className="text-[10px] font-semibold uppercase text-muted-foreground block">03 / Utility Ledger</span>
-                  <h3 className="text-xl font-bold text-foreground">Elastic Credit Engine</h3>
+                  <h3 className="h4-scale text-foreground">Elastic Credit Engine</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">
                     Your account is staked with a ₹5,000 credit bar. A book temporarily freezes portion of the bar as collateral. Returning the item instantly restores your full buffer.
                   </p>
@@ -437,7 +438,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                   <span className="px-2 py-0.5 bg-slate-200 text-foreground font-bold font-mono text-[9px] rounded uppercase tracking-wider">Growth Engine</span>
                   <span className="text-xs text-success font-medium">&bull; Dean's Pilot Favorite</span>
                 </div>
-                <h4 className="text-lg font-bold text-foreground tracking-tight">Exhausted your credits? Read unlimited in-hub.</h4>
+                <h4 className="h5-scale text-foreground tracking-tight">Exhausted your credits? Read unlimited in-hub.</h4>
                 <p className="text-sm text-muted-foreground max-w-3xl leading-relaxed">
                   A student can read any technical reference textbook or handbook in our entire catalog completely free with <strong>zero credit deductions</strong>—as long as they remain inside the physical library building.
                 </p>
@@ -445,7 +446,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
               <div className="shrink-0">
                 <div className="px-4 py-3 bg-white border border-border rounded-lg text-center">
                   <div className="text-xs font-medium text-muted-foreground">CREDIT COST</div>
-                  <div className="text-lg font-bold text-success uppercase">₹0 Free</div>
+                  <div className="h5-scale text-success uppercase">₹0 Free</div>
                 </div>
               </div>
             </div>
@@ -474,7 +475,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                     type="button"
                     className="p-4 bg-background border border-border hover:border-border rounded-xl text-left transition group duration-300 relative overflow-hidden focus:outline-none"
                   >
-                    <div className="absolute top-0 right-0 w-20 h-20 -mr-6 -mt-6 bg-indigo-500/[0.01] rounded-full group-hover:scale-150 transition-transform"></div>
+                    <div className="absolute top-0 right-0 w-20 h-20 -mr-6 -mt-6 bg-primary/[0.01] rounded-full group-hover:scale-150 transition-transform"></div>
 
                     <div className="flex gap-3 items-center">
                       {/* Premium textured simulated digital reference book cover scan mockup */}
@@ -487,7 +488,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
 
                       <div className="space-y-1 min-w-0 flex-1">
                         <span className="text-[9px] font-mono font-bold text-muted-foreground/60 uppercase tracking-widest block">{book.code} • {book.subject}</span>
-                        <h4 className="text-xs font-bold text-foreground/90 group-hover:text-primary transition-colors truncate max-w-[200px]" title={book.title}>
+                        <h4 className="text-xs font-semibold text-foreground/90 group-hover:text-primary transition-colors truncate max-w-[200px]" title={book.title}>
                           {book.title}
                         </h4>
                         <p className="text-[10px] text-muted-foreground/80 truncate font-light">{book.author}</p>
@@ -495,11 +496,11 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                     </div>
 
                     <div className="mt-4 border-t border-border/60 pt-2 flex items-center justify-between text-[10px] font-mono">
-                      <span className="text-muted-foreground/60">Kiosk Status</span>
+                      <span className="text-muted-foreground/60">Hub Status</span>
                       {isAvailable ? (
                         <span className="text-secondary flex items-center font-semibold">
                           <span className="mr-1.5 animate-pulse text-secondary">●</span>
-                          {book.copiesAvailable} Copies Ready at Kiosk
+                          {book.copiesAvailable} Copies Ready at Hub
                         </span>
                       ) : (
                         <span className="text-muted-foreground/60 flex items-center">
@@ -550,8 +551,8 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                 {
                   step: 3,
                   title: "3. Rapid Replenishment Loop",
-                  desc: "Slide the textbook back into your library kiosk counter. High-speed feedback instantly refuels your credit capacity so you can get your next volume.",
-                  icon: <Cpu className="w-4 h-4 text-purple-400" />
+                  desc: "Slide the textbook back into your library Hub counter. High-speed feedback instantly refuels your credit capacity so you can get your next volume.",
+                  icon: <Cpu className="w-4 h-4 text-accent" />
                 },
                 {
                   step: 4,
@@ -568,7 +569,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                     addXp(10);
                   }}
                   className={`p-4 rounded-2xl border text-left transition-all duration-350 relative overflow-hidden group ${activeSimulationStep === flowStep.step
-                    ? 'bg-muted/50 border-indigo-500/85 shadow-[0_0_15px_rgba(92,92,241,0.15)]'
+                    ? 'bg-muted/50 border-primary/85 shadow-[0_0_15px_rgba(92,92,241,0.15)]'
                     : 'bg-zinc-90/20 border-border hover:border-border/60'
                     }`}
                 >
@@ -581,7 +582,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                     </div>
                     <span className="text-[10px] font-mono text-zinc-650 font-bold">INFO BLOCK 0{flowStep.step}</span>
                   </div>
-                  <h4 className={`text-xs font-bold  transition-colors ${activeSimulationStep === flowStep.step ? 'text-primary' : 'text-muted-foreground'}`}>
+                  <h4 className={`text-xs font-semibold  transition-colors ${activeSimulationStep === flowStep.step ? 'text-primary' : 'text-muted-foreground'}`}>
                     {flowStep.title}
                   </h4>
                   <p className="text-[11px] text-muted-foreground/80 leading-relaxed font-light mt-1.5 font-sans">
@@ -596,7 +597,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
 
               {/* Left Sandbox Column: Credit & Wallet Status */}
               <div className="lg:col-span-6 bg-background border border-border p-6 rounded-2xl flex flex-col justify-between space-y-6 relative overflow-hidden">
-                <div className="absolute top-[-10%] right-[-10%] w-48 h-48 bg-indigo-500/[0.03] rounded-full blur-3xl pointer-events-none"></div>
+                <div className="absolute top-[-10%] right-[-10%] w-48 h-48 bg-primary/[0.03] rounded-full blur-3xl pointer-events-none"></div>
 
                 {/* Header */}
                 <div className="space-y-1">
@@ -615,13 +616,13 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                   <div className="flex justify-between items-end">
                     <div className="space-y-0.5 text-left">
                       <span className="text-[9px] font-mono text-muted-foreground/60 uppercase">Available Cash-Free Credit Buffer:</span>
-                      <div className="text-lg font-bold font-mono text-foreground tracking-tight">
+                      <div className="h5-scale font-mono text-foreground tracking-tight">
                         ₹{simCredits.toLocaleString()} <span className="text-xs text-muted-foreground/60 font-light font-sans">/ ₹5,000 Total Limit</span>
                       </div>
                     </div>
                     <div className="text-right">
                       <span className="text-[8px] font-mono text-primary font-bold uppercase block">Buffer Utilization:</span>
-                      <span className="text-xs font-bold font-mono text-foreground/90">
+                      <span className="text-xs font-semibold font-mono text-foreground/90">
                         {Math.round(((5000 - simCredits) / 5000) * 100)}% Used
                       </span>
                     </div>
@@ -676,7 +677,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                 </div>
 
                 {/* Simulated Telemetry log */}
-                <div className="p-2.5 bg-indigo-500/5 text-indigo-305 font-mono text-[10px] rounded-lg border border-indigo-900/40 flex items-center gap-2">
+                <div className="p-2.5 bg-primary/5 text-indigo-305 font-mono text-[10px] rounded-lg border border-indigo-900/40 flex items-center gap-2">
                   <Radio className="w-3 h-3 text-primary shrink-0 animate-pulse" />
                   <span className="text-muted-foreground leading-relaxed text-left">
                     <strong>Sandbox Status:</strong> Available credit holds change instantly with zero transaction lag.
@@ -688,7 +689,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
               <div className="lg:col-span-6 bg-background border border-border p-6 rounded-2xl flex flex-col justify-between space-y-6">
                 <div className="space-y-1 text-left">
                   <span className="text-[9px] font-mono text-primary uppercase font-bold tracking-wider block">INTERACTIVE INSTANT DISPENSER PANEL</span>
-                  <h3 className="text-base font-bold text-foreground ">Campus Library Kiosk Shelf</h3>
+                  <h3 className="text-base font-bold text-foreground ">Campus Library Hub Shelf</h3>
                   <p className="text-[11px] text-muted-foreground font-light font-sans">
                     Click to test borrowing textbooks. Our smart shelves detect active weight changes and adjust limits with 100% computational correctness.
                   </p>
@@ -728,7 +729,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                                 setSimCredits(prev => prev + catalogBook.weight);
                                 addXp(20);
                               }}
-                              className="px-2 py-1 bg-primary/90 hover:bg-slate-900 border border-primary/80 rounded-md text-[9px] font-bold text-primary font-sans transition"
+                              className="px-2 py-1 bg-primary/90 hover:bg-primary border border-primary/80 rounded-md text-[9px] font-bold text-primary font-sans transition"
                             >
                               Return Book
                             </button>
@@ -779,7 +780,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
 
           {/* Block 6: Growth & Operations Narrative Block */}
           <section className="bg-background p-6 sm:p-10 rounded-2xl border border-border flex flex-col md:flex-row items-center gap-8 relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-32 h-32 bg-blue-500/[0.01] rounded-full blur-2xl"></div>
+            <div className="absolute top-0 left-0 w-32 h-32 bg-primary/[0.01] rounded-full blur-2xl"></div>
 
             <div className="space-y-4 md:w-3/4">
               <span className="text-[10px] font-mono tracking-widest text-secondary font-bold uppercase font-semibold">Engineered for speed</span>
@@ -817,7 +818,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
 
                 <div className="space-y-4">
                   <div className="space-y-1">
-                    <h4 className="text-sm font-bold text-muted-foreground font-mono uppercase tracking-wider">Premium Membership</h4>
+                    <h4 className="text-sm font-semibold text-muted-foreground font-mono uppercase tracking-wider">Premium Membership</h4>
                     <div className="flex items-baseline space-x-1">
                       <span className="text-3xl font-mono font-bold text-foreground">₹999</span>
                       <span className="text-xs text-muted-foreground/60 font-mono">/ Year</span>
@@ -837,7 +838,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                     </li>
                     <li className="flex items-start space-x-2.5">
                       <Check className="w-4 h-4 text-secondary shrink-0 mt-0.5" />
-                      <span>Clear your buffer instantly by returning books to the kiosk</span>
+                      <span>Clear your buffer instantly by returning books to the Hub</span>
                     </li>
                     <li className="flex items-start space-x-2.5">
                       <Check className="w-4 h-4 text-secondary shrink-0 mt-0.5" />
@@ -865,11 +866,11 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                 <div className="space-y-4">
                   <div className="space-y-1">
                     <div className="flex justify-between items-start">
-                      <h4 className="text-sm font-bold text-muted-foreground/60 font-mono uppercase tracking-wider font-semibold">Long-Term Lease Tier</h4>
-                      <span className="px-2 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/20 text-[8px] font-bold text-primary font-mono">NEEV FAMILY ONLY</span>
+                      <h4 className="text-sm font-semibold text-muted-foreground/60 font-mono uppercase tracking-wider font-semibold">Long-Term Lease Tier</h4>
+                      <span className="px-2 py-0.5 rounded bg-primary/10 border border-primary/20 text-[8px] font-bold text-primary font-mono">NEEV FAMILY ONLY</span>
                     </div>
                     <div className="flex items-baseline space-x-1">
-                      <span className="text-xl font-bold text-muted-foreground font-mono">Retail Book Cost</span>
+                      <span className="h4-scale text-muted-foreground font-mono">Retail Book Cost</span>
                       <span className="text-xs text-zinc-505 font-mono ml-1">Upfront (Refunded)</span>
                     </div>
                   </div>
@@ -980,7 +981,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
 
               {/* Form card */}
               <div className="lg:col-span-7 bg-muted/50/40 border border-border rounded-2xl p-6 space-y-6 relative">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-indigo-900/5 rounded-full blur-[70px] pointer-events-none"></div>
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-primary/5 rounded-full blur-[70px] pointer-events-none"></div>
 
                 {/* Form Tabs for Login / Sign Up */}
                 <div className="flex border-b border-border/60 pb-1">
@@ -990,12 +991,12 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                       setAuthTab('login');
                       addXp(10);
                     }}
-                    className={`flex-1 pb-3 text-xs font-bold uppercase tracking-wider transition-all relative ${authTab === 'login' ? 'text-foreground' : 'text-muted-foreground/60 hover:text-muted-foreground'
+                    className={`flex-1 pb-3 text-xs font-semibold uppercase tracking-wider transition-all relative ${authTab === 'login' ? 'text-foreground' : 'text-muted-foreground/60 hover:text-muted-foreground'
                       }`}
                   >
                     <span>Login to Account</span>
                     {authTab === 'login' && (
-                      <div className="absolute bottom-[-1px] left-0 right-0 h-0.5 bg-indigo-505 animate-in fade-in duration-200"></div>
+                      <div className="absolute bottom-[-1px] left-0 right-0 h-0.5 bg-primary/55 animate-in fade-in duration-200"></div>
                     )}
                   </button>
                   <button
@@ -1004,12 +1005,12 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                       setAuthTab('signup');
                       addXp(10);
                     }}
-                    className={`flex-1 pb-3 text-xs font-bold uppercase tracking-wider transition-all relative ${authTab === 'signup' ? 'text-foreground' : 'text-muted-foreground/60 hover:text-muted-foreground'
+                    className={`flex-1 pb-3 text-xs font-semibold uppercase tracking-wider transition-all relative ${authTab === 'signup' ? 'text-foreground' : 'text-muted-foreground/60 hover:text-muted-foreground'
                       }`}
                   >
                     <span>Sign Up (New Student)</span>
                     {authTab === 'signup' && (
-                      <div className="absolute bottom-[-1px] left-0 right-0 h-0.5 bg-indigo-505 animate-in fade-in duration-200"></div>
+                      <div className="absolute bottom-[-1px] left-0 right-0 h-0.5 bg-primary/55 animate-in fade-in duration-200"></div>
                     )}
                   </button>
                 </div>
@@ -1018,10 +1019,6 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                   /* ================= LOGIN FORM VIEW ================= */
                   <div className="space-y-4 animate-in fade-in duration-300">
                     <div className="space-y-1">
-                      <div className="flex items-center space-x-1.5 text-primary text-[10px] font-mono uppercase font-bold">
-                        <Lock className="w-3 h-3" />
-                        <span>Academic Registration Nodes</span>
-                      </div>
                       <h3 className="text-base font-bold text-foreground">Access Your Physical Library Account</h3>
                       <p className="text-[11px] text-muted-foreground font-light">
                         Enter your pre-registered email address and choosing credential passwords to access.
@@ -1049,40 +1046,39 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
 
                       <div className="flex items-center space-x-2 select-none my-1">
                         <div className="h-[1px] bg-zinc-850 flex-1"></div>
-                        <span className="text-[8px] font-mono text-muted-foreground uppercase">or authenticate traditionally</span>
+                        <span className="text-[8px] font-mono text-muted-foreground uppercase">(or)</span>
                         <div className="h-[1px] bg-zinc-850 flex-1"></div>
                       </div>
 
                       <div className="space-y-2 text-xs">
-                        <label className="text-[10px] font-mono text-muted-foreground uppercase font-bold">Authorized Account Email Lookup:</label>
+                        <label className="text-[10px] font-mono text-muted-foreground uppercase font-bold">Email:</label>
                         <input
                           type="email"
                           required
                           value={loginEmail}
                           onChange={(e) => setLoginEmail(e.target.value)}
-                          placeholder="ishaan@university.edu or sneha.v@university.edu"
+                          placeholder="Enter Your Email"
                           className="w-full bg-background border border-border rounded-xl p-3 text-foreground/90 font-mono focus:border-border outline-none placeholder-zinc-800 text-xs"
                         />
                       </div>
 
                       <div className="space-y-2 text-xs">
-                        <label className="text-[10px] font-mono text-muted-foreground uppercase font-bold">Secure Account Password:</label>
+                        <label className="text-[10px] font-mono text-muted-foreground uppercase font-bold">Password:</label>
                         <input
                           type="password"
                           required
                           value={loginPassword}
                           onChange={(e) => setLoginPassword(e.target.value)}
-                          placeholder="••••••••"
+                          placeholder="Enter Your Password"
                           className="w-full bg-background border border-border rounded-xl p-3 text-foreground/90 font-mono focus:border-border outline-none placeholder-zinc-800 text-xs animate-in"
                         />
-                        <p className="text-[9px] text-muted-foreground/60 font-mono">Note: Seeded accounts are protected via password <span className="text-muted-foreground bg-background px-1 py-0.5 rounded font-mono">password123</span>.</p>
                       </div>
 
                       <button
                         type="submit"
-                        className="w-full py-3 bg-muted/50 hover:bg-white text-zinc-950 border-t border-white rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-center space-x-1.5 transition mt-2"
+                        className="w-full py-3 bg-muted/50 hover:bg-white text-zinc-950 border-t border-white rounded-xl text-xs font-semibold uppercase tracking-wider flex items-center justify-center space-x-1.5 transition mt-2"
                       >
-                        <span>Authenticate & Access Neev Core &rarr;</span>
+                        <span>Login to Neev &rarr;</span>
                       </button>
                     </form>
                   </div>
@@ -1090,30 +1086,29 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                   /* ================= SIGN UP FORM VIEW ================= */
                   <div className="space-y-4 animate-in fade-in duration-300">
                     <div className="space-y-1">
-                      <div className="flex items-center space-x-1.5 text-primary text-[10px] font-mono uppercase font-bold">
-                        <Sparkles className="w-3 h-3" />
-                        <span>New College Enrollment Service</span>
-                      </div>
                       <h3 className="text-base font-bold text-foreground">Create Your Neev Account</h3>
                       <p className="text-[11px] text-muted-foreground font-light">
-                        Register below to instantly connect to your campus hub kiosk physical book buffer.
+                        Register below to instantly connect to your campus hub Hub physical book buffer.
                       </p>
                     </div>
 
                     <form onSubmit={handleSignUpFormSubmit} className="space-y-4">
-                      {/* Google sign-up banner option */}
+                      {/* Google sign-in */}
                       <div className="flex justify-center w-full">
                         <GoogleLogin
                           onSuccess={credentialResponse => {
                             if (credentialResponse.credential) {
-                              onGoogleLogin(credentialResponse.credential);
+                              onGoogleLogin(credentialResponse.credential, {
+                                accountType: 'student',
+                                hubLocation: signUpBranch
+                              });
                             }
                           }}
                           onError={() => {
-                            console.error('Google Sign Up Failed');
+                            console.error('Google Login Failed');
                           }}
-                          theme="filled_black"
-                          text="signup_with"
+                          theme="filled_blue"
+                          text="continue_with"
                           shape="pill"
                           size="large"
                         />
@@ -1121,7 +1116,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
 
                       <div className="flex items-center space-x-2 select-none my-1">
                         <div className="h-[1px] bg-zinc-850 flex-1"></div>
-                        <span className="text-[8px] font-mono text-zinc-650 uppercase">or register manually with safety</span>
+                        <span className="text-[8px] font-mono text-zinc-650 uppercase">(or)</span>
                         <div className="h-[1px] bg-zinc-850 flex-1"></div>
                       </div>
 
@@ -1133,7 +1128,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                           required
                           value={signUpName}
                           onChange={(e) => setSignUpName(e.target.value)}
-                          placeholder="e.g. Rahul Sharma"
+                          placeholder="Enter your name"
                           className="w-full bg-background border border-border rounded-xl p-3 text-foreground/90 focus:border-border outline-none placeholder-zinc-800 text-xs font-sans"
                         />
                       </div>
@@ -1146,7 +1141,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                           required
                           value={signUpEmail}
                           onChange={(e) => setSignUpEmail(e.target.value)}
-                          placeholder="e.g. rahul@university.edu"
+                          placeholder="Enter your email"
                           className="w-full bg-background border border-border rounded-xl p-3 text-foreground/90 font-mono focus:border-border outline-none placeholder-zinc-800 text-xs"
                         />
                       </div>
@@ -1159,10 +1154,10 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                           required
                           value={signUpPassword}
                           onChange={(e) => setSignUpPassword(e.target.value)}
-                          placeholder="Create secure account password"
+                          placeholder="Create secure password"
                           className="w-full bg-background border border-border rounded-xl p-3 text-foreground/90 font-mono focus:border-border outline-none placeholder-zinc-800 text-xs"
                         />
-                        <p className="text-[9px] text-muted-foreground/60 font-mono">Create a password of at least 4 characters to protect your account's 5,000 credit buffer.</p>
+                        <p className="text-[9px] text-muted-foreground/60 font-mono">Create a password of at least 8 characters to protect your account's 5,000 credit buffer.</p>
                       </div>
 
                       {/* Campus/Branch selection */}
@@ -1179,49 +1174,89 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                         </select>
                       </div>
 
-                      {/* Premium selection block */}
-                      <div className="pt-2">
-                        <label className="text-[10px] font-mono text-muted-foreground uppercase font-bold block mb-2">Choose Your Intake tier:</label>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-left">
+                      {/* Membership Selection */}
+                      <div className="pt-4">
+                        <label className="mb-3 block text-[12px] font-medium uppercase tracking-wider text-[#1F2937]/70">
+                          Choose Your Membership Plan
+                        </label>
+
+                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                          {/* Premium */}
                           <button
                             type="button"
                             onClick={() => {
                               setSignUpPremium(true);
                               addXp(15);
                             }}
-                            className={`p-3 border rounded-xl flex flex-col justify-between transition text-left group ${signUpPremium
-                              ? 'bg-indigo-950/40 border-indigo-505/60 text-foreground'
-                              : 'bg-background/80 border-border hover:border-zinc-705 text-muted-foreground'
+                            className={`group relative rounded-2xl border p-4 text-left transition-all duration-200 ${signUpPremium
+                              ? "border-[#1E3A5F] bg-[#1E3A5F]/5 shadow-sm"
+                              : "border-border bg-background hover:border-[#1E3A5F]/40 hover:bg-muted/20"
                               }`}
                           >
-                            <div className="flex items-center justify-between w-full">
-                              <span className="font-bold text-[11px] text-foreground">Premium Membership</span>
-                              {signUpPremium && <CheckCircle className="w-3.5 h-3.5 text-primary" />}
+                            <div className="flex items-start justify-between">
+                              <div>
+                                <h4 className="text-[16px] font-semibold text-[#1F2937]">
+                                  Premium Membership
+                                </h4>
+
+                                <p className="mt-1 text-[13px] font-medium text-[#10B981]">
+                                  ₹999 / Year
+                                </p>
+                              </div>
+
+                              {signUpPremium && (
+                                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#1E3A5F]">
+                                  <CheckCircle className="h-4 w-4 text-white" />
+                                </div>
+                              )}
                             </div>
-                            <span className="text-[9px] font-mono mt-1 text-secondary font-bold">₹999 / Year</span>
-                            <p className="text-[9px] text-muted-foreground leading-normal mt-1.5 font-sans font-light">
-                              Highly recommended. Unlocks continuous 5,000 Credit limit. Borrow unlimited textbooks.
+
+                            <p className="mt-3 text-[13px] leading-5 text-[#1F2937]/70">
+                              Recommended for active learners. Get a continuous credit limit of
+                              5,000 credits and borrow textbooks without individual security
+                              deposits.
                             </p>
+
+                            <div className="mt-4 flex items-center gap-2">
+                              <Badge className="bg-[#FBBF24]/15 text-[#1F2937] border-[#FBBF24]/30">
+                                Recommended
+                              </Badge>
+                            </div>
                           </button>
 
+                          {/* Free Tier */}
                           <button
                             type="button"
                             onClick={() => {
                               setSignUpPremium(false);
                               addXp(15);
                             }}
-                            className={`p-3 border rounded-xl flex flex-col justify-between transition text-left group ${!signUpPremium
-                              ? 'bg-indigo-950/40 border-indigo-505/60 text-foreground'
-                              : 'bg-background/80 border-border hover:border-zinc-705 text-muted-foreground'
+                            className={`group relative rounded-2xl border p-4 text-left transition-all duration-200 ${!signUpPremium
+                              ? "border-[#1E3A5F] bg-[#1E3A5F]/5 shadow-sm"
+                              : "border-border bg-background hover:border-[#1E3A5F]/40 hover:bg-muted/20"
                               }`}
                           >
-                            <div className="flex items-center justify-between w-full">
-                              <span className="font-bold text-[11px] text-muted-foreground">Regular Free Tier</span>
-                              {!signUpPremium && <CheckCircle className="w-3.5 h-3.5 text-primary" />}
+                            <div className="flex items-start justify-between">
+                              <div>
+                                <h4 className="text-[16px] font-semibold text-[#1F2937]">
+                                  Regular Membership
+                                </h4>
+
+                                <p className="mt-1 text-[13px] font-medium text-[#1F2937]/60">
+                                  Free Plan
+                                </p>
+                              </div>
+
+                              {!signUpPremium && (
+                                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#1E3A5F]">
+                                  <CheckCircle className="h-4 w-4 text-white" />
+                                </div>
+                              )}
                             </div>
-                            <span className="text-[9px] font-mono mt-1 text-muted-foreground font-bold">Standard Account</span>
-                            <p className="text-[9px] text-muted-foreground leading-normal mt-1.5 font-sans font-light">
-                              Lease heavy books individually. Requires upfront retail deposit per title. Fully refundable.
+
+                            <p className="mt-3 text-[13px] leading-5 text-[#1F2937]/70">
+                              Borrow books using refundable security deposits. Suitable for
+                              occasional readers and students with limited borrowing needs.
                             </p>
                           </button>
                         </div>
@@ -1229,9 +1264,9 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
 
                       <button
                         type="submit"
-                        className="w-full py-3 bg-gradient-to-r from-primary to-primary hover:from-primary hover:to-primary text-foreground font-bold border-t border-indigo-400/30 rounded-xl text-xs uppercase tracking-wider flex items-center justify-center space-x-1.5 shadow-lg transition"
+                        className="w-full py-3 bg-primary hover:from-primary hover:to-primary text-white font-bold border-t border-indigo-400/30 rounded-xl text-xs uppercase tracking-wider flex items-center justify-center space-x-1.5 shadow-lg transition"
                       >
-                        <span>Complete Registration & Access Workspace &rarr;</span>
+                        <span>Complete Registration &rarr;</span>
                       </button>
 
                       <div className="text-center">
@@ -1252,21 +1287,21 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
               {/* Right column text/metric points */}
               <div className="lg:col-span-5 space-y-6 pt-2">
                 <div className="p-5 bg-background rounded-2xl border border-border space-y-3">
-                  <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wide">Direct Campus Pickups</h4>
+                  <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Direct Campus Pickups</h4>
                   <p className="text-xs text-muted-foreground/80 leading-relaxed font-light">
                     Neev terminals are established directly beside circulation boards of partnered tech engineering campuses (such as RVCE, IIT-D, BITS).
                   </p>
                 </div>
 
                 <div className="p-5 bg-background rounded-2xl border border-border space-y-3">
-                  <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wide">Secure Refund Auditing</h4>
+                  <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Secure Refund Auditing</h4>
                   <p className="text-xs text-muted-foreground/80 leading-relaxed font-light">
                     Every textbook check-in instantly clears allocated credits and immediately reverses long-term deposit transactions cleanly.
                   </p>
                 </div>
 
                 <div className="p-5 bg-background rounded-2xl border border-border space-y-3">
-                  <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wide">Trained Ambassadorship</h4>
+                  <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Trained Ambassadorship</h4>
                   <p className="text-xs text-muted-foreground/80 leading-relaxed font-light">
                     Our student ambassadors manage counters entirely, eliminating traditional delays and providing instant academic syllabus consulting support.
                   </p>
@@ -1391,7 +1426,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
 
               <div className="bg-background border border-border p-5 rounded-xl space-y-3 relative">
                 <div className="text-[10px] font-mono font-bold text-primary">DAYS 1 - 3</div>
-                <h4 className="text-xs font-bold text-zinc-250 uppercase tracking-wide">Phase 1: Physical Spine Verification & Node Mapping</h4>
+                <h4 className="text-xs font-semibold text-zinc-250 uppercase tracking-wide">Phase 1: Physical Spine Verification & Node Mapping</h4>
                 <p className="text-[11px] text-muted-foreground/80 leading-relaxed font-light">
                   Fast executive administrative signoff and academic scope formulation. We map targets and align physical book spines to digital identifiers.
                 </p>
@@ -1399,7 +1434,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
 
               <div className="bg-background border border-border p-5 rounded-xl space-y-3 relative">
                 <div className="text-[10px] font-mono font-bold text-primary">DAYS 4 - 7</div>
-                <h4 className="text-xs font-bold text-zinc-250 uppercase tracking-wide">Phase 2: Capacitive Core Plate Assembly & RFID Registration</h4>
+                <h4 className="text-xs font-semibold text-zinc-250 uppercase tracking-wide">Phase 2: Capacitive Core Plate Assembly & RFID Registration</h4>
                 <p className="text-[11px] text-muted-foreground/80 leading-relaxed font-light">
                   We customize the desk plates and secure RFID registries. Operations are run entirely by student Campus Ambassadors, ensuring zero payroll burden.
                 </p>
@@ -1407,7 +1442,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
 
               <div className="bg-background border border-border p-5 rounded-xl space-y-3 relative">
                 <div className="text-[10px] font-mono font-bold text-primary">DAYS 8 - 10</div>
-                <h4 className="text-xs font-bold text-zinc-250 uppercase tracking-wide">Phase 3: Local Gateway Deployment & Kiosk Calibration</h4>
+                <h4 className="text-xs font-semibold text-zinc-250 uppercase tracking-wide">Phase 3: Local Gateway Deployment & Hub Calibration</h4>
                 <p className="text-[11px] text-muted-foreground/80 leading-relaxed font-light">
                   Deployment of regional telemetry receivers, gateway sync controllers, and rapid calibration testing on smart terminal shelves.
                 </p>
@@ -1415,7 +1450,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
 
               <div className="bg-background border border-border p-5 rounded-xl space-y-3 relative">
                 <div className="text-[10px] font-mono font-bold text-emerald-450">DAYS 11 - 14</div>
-                <h4 className="text-xs font-bold text-zinc-255 uppercase tracking-wide">Phase 4: Campus Ambassador Onboarding & Live Network Ingress</h4>
+                <h4 className="text-xs font-semibold text-zinc-255 uppercase tracking-wide">Phase 4: Campus Ambassador Onboarding & Live Network Ingress</h4>
                 <p className="text-[11px] text-muted-foreground/80 leading-relaxed font-light">
                   Ambassador operational training is completed, and student smart registration goes live, unlocking immediate curriculum resource checks.
                 </p>
@@ -1428,7 +1463,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
           <section id="b2b-form" className="bg-muted/50/40 border border-border rounded-2xl p-6 sm:p-10 max-w-4xl mx-auto space-y-8 scroll-mt-20">
             <div className="text-center space-y-2">
               <span className="text-[10px] font-mono uppercase tracking-widest text-secondary font-bold">Dean Consultation Room</span>
-              <h3 className="text-xl sm:text-2xl font-bold text-foreground">Ready to talk about one pilot hub?</h3>
+              <h3 className="text-xl sm:h3-scale text-foreground">Ready to talk about one pilot hub?</h3>
               <p className="text-xs text-muted-foreground font-light max-w-xl mx-auto">
                 No complex RFPs. Choose your appointment time slot in under 3 clicks. Our state coordinators will review library constraints and deliver a 14-day execution sheet.
               </p>
@@ -1439,7 +1474,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                 <div className="w-10 h-10 rounded-full bg-emerald-900/60 flex items-center justify-center mx-auto">
                   <Check className="w-5 h-5 text-secondary" />
                 </div>
-                <h4 className="text-sm font-bold text-foreground">Consultation Booked Successfully!</h4>
+                <h4 className="text-sm font-semibold text-foreground">Consultation Booked Successfully!</h4>
                 <p className="text-xs text-muted-foreground max-w-md mx-auto leading-relaxed">
                   Thank you, <strong>{clientInstitution}</strong>. A regional coordinator has locked your request for {clientTime.replace('T', ' at ')}. An confirmation docket was sent to <strong>{clientEmail}</strong>.
                 </p>
@@ -1450,14 +1485,19 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                 {/* Click 1: Institution name */}
                 <div className="space-y-1.5 text-xs">
                   <label className="text-[9px] font-mono text-muted-foreground/60 uppercase tracking-wider font-semibold">1. Institution Name:</label>
-                  <input
-                    type="text"
+                  <select
                     required
                     value={clientInstitution}
                     onChange={(e) => setClientInstitution(e.target.value)}
-                    placeholder="e.g. RVCE, IIT Delhi"
-                    className="w-full bg-background border border-border/60 rounded-xl p-2.5 text-foreground/90 focus:outline-none focus:border-border"
-                  />
+                    className="w-full bg-background border border-border/60 rounded-xl p-2.5 text-foreground/90 focus:outline-none focus:border-border cursor-pointer"
+                  >
+                    <option value="">Select Institution</option>
+                    {/* Placeholder options - populate with actual institution names */}
+                    <option value="RVCE">RV College of Engineering</option>
+                    <option value="IIT Delhi">IIT Delhi</option>
+                    <option value="IISC Bangalore">IISC Bangalore</option>
+                    <option value="MSRIT">MSRIT</option>
+                  </select>
                 </div>
 
                 {/* Click 2: Time slot selection */}
@@ -1528,7 +1568,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
 
               {/* Form container */}
               <div className="lg:col-span-7 bg-muted/50/40 border border-border rounded-2xl p-6 space-y-6 relative">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-indigo-900/5 rounded-full blur-[70px] pointer-events-none"></div>
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-primary/5 rounded-full blur-[70px] pointer-events-none"></div>
 
                 {/* Form Tabs */}
                 <div className="flex border-b border-border/60 pb-1 font-sans">
@@ -1538,7 +1578,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                       setCollegeAuthTab('login');
                       addXp(10);
                     }}
-                    className={`flex-1 pb-3 text-xs font-bold uppercase tracking-wider transition-all relative ${collegeAuthTab === 'login' ? 'text-foreground' : 'text-muted-foreground/60 hover:text-muted-foreground'
+                    className={`flex-1 pb-3 text-xs font-semibold uppercase tracking-wider transition-all relative ${collegeAuthTab === 'login' ? 'text-foreground' : 'text-muted-foreground/60 hover:text-muted-foreground'
                       }`}
                   >
                     <span>Ambassador / Admin Login</span>
@@ -1552,7 +1592,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                       setCollegeAuthTab('signup');
                       addXp(10);
                     }}
-                    className={`flex-1 pb-3 text-xs font-bold uppercase tracking-wider transition-all relative ${collegeAuthTab === 'signup' ? 'text-foreground' : 'text-muted-foreground/60 hover:text-muted-foreground'
+                    className={`flex-1 pb-3 text-xs font-semibold uppercase tracking-wider transition-all relative ${collegeAuthTab === 'signup' ? 'text-foreground' : 'text-muted-foreground/60 hover:text-muted-foreground'
                       }`}
                   >
                     <span>Sign Up Admin</span>
@@ -1566,11 +1606,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                   /* COLLEGE/HUB LOGIN FORM */
                   <div className="space-y-4 animate-in fade-in duration-300">
                     <div className="space-y-1">
-                      <div className="flex items-center space-x-1.5 text-primary text-[10px] font-mono uppercase font-bold">
-                        <Lock className="w-3 h-3" />
-                        <span>Authorized Hub Ingress</span>
-                      </div>
-                      <h3 className="text-base font-bold text-foreground ">Access Core Library Console</h3>
+                      <h3 className="text-base font-bold text-foreground ">Access Hub Account</h3>
                       <p className="text-[11px] text-muted-foreground font-light">
                         Use your assigned university credentials to manage your assigned library's logistics.
                       </p>
@@ -1584,25 +1620,23 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                       }}
                       className="space-y-4"
                     >
-                      {/* Unified Google Login Button scaled to colleges */}
-                      <button
-                        type="button"
-                        onClick={triggerGoogleAuthSimulation}
-                        disabled={googleLoading}
-                        className="w-full py-2.5 bg-background hover:bg-muted/50 border border-border hover:border-border/60 text-foreground rounded-xl text-xs font-bold flex items-center justify-center space-x-2.5 transition shrink-0"
-                      >
-                        {googleLoading ? (
-                          <div className="w-4 h-4 rounded-full border-2 border-border/60 border-t-white animate-spin"></div>
-                        ) : (
-                          <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
-                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
-                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
-                          </svg>
-                        )}
-                        <span>{googleLoading ? 'Verifying with SSO...' : 'Sign in with Google'}</span>
-                      </button>
+                      {/* Google sign-in */}
+                      <div className="flex justify-center w-full">
+                        <GoogleLogin
+                          onSuccess={credentialResponse => {
+                            if (credentialResponse.credential) {
+                              onGoogleLogin(credentialResponse.credential);
+                            }
+                          }}
+                          onError={() => {
+                            console.error('Google Login Failed');
+                          }}
+                          theme="filled_blue"
+                          text="continue_with"
+                          shape="pill"
+                          size="large"
+                        />
+                      </div>
 
                       <div className="flex items-center space-x-2 select-none my-1">
                         <div className="h-[1px] bg-zinc-850 flex-1"></div>
@@ -1617,7 +1651,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                           required
                           value={collegeEmail}
                           onChange={(e) => setCollegeEmail(e.target.value)}
-                          placeholder="sharma.ambassador@neev.in"
+                          placeholder="Enter Hub Email"
                           className="w-full bg-background border border-border rounded-xl p-3 text-zinc-105 focus:border-border outline-none font-mono text-xs"
                         />
                       </div>
@@ -1636,7 +1670,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
 
                       <button
                         type="submit"
-                        className="w-full py-3 bg-muted/50 hover:bg-white text-zinc-950 border-t border-white rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-center space-x-1.5 transition mt-2"
+                        className="w-full py-3 bg-muted/50 hover:bg-white text-zinc-950 border-t border-white rounded-xl text-xs font-semibold uppercase tracking-wider flex items-center justify-center space-x-1.5 transition mt-2"
                       >
                         <span>Login&rarr;</span>
                       </button>
@@ -1646,14 +1680,39 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                   /* COLLEGE / HUB / ADMIN SIGNUP FORM */
                   <div className="space-y-5 animate-in fade-in duration-300">
                     <div className="space-y-2">
-                      <div className="flex items-center space-x-2 text-primary text-[10px] font-mono uppercase font-bold">
-                        <School className="w-3 h-3" />
-                        <span>Institution Registration</span>
-                      </div>
-                      <h3 className="text-lg font-semibold text-foreground">Create Institution Administrator Account</h3>
+                      <h3 className="text-lg font-semibold text-foreground">Create Hub Account</h3>
                       <p className="text-xs text-muted-foreground">
-                        Register your institution and create the primary administrator account responsible for managing books, students, librarians, and circulation operations.
+                        Register your hub and create the primary administrator account responsible for managing books, students, librarians, and circulation operations.
                       </p>
+                    </div>
+                    {/* Google sign-in */}
+                    <div className="flex justify-center w-full">
+                      <GoogleLogin
+                        onSuccess={credentialResponse => {
+                          if (credentialResponse.credential) {
+                            const role = adminRole === 'super_admin' ? 'super_admin' : 'hub';
+                            const locationString = `${city.trim()}, ${adminState.trim()}, ${country.trim()}`;
+                            onGoogleLogin(credentialResponse.credential, {
+                              accountType: role,
+                              hubLocation: locationString,
+                              hubName: institutionName.trim(),
+                              hubKind: institutionType
+                            });
+                          }
+                        }}
+                        onError={() => {
+                          console.error('Google Login Failed');
+                        }}
+                        theme="filled_blue"
+                        text="continue_with"
+                        shape="pill"
+                        size="large"
+                      />
+                    </div>
+                    <div className="flex items-center space-x-2 select-none my-1">
+                      <div className="h-[1px] bg-zinc-850 flex-1"></div>
+                      <span className="text-[8px] font-mono text-zinc-650 uppercase">(Or)</span>
+                      <div className="h-[1px] bg-zinc-850 flex-1"></div>
                     </div>
                     <form
                       onSubmit={(e) => {
@@ -1708,11 +1767,11 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                         <input type="password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Confirm Password" className="w-full rounded-xl border border-border bg-background p-3 text-sm focus:outline-none" />
                       </div>
                       <label className="flex items-start gap-2 text-xs text-muted-foreground">
-                        <input type="checkbox" required className="mt-1" />
+                        <input type="checkbox" required />
                         <span>I confirm that I am authorized to create and manage this institution account.</span>
                       </label>
                       <button type="submit" className="w-full rounded-xl bg-primary text-primary-foreground py-3 text-sm font-semibold transition hover:opacity-90">
-                        Create Institution Account
+                        Create Hub Account &rarr;
                       </button>
                     </form>
                   </div>
@@ -1722,13 +1781,13 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
               {/* Sidebar metric notes */}
               <div className="lg:col-span-5 space-y-6 pt-2">
                 <div className="p-5 bg-background rounded-2xl border border-border space-y-3">
-                  <h4 className="text-xs font-bold text-primary uppercase tracking-wide">Autonomous Inventory Audits</h4>
+                  <h4 className="text-xs font-semibold text-primary uppercase tracking-wide">Autonomous Inventory Audits</h4>
                   <p className="text-xs text-muted-foreground leading-relaxed font-light">
                     Ambassadors use local hub views to configure physical shelves, check book weight sensors, and receive direct checkout deposit alerts on site.
                   </p>
                 </div>
                 <div className="p-5 bg-background rounded-2xl border border-border space-y-3">
-                  <h4 className="text-xs font-bold text-primary uppercase tracking-wide">MOU Administrative Sovereignty</h4>
+                  <h4 className="text-xs font-semibold text-primary uppercase tracking-wide">MOU Administrative Sovereignty</h4>
                   <p className="text-xs text-muted-foreground leading-relaxed font-light">
                     Administrators oversee system financials, check global subscription flow metrics, activate bounty textbooks, and add fresh syllabus material to the master database catalog.
                   </p>

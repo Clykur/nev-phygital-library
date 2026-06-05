@@ -52,7 +52,7 @@ export default function StudentProfilePage() {
   const fileRef = useRef<HTMLInputElement>(null);
 
   const top = inShell ? "" : "pt-24";
-  const pageWrap = inShell ? "w-full" : PORTAL_PAGE_CONTAINER;
+  const pageWrap = inShell ? "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8" : cn(PORTAL_PAGE_CONTAINER, "py-8 space-y-8");
   const outline = "rounded-md border border-border bg-background";
 
   const runUpgrade = async () => {
@@ -119,13 +119,10 @@ export default function StudentProfilePage() {
   }
 
   return (
-    <div className={cn("min-h-[100dvh] bg-background pb-20", top)}>
-      <div className={cn("mx-auto", pageWrap)}>
-        <div className="mb-8 border-b border-border/30 pb-6">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#64748B]">
-            {user?.baseRole === "super_admin" ? "Super admin" : hubDesk ? "Hub portal" : "Student"}
-          </p>
-          <h1 className="mt-1 font-[var(--font-display)] text-lg font-bold tracking-tight text-foreground">
+    <div className={cn("min-h-[100dvh] bg-background font-sans text-foreground", top)}>
+      <div className={cn("mx-auto w-full", pageWrap)}>
+        <div className="border-b border-border/30 pb-6 font-sans">
+          <h1 className="mt-1 text-[36px] font-[700] leading-tight tracking-tight text-[#1F2937]">
             Profile
           </h1>
         </div>
@@ -145,7 +142,7 @@ export default function StudentProfilePage() {
                 type="button"
                 size="sm"
                 variant="secondary"
-                className="absolute -bottom-1 -right-1 h-9 w-9 rounded-md p-0 shadow-md"
+                className="absolute -bottom-1 -right-1 h-9 w-9 rounded-md p-0 shadow-sm"
                 disabled={uploadBusy}
                 aria-label="Upload profile photo"
                 onClick={() => fileRef.current?.click()}
@@ -158,38 +155,28 @@ export default function StudentProfilePage() {
               </Button>
             </div>
             <div className="min-w-0 flex-1 text-center sm:text-left">
-              <h2 className="font-serif text-xl font-light text-foreground">{user.name}</h2>
-              <p className="mt-1 text-sm text-muted-foreground">{user.email}</p>
-              <p className="mt-3 text-xs text-muted-foreground">
+              <h2 className="text-[24px] font-[600] leading-snug text-[#1F2937]">{user.name}</h2>
+              <p className="mt-1 text-[14px] font-[400] leading-relaxed text-[#1F2937]/70">{user.email}</p>
+              <p className="mt-3 text-[13px] font-[400] leading-normal text-[#1F2937]/70">
                 JPEG, PNG, WebP, or GIF · up to 5&nbsp;MB. Replaces your previous photo.
-              </p>
-              <p className="mt-4 border-t border-border/40 pt-4 text-xs leading-relaxed text-muted-foreground">
-                Your photo is stored in the{" "}
-                <span className="font-medium text-foreground">profile-images</span> bucket and only
-                shown here and in the sidebar after you sign in.
               </p>
             </div>
           </div>
         </section>
 
         {user.hubMemberships.length > 0 ? (
-          <section className={cn(outline, "mt-8 overflow-hidden p-6 sm:p-8")}>
-            <h3 className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          <section className={cn(outline, "overflow-hidden p-6 sm:p-8")}>
+            <h3 className="flex items-center gap-2 text-[12px] font-[500] leading-normal uppercase tracking-wider text-[#1F2937]/70">
               <Building2 className="h-3.5 w-3.5" />
               Library desk access
             </h3>
-            <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-              Your account stays <span className="font-medium text-foreground">base role: user</span>.
-              Desk permissions come from hub membership (college, public, government, or other
-              libraries).
-            </p>
             <ul className="mt-4 space-y-2">
               {user.hubMemberships.map((m) => {
                 const hub = hubsQ.data?.hubs.find((h) => h.id === m.hubId);
                 return (
-                  <li key={`${m.hubId}-${m.role}`} className="rounded-md border border-border bg-muted/20 px-3 py-2 text-sm">
-                    <span className="font-medium text-foreground">{hub?.name ?? "Hub"}</span>
-                    <span className="mt-0.5 block text-xs text-muted-foreground">
+                  <li key={`${m.hubId}-${m.role}`} className="rounded-md border border-border bg-muted/20 px-3 py-2 text-[14px] font-[400] leading-relaxed">
+                    <span className="font-[600] text-[#1F2937]">{hub?.name ?? "Hub"}</span>
+                    <span className="mt-0.5 block text-[12px] font-[500] leading-normal text-[#1F2937]/70">
                       {hubKindLabel(hub?.kind)} · {hubMembershipRoleLabel(m.role)}
                     </span>
                   </li>
@@ -199,47 +186,47 @@ export default function StudentProfilePage() {
           </section>
         ) : null}
 
-        <section className={cn(outline, "mt-8 overflow-hidden p-6 sm:p-8")}>
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        <section className={cn(outline, "overflow-hidden p-6 sm:p-8 font-sans")}>
+          <h3 className="text-[12px] font-[500] leading-normal uppercase tracking-wider text-[#1F2937]/70">
             Details
           </h3>
-          <dl className="mt-4 space-y-4 text-sm">
+          <dl className="mt-4 space-y-4 text-[14px] font-[400] leading-relaxed">
             <div className="flex flex-col gap-1 border-b border-border/50 pb-4 sm:flex-row sm:items-center sm:justify-between">
-              <dt className="text-muted-foreground">Phone</dt>
-              <dd className="font-medium text-foreground">{user.phone || "—"}</dd>
+              <dt className="text-[#1F2937]/70">Phone</dt>
+              <dd className="font-[600] text-[#1F2937]">{user.phone || "—"}</dd>
             </div>
             <div className="flex flex-col gap-1 border-b border-border/50 pb-4 sm:flex-row sm:items-center sm:justify-between">
-              <dt className="text-muted-foreground">Registration date</dt>
-              <dd className="font-medium text-foreground">
+              <dt className="text-[#1F2937]/70">Registration date</dt>
+              <dd className="font-[600] text-[#1F2937]">
                 {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "—"}
               </dd>
             </div>
             <div className="flex flex-col gap-1 border-b border-border/50 pb-4 sm:flex-row sm:items-center sm:justify-between">
-              <dt className="text-muted-foreground">Account status</dt>
+              <dt className="text-[#1F2937]/70">Account status</dt>
               <dd>
                 <span className={cn(
-                  "inline-flex h-7 items-center rounded-md border px-3 text-[11px] font-semibold uppercase tracking-wide",
-                  user.accountStatus === "active" ? STATUS_CHIP_EMERALD : "border-border bg-muted text-foreground"
+                  "inline-flex h-7 items-center rounded-md border px-3 text-[12px] font-[500] leading-normal uppercase tracking-wide",
+                  user.accountStatus === "active" ? STATUS_CHIP_EMERALD : "border-border bg-muted text-[#1F2937]"
                 )}>
                   {user.accountStatus}
                 </span>
               </dd>
             </div>
             <div className="flex flex-col gap-1 border-b border-border/50 pb-4 sm:flex-row sm:items-center sm:justify-between">
-              <dt className="text-muted-foreground">Role</dt>
+              <dt className="text-[#1F2937]/70">Role</dt>
               <dd>
-                <span className="inline-flex h-7 items-center rounded-md border border-border bg-muted/30 px-3 text-[11px] font-semibold uppercase tracking-wide text-foreground">
+                <span className="inline-flex h-7 items-center rounded-md border border-border bg-muted/30 px-3 text-[12px] font-[500] leading-normal uppercase tracking-wide text-[#1F2937]">
                   {user.baseRole}
                 </span>
               </dd>
             </div>
             <div className="flex flex-col gap-1 border-b border-border/50 pb-4 sm:flex-row sm:items-center sm:justify-between">
-              <dt className="text-muted-foreground">Premium</dt>
+              <dt className="text-[#1F2937]/70">Premium</dt>
               <dd>
                 <span
                   className={cn(
-                    "inline-flex h-7 items-center rounded-md border px-3 text-[11px] font-semibold uppercase tracking-wide",
-                    isPremiumOk(user) ? STATUS_CHIP_EMERALD : "border-border bg-muted text-foreground",
+                    "inline-flex h-7 items-center rounded-md border px-3 text-[12px] font-[500] leading-normal uppercase tracking-wide",
+                    isPremiumOk(user) ? STATUS_CHIP_EMERALD : "border-border bg-muted text-[#1F2937]",
                   )}
                 >
                   {isPremiumOk(user)
@@ -251,12 +238,12 @@ export default function StudentProfilePage() {
               </dd>
             </div>
             <div className="flex flex-col gap-1 border-b border-border/50 pb-4 sm:flex-row sm:items-center sm:justify-between">
-              <dt className="text-muted-foreground">Current plan</dt>
-              <dd className="font-medium text-foreground">{isPremiumOk(user) ? "Premium" : "Free"}</dd>
+              <dt className="text-[#1F2937]/70">Current plan</dt>
+              <dd className="font-[600] text-[#1F2937]">{isPremiumOk(user) ? "Premium" : "Free"}</dd>
             </div>
             <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-              <dt className="text-muted-foreground">Premium until</dt>
-              <dd className="font-medium text-foreground">
+              <dt className="text-[#1F2937]/70">Premium until</dt>
+              <dd className="font-[600] text-[#1F2937]">
                 {user.baseRole === "super_admin" && !user.premiumActive
                   ? "— (all features)"
                   : user.premiumUntil
@@ -271,7 +258,7 @@ export default function StudentProfilePage() {
           {!isPremiumOk(user) && (
             <Button
               type="button"
-              className="mt-8 h-11 w-full rounded-none font-semibold sm:w-auto"
+              className="mt-8 h-11 w-full rounded-2xl font-semibold sm:w-auto"
               onClick={() => setUpgradeOpen(true)}
             >
               <Sparkles className="mr-2 h-4 w-4" />
@@ -282,17 +269,17 @@ export default function StudentProfilePage() {
       </div>
 
       <Dialog open={upgradeOpen} onOpenChange={setUpgradeOpen}>
-        <DialogContent className="w-[calc(100%-32px)] sm:w-full rounded-none sm:max-w-sm">
+        <DialogContent className="font-sans w-[calc(100%-32px)] sm:w-full rounded-2xl sm:max-w-sm">
           <DialogHeader>
-            <DialogTitle className="font-[var(--font-display)] text-lg font-bold tracking-tight">
+            <DialogTitle className="text-[20px] font-[600] leading-snug tracking-tight text-[#1F2937]">
               Demo premium
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-[14px] font-[400] leading-relaxed text-[#1F2937]/70">
               Unlock borrow, requests, and peer buy/sell for this prototype session.
             </DialogDescription>
           </DialogHeader>
           <Button
-            className="h-11 w-full rounded-none font-semibold"
+            className="h-11 w-full rounded-2xl font-semibold"
             disabled={upgradeBusy}
             onClick={() => void runUpgrade()}
           >

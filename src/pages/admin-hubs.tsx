@@ -53,7 +53,7 @@ const outline = "rounded-md border border-border bg-background";
 
 function SectionLabel({ children }: { children: ReactNode }) {
   return (
-    <h2 className="text-[11px] font-bold uppercase tracking-[0.18em] text-foreground">{children}</h2>
+    <h2 className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70">{children}</h2>
   );
 }
 
@@ -99,22 +99,22 @@ function AdminHubsContent() {
     <div className={cn(topPad)}>
       <div className="mb-6 border-b border-border pb-5">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-          <div className="min-w-0">
+          <div className="min-w-0 font-sans">
             <p
               className={cn(
-                "text-[10px] font-semibold uppercase tracking-[0.35em]",
+                "text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70",
                 PORTAL_KICKER_COLOR,
               )}
             >
               {isSuperAdmin ? "Super admin" : "Hub portal"}
             </p>
-            <h1 className="mt-1 font-serif text-lg font-light text-foreground">Hubs</h1>
+            <h1 className="mt-1 text-[36px] font-[700] leading-tight tracking-tight text-[#1F2937]">Hubs</h1>
             {isSuperAdmin ? (
-              <p className="mt-2 max-w-2xl text-xs leading-relaxed text-muted-foreground">
+              <p className="mt-2 max-w-2xl text-[14px] font-[400] leading-relaxed text-[#1F2937]/70">
                 Sites, capacity, and member counts. Open a row to edit. Use{" "}
-                <span className="font-semibold text-foreground">Status</span>,{" "}
-                <span className="font-semibold text-foreground">Type</span>, and{" "}
-                <span className="font-semibold text-foreground">Search</span> to narrow the list. For physical
+                <span className="font-[600] text-[#1F2937]">Status</span>,{" "}
+                <span className="font-[600] text-[#1F2937]">Type</span>, and{" "}
+                <span className="font-[600] text-[#1F2937]">Search</span> to narrow the list. For physical
                 stock, use{" "}
                 <Link
                   href={user ? portalPathsForUser(user).inventory : "/library"}
@@ -133,7 +133,7 @@ function AdminHubsContent() {
           <div className="flex w-full min-w-0 flex-col gap-1.5 sm:w-[12rem]">
             <Label
               htmlFor="admin-hubs-status"
-              className="text-[10px] font-bold uppercase tracking-wide text-foreground"
+              className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70"
             >
               Status
             </Label>
@@ -151,7 +151,7 @@ function AdminHubsContent() {
           <div className="flex w-full min-w-0 flex-col gap-1.5 sm:w-[12rem]">
             <Label
               htmlFor="admin-hubs-type"
-              className="text-[10px] font-bold uppercase tracking-wide text-foreground"
+              className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70"
             >
               Type
             </Label>
@@ -172,7 +172,7 @@ function AdminHubsContent() {
           <div className="min-w-0 flex-1 basis-[14rem]">
             <Label
               htmlFor="admin-hubs-search"
-              className="text-[10px] font-bold uppercase tracking-wide text-foreground"
+              className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70"
             >
               Search
             </Label>
@@ -209,16 +209,16 @@ function AdminHubsContent() {
           <>
             <div className="border-b border-border px-4 py-3">
               <SectionLabel>All hubs</SectionLabel>
-              <p className="mt-1 text-xs text-muted-foreground">
+              <p className="mt-1 text-[12px] font-[500] text-[#1F2937]/70">
                 {filteredHubs.length === rows.length
                   ? `${rows.length} in scope${q.data && q.data.total > rows.length ? ` · ${q.data.total} match search` : ""}`
                   : `${filteredHubs.length} shown · ${rows.length} in search scope`}
               </p>
             </div>
             {!rows.length ? (
-              <p className="px-4 py-10 text-sm text-muted-foreground sm:px-4">No hubs match this search.</p>
+              <p className="px-4 py-10 text-[14px] font-[400] text-[#1F2937]/70 sm:px-4">No hubs match this search.</p>
             ) : !filteredHubs.length ? (
-              <p className="px-4 py-10 text-sm text-muted-foreground sm:px-4">No hubs match the filters.</p>
+              <p className="px-4 py-10 text-[14px] font-[400] text-[#1F2937]/70 sm:px-4">No hubs match the filters.</p>
             ) : (
               <div className="overflow-x-auto">
                 <Table>
@@ -237,28 +237,28 @@ function AdminHubsContent() {
                   <TableBody>
                     {filteredHubs.map((h) => (
                       <TableRow key={h.id} className="cursor-pointer border-border">
-                        <TableCell className="pl-4 font-medium sm:pl-6">
+                        <TableCell className="pl-4 font-[500] sm:pl-6">
                           <Link href={adminHubPath(h.id)} className={PORTAL_INLINE_LINK}>
                             {h.name}
                           </Link>
-                          <p className="mt-0.5 font-mono text-[11px] text-muted-foreground">
+                          <p className="mt-0.5 font-mono text-[12px] font-[500] text-[#1F2937]/70">
                             {h.publicId ?? h.id.slice(0, 8)}
                           </p>
                         </TableCell>
-                        <TableCell className="text-muted-foreground">{h.location}</TableCell>
+                        <TableCell className="text-[#1F2937]/70">{h.location}</TableCell>
                         <TableCell>
                           <span className={cn(uniformBadgeShape, getStatusColorClasses("approved"), "font-normal")}>
                             {hubKindLabel(h.kind)}
                           </span>
                         </TableCell>
-                        <TableCell className="tabular-nums text-muted-foreground">{h.memberCount}</TableCell>
-                        <TableCell className="text-right font-mono tabular-nums text-muted-foreground">
+                        <TableCell className="tabular-nums text-[#1F2937]/70">{h.memberCount}</TableCell>
+                        <TableCell className="text-right font-mono tabular-nums text-[#1F2937]/70">
                           {h.bookCount}
                         </TableCell>
-                        <TableCell className="text-right font-mono tabular-nums text-muted-foreground">
+                        <TableCell className="text-right font-mono tabular-nums text-[#1F2937]/70">
                           {h.activeRequestCount}
                         </TableCell>
-                        <TableCell className="text-xs text-muted-foreground">
+                        <TableCell className="text-[13px] font-[400] text-[#1F2937]/70">
                           {h.bookCount <= 0
                             ? "—"
                             : h.activeRequestCount / Math.max(1, h.bookCount) > 0.2

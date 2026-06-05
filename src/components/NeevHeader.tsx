@@ -34,7 +34,7 @@ export const NeevHeader: React.FC<NeevHeaderProps> = ({
 
           {/* Logo Brand */}
           <div className="flex items-center space-x-3 cursor-pointer group" onClick={() => setActiveTab('overview')}>
-            <div className="relative flex items-center justify-center w-8 h-8 rounded-lg bg-slate-900 shadow-sm transition-transform duration-300">
+            <div className="relative flex items-center justify-center w-8 h-8 rounded-lg bg-primary shadow-sm transition-transform duration-300">
               <Library className="w-4 h-4 text-white" />
             </div>
             <div className="flex items-center space-x-1">
@@ -179,7 +179,7 @@ export const NeevHeader: React.FC<NeevHeaderProps> = ({
                     setActiveTab('landing');
                     setTimeout(() => document.getElementById('auth-section')?.scrollIntoView({ behavior: 'smooth' }), 100);
                   }}
-                  className="px-4 py-2 rounded-md text-sm font-medium text-white bg-slate-900 hover:bg-slate-800 transition-colors"
+                  className="px-4 py-2 rounded-md text-sm font-medium text-white bg-primary hover:bg-[#152A45] transition-colors"
                 >
                   Get Started
                 </button>

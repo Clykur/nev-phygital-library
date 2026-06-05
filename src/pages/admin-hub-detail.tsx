@@ -117,14 +117,14 @@ type ConfirmAction = "enable" | "disable" | "delete" | null;
 const outline = "rounded-md border border-border bg-background";
 
 function SectionLabel({ children }: { children: ReactNode }) {
-  return <h2 className="text-[11px] font-bold uppercase tracking-[0.18em] text-foreground">{children}</h2>;
+  return <h2 className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70">{children}</h2>;
 }
 
 function MetricCard({ label, value }: { label: string; value: number }) {
   return (
     <div className="rounded-md border border-border bg-background px-3 py-3">
-      <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">{label}</p>
-      <p className="mt-1 text-xl font-semibold tabular-nums">{value}</p>
+      <p className="text-[11px] font-[500] uppercase tracking-wider text-[#1F2937]/70">{label}</p>
+      <p className="mt-1 text-[24px] font-[600] tabular-nums text-[#1F2937]">{value}</p>
     </div>
   );
 }
@@ -237,14 +237,14 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
           <div className="min-w-0">
             <p
               className={cn(
-                "text-[10px] font-semibold uppercase tracking-[0.35em]",
+                "text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70",
                 PORTAL_KICKER_COLOR,
               )}
             >
               {isSuperAdmin ? "Super admin" : "Hub portal"}
             </p>
-            <h1 className="mt-1 font-serif text-lg font-light text-foreground">{hub.name}</h1>
-            <p className="mt-1 text-xs text-muted-foreground">
+            <h1 className="mt-1 text-[36px] font-[700] leading-tight tracking-tight text-[#1F2937]">{hub.name}</h1>
+            <p className="mt-1 text-[13px] font-[400] text-[#1F2937]/70">
               {memberCount} staff member{memberCount === 1 ? "" : "s"} · Hub ID {hub.publicId}
             </p>
           </div>
@@ -269,30 +269,30 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
           </div>
           <div className="grid gap-3 p-4 text-sm sm:grid-cols-2 lg:grid-cols-3">
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Hub name</p>
+              <p className="text-[11px] font-[500] uppercase tracking-wider text-[#1F2937]/70">Hub name</p>
               <p className="mt-1">{hub.name}</p>
             </div>
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Hub ID</p>
-              <p className="mt-1 font-mono text-xs">{hub.publicId}</p>
+              <p className="text-[11px] font-[500] uppercase tracking-wider text-[#1F2937]/70">Hub ID</p>
+              <p className="mt-1 font-mono text-[13px] font-[400]">{hub.publicId}</p>
             </div>
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Kind</p>
-              <span className={cn(uniformBadgeShape, getStatusColorClasses("approved"), "mt-1 font-medium")}>
+              <p className="text-[11px] font-[500] uppercase tracking-wider text-[#1F2937]/70">Kind</p>
+              <span className={cn(uniformBadgeShape, getStatusColorClasses("approved"), "mt-1 font-[500]")}>
                 {hubKindLabel(hub.kind)}
               </span>
             </div>
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Location</p>
+              <p className="text-[11px] font-[500] uppercase tracking-wider text-[#1F2937]/70">Location</p>
               <p className="mt-1">{hub.location || "—"}</p>
             </div>
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Status</p>
+              <p className="text-[11px] font-[500] uppercase tracking-wider text-[#1F2937]/70">Status</p>
               <span
                 className={cn(
                   uniformBadgeShape,
                   getStatusColorClasses(hub.isActive ? "available" : "cancelled"),
-                  "mt-1 font-medium"
+                  "mt-1 font-[500]"
                 )}
               >
                 {hub.isActive ? "Active" : "Disabled"}
@@ -300,7 +300,7 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
             </div>
             {hub.capacity != null ? (
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Capacity</p>
+                <p className="text-[11px] font-[500] uppercase tracking-wider text-[#1F2937]/70">Capacity</p>
                 <p className="mt-1">{hub.capacity}</p>
               </div>
             ) : null}
@@ -329,8 +329,8 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
               {members.map((m) => (
                 <div key={m.userId} className="flex flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-medium">{m.name}</p>
-                    <p className="truncate text-xs text-muted-foreground">{m.email}</p>
+                    <p className="truncate text-sm font-[500]">{m.name}</p>
+                    <p className="truncate text-[13px] font-[400] text-[#1F2937]/70">{m.email}</p>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className={cn(uniformBadgeShape, getStatusColorClasses("approved"), "font-normal")}>
@@ -387,7 +387,7 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
                           {r.status.replace(/_/g, " ")}
                         </span>
                       </TableCell>
-                      <TableCell className="text-muted-foreground">
+                      <TableCell className="text-[#1F2937]/70">
                         {r.source === "hub_inventory" ? "Hub owned" : r.source}
                       </TableCell>
                       <TableCell className="pr-4 sm:pr-6">{fmtDate(r.updatedAt)}</TableCell>
@@ -420,9 +420,9 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
                       <TableCell className="pl-4 sm:pl-6">
                         <CoverCell title={r.title} url={r.coverImageUrl} />
                       </TableCell>
-                      <TableCell className="font-mono text-xs">{r.borrowerMasked}</TableCell>
+                      <TableCell className="font-mono text-[13px] font-[400]">{r.borrowerMasked}</TableCell>
                       <TableCell>
-                        <span className={cn(uniformBadgeShape, getStatusColorClasses(r.status.toLowerCase() === "active" || r.status.toLowerCase() === "checked_out" ? "checked out" : r.status.toLowerCase() === "overdue" ? "overdue" : "available"), "font-medium")}>
+                        <span className={cn(uniformBadgeShape, getStatusColorClasses(r.status.toLowerCase() === "active" || r.status.toLowerCase() === "checked_out" ? "checked out" : r.status.toLowerCase() === "overdue" ? "overdue" : "available"), "font-[500]")}>
                           {r.status.replace(/_/g, " ")}
                         </span>
                       </TableCell>
@@ -458,10 +458,10 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
                         <CoverCell title={r.title} url={r.coverImageUrl} />
                       </TableCell>
                       <TableCell>₹{r.price.toLocaleString("en-IN")}</TableCell>
-                      <TableCell className="text-muted-foreground">
+                      <TableCell className="text-[#1F2937]/70">
                         {r.source === "hub_inventory" ? "Hub owned" : "Peer consignment"}
                       </TableCell>
-                      <TableCell className="font-mono text-xs">{r.buyerMasked}</TableCell>
+                      <TableCell className="font-mono text-[13px] font-[400]">{r.buyerMasked}</TableCell>
                       <TableCell className="pr-4 sm:pr-6">{fmtDate(r.soldAt)}</TableCell>
                     </TableRow>
                   ))}
@@ -510,7 +510,7 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
             <SectionLabel>Admin actions</SectionLabel>
           </div>
           <div className="space-y-3 p-4">
-            <p className="text-xs text-muted-foreground">
+            <p className="text-[13px] font-[400] text-[#1F2937]/70">
               Actions here are operational controls only. Inventory, requests, and commerce remain source-specific pages.
             </p>
             <div className="flex flex-wrap gap-2">
@@ -556,14 +556,14 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>
+            <AlertDialogTitle className="font-sans text-[24px] font-[600] text-[#1F2937]">
               {confirmAction === "enable"
                 ? "Enable this hub?"
                 : confirmAction === "disable"
                   ? "Disable this hub?"
                   : "Delete this hub permanently?"}
             </AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogDescription className="text-[14px] font-[400] text-[#1F2937]/70">
               {confirmAction === "enable" && "The hub will return to active operations."}
               {confirmAction === "disable" && "The hub will be marked disabled and deprioritized in operations."}
               {confirmAction === "delete" &&

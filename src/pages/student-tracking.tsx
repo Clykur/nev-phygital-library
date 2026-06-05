@@ -108,6 +108,79 @@ function fmtDue(iso: string | undefined | null) {
   }
 }
 
+function fmtKindLabel(kind: string) {
+  return kind.replace(/_/g, " ");
+}
+
+function notificationPriority(kind: string) {
+  if (kind === "book_request_ready") return 1;
+  if (kind === "book_request_routed" || kind === "book_request_fulfilled") return 2;
+  if (kind === "hub_return_confirmation" || kind === "p2p_return_confirmation") return 3;
+  if (kind === "p2p_purchase_confirmation" || kind === "hub_purchase_confirmation") return 3;
+  if (kind === "book_request_expired" || kind === "book_request_cancelled") return 4;
+  return 5;
+}
+
+type AlertNav = {
+  type: "request_update" | "ready_for_pickup" | "purchase_confirmation" | "peer_purchase";
+  referenceId: string | null;
+  href: string;
+};
+
+function resolveAlertNav(n: NotifRow, activity: string, borrow: string): AlertNav {
+  const requestUpdateKinds = new Set([
+    "book_request_routed",
+    "book_request_fulfilled",
+    "book_request_cancelled",
+    "book_request_expired",
+    "book_request_picked",
+  ]);
+  if (n.kind === "book_request_ready") {
+    const ref = n.bookRequestId ?? null;
+    return {
+      type: "ready_for_pickup",
+      referenceId: ref,
+      href: ref ? `/student/library?focus=request&ref=${encodeURIComponent(ref)}` : "/student/library",
+    };
+  }
+  if (requestUpdateKinds.has(n.kind)) {
+    const ref = n.bookRequestId ?? null;
+    return {
+      type: "request_update",
+      referenceId: ref,
+      href: ref
+        ? `${activity}?focus=request&ref=${encodeURIComponent(ref)}#requests`
+        : activity,
+    };
+  }
+  if (n.kind === "p2p_purchase_confirmation") {
+    return {
+      type: "peer_purchase",
+      referenceId: null,
+      href: `${activity}#purchases`,
+    };
+  }
+  if (n.kind === "hub_purchase_confirmation") {
+    return {
+      type: "purchase_confirmation",
+      referenceId: null,
+      href: `${activity}#purchases`,
+    };
+  }
+  if (n.kind === "hub_return_confirmation" || n.kind === "p2p_return_confirmation") {
+    return {
+      type: "request_update",
+      referenceId: null,
+      href: activity,
+    };
+  }
+  return {
+    type: "request_update",
+    referenceId: n.bookRequestId ?? null,
+    href: activity,
+  };
+}
+
 function fmtDateOnly(iso: string | undefined | null) {
   if (!iso) return "";
   try {
@@ -298,6 +371,15 @@ export default function StudentTrackingPage() {
     queryFn: () => apiFetch<{ listings: P2pRow[] }>("/api/p2p/listings", { token: token! }),
   });
 
+  const overviewQ = useQuery({
+    queryKey: ["hub", "overview", token, "activity"],
+    enabled: !!token && hubDesk,
+    queryFn: () => {
+      const path = user?.baseRole === "super_admin" ? "/api/hub/super-admin-overview" : "/api/hub/overview";
+      return apiFetch<any>(`${path}?range=week`, { token: token! });
+    },
+  });
+
   const hubLabel = (hubId: string | null | undefined) =>
     hubId ? (hubsQ.data?.hubs.find((h) => h.id === hubId)?.name ?? "") : "";
 
@@ -330,6 +412,11 @@ export default function StudentTrackingPage() {
     booksQ.data?.books.filter(
       (b) =>
         b.borrowerUserId === user?.userId && (b.status === "checked_out" || b.status === "overdue"),
+    ) ?? [];
+
+  const peerBorrows =
+    p2pQ.data?.listings.filter(
+      (l) => l.borrowerUserId === user?.userId && l.status === "borrowed",
     ) ?? [];
 
   const hubPurchases =
@@ -372,6 +459,49 @@ export default function StudentTrackingPage() {
 
   const notifications = notifQ.data?.notifications ?? [];
   const unreadAlerts = notifications.filter((n) => !n.readAt).length;
+
+  const hubAlerts = useMemo(() => {
+    if (!overviewQ.data?.overview?.alerts?.length) return [];
+    const SEVERITY_ORDER: Record<string, number> = { critical: 0, warning: 1, info: 2 };
+    return [...overviewQ.data.overview.alerts].sort((a: any, b: any) => {
+      const sa = SEVERITY_ORDER[a.severity] ?? 9;
+      const sb = SEVERITY_ORDER[b.severity] ?? 9;
+      if (sa !== sb) return sa - sb;
+      return 0;
+    });
+  }, [overviewQ.data]);
+
+  const sortedNotifications = useMemo(() => {
+    const actionableKinds = new Set([
+      "book_request_ready",
+      "book_request_routed",
+      "book_request_fulfilled",
+      "book_request_cancelled",
+      "book_request_expired",
+      "book_request_picked",
+      "p2p_purchase_confirmation",
+      "hub_purchase_confirmation",
+      "hub_return_confirmation",
+      "p2p_return_confirmation",
+    ]);
+    const rows = notifications.filter(
+      (n) => actionableKinds.has(n.kind) && !(n.readAt && notificationPriority(n.kind) >= 4),
+    );
+    return [...rows].sort((a, b) => {
+      const pa = notificationPriority(a.kind);
+      const pb = notificationPriority(b.kind);
+      if (pa !== pb) return pa - pb;
+      const ta = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const tb = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return tb - ta;
+    });
+  }, [notifications]);
+
+  const notificationBuckets = useMemo(() => {
+    const requiresAction = sortedNotifications.filter((n) => notificationPriority(n.kind) <= 3);
+    const informational = sortedNotifications.filter((n) => notificationPriority(n.kind) > 3);
+    return { requiresAction, informational };
+  }, [sortedNotifications]);
 
   const top = inShell ? "" : "pt-24";
   const pageWrap = inShell ? "w-full" : PORTAL_PAGE_CONTAINER;
@@ -476,11 +606,8 @@ export default function StudentTrackingPage() {
   return (
     <div className={cn("min-h-[100dvh] bg-background pb-20", top)}>
       <div className={cn("mx-auto", pageWrap)}>
-        <div className="mb-8 border-b border-border/30 pb-6">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#64748B]">
-            {user?.baseRole === "super_admin" ? "Super admin" : hubDesk ? "Hub portal" : "Student"}
-          </p>
-          <h1 className="mt-1 font-[var(--font-display)] text-lg font-bold tracking-tight text-foreground">
+        <div className="mb-8 border-b border-border/30 pb-2">
+          <h1 className="mt-1 text-[36px] font-[700] leading-tight tracking-tight text-[#1F2937]">
             Activity
           </h1>
         </div>
@@ -506,10 +633,10 @@ export default function StudentTrackingPage() {
                 </TableHeader>
                 <TableBody>
                   <TableRow className={rowStripe}>
-                    <TableCell className="pl-5 text-lg font-semibold tabular-nums">0</TableCell>
+                    <TableCell className="pl-5 text-lg font-semibold tabular-nums">{onLoan.length}</TableCell>
                     <TableCell className="text-lg font-semibold tabular-nums">{hubPurchases.length}</TableCell>
                     <TableCell className="text-lg font-semibold tabular-nums">{myPurchases.length}</TableCell>
-                    <TableCell className="text-lg font-semibold tabular-nums">0</TableCell>
+                    <TableCell className="text-lg font-semibold tabular-nums">{peerBorrows.length}</TableCell>
                     <TableCell className="text-lg font-semibold tabular-nums">{requestsByRecent.length}</TableCell>
                     <TableCell className="pr-5 text-lg font-semibold tabular-nums">{unreadAlerts}</TableCell>
                   </TableRow>
@@ -566,7 +693,7 @@ export default function StudentTrackingPage() {
               />
               <div className="mt-4 space-y-3">
                 {nextActions.pickupReady.length > 0 ? (
-                  <div className="rounded-md border border-emerald-500/25 bg-emerald-500/5 p-3 text-sm">
+                  <div className="rounded-md border border-secondary/25 bg-secondary/5 p-3 text-sm">
                     <p className="text-[10px] font-bold uppercase tracking-wide text-secondary/80 dark:text-emerald-200/90">
                       Pickup pending
                     </p>
@@ -601,6 +728,72 @@ export default function StudentTrackingPage() {
             </section>
           </>
         ) : null}
+
+        {hubDesk && (
+          <>
+            <Separator className="my-8" />
+            <section aria-label="Alerts">
+              <SectionHeading
+                kicker="Alerts"
+                title="Notifications & Updates"
+                description="Prioritized for pickup, request updates, and purchase confirmations."
+              />
+              <div className="mt-4 space-y-6">
+                <BlockCard
+                  title="Hub notifications"
+                  description="Recent alerts requiring your attention across managed hubs."
+                  isLoading={overviewQ.isLoading}
+                >
+                  <div className="px-4 pb-4 sm:px-0">
+                    {overviewQ.isError ? (
+                      <p className="px-5 text-sm text-destructive">
+                        {overviewQ.error instanceof ApiError ? overviewQ.error.message : "Could not load alerts."}
+                      </p>
+                    ) : hubAlerts.length === 0 ? (
+                      <p className="px-5 text-sm text-muted-foreground">
+                        All clear.
+                      </p>
+                    ) : (
+                      <div className="space-y-6 px-5 sm:px-0">
+                        <ul className="divide-y divide-border">
+                          {hubAlerts.map((a: any) => (
+                            <li
+                              key={a.kind}
+                              className="flex flex-wrap items-center justify-between gap-3 px-5 py-3"
+                            >
+                              <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
+                                <span
+                                  className={cn(
+                                    "inline-flex h-7 items-center whitespace-nowrap rounded-sm border px-3 text-[10px] font-semibold uppercase tracking-wide",
+                                    a.severity === "critical"
+                                      ? "border-destructive/30 bg-destructive/10 text-destructive"
+                                      : a.severity === "warning"
+                                        ? "border-primary/30 bg-primary/10 text-foreground dark:bg-primary/15"
+                                        : "border-border bg-muted/40 text-foreground"
+                                  )}
+                                >
+                                  {a.severity ?? "warning"}
+                                </span>
+                                <span className="min-w-0 text-[14px] font-[400] text-[#1F2937] dark:text-foreground">
+                                  {a.message}
+                                </span>
+                              </div>
+                              {a.count != null ? (
+                                <span className="font-mono text-[14px] tabular-nums text-[#1F2937]/70 dark:text-muted-foreground">
+                                  {a.count}
+                                </span>
+                              ) : null}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                </BlockCard>
+              </div>
+            </section>
+          </>
+        )}
 
         {showYourActions ? (
           <>

@@ -76,7 +76,7 @@ export const NeevCatalog: React.FC<NeevCatalogProps> = ({
         <div className="mb-8 border-b border-border/30 pb-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
             <div className="flex min-w-0 flex-1 flex-col">
-              <label className="text-[10px] font-medium text-muted-foreground mb-1">Search</label>
+              <label className="text-sm font-medium text-muted-foreground mb-1">Search</label>
               <div className="flex h-10 items-center gap-2 rounded-xl border border-border bg-background px-3 transition-[box-shadow] focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/15 sm:h-10 sm:px-4">
                 <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
                 <input
@@ -84,13 +84,13 @@ export const NeevCatalog: React.FC<NeevCatalogProps> = ({
                   placeholder="Search title, author, or subject…"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="min-w-0 flex-1 border-none bg-transparent py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none sm:text-[15px]"
+                  className="min-w-0 flex-1 border-none bg-transparent py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none sm:text-base"
                 />
               </div>
             </div>
 
             <div className="flex w-[100px] shrink-0 flex-col sm:w-[120px]">
-              <label className="text-[10px] font-medium text-muted-foreground mb-1">Source</label>
+              <label className="text-sm font-medium text-muted-foreground mb-1">Source</label>
               <div className="relative">
                 <select
                   value={sourceFilter}
@@ -112,7 +112,7 @@ export const NeevCatalog: React.FC<NeevCatalogProps> = ({
           {browseRows.map((book) => {
             const isAvailable = book.physicalCopiesAvailable > 0;
             return (
-              <div key={book.id} className="group relative flex flex-col overflow-hidden rounded-xl bg-background border border-border/80 shadow-sm transition-all hover:border-border hover:shadow-md h-full">
+              <div key={book.id} className="group relative flex flex-col overflow-hidden rounded-xl bg-background border border-border/80 shadow-sm transition-all hover:border-border hover:shadow-sm h-full">
                 {/* Image Area */}
                 <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted/30">
                   <div className="absolute inset-0 flex items-center justify-center p-4">
@@ -145,7 +145,7 @@ export const NeevCatalog: React.FC<NeevCatalogProps> = ({
 
                   <div className="mt-3 flex flex-wrap items-center gap-1.5">
                     {isAvailable ? (
-                      <span className="rounded-sm bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-secondary dark:text-secondary">
+                      <span className="rounded-sm bg-secondary/10 px-1.5 py-0.5 text-[10px] font-semibold text-secondary dark:text-secondary">
                         Available
                       </span>
                     ) : (

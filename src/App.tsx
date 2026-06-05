@@ -18,6 +18,9 @@ import HubOverviewPage from "@/pages/hub-overview";
 import HubInventoryPage from "@/pages/hub-inventory";
 import HubBookRequestsPage from "@/pages/hub-requests";
 import HubDeskP2pListingsPage from "@/pages/hub-desk-p2p-listings";
+import StudentSubscriptionPage from "@/pages/student-subscription";
+import HubBillingPage from "@/pages/hub-billing";
+
 import StudentTrackingPage from "@/pages/student-tracking";
 import StudentAlertsPage from "@/pages/student-alerts";
 import StudentProfilePage from "@/pages/student-profile";
@@ -332,8 +335,8 @@ function PublicRoutes() {
                 await login(email, password);
               }
             }}
-            onGoogleLogin={async (token: string) => {
-              await loginGoogle(token);
+            onGoogleLogin={async (token: string, extra?: { accountType?: string, hubLocation?: string, hubName?: string, hubKind?: string }) => {
+              await loginGoogle({ token, ...extra });
             }}
             onSignUp={async (name: string, email: string, isPremium: boolean, hubLocationId: string, password?: string, role?: string, hubName?: string, hubKind?: string) => {
               if (password) {
@@ -373,6 +376,7 @@ function LoggedInRoutes() {
         <Route path={STUDENT_LIBRARY_PATH} component={StudentLibraryRoute} />
         <Route path={STUDENT_ALERTS_PATH} component={StudentAlertsRoute} />
         <Route path="/student/profile" component={StudentProfileRoute} />
+        <Route path="/student/subscription" component={StudentSubscriptionPage} />
         <Route path="/student/tracking">
           <Redirect to={STUDENT_ACTIVITY_PATH} />
         </Route>
@@ -402,6 +406,7 @@ function LoggedInRoutes() {
         </Route>
         <Route path={SUPER_ADMIN_OVERVIEW_PATH} component={SuperAdminOverviewRoute} />
         <Route path={HUB_OVERVIEW_PATH} component={HubStaffOverviewRoute} />
+        <Route path="/hub/:id/billing">{(params: any) => <HubBillingPage hubId={params?.id!} />}</Route>
         <Route path={SUPER_ADMIN_INVENTORY_PATH} component={SuperAdminInventoryRoute} />
         <Route path={HUB_INVENTORY_PATH} component={HubInventoryDeskRoute} />
         <Route path={SUPER_ADMIN_REQUESTS_PATH} component={SuperAdminBookRequestsRoute} />

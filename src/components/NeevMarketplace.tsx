@@ -93,7 +93,7 @@ export const NeevMarketplace: React.FC<any> = ({
                   placeholder="Search title, author, or subject…"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="min-w-0 flex-1 border-none bg-transparent py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none sm:text-[15px]"
+                  className="min-w-0 flex-1 border-none bg-transparent py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none sm:text-base"
                 />
               </div>
             </div>
@@ -135,7 +135,7 @@ export const NeevMarketplace: React.FC<any> = ({
           {browseRows.map((book) => {
             const isAvailable = book.physicalCopiesAvailable > 0;
             return (
-              <div key={book.id} className="group relative flex flex-col overflow-hidden rounded-xl bg-background border border-border/80 shadow-sm transition-all hover:border-border hover:shadow-md h-full">
+              <div key={book.id} className="group relative flex flex-col overflow-hidden rounded-xl bg-background border border-border/80 shadow-sm transition-all hover:border-border hover:shadow-sm h-full">
                 {/* Image Area */}
                 <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted/30">
                   <div className="absolute inset-0 flex items-center justify-center p-4">
@@ -168,7 +168,7 @@ export const NeevMarketplace: React.FC<any> = ({
 
                   <div className="mt-3 flex flex-wrap items-center gap-1.5">
                     {isAvailable ? (
-                      <span className="rounded-sm bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-secondary dark:text-secondary">
+                      <span className="rounded-sm bg-secondary/10 px-1.5 py-0.5 text-[10px] font-semibold text-secondary dark:text-secondary">
                         Available
                       </span>
                     ) : (
@@ -192,7 +192,7 @@ export const NeevMarketplace: React.FC<any> = ({
                     <button
                       onClick={() => addXp(40)}
                       className={`flex-1 inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs font-medium transition-colors ${isAvailable
-                          ? 'bg-slate-900 text-white hover:bg-slate-800'
+                          ? 'bg-primary text-white hover:bg-[#152A45]'
                           : 'bg-muted/50 text-muted-foreground cursor-not-allowed'
                         }`}
                     >

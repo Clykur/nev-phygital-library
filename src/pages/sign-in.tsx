@@ -125,7 +125,7 @@ export default function SignInPage() {
             type="button"
             variant="ghost"
             size="icon"
-            className="h-9 w-9 shrink-0 rounded-none text-muted-foreground hover:bg-muted hover:text-foreground"
+            className="h-9 w-9 shrink-0 rounded-xl text-muted-foreground hover:bg-muted hover:text-foreground"
             onClick={dismiss}
             aria-label="Close"
           >
@@ -148,16 +148,16 @@ export default function SignInPage() {
           </p>
 
           <Tabs defaultValue="signin" className="mt-8">
-            <TabsList className="grid h-11 w-full grid-cols-2 gap-0 rounded-none border border-border bg-muted/50 p-0">
+            <TabsList className="grid h-11 w-full grid-cols-2 gap-0 rounded-xl border border-border bg-muted/50 p-0">
               <TabsTrigger
                 value="signin"
-                className="rounded-none border-0 py-2.5 text-sm font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:text-muted-foreground"
+                className="rounded-xl border-0 py-2.5 text-sm font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:text-muted-foreground"
               >
                 Sign in
               </TabsTrigger>
               <TabsTrigger
                 value="register"
-                className="rounded-none border-0 py-2.5 text-sm font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:text-muted-foreground"
+                className="rounded-xl border-0 py-2.5 text-sm font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:text-muted-foreground"
               >
                 Register
               </TabsTrigger>
@@ -176,7 +176,7 @@ export default function SignInPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="h-11 rounded-none border-border bg-background focus-visible:ring-primary"
+                    className="h-11 rounded-xl border-border bg-background focus-visible:ring-primary"
                   />
                 </div>
                 <div className="space-y-2">
@@ -190,10 +190,10 @@ export default function SignInPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="h-11 rounded-none border-border bg-background focus-visible:ring-primary"
+                    className="h-11 rounded-xl border-border bg-background focus-visible:ring-primary"
                   />
                 </div>
-                <Button type="submit" disabled={busy} className="mt-2 h-11 w-full rounded-none font-semibold">
+                <Button type="submit" disabled={busy} className="mt-2 h-11 w-full rounded-xl font-semibold">
                   {busy ? "…" : "Continue"}
                 </Button>
               </form>
@@ -210,7 +210,7 @@ export default function SignInPage() {
                   >
                     <label
                       className={cn(
-                        "flex cursor-pointer gap-3 border p-3 text-left transition-colors rounded-none",
+                        "flex cursor-pointer gap-3 border p-3 text-left transition-colors rounded-xl",
                         registerAs === "student"
                           ? "border-primary bg-primary/5 ring-1 ring-primary/25"
                           : "border-border bg-background hover:bg-muted/50",
@@ -226,7 +226,7 @@ export default function SignInPage() {
                     </label>
                     <label
                       className={cn(
-                        "flex cursor-pointer gap-3 border p-3 text-left transition-colors rounded-none",
+                        "flex cursor-pointer gap-3 border p-3 text-left transition-colors rounded-xl",
                         registerAs === "hub"
                           ? "border-primary bg-primary/5 ring-1 ring-primary/25"
                           : "border-border bg-background hover:bg-muted/50",
@@ -252,7 +252,7 @@ export default function SignInPage() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
-                    className="h-11 rounded-none border-border bg-background focus-visible:ring-primary"
+                    className="h-11 rounded-xl border-border bg-background focus-visible:ring-primary"
                   />
                 </div>
                 {registerAs === "hub" ? (
@@ -265,7 +265,7 @@ export default function SignInPage() {
                         onChange={(e) => setHubName(e.target.value)}
                         required
                         placeholder="e.g. North Campus Reading Room"
-                        className="h-11 rounded-none border-border bg-background focus-visible:ring-primary"
+                        className="h-11 rounded-xl border-border bg-background focus-visible:ring-primary"
                       />
                     </div>
                     <div className="space-y-2">
@@ -276,7 +276,7 @@ export default function SignInPage() {
                         onChange={(e) => setHubLocation(e.target.value)}
                         required
                         placeholder="City, campus, or address"
-                        className="h-11 rounded-none border-border bg-background focus-visible:ring-primary"
+                        className="h-11 rounded-xl border-border bg-background focus-visible:ring-primary"
                       />
                     </div>
                     <div className="space-y-2">
@@ -284,11 +284,11 @@ export default function SignInPage() {
                       <Select value={hubKind} onValueChange={(v) => setHubKind(v as HubKindValue)}>
                         <SelectTrigger
                           id="reg-hub-kind"
-                          className="h-11 rounded-none border-border bg-background focus:ring-primary"
+                          className="h-11 rounded-xl border-border bg-background focus:ring-primary"
                         >
                           <SelectValue placeholder="Choose type" />
                         </SelectTrigger>
-                        <SelectContent className="rounded-none border-border">
+                        <SelectContent className="rounded-xl border-border">
                           {HUB_KIND_OPTIONS.map((opt) => (
                             <SelectItem key={opt.value} value={opt.value}>
                               {opt.label}
@@ -308,7 +308,7 @@ export default function SignInPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="h-11 rounded-none border-border bg-background focus-visible:ring-primary"
+                    className="h-11 rounded-xl border-border bg-background focus-visible:ring-primary"
                   />
                 </div>
                 <div className="space-y-2">
@@ -321,10 +321,10 @@ export default function SignInPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     minLength={8}
-                    className="h-11 rounded-none border-border bg-background focus-visible:ring-primary"
+                    className="h-11 rounded-xl border-border bg-background focus-visible:ring-primary"
                   />
                 </div>
-                <Button type="submit" disabled={busy} className="mt-2 h-11 w-full rounded-none font-semibold">
+                <Button type="submit" disabled={busy} className="mt-2 h-11 w-full rounded-xl font-semibold">
                   {busy ? "…" : registerAs === "hub" ? "Create hub & account" : "Create account"}
                 </Button>
               </form>

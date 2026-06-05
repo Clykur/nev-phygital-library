@@ -134,19 +134,19 @@ export const NeevStudentDashboard: React.FC<any> = () => {
           <div>
             <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">Authenticated student portal</span>
             <div className="flex items-center space-x-2">
-            <h2 className="text-sm font-bold text-foreground">Welcome back, {user?.name}</h2>
+            <h2 className="text-lg font-semibold text-foreground">Welcome back, {user?.name}</h2>
             {user?.premiumActive && (
-              <span className="px-2 py-0.5 bg-primary/80 text-blue-300 rounded text-[9px] font-mono font-bold tracking-wider">PREMIUM</span>
+              <span className="px-2 py-0.5 bg-primary/80 text-blue-300 rounded text-[9px] font-mono font-semibold tracking-wider">PREMIUM</span>
             )}
             {user?.hubMemberships && user.hubMemberships.length > 0 && (
-              <span className="px-2 py-0.5 bg-purple-900 text-purple-300 rounded text-[9px] font-mono font-bold tracking-wider">HUB MEMBER</span>
+              <span className="px-2 py-0.5 bg-accent text-accent-foreground rounded text-[9px] font-mono font-semibold tracking-wider">HUB MEMBER</span>
             )}
           </div>
           </div>
         </div>
         <div className="flex items-center space-x-3 text-xs font-mono">
           <span className="text-muted-foreground">SYSTEM HEALTH:</span>
-          <span className="px-2 py-0.5 bg-success/10 text-success border border-success/20 rounded font-bold">
+          <span className="px-2 py-0.5 bg-success/10 text-success border border-success/20 rounded font-semibold">
             ONLINE
           </span>
         </div>
@@ -159,13 +159,10 @@ export const NeevStudentDashboard: React.FC<any> = () => {
         <div className="lg:col-span-1 space-y-6">
 
           {/* Elastic Credit Buffer Progress Card */}
-          <div className={`border rounded-xl p-6 space-y-5 transition-all duration-500 relative overflow-hidden ${flashReconciliation
-              ? 'border-success ring-2 ring-green-500/10 bg-success/10'
-              : 'border-border bg-white shadow-sm'
-            }`}>
+          <div className={`bento-card p-6 space-y-5 relative ${flashReconciliation ? 'border-success ring-2 ring-success/10 bg-success/10' : ''}`}>
 
             {flashReconciliation && (
-              <div className="absolute top-3 right-3 px-2 py-0.5 bg-secondary/90 border border-emerald-500/30 text-secondary text-[9px] font-bold font-mono rounded animate-pulse">
+              <div className="absolute top-3 right-3 px-2 py-0.5 bg-secondary/90 border border-secondary/30 text-secondary text-[9px] font-semibold font-mono rounded animate-pulse">
                 ✔ CAPACITY RECLAIMED
               </div>
             )}
@@ -174,7 +171,7 @@ export const NeevStudentDashboard: React.FC<any> = () => {
               <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground block">
                 Neev Elastic Kiosk Credit Buffer
               </span>
-              <h3 className="text-2xl font-extrabold text-foreground flex items-baseline gap-1.5">
+              <h3 className="text-[32px] font-[700] text-foreground flex items-baseline gap-1.5">
                 ₹{availableCredits.toLocaleString()}
                 <span className="text-xs text-muted-foreground font-normal">Available Credits</span>
               </h3>
@@ -199,7 +196,7 @@ export const NeevStudentDashboard: React.FC<any> = () => {
 
               <div className="flex justify-between items-center text-[10px] font-medium text-muted-foreground uppercase">
                 <span>BLOCKED: {totalBorrowedValue} CR</span>
-                <span className="text-primary font-bold">CAP OVERALL: {availableCredits} CR</span>
+                <span className="text-primary font-semibold">CAP OVERALL: {availableCredits} CR</span>
               </div>
             </div>
 
@@ -216,12 +213,12 @@ export const NeevStudentDashboard: React.FC<any> = () => {
         <div className="lg:col-span-2 space-y-6">
 
           {/* Component 2: Active Leases Card showing remaining days */}
-          <div className="bg-muted/50/40 border border-border/60 rounded-2xl p-6 space-y-4">
+          <div className="bento-card p-6 bg-card space-y-4">
             <div className="flex items-center justify-between border-b border-border pb-3">
               <div className="flex items-center space-x-2">
                 <Calendar className="w-5 h-5 text-primary" />
                 <div>
-                  <h3 className="text-sm font-bold text-foreground tracking-tight">Active Book Leases</h3>
+                  <h3 className="text-lg font-semibold text-foreground tracking-tight">Active Book Leases</h3>
                   <p className="text-[10px] font-mono text-muted-foreground/60 uppercase font-semibold">Track remaining rental days before return deadlines</p>
                 </div>
               </div>
@@ -253,12 +250,12 @@ export const NeevStudentDashboard: React.FC<any> = () => {
                           <span className="text-[9px] font-mono bg-zinc-90 w-full text-zinc-405 border border-border/60 rounded px-1.5 py-0.5">
                             {creditValue} Credits Blocked
                           </span>
-                          <span className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded ${isCloseToDeadline ? 'bg-accent/90 text-accent border border-amber-900/40' : 'bg-primary/90 text-primary border border-blue-900/40'
+                          <span className={`text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded ${isCloseToDeadline ? 'bg-accent/90 text-accent border border-amber-900/40' : 'bg-primary/90 text-primary border border-blue-900/40'
                             }`}>
                             {checkout.daysRemaining} days left
                           </span>
                         </div>
-                        <h4 className="text-xs font-bold text-foreground mt-1 line-clamp-1">{checkout.title}</h4>
+                        <h4 className="text-xs font-semibold text-foreground mt-1 line-clamp-1">{checkout.title}</h4>
                         <p className="text-[10px] text-muted-foreground/60 mt-0.5 font-light">by {checkout.author}</p>
                       </div>
 
@@ -267,7 +264,7 @@ export const NeevStudentDashboard: React.FC<any> = () => {
                         <button
                           type="button"
                           onClick={() => handleTriggerReturnWithFlash(checkout.id, checkout.bookId)}
-                          className="px-2.5 py-1 bg-muted/50 hover:bg-zinc-850 text-[10px] text-muted-foreground hover:text-foreground border border-border/60 rounded transition font-bold"
+                          className="px-2.5 py-1 bg-muted/50 hover:bg-zinc-850 text-[10px] text-muted-foreground hover:text-foreground border border-border/60 rounded transition font-semibold"
                         >
                           Return Kiosk
                         </button>
@@ -280,12 +277,12 @@ export const NeevStudentDashboard: React.FC<any> = () => {
           </div>
 
           {/* Component 3: Bounty Board Feed showing titles currently wanted */}
-          <div className="bg-muted/50/40 border border-border/60 rounded-2xl p-6 space-y-4">
+          <div className="bento-card p-6 bg-card space-y-4">
             <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 border-b border-border pb-3">
               <div className="flex items-center space-x-2">
                 <BookOpen className="w-5 h-5 text-primary" />
                 <div>
-                  <h3 className="text-sm font-bold text-foreground tracking-tight">Campus Bounty Board</h3>
+                  <h3 className="text-lg font-semibold text-foreground tracking-tight">Campus Bounty Board</h3>
                   <p className="text-[10px] font-mono text-zinc-505 uppercase font-semibold">Syllabus items currently wanted by the hub for free premium trades</p>
                 </div>
               </div>
@@ -294,21 +291,21 @@ export const NeevStudentDashboard: React.FC<any> = () => {
               <div className="flex space-x-1.5 bg-background/80 p-0.5 border border-border rounded-lg shrink-0">
                 <button
                   onClick={() => setBountyFilter('all')}
-                  className={`px-2.5 py-1 text-[9.5px] font-mono rounded-md font-bold transition-all ${bountyFilter === 'all' ? 'bg-muted text-foreground' : 'text-muted-foreground/60 hover:text-muted-foreground'
+                  className={`px-2.5 py-1 text-[9.5px] font-mono rounded-md font-semibold transition-all ${bountyFilter === 'all' ? 'bg-muted text-foreground' : 'text-muted-foreground/60 hover:text-muted-foreground'
                     }`}
                 >
                   ALL
                 </button>
                 <button
                   onClick={() => setBountyFilter('computer')}
-                  className={`px-2.5 py-1 text-[9.5px] font-mono rounded-md font-bold transition-all ${bountyFilter === 'computer' ? 'bg-muted text-foreground' : 'text-muted-foreground/60 hover:text-muted-foreground'
+                  className={`px-2.5 py-1 text-[9.5px] font-mono rounded-md font-semibold transition-all ${bountyFilter === 'computer' ? 'bg-muted text-foreground' : 'text-muted-foreground/60 hover:text-muted-foreground'
                     }`}
                 >
                   COMP
                 </button>
                 <button
                   onClick={() => setBountyFilter('mechanical')}
-                  className={`px-2.5 py-1 text-[9.5px] font-mono rounded-md font-bold transition-all ${bountyFilter === 'mechanical' ? 'bg-muted text-foreground' : 'text-muted-foreground/60 hover:text-muted-foreground'
+                  className={`px-2.5 py-1 text-[9.5px] font-mono rounded-md font-semibold transition-all ${bountyFilter === 'mechanical' ? 'bg-muted text-foreground' : 'text-muted-foreground/60 hover:text-muted-foreground'
                     }`}
                 >
                   MECH
@@ -318,7 +315,7 @@ export const NeevStudentDashboard: React.FC<any> = () => {
 
             {/* Request form submission widget */}
             <form onSubmit={handleCustomRequestSubmit} className="p-4 bg-background/40 border border-border/60 rounded-xl space-y-3">
-              <h4 className="text-[11px] font-bold font-mono text-muted-foreground uppercase">Submit a Syllabus Book request / Upvote request</h4>
+              <h4 className="text-[11px] font-semibold font-mono text-muted-foreground uppercase">Submit a Syllabus Book request / Upvote request</h4>
               <div className="flex gap-2">
                 <input
                   type="text"
@@ -329,7 +326,7 @@ export const NeevStudentDashboard: React.FC<any> = () => {
                 />
                 <button
                   type="submit"
-                  className="px-3 py-1.5 bg-primary hover:bg-primary text-xs font-bold text-foreground rounded-lg transition shrink-0 flex items-center space-x-1"
+                  className="px-3 py-1.5 bg-primary hover:bg-primary text-xs font-semibold text-foreground rounded-lg transition shrink-0 flex items-center space-x-1"
                 >
                   <PlusCircle className="w-3.5 h-3.5" />
                   <span className="hidden sm:inline">Request</span>
@@ -342,7 +339,7 @@ export const NeevStudentDashboard: React.FC<any> = () => {
 
             {/* List User's Active Requests */}
             <div className="space-y-2.5">
-              <span className="text-[10px] font-mono text-primary font-bold uppercase tracking-wider block">Your Live Requests</span>
+              <span className="text-[10px] font-mono text-primary font-semibold uppercase tracking-wider block">Your Live Requests</span>
               
               {myRequests.length === 0 ? (
                 <div className="p-4 text-center bg-background/40 border border-border/60 rounded-xl space-y-2">
@@ -361,7 +358,7 @@ export const NeevStudentDashboard: React.FC<any> = () => {
                             STATUS: {req.status}
                           </span>
                         </div>
-                        <h4 className="text-xs font-bold text-foreground leading-normal">{req.bookTitle}</h4>
+                        <h4 className="text-xs font-semibold text-foreground leading-normal">{req.bookTitle}</h4>
                       </div>
                       <span className="px-2.5 py-1 bg-muted/50 border border-border/60 text-[10px] font-mono text-muted-foreground rounded-lg">
                         {new Date(req.createdAt).toLocaleDateString()}

@@ -16,7 +16,7 @@ export function Footer({ setActiveTab, setLandingSegment }: FooterProps) {
 
   return (
     <footer className="border-t border-border bg-white">
-      <div className="mx-auto max-w-[1280px] px-6 py-12 md:py-16">
+      <div className="mx-auto max-w-[1280px] px-6 py-6 md:py-6">
 
         {/* TOP SECTION */}
         <div className="grid grid-cols-1 gap-12 md:gap-16 md:grid-cols-[1.4fr_0.7fr_0.7fr]">
@@ -42,7 +42,7 @@ export function Footer({ setActiveTab, setLandingSegment }: FooterProps) {
               </div>
             </button>
 
-            <p className="mt-6 pl-2 text-[15px] leading-8 text-[#64748B]">
+            <p className="mt-6 pl-2 text-base leading-8 text-[#64748B]">
               The modern student library network for
               quick access, reduced costs, and better reuse
               across hubs.
@@ -63,7 +63,7 @@ export function Footer({ setActiveTab, setLandingSegment }: FooterProps) {
                     setLandingSegment?.('students');
                     window.scrollTo({ top: 0, behavior: "smooth" });
                   }}
-                  className="flex items-center space-x-2 text-[15px] text-[#334155] transition-colors hover:text-foreground"
+                  className="flex items-center space-x-2 text-base text-[#334155] transition-colors hover:text-foreground"
                 >
                   <Library className="w-4 h-4" />
                   <span>Home</span>
@@ -76,23 +76,10 @@ export function Footer({ setActiveTab, setLandingSegment }: FooterProps) {
                     setActiveTab?.('catalog');
                     window.scrollTo({ top: 0, behavior: "smooth" });
                   }}
-                  className="flex items-center space-x-2 text-[15px] text-[#334155] transition-colors hover:text-foreground"
+                  className="flex items-center space-x-2 text-base text-[#334155] transition-colors hover:text-foreground"
                 >
                   <BookOpen className="w-4 h-4" />
-                  <span>Catalog</span>
-                </button>
-              </li>
-
-              <li>
-                <button
-                  onClick={() => {
-                    setActiveTab?.('map');
-                    window.scrollTo({ top: 0, behavior: "smooth" });
-                  }}
-                  className="flex items-center space-x-2 text-[15px] text-[#334155] transition-colors hover:text-foreground"
-                >
-                  <MapIcon className="w-4 h-4" />
-                  <span>Map</span>
+                  <span>Find a Book</span>
                 </button>
               </li>
 
@@ -103,7 +90,7 @@ export function Footer({ setActiveTab, setLandingSegment }: FooterProps) {
                     setLandingSegment?.('students');
                     setTimeout(() => document.getElementById('about-section')?.scrollIntoView({ behavior: 'smooth' }), 100);
                   }}
-                  className="flex items-center space-x-2 text-[15px] text-[#334155] transition-colors hover:text-foreground"
+                  className="flex items-center space-x-2 text-base text-[#334155] transition-colors hover:text-foreground"
                 >
                   <Info className="w-4 h-4" />
                   <span>About</span>
@@ -121,7 +108,7 @@ export function Footer({ setActiveTab, setLandingSegment }: FooterProps) {
             <ul className="mt-6 space-y-4">
               <li>
                 <button
-                  className="text-[15px] text-[#334155] transition-colors hover:text-foreground"
+                  className="text-base text-[#334155] transition-colors hover:text-foreground"
                 >
                   Privacy
                 </button>
@@ -129,7 +116,7 @@ export function Footer({ setActiveTab, setLandingSegment }: FooterProps) {
 
               <li>
                 <button
-                  className="text-[15px] text-[#334155] transition-colors hover:text-foreground"
+                  className="text-base text-[#334155] transition-colors hover:text-foreground"
                 >
                   Terms
                 </button>
@@ -137,7 +124,7 @@ export function Footer({ setActiveTab, setLandingSegment }: FooterProps) {
 
               <li>
                 <button
-                  className="text-[15px] text-[#334155] transition-colors hover:text-foreground"
+                  className="text-base text-[#334155] transition-colors hover:text-foreground"
                 >
                   Security
                 </button>
@@ -147,7 +134,7 @@ export function Footer({ setActiveTab, setLandingSegment }: FooterProps) {
         </div>
 
         {/* BOTTOM SECTION */}
-        <div className="mt-12 md:mt-14 flex flex-col items-start justify-between gap-8 border-t border-border pt-8 md:flex-row md:items-center">
+        <div className="mt-5 md:mt-5 flex flex-col items-start justify-between gap-8 border-t border-border pt-2 md:flex-row md:items-center">
 
           <p className="text-sm text-[#64748B]">
             © {new Date().getFullYear()} Neev. All rights reserved.

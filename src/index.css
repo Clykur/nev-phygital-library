@@ -44,41 +44,42 @@
 
 :root {
   /* Core Palette */
-  --background: #F8F9FA;
-  --foreground: #212529;
+  --background: #FAFAF7;
+  --foreground: #1F2937;
 
-  --border: #E9ECEF;
-  --input: #E9ECEF;
-  --ring: #3B5BDB;
+  --border: #E5E7EB;
+  --input: #E5E7EB;
+  --ring: #1E3A5F;
 
   --card: #FFFFFF;
-  --card-foreground: #212529;
+  --card-foreground: #1F2937;
 
   --popover: #FFFFFF;
-  --popover-foreground: #212529;
+  --popover-foreground: #1F2937;
 
-  --primary: #3B5BDB;
+  --primary: #1E3A5F;
   --primary-foreground: #FFFFFF;
 
-  --secondary: #0CA678;
+  --secondary: #10B981;
   --secondary-foreground: #FFFFFF;
 
-  --muted: #F8F9FA;
-  --muted-foreground: #868E96;
+  --muted: #F3F4F6;
+  --muted-foreground: #6B7280;
 
-  --accent: #F59F00;
-  --accent-foreground: #FFFFFF;
+  --accent: #FBBF24;
+  --accent-foreground: #1F2937;
 
-  --destructive: #E03131;
+  --destructive: #EF4444;
   --destructive-foreground: #FFFFFF;
 
-  --success: #2F9E44;
-  --warning: #F08C00;
-  --info: #1971C2;
+  --success: #10B981;
+  --warning: #FBBF24;
+  --info: #3B82F6;
 
   /* Typography */
   --app-font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --app-font-display: "Manrope", "Inter", -apple-system, sans-serif;
+  --app-font-display: "Inter", -apple-system, sans-serif;
+  --app-font-serif: "Merriweather", serif;
   --app-font-mono: "JetBrains Mono", "Fira Code", "Cascadia Code", "Consolas", monospace;
 }
 
@@ -102,7 +103,6 @@
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--app-font-display);
     font-weight: 700;
-    letter-spacing: -0.02em;
   }
 
   /* Monospace elements use JetBrains Mono */
@@ -131,41 +131,60 @@
   /* TYPOGRAPHY SYSTEM */
   /* -------------------------------- */
 
-  .hero-title {
-    @apply text-4xl leading-[0.95] tracking-[-0.05em] sm:text-5xl md:text-6xl lg:text-7xl font-bold;
+  .hero-title, .display-heading {
+    @apply text-[48px] leading-[56px] font-[800] tracking-tight;
     font-family: var(--app-font-display);
   }
 
   .h1-scale {
-    @apply text-3xl leading-[1] tracking-[-0.045em] font-bold sm:text-4xl md:text-5xl lg:text-6xl;
+    @apply text-[36px] leading-[44px] font-[700];
     font-family: var(--app-font-display);
   }
 
   .h2-scale {
-    @apply text-2xl leading-[1.05] tracking-[-0.04em] font-bold sm:text-3xl md:text-4xl;
+    @apply text-[30px] leading-[38px] font-[700];
     font-family: var(--app-font-display);
   }
 
   .h3-scale {
-    @apply text-lg leading-[1.15] font-bold sm:text-xl md:text-2xl;
+    @apply text-[24px] leading-[32px] font-[600];
     font-family: var(--app-font-display);
   }
 
-  .body-scale {
-    @apply text-sm leading-relaxed sm:text-base md:text-lg;
+  .h4-scale {
+    @apply text-[20px] leading-[28px] font-[600];
+    font-family: var(--app-font-display);
   }
 
-  .small-scale {
-    @apply text-sm md:text-[15px] leading-relaxed;
+  .h5-scale {
+    @apply text-[18px] leading-[26px] font-[600];
+    font-family: var(--app-font-display);
+  }
+
+  .body-large {
+    @apply text-[16px] leading-[26px] font-[400];
+  }
+
+  .body-scale, .body-medium {
+    @apply text-[14px] leading-[22px] font-[400];
+  }
+
+  .small-scale, .body-small {
+    @apply text-[13px] leading-[20px] font-[400];
   }
 
   .caption-scale {
-    @apply text-[11px] md:text-xs leading-relaxed uppercase tracking-widest;
+    @apply text-[12px] leading-[18px] font-[500];
   }
 
   /* Font utilities — use these for explicit font switching */
   .font-display {
     font-family: var(--app-font-display) !important;
+  }
+
+  .font-reading {
+    font-family: var(--app-font-serif) !important;
+    @apply leading-relaxed;
   }
 
   .font-code {
@@ -211,7 +230,7 @@
   }
 
   .bento-card:hover {
-    @apply border-primary/30 shadow-[0_10px_30px_rgba(59,91,219,0.08)];
+    @apply border-primary/30 shadow-[0_10px_30px_rgba(30,58,95,0.08)];
   }
 
   .glass-card {
@@ -231,11 +250,11 @@
   }
 
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-7 py-4 text-sm md:text-base font-bold text-white shadow-[0_10px_30px_rgba(59,91,219,0.25)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#364FC7] hover:shadow-[0_18px_40px_rgba(59,91,219,0.30)];
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-7 py-4 text-sm md:text-base font-bold text-white shadow-[0_10px_30px_rgba(30,58,95,0.25)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#152A45] hover:shadow-[0_18px_40px_rgba(30,58,95,0.30)];
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-white px-7 py-4 text-sm md:text-base font-bold text-foreground transition-all duration-300 hover:border-primary hover:bg-[#F8F9FA];
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-white px-7 py-4 text-sm md:text-base font-bold text-foreground transition-all duration-300 hover:border-primary hover:bg-[#FAFAF7];
   }
 
   .btn-glass {
@@ -358,7 +377,7 @@
   .radial-primary {
     background:
       radial-gradient(circle at top,
-        rgba(59, 130, 246, 0.16) 0%,
+        rgba(30, 58, 95, 0.16) 0%,
         transparent 55%);
   }
 }

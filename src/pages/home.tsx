@@ -109,7 +109,7 @@ export default function Home() {
     <div className="w-full bg-[#FAFAFA] font-sans selection:bg-primary/20 selection:text-primary">
 
       {/* 1. HERO SECTION */}
-      <section id="hero" ref={heroRef} className="relative min-h-[100dvh] flex flex-col justify-center items-center overflow-hidden bg-slate-900">
+      <section id="hero" ref={heroRef} className="relative min-h-[100dvh] flex flex-col justify-center items-center overflow-hidden bg-primary">
         {/* Background Video */}
         <div className="absolute inset-0 z-0">
           <video
@@ -258,12 +258,12 @@ export default function Home() {
 
               <motion.div variants={stagger} className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
                 <motion.div variants={fadeUp} className="w-full sm:w-auto">
-                  <Link href="/login" className="magnetic-btn flex w-full items-center justify-center gap-2 rounded-none bg-primary px-6 py-3 small-scale font-bold text-white shadow-md transition-all hover:bg-primary hover:-translate-y-0.5">
+                  <Link href="/login" className="magnetic-btn flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-6 py-3 small-scale font-bold text-white shadow-sm transition-all hover:bg-primary hover:-translate-y-0.5">
                     Explore Network <ArrowRight className="h-4 w-4" />
                   </Link>
                 </motion.div>
                 <motion.div variants={fadeUp} className="w-full sm:w-auto">
-                  <Link href="/colleges" className="magnetic-btn flex w-full items-center justify-center gap-2 rounded-none border border-border bg-white px-6 py-3 small-scale font-bold text-foreground shadow-sm transition-all hover:border-border hover:bg-muted hover:-translate-y-0.5">
+                  <Link href="/colleges" className="magnetic-btn flex w-full items-center justify-center gap-2 rounded-2xl border border-border bg-white px-6 py-3 small-scale font-bold text-foreground shadow-sm transition-all hover:border-border hover:bg-muted hover:-translate-y-0.5">
                     Partner With Us
                   </Link>
                 </motion.div>
@@ -307,7 +307,7 @@ export default function Home() {
                 <motion.div
                   animate={{ y: [0, -10, 0], rotateX: [10, 11, 10], rotateY: [-15, -13, -15] }}
                   transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                  className="relative w-[280px] h-[380px] rounded-none shadow-xl overflow-visible border border-border bg-white"
+                  className="relative w-[280px] h-[380px] rounded-2xl shadow-xl overflow-visible border border-border bg-white"
                 >
                   <img
                     src="/literary_poet_portrait.png"
@@ -327,12 +327,12 @@ export default function Home() {
                     }}
                     className="absolute -top-6 -left-14 bento-card p-3 flex items-center gap-2.5 w-[160px] z-30 shadow-2xl bg-white border-border"
                   >
-                    <div className="h-8 w-8 rounded-none flex items-center justify-center">
+                    <div className="h-8 w-8 rounded-2xl flex items-center justify-center">
                       <BookOpen className="h-4 w-4 text-primary" />
                     </div>
                     <div>
                       <p className="text-[8px] font-bold text-muted-foreground uppercase tracking-[0.15em]">AVAILABLE NOW</p>
-                      <p className="flex items-baseline gap-1 text-[15px] font-bold text-foreground leading-none">
+                      <p className="flex items-baseline gap-1 text-base font-bold text-foreground leading-none">
                         <span className="text-primary">12,450+</span>
                         <span>Titles</span>
                       </p>
@@ -345,7 +345,7 @@ export default function Home() {
                     transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut", delay: 2 }}
                     className="absolute -bottom-8 -right-10 bento-card p-3 flex items-center gap-2.5 w-[160px] z-30 shadow-2xl bg-white border-border"
                   >
-                    <div className="h-8 w-8 rounded-none flex items-center justify-center">
+                    <div className="h-8 w-8 rounded-2xl flex items-center justify-center">
                       <Network className="h-4 w-4 text-primary" />
                     </div>
                     <div>
@@ -417,10 +417,10 @@ export default function Home() {
         absolute
         w-[240px]
         h-[380px]
-        rounded-none
+        rounded-2xl
         overflow-hidden
         border border-primary/10
-        shadow-md
+        shadow-sm
         bg-white
         z-10
       "
@@ -434,7 +434,7 @@ export default function Home() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
 
                   <div className="absolute bottom-0 left-0 right-0 p-4">
-                    <div className="rounded-none bg-white/90 backdrop-blur-xl p-5">
+                    <div className="rounded-2xl bg-white/90 backdrop-blur-xl p-5">
                       <h3 className="h3-scale text-foreground mb-2.5">
                         The Explorers
                       </h3>
@@ -465,7 +465,7 @@ export default function Home() {
         absolute
         w-[280px]
         h-[460px]
-        rounded-none
+        rounded-2xl
         overflow-hidden
         border border-primary/10
         shadow-lg
@@ -482,7 +482,7 @@ export default function Home() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/65 to-transparent" />
 
                   <div className="absolute bottom-0 left-0 right-0 p-5">
-                    <div className="rounded-none bg-white/90 backdrop-blur-xl p-6">
+                    <div className="rounded-2xl bg-white/90 backdrop-blur-xl p-6">
                       <h3 className="h3-scale text-foreground mb-3">
                         The Knowledge Builder
                       </h3>
@@ -516,10 +516,10 @@ export default function Home() {
         absolute
         w-[240px]
         h-[380px]
-        rounded-none
+        rounded-2xl
         overflow-hidden
         border border-primary/10
-        shadow-md
+        shadow-sm
         bg-white
         z-10
       "
@@ -533,7 +533,7 @@ export default function Home() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
 
                   <div className="absolute bottom-0 left-0 right-0 p-4">
-                    <div className="rounded-none bg-white/90 backdrop-blur-xl p-5">
+                    <div className="rounded-2xl bg-white/90 backdrop-blur-xl p-5">
                       <h3 className="h3-scale text-foreground mb-2.5">
                         The Readers
                       </h3>
@@ -565,7 +565,7 @@ export default function Home() {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true, margin: "-50px" }}
                         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                        className="relative h-[420px] rounded-none overflow-hidden border border-primary/10 shadow-md bg-white"
+                        className="relative h-[420px] rounded-2xl overflow-hidden border border-primary/10 shadow-sm bg-white"
                       >
                         <img
                           src={SHOWCASE_BOOKS[4]}
@@ -574,7 +574,7 @@ export default function Home() {
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                         <div className="absolute bottom-0 left-0 right-0 p-4">
-                          <div className="rounded-none bg-white/90 backdrop-blur-xl p-5">
+                          <div className="rounded-2xl bg-white/90 backdrop-blur-xl p-5">
                             <h3 className="h3-scale text-foreground mb-2.5">The Explorers</h3>
                             <p className="body-scale text-muted-foreground">Discover curated libraries and premium reading spaces.</p>
                           </div>
@@ -589,7 +589,7 @@ export default function Home() {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true, margin: "-50px" }}
                         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                        className="relative h-[420px] rounded-none overflow-hidden border border-primary/10 shadow-md bg-white"
+                        className="relative h-[420px] rounded-2xl overflow-hidden border border-primary/10 shadow-sm bg-white"
                       >
                         <img
                           src={SHOWCASE_BOOKS[5]}
@@ -598,7 +598,7 @@ export default function Home() {
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/65 to-transparent" />
                         <div className="absolute bottom-0 left-0 right-0 p-5">
-                          <div className="rounded-none bg-white/90 backdrop-blur-xl p-6">
+                          <div className="rounded-2xl bg-white/90 backdrop-blur-xl p-6">
                             <h3 className="h3-scale text-foreground mb-3">The Knowledge Builder</h3>
                             <p className="body-scale text-muted-foreground">Intelligent discovery, reading analytics, and seamless library management.</p>
                           </div>
@@ -613,7 +613,7 @@ export default function Home() {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true, margin: "-50px" }}
                         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                        className="relative h-[420px] rounded-none overflow-hidden border border-primary/10 shadow-md bg-white"
+                        className="relative h-[420px] rounded-2xl overflow-hidden border border-primary/10 shadow-sm bg-white"
                       >
                         <img
                           src={SHOWCASE_BOOKS[6]}
@@ -622,7 +622,7 @@ export default function Home() {
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                         <div className="absolute bottom-0 left-0 right-0 p-4">
-                          <div className="rounded-none bg-white/90 backdrop-blur-xl p-5">
+                          <div className="rounded-2xl bg-white/90 backdrop-blur-xl p-5">
                             <h3 className="h3-scale text-foreground mb-2.5">The Readers</h3>
                             <p className="body-scale text-muted-foreground">Build habits, share highlights, and grow your reading network.</p>
                           </div>
@@ -639,7 +639,7 @@ export default function Home() {
                       key={i}
                       onClick={() => api?.scrollTo(i)}
                       className={cn(
-                        "h-1.5 rounded-none transition-all duration-300",
+                        "h-1.5 rounded-2xl transition-all duration-300",
                         current === i + 1
                           ? "w-8 bg-primary"
                           : "w-2 bg-slate-300 hover:bg-slate-400"
@@ -680,7 +680,7 @@ export default function Home() {
             {[...SHOWCASE_BOOKS, ...SHOWCASE_BOOKS, ...SHOWCASE_BOOKS].map((src, idx) => (
               <div
                 key={idx}
-                className="group relative w-[160px] h-[230px] shrink-0 rounded-none overflow-hidden shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-md cursor-pointer"
+                className="group relative w-[160px] h-[230px] shrink-0 rounded-2xl overflow-hidden shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-sm cursor-pointer"
               >
                 <img src={src} alt="Book Mockup" className="w-full h-full object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -740,7 +740,7 @@ export default function Home() {
                   transition={{ duration: 0.3 }}
                   className="
               relative
-              rounded-none
+              rounded-2xl
             "
                 >
                   <img
@@ -763,7 +763,7 @@ export default function Home() {
               order-2
               lg:order-1
               relative
-              rounded-none
+              rounded-2xl
             "
                 >
                   <img
@@ -810,7 +810,7 @@ export default function Home() {
                   transition={{ duration: 0.3 }}
                   className="
               relative
-              rounded-none
+              rounded-2xl
             "
                 >
                   <img
@@ -831,11 +831,11 @@ export default function Home() {
           initial="hidden"
           whileInView="visible"
           viewport={viewportOnce}
-          className="group rounded-none border-y border-border bg-white py-16 md:py-24 shadow-sm relative overflow-hidden transition-all duration-500 hover:shadow-md hover:border-primary/10"
+          className="group rounded-2xl border-y border-border bg-white py-16 md:py-24 shadow-sm relative overflow-hidden transition-all duration-500 hover:shadow-sm hover:border-primary/10"
         >
           {/* Background Accents */}
           <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 blur-[140px] rounded-full pointer-events-none -translate-y-1/2 translate-x-1/4 group-hover:bg-primary/10 transition-colors duration-700" />
-          <div className="absolute bottom-0 left-0 w-80 h-80 bg-blue-100/20 blur-[100px] rounded-full pointer-events-none translate-y-1/2 -translate-x-1/4" />
+          <div className="absolute bottom-0 left-0 w-80 h-80 bg-primary/10/20 blur-[100px] rounded-full pointer-events-none translate-y-1/2 -translate-x-1/4" />
 
           <Container className="relative z-10">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-start">
@@ -937,12 +937,12 @@ export default function Home() {
         grid
         grid-cols-1
         lg:grid-cols-2
-        rounded-none
+        rounded-2xl
         overflow-hidden
         border
-        border-slate-200/60
+        border-border 200/60
         bg-white
-        shadow-md
+        shadow-sm
       ">
 
               {/* LEFT PLAN */}
@@ -976,7 +976,7 @@ export default function Home() {
 
                   <div className="
               inline-flex
-              rounded-none
+              rounded-2xl
               bg-primary/10
               px-3
               py-1
@@ -1009,7 +1009,7 @@ export default function Home() {
                   <div className="
               mt-3
               inline-flex
-              rounded-none
+              rounded-2xl
               border
               border-border
               px-3
@@ -1052,7 +1052,7 @@ export default function Home() {
                     w-6
                     items-center
                     justify-center
-                    rounded-none
+                    rounded-2xl
                   ">
                           <Check className="h-4 w-4 text-primary" />
                         </div>
@@ -1072,14 +1072,14 @@ export default function Home() {
                 inline-flex
                 items-center
                 gap-2
-                rounded-none
+                rounded-2xl
                 bg-primary
                 px-6
                 py-3
                 small-scale
                 font-bold
                 text-white
-                shadow-md
+                shadow-sm
                 transition-all
                 duration-300
                 hover:-translate-y-0.5
@@ -1111,7 +1111,7 @@ export default function Home() {
 
                   <div className="
               inline-flex
-              rounded-none
+              rounded-2xl
               bg-primary
               px-3
               py-1
@@ -1174,9 +1174,9 @@ export default function Home() {
                       <div
                         key={item.label}
                         className="
-                    rounded-none
+                    rounded-2xl
                     border
-                    border-slate-200/60
+                    border-border 200/60
                     bg-white
                     p-5
                   "
@@ -1353,7 +1353,7 @@ export default function Home() {
     -translate-x-1/2
     w-[900px]
     h-[500px]
-    bg-blue-500/20
+    bg-primary/20
     blur-[140px]
     rounded-full
     pointer-events-none
@@ -1365,7 +1365,7 @@ export default function Home() {
     right-0
     w-[500px]
     h-[500px]
-    bg-cyan-400/10
+    bg-secondary/10
     blur-[120px]
     rounded-full
     pointer-events-none
@@ -1440,7 +1440,7 @@ export default function Home() {
               inline-flex
               items-center
               gap-2
-              rounded-none
+              rounded-2xl
               bg-white
               px-6
               py-3
@@ -1462,7 +1462,7 @@ export default function Home() {
               w-6
               items-center
               justify-center
-              rounded-none
+              rounded-2xl
               text-foreground
               transition-transform
               duration-300
@@ -1481,7 +1481,7 @@ export default function Home() {
               inline-flex
               items-center
               gap-2
-              rounded-none
+              rounded-2xl
               border
               border-white/10
               bg-white/5

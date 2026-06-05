@@ -312,9 +312,6 @@ export default function StudentLibraryPage() {
     <div className={cn("min-h-[100dvh] bg-background pb-20", top)}>
       <div className={cn("mx-auto", pageWrap)}>
         <div className="mb-8 border-b border-border/30 pb-6">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#64748B]">
-            {hubDesk ? "Hub portal" : "student"}
-          </p>
           <h1 className="mt-1 font-[var(--font-display)] text-lg font-bold tracking-tight text-foreground">
             My library
           </h1>
@@ -366,7 +363,7 @@ export default function StudentLibraryPage() {
             <Button
               type="button"
               variant="outline"
-              className="h-11 rounded-none border-border sm:min-w-[100px]"
+              className="h-11 rounded-2xl border-border sm:min-w-[100px]"
               disabled={returnHubBook.isPending || returnPeerBorrow.isPending}
               onClick={() => setConfirmReturn(null)}
             >
@@ -374,7 +371,7 @@ export default function StudentLibraryPage() {
             </Button>
             <Button
               type="button"
-              className="h-11 rounded-none font-semibold sm:min-w-[160px]"
+              className="h-11 rounded-2xl font-semibold sm:min-w-[160px]"
               disabled={returnHubBook.isPending || returnPeerBorrow.isPending || !confirmReturn}
               onClick={() => {
                 if (!confirmReturn) return;

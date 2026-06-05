@@ -172,7 +172,7 @@ export default function About() {
     visible: { transition: { staggerChildren: reduceMotion ? 0 : 0.08, delayChildren: reduceMotion ? 0 : 0.1 } },
   };
 
-  const card = "bento-card border border-primary/20 bg-white p-6 md:p-8 rounded-none transition-all hover:shadow-lg hover:-translate-y-1";
+  const card = "bento-card border border-primary/20 bg-white p-6 md:p-8 rounded-2xl transition-all hover:shadow-lg hover:-translate-y-1";
 
   const handleContactSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -183,7 +183,7 @@ export default function About() {
   return (
     <>
       <Dialog open={contactDialogOpen} onOpenChange={setContactDialogOpen}>
-        <DialogContent className="w-[calc(100%-32px)] sm:w-full max-h-[min(90vh,720px)] max-w-[440px] gap-0 overflow-y-auto rounded-none p-0">
+        <DialogContent className="w-[calc(100%-32px)] sm:w-full max-h-[min(90vh,720px)] max-w-[440px] gap-0 overflow-y-auto rounded-2xl p-0">
           <div className="px-6 pb-8 pt-10 sm:px-8 sm:pb-10 sm:pt-11">
             <DialogHeader className="space-y-3 text-left">
               <p className="text-xs tracking-[0.2em] font-bold uppercase text-[#64748B]">Get in touch</p>
@@ -206,7 +206,7 @@ export default function About() {
                   placeholder="Your name"
                   required
                   autoComplete="name"
-                  className="h-11 rounded-none border-border bg-background focus-visible:ring-primary"
+                  className="h-11 rounded-2xl border-border bg-background focus-visible:ring-primary"
                 />
               </div>
               <div className="space-y-2">
@@ -220,7 +220,7 @@ export default function About() {
                   placeholder="you@example.com"
                   required
                   autoComplete="email"
-                  className="h-11 rounded-none border-border bg-background focus-visible:ring-primary"
+                  className="h-11 rounded-2xl border-border bg-background focus-visible:ring-primary"
                 />
               </div>
               <div className="space-y-2">
@@ -233,10 +233,10 @@ export default function About() {
                   placeholder="How can we help?"
                   rows={4}
                   required
-                  className="min-h-[7.5rem] resize-none rounded-none border-border bg-background focus-visible:ring-primary"
+                  className="min-h-[7.5rem] resize-none rounded-2xl border-border bg-background focus-visible:ring-primary"
                 />
               </div>
-              <Button type="submit" className="mt-2 h-11 w-full rounded-none font-bold text-sm md:text-base">
+              <Button type="submit" className="mt-2 h-11 w-full rounded-2xl font-bold text-sm md:text-base">
                 Send message
               </Button>
             </form>
@@ -246,7 +246,7 @@ export default function About() {
 
       <div className="w-full bg-[#FAFAFA] font-sans selection:bg-primary/20 selection:text-primary">
         {/* 1. HERO SECTION WITH VIDEO BACKGROUND */}
-        <section id="hero" ref={heroRef} className="relative h-[100dvh] w-full overflow-hidden bg-slate-900">
+        <section id="hero" ref={heroRef} className="relative h-[100dvh] w-full overflow-hidden bg-primary">
           <video
             autoPlay
             muted
@@ -315,7 +315,7 @@ export default function About() {
 
                   <motion.div variants={stagger} className="mt-12 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-6">
                     <motion.div variants={fadeUp} className="w-full sm:w-auto">
-                      <Link href="/marketplace" className="magnetic-btn flex w-full items-center justify-center gap-2 rounded-none bg-primary px-12 h-16 text-base md:text-lg font-bold text-white shadow-2xl transition-all hover:bg-primary hover:-translate-y-1">
+                      <Link href="/marketplace" className="magnetic-btn flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-12 h-16 text-base md:text-lg font-bold text-white shadow-2xl transition-all hover:bg-primary hover:-translate-y-1">
                         Browse Marketplace <ArrowRight className="h-5 w-5" />
                       </Link>
                     </motion.div>
@@ -323,7 +323,7 @@ export default function About() {
                       <Button
                         variant="outline"
                         onClick={() => setContactDialogOpen(true)}
-                        className="magnetic-btn flex w-full items-center justify-center gap-2 rounded-none border-2 border-white/20 bg-white/10 backdrop-blur-md px-12 h-16 text-base md:text-lg font-bold text-white transition-all hover:bg-white/20 hover:-translate-y-1"
+                        className="magnetic-btn flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-white/20 bg-white/10 backdrop-blur-md px-12 h-16 text-base md:text-lg font-bold text-white transition-all hover:bg-white/20 hover:-translate-y-1"
                       >
                         <MessageSquare className="h-5 w-5" />
                         Contact Us
@@ -464,7 +464,7 @@ export default function About() {
                   >
 
                     {/* node */}
-                    <div className="absolute left-5 top-[80px] z-20 hidden h-4 w-4 -translate-x-1/2 rounded-full border-4 border-white bg-primary shadow-md md:block md:left-1/2" />
+                    <div className="absolute left-5 top-[80px] z-20 hidden h-4 w-4 -translate-x-1/2 rounded-full border-4 border-white bg-primary shadow-sm md:block md:left-1/2" />
 
                     {/* CARD */}
                     <div
@@ -495,7 +495,7 @@ export default function About() {
                       <div className="relative z-10">
 
                         {/* icon */}
-                        <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-none overflow-hidden">
+                        <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl overflow-hidden">
                           <img
                             src={step.icon}
                             alt={step.title}
@@ -577,7 +577,7 @@ export default function About() {
                           {VALUES.map((_, i) => (
                             <div
                               key={i}
-                              className={`h-1.5 transition-all duration-500 rounded-none ${activeValueIndex === i ? "w-12 bg-primary" : "w-4 bg-muted/50"
+                              className={`h-1.5 transition-all duration-500 rounded-2xl ${activeValueIndex === i ? "w-12 bg-primary" : "w-4 bg-muted/50"
                                 }`}
                             />
                           ))}
@@ -585,7 +585,7 @@ export default function About() {
                       </div>
 
                       {/* Illustration */}
-                      <div className="order-1 lg:order-2 relative aspect-square lg:aspect-auto lg:h-[500px] overflow-hidden rounded-none">
+                      <div className="order-1 lg:order-2 relative aspect-square lg:aspect-auto lg:h-[500px] overflow-hidden rounded-2xl">
                         <img
                           src={card.image}
                           alt={card.title}
@@ -622,7 +622,7 @@ export default function About() {
                 <Button
                   size="lg"
                   onClick={() => setContactDialogOpen(true)}
-                  className="bg-white text-primary hover:bg-muted h-16 px-10 rounded-none font-bold text-sm md:text-base transition-all hover:-translate-y-1 shadow-xl"
+                  className="bg-white text-primary hover:bg-muted h-16 px-10 rounded-2xl font-bold text-sm md:text-base transition-all hover:-translate-y-1 shadow-xl"
                 >
                   Contact Us
                   <span>
@@ -633,7 +633,7 @@ export default function About() {
                   <Button
                     size="lg"
                     variant="outline"
-                    className="border-white/30 bg-white/10 text-white hover:bg-white/20 h-16 px-10 rounded-none font-bold text-sm md:text-base backdrop-blur-md transition-all hover:-translate-y-1"
+                    className="border-white/30 bg-white/10 text-white hover:bg-white/20 h-16 px-10 rounded-2xl font-bold text-sm md:text-base backdrop-blur-md transition-all hover:-translate-y-1"
                   >
                     Partner with Neev
                   </Button>

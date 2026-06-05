@@ -21,7 +21,7 @@ import { format } from "date-fns";
 
 export function HubStudentAnalytics({ overviewHubId }: { overviewHubId: string }) {
   const { token, user } = useAuth();
-  
+
   const { data, isLoading } = useQuery({
     queryKey: ["hub", "students", "analytics", overviewHubId, token],
     enabled: !!token && !!user?.hubStaffHubIds.length,
@@ -42,59 +42,51 @@ export function HubStudentAnalytics({ overviewHubId }: { overviewHubId: string }
   if (!data) return null;
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5 mb-8">
-      <Card className="rounded-xl border-border/60 shadow-sm">
-        <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">Total Students</CardTitle>
-          <Users className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{data.totalStudents}</div>
-        </CardContent>
-      </Card>
-      <Card className="rounded-xl border-border/60 shadow-sm">
-        <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">Active Subs</CardTitle>
-          <CheckCircle className="h-4 w-4 text-success" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{data.activeSubscriptions}</div>
-        </CardContent>
-      </Card>
-      <Card className="rounded-xl border-border/60 shadow-sm">
-        <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">Expired Subs</CardTitle>
-          <XCircle className="h-4 w-4 text-destructive" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{data.expiredSubscriptions}</div>
-        </CardContent>
-      </Card>
-      <Card className="rounded-xl border-border/60 shadow-sm">
-        <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">Credits Issued</CardTitle>
-          <Wallet className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{data.totalCreditsIssued}</div>
-        </CardContent>
-      </Card>
-      <Card className="rounded-xl border-border/60 shadow-sm">
-        <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">Credits Spent</CardTitle>
-          <HandCoins className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{data.totalCreditsRedeemed}</div>
-        </CardContent>
-      </Card>
-    </div>
+    <section aria-label="Student Analytics" className="rounded-md border border-border bg-background overflow-hidden">
+      <div className="border-b border-border px-4 py-3">
+        <h2 className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70">
+          Student Analytics
+        </h2>
+      </div>
+      <div className="grid grid-cols-2 divide-x divide-y divide-border sm:grid-cols-3 lg:grid-cols-5">
+        <div className="p-3">
+          <p className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70">Total Students</p>
+          <p className="mt-1 font-mono text-[24px] font-[600] tracking-tight text-[#1F2937]">
+            {data.totalStudents}
+          </p>
+        </div>
+        <div className="p-3">
+          <p className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70">Active Subs</p>
+          <p className="mt-1 font-mono text-[24px] font-[600] tracking-tight text-[#1F2937]">
+            {data.activeSubscriptions}
+          </p>
+        </div>
+        <div className="p-3">
+          <p className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70">Expired Subs</p>
+          <p className="mt-1 font-mono text-[24px] font-[600] tracking-tight text-[#1F2937]">
+            {data.expiredSubscriptions}
+          </p>
+        </div>
+        <div className="p-3">
+          <p className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70">Credits Issued</p>
+          <p className="mt-1 font-mono text-[24px] font-[600] tracking-tight text-[#1F2937]">
+            {data.totalCreditsIssued}
+          </p>
+        </div>
+        <div className="p-3">
+          <p className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70">Credits Spent</p>
+          <p className="mt-1 font-mono text-[24px] font-[600] tracking-tight text-[#1F2937]">
+            {data.totalCreditsRedeemed}
+          </p>
+        </div>
+      </div>
+    </section>
   );
 }
 
 export function HubStudentsSection({ overviewHubId }: { overviewHubId: string }) {
   const { token, user } = useAuth();
-  
+
   const { data, isLoading } = useQuery({
     queryKey: ["hub", "students", overviewHubId, token],
     enabled: !!token && !!user?.hubStaffHubIds.length,
@@ -115,59 +107,67 @@ export function HubStudentsSection({ overviewHubId }: { overviewHubId: string })
   if (!data || !data.students) return null;
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-lg font-serif font-bold">Associated Students</h2>
-      
-      <div className="rounded-xl border border-border/60 overflow-hidden bg-background shadow-sm">
-        <Table>
-          <TableHeader className="bg-muted/30">
-            <TableRow>
-              <TableHead>Student</TableHead>
-              <TableHead>Contact</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Subscription</TableHead>
-              <TableHead className="text-right">Wallet</TableHead>
+    <section aria-label="Associated Students" className="rounded-md border border-border bg-background overflow-hidden">
+      <div className="border-b border-border px-4 py-3">
+        <h2 className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70">
+          Associated Students
+        </h2>
+      </div>
+
+      <div className="overflow-x-auto">
+        <Table className="min-w-[600px] w-full text-sm">
+          <TableHeader>
+            <TableRow className="border-b border-border text-left text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]">
+              <TableHead className="w-[30%] px-4 py-2">Student</TableHead>
+              <TableHead className="w-[20%] hidden md:table-cell px-4 py-2">Contact</TableHead>
+              <TableHead className="w-[15%] px-4 py-2">Status</TableHead>
+              <TableHead className="w-[20%] hidden md:table-cell px-4 py-2">Subscription</TableHead>
+              <TableHead className="w-[15%] text-right pr-4 py-2">Wallet</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {data.students.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={5} className="h-32 text-center text-muted-foreground">
+              <TableRow className="border-b border-border">
+                <TableCell colSpan={5} className="h-32 text-center text-[#1F2937]/70">
                   No students associated with this hub yet.
                 </TableCell>
               </TableRow>
             ) : (
               data.students.map((student: any) => (
-                <TableRow key={student.id}>
-                  <TableCell>
-                    <div className="font-medium text-foreground">{student.name}</div>
-                    <div className="text-xs text-muted-foreground font-mono mt-1">{student.publicId}</div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="text-sm">{student.email}</div>
-                    {student.phone && <div className="text-xs text-muted-foreground mt-1">{student.phone}</div>}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={student.accountStatus === 'active' ? 'default' : 'secondary'} className="capitalize rounded-md">
-                      {student.accountStatus}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex flex-col gap-1 items-start">
-                      <Badge variant="outline" className={
-                        student.subscriptionStatus === 'active' 
-                          ? "border-green-500/30 text-success dark:text-success bg-green-500/10" 
-                          : "border-border text-muted-foreground"
-                      }>
-                        {student.subscriptionStatus}
-                      </Badge>
-                      <span className="text-xs text-muted-foreground">{student.subscriptionPlan}</span>
+                <TableRow key={student.id} className="border-b border-border last:border-0 hover:bg-muted/30">
+                  <TableCell className="align-top py-3 px-4">
+                    <div className="font-[500] text-[#1F2937] whitespace-nowrap">{student.name || "Unknown Student"}</div>
+                    <div className="text-[12px] font-[500] text-[#1F2937]/70 font-mono mt-0.5">{student.publicId}</div>
+                    <div className="text-[12px] font-[500] text-[#1F2937]/70 mt-1.5 md:hidden space-y-0.5">
+                      <div className="truncate max-w-[150px]">{student.email || "No email"}</div>
+                      <div className="capitalize">{student.subscriptionPlan || "No active plan"}</div>
                     </div>
                   </TableCell>
-                  <TableCell className="text-right">
-                    <div className="font-mono font-medium">{student.walletBalance} cr</div>
-                    <div className="text-xs text-muted-foreground mt-1">
-                      <span className="text-success dark:text-success">+{student.creditsEarned}</span> / <span className="text-destructive">-{student.creditsSpent}</span>
+                  <TableCell className="hidden md:table-cell align-top py-3 px-4">
+                    <div className="text-[13px] text-[#1F2937] truncate max-w-[180px]">{student.email || "-"}</div>
+                    {student.phone && <div className="text-[12px] font-[500] text-[#1F2937]/70 mt-0.5">{student.phone}</div>}
+                  </TableCell>
+                  <TableCell className="align-top py-3 px-4">
+                    <Badge variant={student.accountStatus === 'active' ? 'default' : 'secondary'} className="capitalize rounded-sm px-2 py-0.5 text-[11px] font-semibold">
+                      {student.accountStatus || 'Unknown'}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell align-top py-3 px-4">
+                    <div className="flex flex-col gap-1 items-start">
+                      <Badge variant="outline" className={
+                        student.subscriptionStatus === 'active'
+                          ? "border-green-500/30 text-success dark:text-success bg-green-500/10 rounded-sm px-2 py-0.5 text-[11px] font-semibold capitalize"
+                          : "border-border text-[#1F2937]/70 rounded-sm px-2 py-0.5 text-[11px] font-semibold capitalize"
+                      }>
+                        {student.subscriptionStatus || 'Inactive'}
+                      </Badge>
+                      <span className="text-[12px] font-[500] text-[#1F2937]/70 capitalize">{student.subscriptionPlan || "No active plan"}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-right align-top py-3 px-4">
+                    <div className="font-mono font-[600] text-[14px] text-[#1F2937]">{student.walletBalance ?? 0} cr</div>
+                    <div className="text-[12px] font-[500] text-[#1F2937]/70 mt-0.5 whitespace-nowrap">
+                      <span className="text-success dark:text-success">+{student.creditsEarned ?? 0}</span> / <span className="text-destructive">-{student.creditsSpent ?? 0}</span>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -176,6 +176,6 @@ export function HubStudentsSection({ overviewHubId }: { overviewHubId: string })
           </TableBody>
         </Table>
       </div>
-    </div>
+    </section>
   );
 }

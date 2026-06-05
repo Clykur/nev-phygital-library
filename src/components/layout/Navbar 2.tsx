@@ -176,7 +176,7 @@ export function Navbar() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className={`rounded-none border-amber-500/50 ${onDarkHero ? "border-amber-400/40 bg-white/5 text-slate-50" : ""}`}
+                    className={`rounded-2xl border-accent/50 ${onDarkHero ? "border-amber-400/40 bg-white/5 text-slate-50" : ""}`}
                     onClick={() => setUpgradeOpen(true)}
                   >
                     <Sparkles className="mr-1.5 h-3.5 w-3.5" />
@@ -188,7 +188,7 @@ export function Navbar() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className={`rounded-none ${onDarkHero ? "text-slate-100 hover:bg-white/10" : ""}`}
+                      className={`rounded-2xl ${onDarkHero ? "text-slate-100 hover:bg-white/10" : ""}`}
                     >
                       Account
                     </Button>
@@ -227,7 +227,7 @@ export function Navbar() {
                 </Button>
                 <Button
                   asChild
-                  className={`rounded-none px-6 shadow-sm ${onDarkHero ? "bg-accent text-slate-950 hover:bg-accent" : ""}`}
+                  className={`rounded-2xl px-6 shadow-sm ${onDarkHero ? "bg-accent text-slate-950 hover:bg-accent" : ""}`}
                 >
                   <Link href="/sign-in">Join</Link>
                 </Button>
@@ -263,16 +263,16 @@ export function Navbar() {
               </div>
               <div className="mt-auto flex flex-col gap-3 border-t border-border pt-8">
                 {user && !isPremiumOk(user) && (
-                  <Button className="rounded-none" onClick={() => { setMobileMenuOpen(false); setUpgradeOpen(true); }}>
+                  <Button className="rounded-2xl" onClick={() => { setMobileMenuOpen(false); setUpgradeOpen(true); }}>
                     Upgrade
                   </Button>
                 )}
                 {user ? (
-                  <Button variant="outline" className="rounded-none" onClick={() => { logout(); setMobileMenuOpen(false); }}>
+                  <Button variant="outline" className="rounded-2xl" onClick={() => { logout(); setMobileMenuOpen(false); }}>
                     Sign out
                   </Button>
                 ) : (
-                  <Button asChild className="rounded-none">
+                  <Button asChild className="rounded-2xl">
                     <Link href="/sign-in" onClick={() => setMobileMenuOpen(false)}>
                       Sign in
                     </Link>
@@ -293,7 +293,7 @@ export function Navbar() {
               endpoint later.
             </DialogDescription>
           </DialogHeader>
-          <Button className="w-full rounded-none bg-accent text-slate-950 hover:bg-accent" disabled={upgradeBusy} onClick={() => void runUpgrade()}>
+          <Button className="w-full rounded-2xl bg-accent text-slate-950 hover:bg-accent" disabled={upgradeBusy} onClick={() => void runUpgrade()}>
             {upgradeBusy ? "…" : "Activate demo Premium"}
           </Button>
         </DialogContent>

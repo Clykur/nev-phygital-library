@@ -141,7 +141,7 @@ export default function Colleges() {
     visible: { transition: { staggerChildren: reduceMotion ? 0 : 0.08, delayChildren: reduceMotion ? 0 : 0.1 } },
   };
 
-  const card = "bento-card border border-primary/20 bg-white p-6 md:p-8 rounded-none transition-all hover:shadow-lg hover:-translate-y-1";
+  const card = "bento-card border border-primary/20 bg-white p-6 md:p-8 rounded-2xl transition-all hover:shadow-lg hover:-translate-y-1";
 
   const handlePartnerSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -152,7 +152,7 @@ export default function Colleges() {
   return (
     <>
       <Dialog open={partnerDialogOpen} onOpenChange={setPartnerDialogOpen}>
-        <DialogContent className="w-[calc(100%-32px)] sm:w-full max-h-[min(90vh,760px)] max-w-[440px] gap-0 overflow-y-auto rounded-none p-0">
+        <DialogContent className="w-[calc(100%-32px)] sm:w-full max-h-[min(90vh,760px)] max-w-[440px] gap-0 overflow-y-auto rounded-2xl p-0">
           <div className="px-6 pb-8 pt-10 sm:px-8 sm:pb-10 sm:pt-11">
             <DialogHeader className="space-y-3 text-left">
               <p className="caption-scale font-bold uppercase tracking-[0.22em] text-[#64748B]">
@@ -177,7 +177,7 @@ export default function Colleges() {
                   placeholder="City Institute of Technology"
                   required
                   autoComplete="organization"
-                  className="h-11 rounded-none border-border bg-background focus-visible:ring-primary"
+                  className="h-11 rounded-2xl border-border bg-background focus-visible:ring-primary"
                 />
               </div>
               <div className="space-y-2">
@@ -190,7 +190,7 @@ export default function Colleges() {
                   placeholder="Dr. Ananya Rao"
                   required
                   autoComplete="name"
-                  className="h-11 rounded-none border-border bg-background focus-visible:ring-primary"
+                  className="h-11 rounded-2xl border-border bg-background focus-visible:ring-primary"
                 />
               </div>
               <div className="space-y-2">
@@ -203,7 +203,7 @@ export default function Colleges() {
                   placeholder="Library Director"
                   required
                   autoComplete="organization-title"
-                  className="h-11 rounded-none border-border bg-background focus-visible:ring-primary"
+                  className="h-11 rounded-2xl border-border bg-background focus-visible:ring-primary"
                 />
               </div>
               <div className="space-y-2">
@@ -217,7 +217,7 @@ export default function Colleges() {
                   placeholder="you@college.edu"
                   required
                   autoComplete="email"
-                  className="h-11 rounded-none border-border bg-background focus-visible:ring-primary"
+                  className="h-11 rounded-2xl border-border bg-background focus-visible:ring-primary"
                 />
               </div>
               <div className="space-y-2">
@@ -230,10 +230,10 @@ export default function Colleges() {
                   placeholder="Bengaluru, Karnataka"
                   required
                   autoComplete="address-level2"
-                  className="h-11 rounded-none border-border bg-background focus-visible:ring-primary"
+                  className="h-11 rounded-2xl border-border bg-background focus-visible:ring-primary"
                 />
               </div>
-              <Button type="submit" className="mt-2 h-11 w-full rounded-none font-bold small-scale">
+              <Button type="submit" className="mt-2 h-11 w-full rounded-2xl font-bold small-scale">
                 Submit
               </Button>
             </form>
@@ -243,7 +243,7 @@ export default function Colleges() {
 
       <div className="w-full bg-[#FAFAFA] font-sans selection:bg-primary/20 selection:text-primary">
         {/* 1. HERO SECTION WITH VIDEO BACKGROUND */}
-        <section id="hero" ref={heroRef} className="relative h-[100dvh] w-full overflow-hidden bg-slate-900">
+        <section id="hero" ref={heroRef} className="relative h-[100dvh] w-full overflow-hidden bg-primary">
           {/* Video Background */}
           <video
             autoPlay
@@ -289,7 +289,7 @@ export default function Colleges() {
                     <Button
                       size="lg"
                       onClick={() => setPartnerDialogOpen(true)}
-                      className="magnetic-btn flex w-full items-center justify-center gap-2 rounded-none bg-primary px-10 h-16 small-scale font-bold text-white shadow-md transition-all hover:bg-primary hover:-translate-y-0.5"
+                      className="magnetic-btn flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-10 h-16 small-scale font-bold text-white shadow-sm transition-all hover:bg-primary hover:-translate-y-0.5"
                     >
                       Schedule a Conversation <ArrowRight className="h-5 w-5" />
                     </Button>
@@ -397,7 +397,7 @@ export default function Colleges() {
 
                     <div className="flex items-center gap-5 mb-8">
                       {/* Icon */}
-                      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-none">
+                      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl">
                         <img
                           src={item.icon}
                           alt={item.title}
@@ -542,12 +542,12 @@ export default function Colleges() {
 
                       {/* CARD CONTENT */}
                       <div className="relative z-10 w-full md:w-[45%] group">
-                        <div className={`relative bg-white border p-6 md:p-8 transition-all duration-500 rounded-none overflow-hidden h-full
+                        <div className={`relative bg-white border p-6 md:p-8 transition-all duration-500 rounded-2xl overflow-hidden h-full
                           ${isHovered ? 'shadow-2xl border-primary/30 -translate-y-1' : 'border-primary/10 shadow-[0_4px_20px_rgba(0,0,0,0.02)]'}`}>
 
                           {/* Number Badge */}
                           <div className={`absolute top-0 ${isEven ? 'right-0' : 'left-0'} flex h-14 w-14 items-center justify-center transition-colors duration-500
-                            ${isHovered ? 'bg-primary/10 text-primary/40' : 'bg-blue-50/50 text-primary/20'} text-3xl font-black leading-none`}>
+                            ${isHovered ? 'bg-primary/10 text-primary/40' : 'bg-primary/5/50 text-primary/20'} text-3xl font-black leading-none`}>
                             {idx + 1}
                           </div>
 
@@ -604,7 +604,7 @@ export default function Colleges() {
                 <Button
                   size="lg"
                   onClick={() => setPartnerDialogOpen(true)}
-                  className="bg-white text-primary hover:bg-muted h-16 px-10 rounded-none font-bold small-scale transition-all hover:-translate-y-1 shadow-xl"
+                  className="bg-white text-primary hover:bg-muted h-16 px-10 rounded-2xl font-bold small-scale transition-all hover:-translate-y-1 shadow-xl"
                 >
                   Schedule a Conversation
                   <span>
@@ -615,7 +615,7 @@ export default function Colleges() {
                   <Button
                     size="lg"
                     variant="outline"
-                    className="border-white/30 bg-white/10 text-white hover:bg-white/20 h-16 px-10 rounded-none font-bold small-scale backdrop-blur-md transition-all hover:-translate-y-1"
+                    className="border-white/30 bg-white/10 text-white hover:bg-white/20 h-16 px-10 rounded-2xl font-bold small-scale backdrop-blur-md transition-all hover:-translate-y-1"
                   >
                     Learn More About Neev
                   </Button>

@@ -14,6 +14,8 @@ import {
   Tag,
   Users,
   Wallet,
+  Sparkles,
+  CreditCard,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { AuthUser } from "@/lib/rbac";
@@ -63,7 +65,7 @@ export function studentDeskGroupsForUser(user: AuthUser): DeskGroup[] {
         },
         {
           href: p.sell,
-          label: "Sell books",
+          label: "Sell",
           hint: "Manage your listings",
           Icon: Tag,
         },
@@ -91,6 +93,25 @@ export function studentDeskGroupsForUser(user: AuthUser): DeskGroup[] {
           label: "Alerts",
           hint: "Updates and reminders",
           Icon: Bell,
+        },
+        {
+          href: "/student/subscription",
+          label: "Subscription",
+          hint: "Manage your premium plan",
+          Icon: Sparkles,
+        },
+      ],
+    },
+    {
+      id: "settings",
+      title: "Settings",
+      subtitle: "Hub Management",
+      tabs: [
+        {
+          href: `/hub/${user.hubStaffHubIds[0]}/billing`,
+          label: "Billing & Plans",
+          hint: "Manage hub subscription",
+          Icon: CreditCard,
         },
       ],
     },
@@ -204,7 +225,7 @@ export function hubDeskGroupsForUser(user: AuthUser): DeskGroup[] {
   ];
 }
 
-function isHubDeskPathActive(location: string, href: string): boolean {
+export function isHubDeskPathActive(location: string, href: string): boolean {
   if (href === HUB_INVENTORY_PATH || href === SUPER_ADMIN_INVENTORY_PATH) {
     return (
       location === HUB_INVENTORY_PATH ||

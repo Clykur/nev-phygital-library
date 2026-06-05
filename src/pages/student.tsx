@@ -113,7 +113,7 @@ export default function Student() {
                         </div>
                         
                         <div className="flex justify-between items-start mb-6 relative z-10">
-                          <div className="w-12 h-14 bg-slate-900 rounded-sm flex items-center justify-center shadow-md">
+                          <div className="w-12 h-14 bg-primary rounded-sm flex items-center justify-center shadow-sm">
                             <BookOpen className="w-5 h-5 text-slate-50" />
                           </div>
                           <span className={cn(uniformBadgeShape, getStatusColorClasses("set aside"))}>
@@ -129,8 +129,8 @@ export default function Student() {
                             <MapPin className="w-3 h-3 mr-1.5" /> Return to: {book.hub}
                           </div>
                           <div className="flex items-center gap-2">
-                            <Button onClick={() => handleReturn(book.id)} size="sm" variant="outline" className="flex-1 h-9 rounded-full text-xs hover:bg-emerald-500/10 hover:text-secondary hover:border-secondary/20 transition-colors">Return</Button>
-                            <Button onClick={() => handleRenew(book.id)} size="sm" variant="outline" className="flex-1 h-9 rounded-full text-xs hover:bg-blue-500/10 hover:text-primary hover:border-primary/20 transition-colors"><RefreshCw className="w-3 h-3 mr-1" /> Renew</Button>
+                            <Button onClick={() => handleReturn(book.id)} size="sm" variant="outline" className="flex-1 h-9 rounded-full text-xs hover:bg-secondary/10 hover:text-secondary hover:border-secondary/20 transition-colors">Return</Button>
+                            <Button onClick={() => handleRenew(book.id)} size="sm" variant="outline" className="flex-1 h-9 rounded-full text-xs hover:bg-primary/10 hover:text-primary hover:border-primary/20 transition-colors"><RefreshCw className="w-3 h-3 mr-1" /> Renew</Button>
                           </div>
                         </div>
                       </div>
@@ -217,7 +217,7 @@ export default function Student() {
             {/* ID Card */}
             <motion.div initial="hidden" animate="visible" variants={fadeInUp}>
               <div className="rounded-2xl p-6 bg-slate-950 text-slate-50 relative overflow-hidden shadow-xl">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/20 rounded-full blur-2xl pointer-events-none" />
+                <div className="absolute top-0 right-0 w-32 h-32 bg-accent/20 rounded-full blur-2xl pointer-events-none" />
                 <div className="relative z-10">
                   <div className="flex justify-between items-start mb-8">
                     <span className="font-serif italic text-accent">PSLN Member</span>
@@ -234,7 +234,7 @@ export default function Student() {
                     <p className="text-muted-foreground text-sm font-mono tracking-widest">ID: 8842-1099</p>
                   </div>
                   
-                  <div className="grid grid-cols-2 gap-4 border-t border-slate-800 pt-4">
+                  <div className="grid grid-cols-2 gap-4 border-t border-border 800 pt-4">
                     <div>
                       <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Borrowed</p>
                       <p className="text-lg font-medium">12</p>
@@ -250,7 +250,7 @@ export default function Student() {
 
             {/* Membership Status */}
             <motion.div initial="hidden" animate="visible" variants={fadeInUp} transition={{ delay: 0.1 }}>
-              <div className="glass-card bg-card/60 p-6 rounded-2xl flex justify-between items-center border border-amber-500/20">
+              <div className="glass-card bg-card/60 p-6 rounded-2xl flex justify-between items-center border border-accent/20">
                 <div>
                   <p className="text-xs text-accent uppercase tracking-wider font-medium mb-1">Active Plan</p>
                   <p className="font-serif font-medium text-lg">Pro ₹199/mo</p>

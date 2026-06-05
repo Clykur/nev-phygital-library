@@ -15,22 +15,22 @@ export function getStatusColorClasses(status: string): string {
   
   // Available (Emerald)
   if (["available", "ready", "on marketplace"].includes(s)) {
-    return "border border-emerald-500/30 bg-emerald-500/10 text-secondary/80 dark:text-secondary/20";
+    return "border border-secondary/30 bg-secondary/10 text-secondary/80 dark:text-secondary/20";
   }
   
   // Approved (Sky)
   if (["approved", "listed", "requested", "new"].includes(s)) {
-    return "border border-sky-500/35 bg-sky-500/10 text-sky-950 dark:text-sky-100";
+    return "border border-primary/30 bg-primary/10 text-primary-foreground";
   }
   
   // Set Aside (Amber)
   if (["set aside", "reserved", "fulfilled", "borrowed"].includes(s)) {
-    return "border border-amber-500/35 bg-amber-500/10 text-accent/90 dark:text-accent/20";
+    return "border border-accent/35 bg-accent/10 text-accent/90 dark:text-accent/20";
   }
   
   // Checked Out (Violet)
   if (["checked out", "checked_out", "in_transit", "in transit", "transfer_pending", "transfer pending", "routed", "finding", "pending_dropoff", "pending drop-off"].includes(s)) {
-    return "border border-violet-500/35 bg-violet-500/10 text-violet-950 dark:text-violet-100";
+    return "border border-accent/30 bg-accent/10 text-accent-foreground";
   }
   
   // Overdue (Rose)

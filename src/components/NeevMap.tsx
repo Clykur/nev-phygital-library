@@ -103,7 +103,7 @@ export const NeevMap: React.FC<any> = ({
                 <path
                   d={`M ${activePath.map(p => `${p.x} ${p.y}`).join(' L ')}`}
                   fill="none"
-                  stroke="rgba(59, 130, 246, 0.2)"
+                  stroke="rgba(30, 58, 95, 0.2)"
                   strokeWidth="3.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -159,7 +159,7 @@ export const NeevMap: React.FC<any> = ({
               }
 
               if (isSelected) {
-                fillColor = isShelf ? 'rgba(59, 130, 246, 0.15)' : fillColor;
+                fillColor = isShelf ? 'rgba(30, 58, 95, 0.15)' : fillColor;
                 strokeColor = isShelf ? '#3b82f6' : strokeColor;
               }
 
@@ -179,7 +179,7 @@ export const NeevMap: React.FC<any> = ({
                       width={zone.width + 2}
                       height={zone.height + 2}
                       fill="none"
-                      stroke="rgba(59, 130, 246, 0.15)"
+                      stroke="rgba(30, 58, 95, 0.15)"
                       strokeWidth="0.5"
                       rx="1"
                     />

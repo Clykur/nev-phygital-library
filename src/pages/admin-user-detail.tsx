@@ -95,7 +95,7 @@ type ConfirmAction = "hold" | "deactivate" | "delete" | null;
 const outline = "rounded-md border border-border bg-background";
 
 function SectionLabel({ children }: { children: ReactNode }) {
-  return <h2 className="text-[11px] font-bold uppercase tracking-[0.18em] text-foreground">{children}</h2>;
+  return <h2 className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70">{children}</h2>;
 }
 
 function baseRoleLabel(role: string) {
@@ -225,14 +225,14 @@ function AdminUserDetailContent({ userId }: { userId: string }) {
           <div className="min-w-0">
             <p
               className={cn(
-                "text-[10px] font-semibold uppercase tracking-[0.35em]",
+                "text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70",
                 PORTAL_KICKER_COLOR,
               )}
             >
               {isSuperAdmin ? "Super admin" : "Hub portal"}
             </p>
-            <h1 className="mt-1 font-serif text-lg font-light text-foreground">{user.name}</h1>
-            <p className="mt-1 text-xs text-muted-foreground">{user.email}</p>
+            <h1 className="mt-1 text-[36px] font-[700] leading-tight tracking-tight text-[#1F2937]">{user.name}</h1>
+            <p className="mt-1 text-[13px] font-[400] text-[#1F2937]/70">{user.email}</p>
           </div>
           <div className="flex shrink-0 flex-col gap-2 sm:flex-row sm:items-center">
             <Button variant="outline" className="h-10 w-full gap-1.5 rounded-md sm:w-auto" asChild>
@@ -255,25 +255,25 @@ function AdminUserDetailContent({ userId }: { userId: string }) {
           </div>
           <div className="grid gap-3 p-4 text-sm sm:grid-cols-2 lg:grid-cols-3">
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Name</p>
+              <p className="text-[11px] font-[500] uppercase tracking-wider text-[#1F2937]/70">Name</p>
               <p className="mt-1">{user.name}</p>
             </div>
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Email</p>
+              <p className="text-[11px] font-[500] uppercase tracking-wider text-[#1F2937]/70">Email</p>
               <p className="mt-1 break-all">{user.email}</p>
             </div>
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Student ID</p>
-              <p className="mt-1 font-mono text-xs">{user.publicId}</p>
+              <p className="text-[11px] font-[500] uppercase tracking-wider text-[#1F2937]/70">Student ID</p>
+              <p className="mt-1 font-mono text-[13px] font-[400]">{user.publicId}</p>
             </div>
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Base role</p>
+              <p className="text-[11px] font-[500] uppercase tracking-wider text-[#1F2937]/70">Base role</p>
               <span className={cn(uniformBadgeShape, getStatusColorClasses("approved"), "mt-1 font-normal")}>
                 {baseRoleLabel(user.baseRole)}
               </span>
             </div>
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Account status</p>
+              <p className="text-[11px] font-[500] uppercase tracking-wider text-[#1F2937]/70">Account status</p>
               <span
                 className={cn(
                   uniformBadgeShape,
@@ -285,7 +285,7 @@ function AdminUserDetailContent({ userId }: { userId: string }) {
               </span>
             </div>
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Created</p>
+              <p className="text-[11px] font-[500] uppercase tracking-wider text-[#1F2937]/70">Created</p>
               <p className="mt-1">{fmtDate(user.createdAt)}</p>
             </div>
           </div>
@@ -313,7 +313,7 @@ function AdminUserDetailContent({ userId }: { userId: string }) {
                           {m.hubName}
                         </Link>
                       </TableCell>
-                      <TableCell className="text-muted-foreground">{m.hubKind || "other"}</TableCell>
+                      <TableCell className="text-[#1F2937]/70">{m.hubKind || "other"}</TableCell>
                       <TableCell className="pr-4 sm:pr-6">
                         <span className={cn(uniformBadgeShape, getStatusColorClasses("approved"), "font-normal")}>
                           {hubMembershipRoleLabel(m.role)}
@@ -384,7 +384,7 @@ function AdminUserDetailContent({ userId }: { userId: string }) {
                         <CoverCell title={r.title} url={r.coverImageUrl} />
                       </TableCell>
                       <TableCell>₹{r.price.toLocaleString("en-IN")}</TableCell>
-                      <TableCell className="font-mono text-xs">{r.buyerMasked}</TableCell>
+                      <TableCell className="font-mono text-[13px] font-[400]">{r.buyerMasked}</TableCell>
                       <TableCell>{r.hubName}</TableCell>
                       <TableCell className="pr-4 sm:pr-6">{fmtDate(r.date)}</TableCell>
                     </TableRow>
@@ -440,7 +440,7 @@ function AdminUserDetailContent({ userId }: { userId: string }) {
         <section className={cn(outline, "overflow-hidden")} aria-label="Admin actions">
           <div className="border-b border-border px-4 py-3">
             <SectionLabel>Admin actions</SectionLabel>
-            <p className="mt-1 text-xs text-muted-foreground">These actions are destructive and audit-logged.</p>
+            <p className="mt-1 text-[13px] font-[400] text-[#1F2937]/70">These actions are destructive and audit-logged.</p>
           </div>
           <div className="flex flex-wrap gap-2 p-4">
             <Button
@@ -477,8 +477,8 @@ function AdminUserDetailContent({ userId }: { userId: string }) {
       <AlertDialog open={confirmAction != null} onOpenChange={(o) => !o && setConfirmAction(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{confirmTitle}</AlertDialogTitle>
-            <AlertDialogDescription>{confirmBody}</AlertDialogDescription>
+            <AlertDialogTitle className="font-sans text-[24px] font-[600] text-[#1F2937]">{confirmTitle}</AlertDialogTitle>
+            <AlertDialogDescription className="text-[14px] font-[400] text-[#1F2937]/70">{confirmBody}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>

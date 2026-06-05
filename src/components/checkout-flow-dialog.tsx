@@ -241,7 +241,7 @@ export function CheckoutFlowDialog({
                   </p>
                 ))}
               <Button
-                className="h-11 w-full rounded-none bg-primary/90 text-slate-950 hover:bg-primary-400"
+                className="h-11 w-full rounded-2xl bg-primary/90 text-slate-950 hover:bg-primary-400"
                 onClick={() => setStep("payment")}
               >
                 Continue to payment
@@ -276,14 +276,14 @@ export function CheckoutFlowDialog({
                 <Button
                   type="button"
                   variant="outline"
-                  className="flex-1 rounded-none"
+                  className="flex-1 rounded-2xl"
                   disabled={pending}
                   onClick={() => setStep("details")}
                 >
                   Back
                 </Button>
                 <Button
-                  className="flex-1 rounded-none bg-primary/90 text-primary-foreground hover:bg-primary/80"
+                  className="flex-1 rounded-2xl bg-primary/90 text-primary-foreground hover:bg-primary/80"
                   disabled={pending || balance < amount || !!(shelfAcquireBody && deskAcquireHubs && deskAcquireHubs.length > 1 && !acquireHubId)}
                   onClick={() => void runPayment()}
                 >
@@ -319,7 +319,7 @@ export function CheckoutFlowDialog({
                 <p className="mt-1 text-[11px] text-muted-foreground">QR support can be added on top of this ref in the next phase.</p>
               </div>
               <Button
-                className="w-full rounded-none"
+                className="w-full rounded-2xl"
                 onClick={() => {
                   onOpenChange(false);
                   setStep("details");

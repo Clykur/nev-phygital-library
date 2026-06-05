@@ -44,7 +44,7 @@ type AuthContextValue = {
   user: AuthUser | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<AuthUser>;
-  loginGoogle: (token: string) => Promise<AuthUser>;
+  loginGoogle: (payload: { token: string; accountType?: string; hubLocation?: string; hubName?: string; hubKind?: string }) => Promise<AuthUser>;
   register: (payload: RegisterPayload) => Promise<AuthUser>;
   logout: () => void;
   refreshUser: () => Promise<void>;
@@ -159,10 +159,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return data.user;
   }, []);
 
-  const loginGoogle = useCallback(async (googleToken: string) => {
+  const loginGoogle = useCallback(async (payload: { token: string; accountType?: string; hubLocation?: string; hubName?: string; hubKind?: string }) => {
     const data = await apiFetch<{ token: string; user: AuthUser }>("/api/auth/google", {
       method: "POST",
-      body: JSON.stringify({ token: googleToken }),
+      body: JSON.stringify(payload),
     });
     localStorage.setItem(STORAGE_KEY, data.token);
     setToken(data.token);

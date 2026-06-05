@@ -215,7 +215,7 @@ export const NeevCollege: React.FC<any> = ({
       
       {/* Intro Banner */}
       <section className="bg-muted/50/40 border border-zinc-805/80 rounded-2xl p-6 md:p-8 relative overflow-hidden">
-        <div className="absolute top-0 right-[5%] w-[300px] h-[300px] bg-blue-500/5 rounded-full blur-[80px] pointer-events-none"></div>
+        <div className="absolute top-0 right-[5%] w-[300px] h-[300px] bg-primary/5 rounded-full blur-[80px] pointer-events-none"></div>
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10">
           <div className="space-y-2 max-w-2xl">
             <div className="inline-flex items-center space-x-1.5 px-3 py-1 bg-primary/10 border border-blue-900/60 rounded-full text-[10px] font-mono font-medium text-primary uppercase tracking-widest">
@@ -308,7 +308,7 @@ export const NeevCollege: React.FC<any> = ({
                   onClick={() => handleSwitchBranch(c.id)}
                   className={`p-3.5 rounded-xl border text-left cursor-pointer transition-all ${
                     isActive
-                      ? 'bg-blue-950/20 border-primary/80 shadow-md shadow-blue-900/5'
+                      ? 'bg-blue-950/20 border-primary/80 shadow-sm shadow-blue-900/5'
                       : 'bg-background/40 border-border hover:bg-muted/50 hover:border-border/60'
                   }`}
                 >
@@ -418,7 +418,7 @@ export const NeevCollege: React.FC<any> = ({
             <button
               type="submit"
               disabled={onboardSuccess}
-              className="w-full py-2.5 bg-gradient-to-r from-primary to-primary disabled:from-zinc-800 hover:from-primary hover:to-indigo-505 disabled:text-muted-foreground/50 border border-blue-500/10 rounded-xl font-bold text-xs text-foreground tracking-wider flex items-center justify-center space-x-2 transition"
+              className="w-full py-2.5 bg-gradient-to-r from-primary to-primary disabled:from-zinc-800 hover:from-primary hover:to-indigo-505 disabled:text-muted-foreground/50 border border-primary/10 rounded-xl font-bold text-xs text-foreground tracking-wider flex items-center justify-center space-x-2 transition"
             >
               {onboardSuccess ? (
                 <>
@@ -500,7 +500,7 @@ export const NeevCollege: React.FC<any> = ({
               <div className="space-y-1 bg-background/40 p-2.5 rounded-xl border border-border">
                 <div className="flex justify-between text-[10px] font-mono text-muted-foreground/50">
                   <span>Vertical Axis (Y):</span>
-                  <span className="text-purple-400 font-bold">{customShelfY}%</span>
+                  <span className="text-primary font-bold">{customShelfY}%</span>
                 </div>
                 <input
                   type="range"
@@ -678,7 +678,7 @@ export const NeevCollege: React.FC<any> = ({
             <button
               type="submit"
               disabled={bookRegistered}
-              className="w-full py-2 bg-gradient-to-r from-secondary to-secondary hover:from-emerald-505 hover:to-teal-505 border border-emerald-500/10 rounded-xl font-bold text-xs text-foreground flex items-center justify-center space-x-1 px-4 transition"
+              className="w-full py-2 bg-gradient-to-r from-secondary to-secondary hover:from-emerald-505 hover:to-teal-505 border border-secondary/10 rounded-xl font-bold text-xs text-foreground flex items-center justify-center space-x-1 px-4 transition"
             >
               {bookRegistered ? (
                 <>

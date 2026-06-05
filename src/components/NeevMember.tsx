@@ -115,8 +115,8 @@ export const NeevMember: React.FC = () => {
         <div className="relative aspect-[1.586/1] w-full rounded-2xl bg-gradient-to-tr from-primary via-indigo-900 to-slate-900 border border-indigo-400/40 p-6 shadow-2xl flex flex-col justify-between overflow-hidden group">
           
           {/* Glowing particle background elements */}
-          <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/20 rounded-full blur-2xl group-hover:bg-blue-500/30 transition-all duration-700 pointer-events-none"></div>
-          <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-purple-500/20 rounded-full blur-xl pointer-events-none"></div>
+          <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 rounded-full blur-2xl group-hover:bg-primary/30 transition-all duration-700 pointer-events-none"></div>
+          <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-accent/20 rounded-full blur-xl pointer-events-none"></div>
 
           {/* Micro structural text markings */}
           <div className="flex items-start justify-between">
@@ -137,7 +137,7 @@ export const NeevMember: React.FC = () => {
 
           <div className="space-y-1 z-10">
             <p className="text-xs font-semibold text-muted-foreground">{user?.name || "Member"}</p>
-            <p className="text-[10px] font-mono text-indigo-300">CARD ID: NEEV-{user?.userId?.substring(0,8).toUpperCase() || 'NEW'}</p>
+            <p className="text-[10px] font-mono text-foreground/70">CARD ID: NEEV-{user?.userId?.substring(0,8).toUpperCase() || 'NEW'}</p>
           </div>
 
           {/* Barcode representation */}
@@ -161,7 +161,7 @@ export const NeevMember: React.FC = () => {
             : 'border-border/60 bg-muted/50/40'
         }`}>
           {flashCreditFull && (
-            <div className="absolute top-2 right-2 px-2 py-0.5 bg-secondary/90 border border-emerald-500/30 text-secondary text-[9px] font-bold font-mono rounded animate-pulse">
+            <div className="absolute top-2 right-2 px-2 py-0.5 bg-secondary/90 border border-secondary/30 text-secondary text-[9px] font-bold font-mono rounded animate-pulse">
               ✔ RECONCILED OK
             </div>
           )}
@@ -336,7 +336,7 @@ export const NeevMember: React.FC = () => {
                 
                 {/* Radar sweeping green circle */}
                 <div className={`absolute inset-2 rounded-full border border-dashed transition-colors duration-500 ${
-                  geofenceBreached ? 'border-red-500/25 bg-red-500/5' : 'border-emerald-500/20 bg-emerald-500/5'
+                  geofenceBreached ? 'border-red-500/25 bg-red-500/5' : 'border-secondary/20 bg-secondary/5'
                 }`}></div>
                 
                 <div className="absolute inset-8 rounded-full border border-border/40"></div>
@@ -434,7 +434,7 @@ export const NeevMember: React.FC = () => {
                   key={aIdx}
                   className={`p-3.5 rounded-xl border flex items-start space-x-3 transition-all ${
                     ach.unlocked 
-                      ? 'bg-background/80 border-border/60 hover:border-border shadow-md shadow-amber-500/2' 
+                      ? 'bg-background/80 border-border/60 hover:border-border shadow-sm shadow-amber-500/2' 
                       : 'bg-muted/50/10 border-border/40 opacity-40'
                   }`}
                 >

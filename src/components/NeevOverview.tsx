@@ -234,7 +234,7 @@ export const NeevOverview: React.FC<NeevOverviewProps> = ({ branch, setActiveTab
         </div>
 
         <div className="bg-muted/50/10 border border-border/60 p-6 rounded-2xl space-y-2">
-          <div className="w-8 h-8 rounded-full bg-purple-950 flex items-center justify-center text-xs font-mono font-bold text-purple-400 border border-purple-800/60">03</div>
+          <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-xs font-mono font-bold text-primary border border-primary/40">03</div>
           <h3 className="text-sm font-bold text-foreground uppercase tracking-tight">Walk Out NFC Checkout</h3>
           <p className="text-xs text-muted-foreground leading-relaxed">
             Walk past security thresholds with books in your bag. The dual UHF active gates log physical tag matches against your smartphone’s active ticket. Borrows check out instantly!

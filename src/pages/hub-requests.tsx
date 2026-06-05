@@ -78,7 +78,7 @@ const outline = "rounded-md border border-border bg-background";
 
 function SectionLabel({ children }: { children: ReactNode }) {
   return (
-    <h2 className="text-[11px] font-bold uppercase tracking-[0.18em] text-foreground">{children}</h2>
+    <h2 className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70">{children}</h2>
   );
 }
 
@@ -161,7 +161,7 @@ function DeskRequestProgress({ status }: { status: string }) {
         : status === "cancelled"
           ? "Withdrawn — closed"
           : "Closed";
-    return <p className="text-[11px] text-muted-foreground">{closed}</p>;
+    return <p className="text-[12px] font-[500] text-[#1F2937]/70">{closed}</p>;
   }
   return (
     <div
@@ -172,19 +172,19 @@ function DeskRequestProgress({ status }: { status: string }) {
       {DESK_PROGRESS_LABELS.map((label, i) => (
         <span key={label} className="flex items-center">
           {i > 0 ? (
-            <span className="mx-0.5 text-[10px] text-muted-foreground/50" aria-hidden>
+            <span className="mx-0.5 text-[11px] text-[#1F2937]/50" aria-hidden>
               →
             </span>
           ) : null}
           <span
             role="listitem"
             className={cn(
-              "inline-flex h-6 items-center rounded-md border px-2 text-[10px] font-medium",
+              "inline-flex h-6 items-center rounded-md border px-2 text-[11px] font-[500]",
               i === active
-                ? "border-primary/30 bg-primary/10 text-foreground"
+                ? "border-primary/30 bg-primary/10 text-[#1F2937]"
                 : i < active
-                  ? "border-emerald-500/30 bg-emerald-500/10 text-secondary/80 dark:text-emerald-200/90"
-                  : "border-border/70 bg-background text-muted-foreground",
+                  ? "border-secondary/30 bg-secondary/10 text-secondary/80 dark:text-emerald-200/90"
+                  : "border-border/70 bg-background text-[#1F2937]/70",
             )}
           >
             {i < active ? "✓ " : ""}
@@ -581,25 +581,20 @@ export default function HubBookRequestsPage() {
     );
   }
 
-  const selectTriggerClass = "h-10 w-full rounded-md border-border bg-background";
+  const selectTriggerClass = "h-10 w-full text-primary rounded-md border-border bg-background";
   const inputClass = "h-10 w-full rounded-md border-border bg-background text-sm";
 
   return (
-    <div className={cn(topPad)}>
+    <div className={cn(topPad, "pb-10 lg:pb-10")}>
       <div className="mb-6 border-b border-border pb-5">
-        <div className="min-w-0">
-          <p
-            className={cn(
-              "text-[10px] font-semibold uppercase tracking-[0.35em]",
-              PORTAL_KICKER_COLOR,
-            )}
-          >
-            {isSuperAdmin ? "Super admin" : "Hub portal"}
+        <div className="min-w-0 font-sans">
+          <h1 className="mt-1 text-[36px] font-[700] leading-tight tracking-tight text-[#1F2937]">Requests</h1>
+          <p className="mt-4 max-w-2xl text-[14px] font-[400] leading-relaxed text-[#1F2937]/70">
+            Manage incoming book requests, assign copies, and coordinate student pickups.
           </p>
-          <h1 className="mt-1 font-serif text-lg font-light text-foreground">Requests</h1>
           {isSuperAdmin ? (
-            <p className="mt-2 max-w-2xl text-xs leading-relaxed text-muted-foreground">
-              Triage the desk queue across your scoped hubs. Use <span className="font-semibold text-foreground">Scope</span>{" "}
+            <p className="mt-2 max-w-2xl text-[14px] font-[400] leading-relaxed text-[#1F2937]/70">
+              Triage the desk queue across your scoped hubs. Use <span className="font-[600] text-[#1F2937]">Scope</span>{" "}
               to filter one location.
             </p>
           ) : null}
@@ -607,7 +602,7 @@ export default function HubBookRequestsPage() {
 
         <div className="mt-4 flex w-full min-w-0 flex-col gap-3 sm:flex-row sm:flex-nowrap sm:items-end sm:gap-3">
           <div className="flex min-w-0 w-full flex-[3] flex-col gap-1.5 sm:min-w-[20rem] lg:min-w-[28rem]">
-            <Label htmlFor="hub-req-search" className="text-[10px] font-bold uppercase tracking-wide text-foreground">
+            <Label htmlFor="hub-req-search" className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70">
               Search title
             </Label>
             <Input
@@ -622,7 +617,7 @@ export default function HubBookRequestsPage() {
             <div className="flex min-w-0 flex-1 flex-col gap-1.5">
               <Label
                 htmlFor="hub-req-scope"
-                className="text-[10px] font-bold uppercase tracking-wide text-foreground"
+                className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70"
               >
                 Scope
               </Label>
@@ -644,7 +639,7 @@ export default function HubBookRequestsPage() {
           <div className="flex min-w-0 flex-1 flex-col gap-1.5">
             <Label
               htmlFor="hub-req-status"
-              className="text-[10px] font-bold uppercase tracking-wide text-foreground"
+              className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70"
             >
               Status
             </Label>
@@ -679,7 +674,7 @@ export default function HubBookRequestsPage() {
       <section className={cn(outline, "overflow-hidden")} aria-label="Request queue">
         <div className="border-b border-border px-4 py-3">
           <SectionLabel>Active requests</SectionLabel>
-          <p className="mt-1 text-xs text-muted-foreground">
+          <p className="mt-1 text-[12px] font-[500] text-[#1F2937]/70">
             {filteredRequests.length === hubDeskRequestsSorted.length
               ? `${hubDeskRequestsSorted.length} in scope`
               : `${filteredRequests.length} shown · ${hubDeskRequestsSorted.length} in scope`}
@@ -737,9 +732,9 @@ export default function HubBookRequestsPage() {
                         showActionColumn ? "lg:grid-cols-[minmax(0,1fr)_16rem]" : "lg:grid-cols-1",
                       )}
                     >
-                      <div className="min-w-0 flex-1 space-y-3">
+                      <div className="min-w-0 flex-1 space-y-3 font-sans">
                         <div className="flex flex-wrap items-center gap-2">
-                          <h3 className="text-[15px] font-semibold text-foreground">
+                          <h3 className="text-[16px] font-[400] text-[#1F2937]">
                             {r.bookTitle?.trim() || "Book request"}
                           </h3>
                           <DeskRequestStatusBadge status={r.status} />
@@ -752,41 +747,41 @@ export default function HubBookRequestsPage() {
                           ) : null}
                         </div>
                         {r.createdAt ? (
-                          <p className="text-[11px] text-muted-foreground">
+                          <p className="text-[12px] font-[500] text-[#1F2937]/70">
                             Open{" "}
-                            <time dateTime={r.createdAt} className="text-foreground/90">
+                            <time dateTime={r.createdAt} className="text-[#1F2937]">
                               {formatDistanceToNow(new Date(r.createdAt), { addSuffix: true })}
                             </time>
                           </p>
                         ) : null}
                         {r.notes?.trim() ? (
-                          <p className="rounded-md border border-border/70 bg-muted/30 px-3 py-2 text-sm text-muted-foreground">
+                          <p className="rounded-md border border-border/70 bg-muted/30 px-3 py-2 text-[14px] font-[400] text-[#1F2937]/70">
                             {r.notes}
                           </p>
                         ) : null}
-                        <div className="grid gap-2 rounded-md border border-border bg-muted/[0.2] px-3 py-2.5 text-[11px] sm:grid-cols-2 lg:grid-cols-4">
+                        <div className="grid gap-2 rounded-md border border-border bg-muted/[0.2] px-3 py-2.5 text-[12px] font-[500] sm:grid-cols-2 lg:grid-cols-4">
                           <div className="space-y-0.5">
-                            <p className="text-muted-foreground">Member</p>
-                            <p className="font-mono text-foreground/90">{r.requesterPublicId ?? "Student"}</p>
+                            <p className="text-[#1F2937]/70">Member</p>
+                            <p className="font-mono text-[#1F2937]">{r.requesterPublicId ?? "Student"}</p>
                           </div>
                           <div className="space-y-0.5">
-                            <p className="text-muted-foreground">Hub</p>
-                            <p className="truncate text-foreground/90">{hubName(r.hubId)}</p>
+                            <p className="text-[#1F2937]/70">Hub</p>
+                            <p className="truncate text-[#1F2937]">{hubName(r.hubId)}</p>
                           </div>
                           <div className="space-y-0.5">
-                            <p className="text-muted-foreground">Updated</p>
-                            <p className="text-foreground/90">{fmtDeskReqDate(r.updatedAt ?? r.createdAt)}</p>
+                            <p className="text-[#1F2937]/70">Updated</p>
+                            <p className="text-[#1F2937]">{fmtDeskReqDate(r.updatedAt ?? r.createdAt)}</p>
                           </div>
                           <div className="space-y-0.5">
-                            <p className="text-muted-foreground">Ready at</p>
-                            <p className="text-foreground/90">{r.readyAt ? fmtDeskReqDate(r.readyAt) : "—"}</p>
+                            <p className="text-[#1F2937]/70">Ready at</p>
+                            <p className="text-[#1F2937]">{r.readyAt ? fmtDeskReqDate(r.readyAt) : "—"}</p>
                           </div>
                         </div>
-                        <p className="rounded-md border border-border/70 bg-background/70 px-3 py-2 text-[11px] text-muted-foreground">
-                          <span className="font-medium text-foreground">Assigned copy: </span>
+                        <p className="rounded-md border border-border/70 bg-background/70 px-3 py-2 text-[12px] font-[500] text-[#1F2937]/70">
+                          <span className="font-[600] text-[#1F2937]">Assigned copy: </span>
                           {r.assignedCopyId ? (
                             <>
-                              <span className="font-mono text-foreground/90">{r.assignedCopyRefId ?? "Linked copy"}</span>
+                              <span className="font-mono text-[#1F2937]">{r.assignedCopyRefId ?? "Linked copy"}</span>
                               {r.assignmentVerified === false ? (
                                 <span className={cn(uniformBadgeShape, getStatusColorClasses("set aside"), "ml-2")}>
                                   Unverified
@@ -798,19 +793,19 @@ export default function HubBookRequestsPage() {
                           )}
                         </p>
                         {r.assignedCopyId && r.assignmentVerified === false ? (
-                          <p className="rounded-md border border-primary/30 bg-primary/10 px-3 py-2 text-[11px] text-foreground">
+                          <p className="rounded-md border border-primary/30 bg-primary/10 px-3 py-2 text-[12px] font-[500] text-[#1F2937]">
                             Not shelf verified - pickup may fail.
                           </p>
                         ) : null}
                         {(ACTIVE_PIPELINE as readonly string[]).includes(r.status) && r.bookTitle?.trim() ? (
-                          <p className="rounded-md border border-border/70 bg-background/70 px-3 py-2 text-[11px] text-muted-foreground">
-                            <span className="font-medium text-foreground">Available matches on shelf: </span>
+                          <p className="rounded-md border border-border/70 bg-background/70 px-3 py-2 text-[12px] font-[500] text-[#1F2937]/70">
+                            <span className="font-[600] text-[#1F2937]">Available matches on shelf: </span>
                             {matchBooksQ.isLoading
                               ? "…"
                               : !r.assignedCopyId
                                 ? matchAvailableForRequest(r)
                                 : "—"}{" "}
-                            <span className="text-muted-foreground/80">
+                            <span className="text-[#1F2937]/50">
                               (unassigned, available copies this hub / title; capped at 500 rows loaded)
                             </span>
                           </p>
@@ -819,13 +814,13 @@ export default function HubBookRequestsPage() {
                           <DeskRequestProgress status={r.status} />
                         </div>
                         {nextAction ? (
-                          <div className="rounded-md border border-primary/25 bg-primary/[0.06] px-3 py-2 text-[12px] leading-snug text-foreground dark:bg-primary/[0.08]">
-                            <span className="font-semibold text-primary">Next: </span>
+                          <div className="rounded-md border border-primary/25 bg-primary/[0.06] px-3 py-2 text-[13px] font-[400] leading-snug text-[#1F2937] dark:bg-primary/[0.08]">
+                            <span className="font-[600] text-primary">Next: </span>
                             {nextAction}
                           </div>
                         ) : null}
                         {hint ? (
-                          <p className="text-[12px] leading-relaxed text-muted-foreground">{hint}</p>
+                          <p className="text-[13px] font-[400] leading-relaxed text-[#1F2937]/70">{hint}</p>
                         ) : null}
                       </div>
                       {showActionColumn ? (
@@ -835,7 +830,7 @@ export default function HubBookRequestsPage() {
                               type="button"
                               size="sm"
                               variant="secondary"
-                              className="h-9 rounded-md text-xs font-medium"
+                              className="h-9 rounded-md text-[13px] font-[500]"
                               disabled={pendingPatch}
                               onClick={() => patchDeskRequest.mutate({ id: r.id, status: "routed" })}
                             >
@@ -846,7 +841,7 @@ export default function HubBookRequestsPage() {
                             <Button
                               type="button"
                               size="sm"
-                              className="h-9 rounded-md text-xs"
+                              className="h-9 rounded-md text-[13px] font-[400]"
                               disabled={pendingPatch}
                               onClick={() => patchDeskRequest.mutate({ id: r.id, status: "ready" })}
                             >
@@ -858,7 +853,7 @@ export default function HubBookRequestsPage() {
                               type="button"
                               size="sm"
                               variant="secondary"
-                              className="h-9 rounded-md text-xs"
+                              className="h-9 rounded-md text-[13px] font-[400]"
                               disabled={pendingPatch}
                               onClick={() => {
                                 patchDeskRequest.mutate({ id: r.id, status: "picked" });
@@ -872,7 +867,7 @@ export default function HubBookRequestsPage() {
                               type="button"
                               size="sm"
                               variant="secondary"
-                              className="h-9 rounded-md text-xs"
+                              className="h-9 rounded-md text-[13px] font-[400]"
                               onClick={() => setAssignTarget(r)}
                               disabled={assignCopyReq.isPending}
                             >
@@ -883,7 +878,7 @@ export default function HubBookRequestsPage() {
                             (r.status === "requested" || r.status === "routed") &&
                             !!r.bookTitle?.trim() &&
                             matchAvailableForRequest(r) === 0 ? (
-                            <p className="rounded-md border border-border/70 bg-background/70 px-2.5 py-2 text-[10px] text-muted-foreground">
+                            <p className="rounded-md border border-border/70 bg-background/70 px-2.5 py-2 text-[12px] font-[500] text-[#1F2937]/70">
                               No available copies - add to inventory or wait.
                             </p>
                           ) : null}
@@ -894,7 +889,7 @@ export default function HubBookRequestsPage() {
                                   type="button"
                                   size="sm"
                                   variant="outline"
-                                  className="h-8 rounded-md text-xs"
+                                  className="h-8 rounded-md text-[13px] font-[400]"
                                   disabled={verifyAssignmentReq.isPending}
                                   onClick={() => verifyAssignmentReq.mutate(r.id)}
                                 >
@@ -905,7 +900,7 @@ export default function HubBookRequestsPage() {
                                 type="button"
                                 size="sm"
                                 variant="outline"
-                                className="h-8 rounded-md text-xs"
+                                className="h-8 rounded-md text-[13px] font-[400]"
                                 disabled={releaseAssignmentReq.isPending}
                                 onClick={() => releaseAssignmentReq.mutate(r.id)}
                               >
@@ -915,7 +910,7 @@ export default function HubBookRequestsPage() {
                                 type="button"
                                 size="sm"
                                 variant="outline"
-                                className="h-8 rounded-md text-xs"
+                                className="h-8 rounded-md text-[13px] font-[400]"
                                 disabled={releaseAssignmentReq.isPending}
                                 onClick={async () => {
                                   try {
@@ -942,7 +937,7 @@ export default function HubBookRequestsPage() {
                               type="button"
                               variant="outline"
                               size="sm"
-                              className="h-9 rounded-md text-xs font-medium"
+                              className="h-9 rounded-md text-[13px] font-[500]"
                               asChild
                             >
                               <Link href={deskInventoryHref(deskPaths!.inventory, r.hubId, r.bookTitle)}>Open inventory</Link>
@@ -950,7 +945,7 @@ export default function HubBookRequestsPage() {
                           ) : null}
                           {isSuperAdmin && !["expired", "cancelled", "picked"].includes(r.status) ? (
                             <div className="mt-1 rounded-md border border-border bg-muted/[0.2] p-2.5">
-                              <p className="text-[9px] font-bold uppercase tracking-wide text-muted-foreground">
+                              <p className="text-[11px] font-[500] uppercase tracking-wider text-[#1F2937]/70">
                                 Platform admin
                               </p>
                               <div className="mt-2 flex flex-col gap-1.5">
@@ -958,7 +953,7 @@ export default function HubBookRequestsPage() {
                                   type="button"
                                   size="sm"
                                   variant="outline"
-                                  className="h-8 w-full justify-start text-xs"
+                                  className="h-8 w-full justify-start text-[13px] font-[400]"
                                   onClick={() => setAdminCloseTarget(r)}
                                 >
                                   Close request…
@@ -968,7 +963,7 @@ export default function HubBookRequestsPage() {
                                     type="button"
                                     size="sm"
                                     variant="secondary"
-                                    className="h-8 w-full justify-start text-xs"
+                                    className="h-8 w-full justify-start text-[13px] font-[400]"
                                     onClick={() => {
                                       setReassignTarget(r);
                                       setReassignHubId("");
@@ -983,7 +978,7 @@ export default function HubBookRequestsPage() {
                                     type="button"
                                     size="sm"
                                     variant="secondary"
-                                    className="h-8 w-full justify-start text-xs"
+                                    className="h-8 w-full justify-start text-[13px] font-[400]"
                                     onClick={() => {
                                       if (r.status === "fulfilled") setOverrideTo("ready");
                                       else if (r.status === "ready") setOverrideTo("picked");
@@ -1017,8 +1012,8 @@ export default function HubBookRequestsPage() {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Assign copy confirmation</DialogTitle>
-            <DialogDescription>Have you physically verified this book on shelf?</DialogDescription>
+            <DialogTitle className="font-sans text-[24px] font-[600] text-[#1F2937]">Assign copy confirmation</DialogTitle>
+            <DialogDescription className="text-[14px] font-[400] text-[#1F2937]/70">Have you physically verified this book on shelf?</DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:gap-0">
             <Button
@@ -1066,8 +1061,8 @@ export default function HubBookRequestsPage() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Admin-close this request?</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle className="font-sans text-[24px] font-[600] text-[#1F2937]">Admin-close this request?</AlertDialogTitle>
+            <AlertDialogDescription className="text-[14px] font-[400] text-[#1F2937]/70">
               Action is written to the audit log and the member is notified. Use cancel for withdrawals, or
               expired for SLA-style closure. Optional reason is stored in the audit log only.
             </AlertDialogDescription>
@@ -1129,8 +1124,8 @@ export default function HubBookRequestsPage() {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Reassign to another hub</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="font-sans text-[24px] font-[600] text-[#1F2937]">Reassign to another hub</DialogTitle>
+            <DialogDescription className="text-[14px] font-[400] text-[#1F2937]/70">
               Only when no shelf copy is linked yet. The request stays with the same member. Inventory at the
               new hub is checked automatically.
             </DialogDescription>
@@ -1226,8 +1221,8 @@ export default function HubBookRequestsPage() {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Override request status</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="font-sans text-[24px] font-[600] text-[#1F2937]">Override request status</DialogTitle>
+            <DialogDescription className="text-[14px] font-[400] text-[#1F2937]/70">
               Use carefully for operational correction. Pickup completion still follows the normal desk checkout path.
             </DialogDescription>
           </DialogHeader>

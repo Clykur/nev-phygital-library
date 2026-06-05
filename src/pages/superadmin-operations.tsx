@@ -264,18 +264,18 @@ function SuperAdminOperationsContent() {
     <div className={cn(inShell ? "" : "pt-24")}>
       <div className="mb-6 border-b border-border pb-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between lg:gap-6">
-          <div className="min-w-0">
-            <p className={cn("text-[10px] font-semibold uppercase tracking-[0.35em]", PORTAL_KICKER_COLOR)}>
+          <div className="min-w-0 font-sans">
+            <p className={cn("text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70", PORTAL_KICKER_COLOR)}>
               Super admin
             </p>
-            <h1 className="mt-1 font-serif text-lg font-light text-foreground">System health & notifications</h1>
-            <p className="mt-2 max-w-2xl text-xs text-muted-foreground">
+            <h1 className="mt-1 text-[36px] font-[700] leading-tight tracking-tight text-[#1F2937]">System health & notifications</h1>
+            <p className="mt-2 max-w-2xl text-[14px] font-[400] text-[#1F2937]/70">
               Action-first ops panel. Triage issues quickly and retry failed notification deliveries.
             </p>
           </div>
           <div className="grid w-full gap-3 sm:grid-cols-2 lg:w-auto lg:min-w-[28rem]">
             <div>
-              <p className="mb-1 text-[10px] font-bold uppercase tracking-wide text-foreground">Severity</p>
+              <p className="mb-1 text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70">Severity</p>
               <Select value={severity} onValueChange={(v) => setSeverity(v as "all" | Severity)}>
                 <SelectTrigger className="h-10 rounded-md">
                   <SelectValue />
@@ -289,7 +289,7 @@ function SuperAdminOperationsContent() {
               </Select>
             </div>
             <div>
-              <p className="mb-1 text-[10px] font-bold uppercase tracking-wide text-foreground">Hub (optional)</p>
+              <p className="mb-1 text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70">Hub (optional)</p>
               <Select value={hubId} onValueChange={setHubId}>
                 <SelectTrigger className="h-10 rounded-md">
                   <SelectValue />
@@ -311,7 +311,7 @@ function SuperAdminOperationsContent() {
       <div className="space-y-6">
         <section className={cn(outline, "overflow-hidden")} aria-label="Issues">
           <div className="border-b border-border px-4 py-3">
-            <h2 className="text-[11px] font-bold uppercase tracking-[0.18em] text-foreground">Issues</h2>
+            <h2 className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70">Issues</h2>
           </div>
           {healthQ.isLoading ? (
             <div className="flex justify-center py-16">
@@ -322,7 +322,7 @@ function SuperAdminOperationsContent() {
               {userFacingErrorMessage(healthQ.error)}
             </p>
           ) : sortedIssues.length === 0 ? (
-            <p className="p-4 text-sm text-muted-foreground">No actionable issues in scope.</p>
+            <p className="p-4 text-[14px] font-[400] text-[#1F2937]/70">No actionable issues in scope.</p>
           ) : (
             <div className="overflow-x-auto">
               <Table>
@@ -348,11 +348,11 @@ function SuperAdminOperationsContent() {
                           {i.severity}
                         </span>
                       </TableCell>
-                      <TableCell className="min-w-[16rem] text-sm">{i.description}</TableCell>
-                      <TableCell className="text-xs text-muted-foreground">
+                      <TableCell className="min-w-[16rem] text-[14px] font-[400] text-[#1F2937]/70">{i.description}</TableCell>
+                      <TableCell className="text-[13px] font-[400] text-[#1F2937]/70">
                         {i.relatedEntity.type}: {i.relatedEntity.label}
                       </TableCell>
-                      <TableCell className="text-xs text-muted-foreground">{fmtAge(i.startedAt)} ago</TableCell>
+                      <TableCell className="text-[13px] font-[400] text-[#1F2937]/70">{fmtAge(i.startedAt)} ago</TableCell>
                       <TableCell className="pr-4 sm:pr-6">
                         <Button
                           size="sm"
@@ -374,7 +374,7 @@ function SuperAdminOperationsContent() {
 
         <section className={cn(outline, "overflow-hidden")} aria-label="Notifications">
           <div className="border-b border-border px-4 py-3">
-            <h2 className="text-[11px] font-bold uppercase tracking-[0.18em] text-foreground">Notifications</h2>
+            <h2 className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70">Notifications</h2>
           </div>
           {notifQ.isLoading ? (
             <div className="flex justify-center py-16">
@@ -385,7 +385,7 @@ function SuperAdminOperationsContent() {
               {userFacingErrorMessage(notifQ.error)}
             </p>
           ) : notifications.length === 0 ? (
-            <p className="p-4 text-sm text-muted-foreground">No recent events in scope.</p>
+            <p className="p-4 text-[14px] font-[400] text-[#1F2937]/70">No recent events in scope.</p>
           ) : (
             <div className="overflow-x-auto">
               <Table>
@@ -401,11 +401,11 @@ function SuperAdminOperationsContent() {
                 <TableBody>
                   {notifications.map((d) => (
                     <TableRow key={d.id} className="border-border">
-                      <TableCell className="pl-4 text-sm font-medium sm:pl-6">{eventTypeLabel(d.type)}</TableCell>
-                      <TableCell className="max-w-[28rem] truncate text-xs text-muted-foreground" title={String(d.payload["body"] ?? "")}>
+                      <TableCell className="pl-4 text-[14px] font-[500] sm:pl-6">{eventTypeLabel(d.type)}</TableCell>
+                      <TableCell className="max-w-[28rem] truncate text-[13px] font-[400] text-[#1F2937]/70" title={String(d.payload["body"] ?? "")}>
                         {String(d.payload["body"] ?? "System event")}
                       </TableCell>
-                      <TableCell className="text-xs text-muted-foreground">{new Date(d.updatedAt).toLocaleString()}</TableCell>
+                      <TableCell className="text-[13px] font-[400] text-[#1F2937]/70">{new Date(d.updatedAt).toLocaleString()}</TableCell>
                       <TableCell>
                         <span
                           className={cn(
@@ -444,8 +444,8 @@ function SuperAdminOperationsContent() {
       <Dialog open={!!reassignIssue} onOpenChange={(open) => !open && setReassignIssue(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Reassign request to another hub</DialogTitle>
-            <DialogDescription>Choose the destination hub and apply immediately.</DialogDescription>
+            <DialogTitle className="font-sans text-[24px] font-[600] text-[#1F2937]">Reassign request to another hub</DialogTitle>
+            <DialogDescription className="text-[14px] font-[400] text-[#1F2937]/70">Choose the destination hub and apply immediately.</DialogDescription>
           </DialogHeader>
           <div className="space-y-3">
             <Select value={targetHubId} onValueChange={setTargetHubId}>
@@ -485,8 +485,8 @@ function SuperAdminOperationsContent() {
       <Dialog open={!!assignIssue} onOpenChange={(open) => !open && setAssignIssue(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Assign copy confirmation</DialogTitle>
-            <DialogDescription>Have you physically verified this book on shelf?</DialogDescription>
+            <DialogTitle className="font-sans text-[24px] font-[600] text-[#1F2937]">Assign copy confirmation</DialogTitle>
+            <DialogDescription className="text-[14px] font-[400] text-[#1F2937]/70">Have you physically verified this book on shelf?</DialogDescription>
           </DialogHeader>
           <div className="grid gap-2">
             <Button

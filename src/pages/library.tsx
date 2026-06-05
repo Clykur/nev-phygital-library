@@ -31,6 +31,7 @@ import { ACTIONS, authorize, isPremiumOk, type AuthUser } from "@/lib/rbac";
 import { toast } from "sonner";
 import {
   AlertCircle,
+  ArrowRight,
   BookOpen,
   Check,
   ChevronsUpDown,
@@ -63,6 +64,13 @@ import { bookCoverDisplayUrl } from "@/lib/book-cover-display";
 import { Portal } from "@radix-ui/react-portal";
 
 type Hub = { id: string; name: string; location: string };
+export type InventoryStats = {
+  total: number;
+  available: number;
+  issued: number;
+  reserved: number;
+};
+
 export type LibraryCatalogBook = {
   id: string;
   refId?: string | null;
@@ -80,6 +88,9 @@ export type LibraryCatalogBook = {
   /** Previous hub after desk shelf acquisition (provenance). */
   acquiredFromHubId?: string | null;
   acquiredFromHubName?: string | null;
+  targetHubName?: string | null;
+  originalHubName?: string | null;
+  inventoryStats?: InventoryStats;
 };
 
 type Book = LibraryCatalogBook;
@@ -126,11 +137,14 @@ export function CatalogBookCard({
   addedAtTitle,
   isSample,
   shelfStatus,
+  inventoryStats,
   /** P2P pipeline listing state — shown on cover (takes priority over `shelfStatus` when both set). */
   pipelineListingStatus,
   action,
+  onOpen,
   /** Square cover area — no radius on placeholder/image clip (e.g. marketplace grid). */
   sharpCover,
+  hideBottomTitle,
 }: {
   title: string;
   coverUrl: string | null | undefined;
@@ -145,9 +159,12 @@ export function CatalogBookCard({
   isSample: boolean;
   /** Hub catalog lifecycle status (borrow page). */
   shelfStatus?: string;
+  inventoryStats?: InventoryStats;
   pipelineListingStatus?: string;
   action: React.ReactNode;
+  onOpen?: () => void;
   sharpCover?: boolean;
+  hideBottomTitle?: boolean;
 }) {
 
 
@@ -183,13 +200,13 @@ export function CatalogBookCard({
           alt={title}
           className={cn(
             "h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]",
-            sharpCover && "rounded-none",
+            sharpCover && "rounded-2xl",
           )}
         />
 
         {/* Resting label */}
         <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black via-black/80 to-transparent p-4 pt-24 transition-opacity duration-300 group-hover:opacity-0 group-focus-within:opacity-0">
-          <p className="font-serif text-[1.1rem] font-bold leading-snug text-white drop-shadow-md line-clamp-2">
+          <p className="font-serif text-[1.1rem] font-bold leading-snug text-white drop-shadow-sm line-clamp-2">
             {title}
           </p>
           {!isSample && fromHubName ? (
@@ -245,6 +262,49 @@ export function CatalogBookCard({
           </div>
         </div>
       </div>
+      
+      {!hideBottomTitle && (
+      <div className="flex flex-1 flex-col justify-between">
+        <div>
+          <div className="flex items-start justify-between gap-2">
+            <h3
+              className={cn(
+                "font-sans text-[16px] font-[600] leading-snug tracking-tight text-foreground transition-colors group-hover:text-primary",
+                sharpCover ? "line-clamp-2" : "line-clamp-3",
+              )}
+            >
+              {title}
+            </h3>
+            {onOpen && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6 shrink-0 rounded-full opacity-0 transition-opacity hover:bg-primary/10 hover:text-primary group-hover:opacity-100"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onOpen();
+                }}
+                aria-label="View details"
+              >
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Button>
+            )}
+          </div>
+          {inventoryStats && inventoryStats.total > 0 && (
+            <div className="mt-1.5 space-y-0.5 text-[11px] leading-relaxed text-muted-foreground">
+              <p className="font-[500] text-foreground">
+                {inventoryStats.available > 0 
+                  ? `${inventoryStats.available} of ${inventoryStats.total} Copies Available` 
+                  : `${inventoryStats.total} Copies Total`}
+              </p>
+              <p>
+                {inventoryStats.issued} Issued &bull; {inventoryStats.reserved} Reserved
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+      )}
     </motion.article>
   );
 }
@@ -264,6 +324,8 @@ export function PeerListingCard({
   priceOk,
   onOpen,
   sharpCover,
+  hideBottomTitle,
+  inventoryStats,
 }: {
   title: string;
   coverUrl: string | null | undefined;
@@ -279,6 +341,8 @@ export function PeerListingCard({
   priceOk: boolean;
   onOpen: () => void;
   sharpCover?: boolean;
+  hideBottomTitle?: boolean;
+  inventoryStats?: InventoryStats;
 }) {
   const hasUserCover = hasBookCover(coverUrl);
 
@@ -316,7 +380,7 @@ export function PeerListingCard({
           alt={title}
           className={cn(
             "h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]",
-            sharpCover && "rounded-none",
+            sharpCover && "rounded-2xl",
           )}
         />
 
@@ -327,7 +391,7 @@ export function PeerListingCard({
           )}
         >
           <p className="font-serif text-[0.95rem] font-medium leading-snug text-white drop-shadow-sm line-clamp-2">
-            {title}
+            title={title}
           </p>
           {priceOk && (
             <p className="mt-1 font-serif text-sm font-semibold tabular-nums text-amber-200/95">
@@ -409,6 +473,35 @@ export function PeerListingCard({
           </div>
         </div>
       </div>
+      
+      {!hideBottomTitle && (
+      <div className="flex flex-1 flex-col justify-between">
+        <div>
+          <div className="flex items-start justify-between gap-2">
+            <h3
+              className={cn(
+                "font-sans text-[16px] font-[600] leading-snug tracking-tight text-foreground transition-colors group-hover:text-primary",
+                sharpCover ? "line-clamp-2" : "line-clamp-3",
+              )}
+            >
+              {title}
+            </h3>
+          </div>
+          {inventoryStats && inventoryStats.total > 0 && (
+            <div className="mt-1.5 space-y-0.5 text-[11px] leading-relaxed text-muted-foreground">
+              <p className="font-[500] text-foreground">
+                {inventoryStats.available > 0 
+                  ? `${inventoryStats.available} of ${inventoryStats.total} Copies Available at Hub` 
+                  : `${inventoryStats.total} Copies Total at Hub`}
+              </p>
+              <p>
+                {inventoryStats.issued} Issued &bull; {inventoryStats.reserved} Reserved
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+      )}
     </motion.article>
   );
 }
@@ -511,13 +604,13 @@ export default function LibraryPage() {
           className="mb-6 flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between"
         >
           <div className="min-w-0 flex-1">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.45em] text-amber-600/90">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.45em] text-accent/90">
               {user?.baseRole === "super_admin" ? "Super admin" : inShell ? "Student" : "Catalog"}
             </p>
             <h1 className="mt-3 font-serif text-4xl font-light tracking-tight md:text-[2.75rem]">
               {inShell ? "Books at your hub" : "Campus copies"}
             </h1>
-            <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-muted-foreground">
+            <p className="mt-3 max-w-xl text-base leading-relaxed text-muted-foreground">
               {inShell ? (
                 <>
                   Physical copies you can check out from your college hub. Request a hold if nothing is
@@ -592,7 +685,7 @@ export default function LibraryPage() {
         )}
 
         {showSampleLayout && (
-          <div className="mb-8 rounded-xl border border-amber-500/25 bg-amber-500/5 px-4 py-3 text-sm text-foreground">
+          <div className="mb-8 rounded-xl border border-accent/25 bg-accent/5 px-4 py-3 text-sm text-foreground">
             <span className="font-medium text-accent/80 dark:text-accent/20">Live shelf is empty.</span>{" "}
             Tiles below are a sample layout — start the API with{" "}
             <code className="rounded bg-muted px-1 text-xs">AUTO_SEED=1</code> (default in{" "}
@@ -662,6 +755,7 @@ export default function LibraryPage() {
                       fullIdForTitle={b.id}
                       isSample={false}
                       shelfStatus={b.status}
+                      inventoryStats={b.inventoryStats}
                       action={
                         <>
                           {!user && (
@@ -995,7 +1089,7 @@ export function RequestBookSection({
           )}
           <Button
             type="submit"
-            className="w-full rounded-none"
+            className="w-full rounded-2xl"
             disabled={
               !isPremiumOk(user) || !hubId || hubs.length === 0 || !bookTitle.trim()
             }

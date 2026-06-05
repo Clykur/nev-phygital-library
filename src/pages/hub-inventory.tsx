@@ -75,6 +75,12 @@ type HubBookRow = {
     assignedAt: string | null;
     assignedBy: string | null;
   } | null;
+  inventoryStats?: {
+    total: number;
+    available: number;
+    issued: number;
+    reserved: number;
+  };
 };
 
 const PAGE_SIZE = 50;
@@ -84,14 +90,14 @@ const outline = "rounded-md border border-border bg-background";
 
 function SectionLabel({ children }: { children: ReactNode }) {
   return (
-    <h2 className="text-[11px] font-bold uppercase tracking-[0.18em] text-foreground">{children}</h2>
+    <h2 className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70">{children}</h2>
   );
 }
 
 function CopyLifecycleStrip({ status }: { status: string }) {
   if (["sold", "unavailable", "transfer_pending", "in_transit"].includes(status)) {
     return (
-      <p className="text-[9px] font-medium uppercase tracking-wide text-muted-foreground">
+      <p className="text-[11px] font-[500] uppercase tracking-wider text-[#1F2937]/70">
         Lifecycle: {status.replace(/_/g, " ")}
       </p>
     );
@@ -105,10 +111,10 @@ function CopyLifecycleStrip({ status }: { status: string }) {
     >
       {["Available", "Set aside (reserved)", "Out (on loan)"].map((label, i) => (
         <span key={label} className="flex items-center gap-1.5">
-          {i > 0 ? <span className="text-[8px] text-muted-foreground/50">→</span> : null}
+          {i > 0 ? <span className="text-[11px] text-[#1F2937]/50">→</span> : null}
           <span
             className={cn(
-              "max-w-[10rem] truncate rounded px-1 py-0.5 text-[9px] font-medium",
+              "max-w-[10rem] truncate rounded px-1 py-0.5 text-[11px] font-[500]",
               i < idx
                 ? "text-emerald-800/80 dark:text-emerald-200/80"
                 : i === idx
@@ -155,7 +161,7 @@ function InventoryPaginationBar({
       >
         Previous
       </Button>
-      <span className="min-w-[6.5rem] text-center text-xs tabular-nums text-muted-foreground" aria-current="page">
+      <span className="min-w-[6.5rem] text-center text-[12px] font-[500] tabular-nums text-[#1F2937]/70" aria-current="page">
         Page {page + 1} / {totalPages}
       </span>
       <Button
@@ -533,42 +539,34 @@ export default function HubInventoryPage() {
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   const rows = booksQ.data?.books ?? [];
 
-  const selectTriggerClass = "h-10 w-full rounded-md border-border bg-background";
+  const selectTriggerClass = "h-10 w-full text-primary rounded-md border-border bg-background";
   const inputClass = "h-10 w-full rounded-md border-border bg-background text-sm";
 
   return (
-    <div className={cn(topPad)}>
+    <div className={cn(topPad, "pb-10 lg:pb-10")}>
       <div className="mb-6 border-b border-border pb-5">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-          <div className="min-w-0">
-            <p
-              className={cn(
-                "text-[10px] font-semibold uppercase tracking-[0.35em]",
-                PORTAL_KICKER_COLOR,
-              )}
-            >
-              {isSuperAdmin ? "Super admin" : "Hub portal"}
-            </p>
-            <h1 className="mt-1 font-serif text-lg font-light text-foreground">Inventory</h1>
+          <div className="min-w-0 font-sans">
+            <h1 className="mt-1 text-[36px] font-[700] leading-tight tracking-tight text-[#1F2937]">Inventory</h1>
             {isSuperAdmin ? (
-              <p className="mt-2 w-full text-xs leading-relaxed text-muted-foreground">
-                Every row is a <span className="font-semibold text-foreground">physical copy</span> (hub stock or student
+              <p className="mt-2 w-full text-[14px] font-[400] leading-relaxed text-[#1F2937]/70">
+                Every row is a <span className="font-[600] text-[#1F2937]">physical copy</span> (hub stock or student
                 consignment on shelf). P2P listings that are not a copy yet are not mixed in here; open{" "}
                 {deskPaths ? (
                   <Link href={deskPaths.p2pListings} className={PORTAL_INLINE_LINK}>
                     P2P Listings
                   </Link>
                 ) : (
-                  <span className="font-medium text-foreground">P2P Listings</span>
+                  <span className="font-[600] text-[#1F2937]">P2P Listings</span>
                 )}{" "}
-                for the pre–drop-off pipeline. Use <span className="font-semibold text-foreground">Scope</span>,{" "}
-                <span className="font-semibold text-foreground">Source</span>, and{" "}
-                <span className="font-semibold text-foreground">Status</span> to filter.
+                for the pre–drop-off pipeline. Use <span className="font-[600] text-[#1F2937]">Scope</span>,{" "}
+                <span className="font-[600] text-[#1F2937]">Source</span>, and{" "}
+                <span className="font-[600] text-[#1F2937]">Status</span> to filter.
               </p>
             ) : (
-              <p className="mt-2 w-full text-xs leading-relaxed text-muted-foreground">
+              <p className="mt-2 w-full text-[14px] font-[400] leading-relaxed text-[#1F2937]/70">
                 On-shelf and consigned physical copies for your managed hubs. Use{" "}
-                <span className="font-semibold text-foreground">Source</span> to separate hub stock from student consignment
+                <span className="font-[600] text-[#1F2937]">Source</span> to separate hub stock from student consignment
                 on shelf. Pre–drop-off peer listings are under{" "}
                 {deskPaths ? (
                   <Link href={deskPaths.p2pListings} className={PORTAL_INLINE_LINK}>
@@ -603,7 +601,7 @@ export default function HubInventoryPage() {
 
         <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
           <div className="flex w-full min-w-0 flex-col gap-1.5 sm:w-full sm:flex-[3] sm:min-w-[20rem] lg:min-w-[28rem]">
-            <Label htmlFor="hub-inv-search" className="text-[10px] font-bold uppercase tracking-wide text-foreground">
+            <Label htmlFor="hub-inv-search" className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70">
               Search title or ref
             </Label>
             <Input
@@ -621,7 +619,7 @@ export default function HubInventoryPage() {
             <div className="flex w-full flex-col gap-1.5 sm:min-w-[10rem] sm:shrink-0 sm:flex-1">
               <Label
                 htmlFor="hub-inv-scope"
-                className="text-[10px] font-bold uppercase tracking-wide text-foreground"
+                className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70"
               >
                 Scope
               </Label>
@@ -647,7 +645,7 @@ export default function HubInventoryPage() {
             </div>
           ) : null}
           <div className="flex min-w-[10rem] shrink-0 flex-1 flex-col gap-1.5">
-            <Label htmlFor="hub-inv-source" className="text-[10px] font-bold uppercase tracking-wide text-foreground">
+            <Label htmlFor="hub-inv-source" className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70">
               Source
             </Label>
             <Select
@@ -668,7 +666,7 @@ export default function HubInventoryPage() {
             </Select>
           </div>
           <div className="flex min-w-[10rem] shrink-0 flex-1 flex-col gap-1.5">
-            <Label htmlFor="hub-inv-status" className="text-[10px] font-bold uppercase tracking-wide text-foreground">
+            <Label htmlFor="hub-inv-status" className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70">
               Status
             </Label>
             <Select
@@ -716,8 +714,8 @@ export default function HubInventoryPage() {
             <div className="border-b border-border px-4 py-3">
               <SectionLabel>Inventory</SectionLabel>
               <div className="mt-2 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
-                <p className="text-xs text-muted-foreground">
-                  <span className="font-medium text-foreground">{total}</span>{" "}
+                <p className="text-[12px] font-[500] text-[#1F2937]/70">
+                  <span className="font-[600] text-[#1F2937]">{total}</span>{" "}
                   {total === 1 ? "copy" : "copies"} in this view
                   {isSuperAdmin && !overviewHubId
                     ? " · every hub"
@@ -737,7 +735,7 @@ export default function HubInventoryPage() {
               </div>
             </div>
             {rows.length === 0 ? (
-              <div className="px-4 py-12 text-center text-sm text-muted-foreground">
+              <div className="px-4 py-12 text-center text-[14px] font-[400] text-[#1F2937]/70">
                 <p>No copies match these filters.</p>
                 {source !== "all" || status !== "all" || q.trim() !== "" ? (
                   <Button
@@ -780,15 +778,15 @@ export default function HubInventoryPage() {
                       <div className="flex min-w-0 items-center justify-between gap-2">
                         <span
                           className={cn(
-                            "inline-flex items-center text-left text-[10px] font-semibold uppercase tracking-wide",
-                            ownership.isHub ? "text-foreground" : "text-muted-foreground",
+                            "inline-flex items-center text-left text-[12px] font-[500] uppercase tracking-wider",
+                            ownership.isHub ? "text-[#1F2937]" : "text-[#1F2937]/70",
                           )}
                         >
                           {ownership.label}
                         </span>
                         {b.source === "hub_inventory" ? (
                           <span
-                            className="shrink-0 font-mono text-[10px] tabular-nums text-muted-foreground"
+                            className="shrink-0 font-mono text-[12px] font-[500] tabular-nums text-[#1F2937]/70"
                             title={b.id}
                           >
                             {refShort}
@@ -796,30 +794,42 @@ export default function HubInventoryPage() {
                         ) : null}
                       </div>
                       <CopyLifecycleStrip status={b.status} />
+                      {b.inventoryStats && b.inventoryStats.total > 0 && (
+                        <div className="mt-1 space-y-0.5 text-[11px] leading-relaxed text-[#1F2937]/70">
+                          <p className="font-[500] text-[#1F2937]">
+                            {b.inventoryStats.available > 0
+                              ? `${b.inventoryStats.available} of ${b.inventoryStats.total} Copies Available at this Hub`
+                              : `${b.inventoryStats.total} Copies Total at this Hub`}
+                          </p>
+                          <p>
+                            {b.inventoryStats.issued} Issued &bull; {b.inventoryStats.reserved} Reserved
+                          </p>
+                        </div>
+                      )}
                       {b.status === "reserved" && b.request ? (
                         <div className="space-y-1.5 rounded-md border border-primary/25 bg-primary/[0.04] p-2 text-xs">
                           <div className="flex items-center gap-2">
                             <p
                               className={cn(
-                                "rounded px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-widest",
+                                "rounded px-1.5 py-0.5 text-[12px] font-[500] uppercase tracking-wider",
                                 b.request.assignmentVerified
-                                  ? "bg-emerald-500/20 text-secondary/90 dark:text-secondary/20"
-                                  : "bg-primary/15 text-foreground",
+                                  ? "bg-secondary/20 text-secondary/90 dark:text-secondary/20"
+                                  : "bg-primary/15 text-[#1F2937]",
                               )}
                             >
                               {b.request.assignmentVerified ? "Verified" : "Unverified"}
                             </p>
-                            <p className="text-muted-foreground">
+                            <p className="text-[#1F2937]/70">
                               Assigned to request{" "}
                               <Link
                                 to={`${deskPaths?.requests ?? ""}?q=${b.request.id.slice(0, 8)}`}
-                                className="font-semibold text-foreground underline-offset-2 hover:underline"
+                                className="font-[600] text-[#1F2937] underline-offset-2 hover:underline"
                               >
                                 {b.request.id.slice(0, 8)}…
                               </Link>
                             </p>
                           </div>
-                          <p className="text-muted-foreground">
+                          <p className="text-[#1F2937]/70">
                             by {b.request.assignedBy ?? "system"}
                             {b.request.assignedAt ? ` at ${new Date(b.request.assignedAt).toLocaleString()}` : ""}
                           </p>
@@ -839,24 +849,24 @@ export default function HubInventoryPage() {
                         isSample={false}
                         shelfStatus={b.status}
                         action={
-                          <div className="mt-3 w-full space-y-2 text-left text-xs text-foreground md:text-white/90">
+                          <div className="mt-3 w-full space-y-2 text-left text-[13px] font-[400] text-[#1F2937] md:text-white/90">
                             {inInterHubTransfer && b.targetHubName ? (
-                              <p className="font-medium leading-snug text-foreground md:text-primary/20">
+                              <p className="font-[500] leading-snug text-[#1F2937] md:text-primary/20">
                                 Transferring to {b.targetHubName}
                               </p>
                             ) : null}
-                            <p className="font-medium tabular-nums">
+                            <p className="font-[500] tabular-nums">
                               ₹{b.borrowPrice.toLocaleString("en-IN")} borrow · ₹
                               {b.buyPrice.toLocaleString("en-IN")} buy
                             </p>
                             <div className="flex flex-wrap items-center gap-1.5">
-                              <span className="inline-flex h-5 items-center rounded-sm bg-muted px-1.5 text-[9px] font-medium uppercase tracking-wide text-foreground md:bg-black/40 md:text-white/90">
+                              <span className="inline-flex h-5 items-center rounded-sm bg-muted px-1.5 text-[11px] font-[500] uppercase tracking-wider text-[#1F2937] md:bg-black/40 md:text-white/90">
                                 {sourceLabel(b.source)}
                               </span>
-                              <span className="inline-flex h-5 items-center rounded-sm bg-muted px-1.5 text-[9px] font-medium uppercase tracking-wide text-foreground md:bg-black/40 md:text-white/90">
+                              <span className="inline-flex h-5 items-center rounded-sm bg-muted px-1.5 text-[11px] font-[500] uppercase tracking-wider text-[#1F2937] md:bg-black/40 md:text-white/90">
                                 {b.condition.replace(/_/g, " ")}
                               </span>
-                              <span className="inline-flex h-5 items-center rounded-sm bg-muted px-1.5 text-[9px] font-medium uppercase tracking-wide text-foreground md:bg-black/40 md:text-white/90">
+                              <span className="inline-flex h-5 items-center rounded-sm bg-muted px-1.5 text-[11px] font-[500] uppercase tracking-wider text-[#1F2937] md:bg-black/40 md:text-white/90">
                                 {b.status === "available"
                                   ? "Available"
                                   : b.status === "reserved"
@@ -959,7 +969,7 @@ export default function HubInventoryPage() {
                               <Button
                                 type="button"
                                 size="sm"
-                                className="h-8 w-full rounded-md border border-sky-400/40 bg-sky-500/20 text-[11px] text-black sm:text-white hover:bg-sky-500/30"
+                                className="h-8 w-full rounded-md border border-primary/40 bg-primary/20 text-[11px] text-black sm:text-white hover:bg-primary/30"
                                 disabled={convertP2pToHub.isPending}
                                 onClick={() => {
                                   if (
@@ -988,7 +998,7 @@ export default function HubInventoryPage() {
                               </Button>
                             ) : null}
                             <p
-                              className="font-mono text-[10px] text-white/55"
+                              className="font-mono text-[11px] font-[500] text-[#1F2937]/50"
                               title={new Date(b.updatedAt).toLocaleString()}
                             >
                               Updated · {new Date(b.updatedAt).toLocaleDateString()}
@@ -1032,10 +1042,10 @@ export default function HubInventoryPage() {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="font-serif">New shelf copy</DialogTitle>
-            <DialogDescription>
-              Register one hub-owned copy on the shelf. Set a <strong>buy</strong> price and a{" "}
-              <strong>borrow</strong> fee (whole rupees; borrow may be ₹0). Book photo is optional same as
+            <DialogTitle className="font-sans text-[24px] font-[600] text-[#1F2937]">New shelf copy</DialogTitle>
+            <DialogDescription className="text-[14px] font-[400] text-[#1F2937]/70">
+              Register one hub-owned copy on the shelf. Set a <strong className="font-[600] text-[#1F2937]">buy</strong> price and a{" "}
+              <strong className="font-[600] text-[#1F2937]">borrow</strong> fee (whole rupees; borrow may be ₹0). Book photo is optional same as
               student listings.
             </DialogDescription>
           </DialogHeader>
@@ -1091,8 +1101,8 @@ export default function HubInventoryPage() {
                                 )}
                               />
                               <span className="flex min-w-0 flex-col gap-0.5 text-left">
-                                <span className="truncate font-medium">{h.name}</span>
-                                <span className="truncate text-xs text-muted-foreground">
+                                <span className="truncate font-[500]">{h.name}</span>
+                                <span className="truncate text-[12px] font-[500] text-[#1F2937]/70">
                                   {hubKindLabel(h.kind)}
                                 </span>
                               </span>
@@ -1126,7 +1136,7 @@ export default function HubInventoryPage() {
                 onChange={(e) => setAddBuy(e.target.value.replace(/[^\d]/g, ""))}
               />
               {!addBuyValid && addBuy.trim() !== "" ? (
-                <p className="text-xs text-destructive">Enter a whole number ₹0 or more.</p>
+                <p className="text-[12px] font-[500] text-destructive">Enter a whole number ₹0 or more.</p>
               ) : null}
             </div>
             <div className="space-y-2">
@@ -1141,7 +1151,7 @@ export default function HubInventoryPage() {
                 onChange={(e) => setAddBorrow(e.target.value.replace(/[^\d]/g, ""))}
               />
               {!addBorrowValid && addBorrow.trim() !== "" ? (
-                <p className="text-xs text-destructive">Enter a whole number ₹0 or more.</p>
+                <p className="text-[12px] font-[500] text-destructive">Enter a whole number ₹0 or more.</p>
               ) : null}
             </div>
             <div className="space-y-2">
@@ -1164,7 +1174,7 @@ export default function HubInventoryPage() {
                   e.target.value = "";
                 }}
               />
-              <p className="text-xs text-muted-foreground">JPEG, PNG, WebP, or GIF · up to 5&nbsp;MB</p>
+              <p className="text-[12px] font-[500] text-[#1F2937]/70">JPEG, PNG, WebP, or GIF · up to 5&nbsp;MB</p>
               <BookCoverImage
                 src={addCoverPreview}
                 alt={addCoverPreview ? "Cover preview" : "Default book cover"}

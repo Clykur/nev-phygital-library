@@ -49,7 +49,7 @@ const outline = "rounded-md border border-border bg-background";
 
 function SectionLabel({ children }: { children: ReactNode }) {
   return (
-    <h2 className="text-[11px] font-bold uppercase tracking-[0.18em] text-foreground">{children}</h2>
+    <h2 className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70">{children}</h2>
   );
 }
 
@@ -100,19 +100,19 @@ function AdminUsersContent() {
     <div className={cn(topPad)}>
       <div className="mb-6 border-b border-border pb-5">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-          <div className="min-w-0">
+          <div className="min-w-0 font-sans">
             <p
               className={cn(
-                "text-[10px] font-semibold uppercase tracking-[0.35em]",
+                "text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70",
                 PORTAL_KICKER_COLOR,
               )}
             >
               {isSuperAdmin ? "Super admin" : "Hub portal"}
             </p>
-            <h1 className="mt-1 font-serif text-lg font-light text-foreground">Users</h1>
+            <h1 className="mt-1 text-[36px] font-[700] leading-tight tracking-tight text-[#1F2937]">Users</h1>
             {isSuperAdmin ? (
-              <p className="mt-2 text-xs leading-snug text-muted-foreground sm:whitespace-nowrap">
-                Filter with <span className="font-semibold text-foreground">Role</span> and <span className="font-semibold text-foreground">Search</span>; open a row for profile, roles, and hub memberships; open{" "}
+              <p className="mt-2 text-[14px] font-[400] leading-relaxed text-[#1F2937]/70 sm:whitespace-nowrap">
+                Filter with <span className="font-[600] text-[#1F2937]">Role</span> and <span className="font-[600] text-[#1F2937]">Search</span>; open a row for profile, roles, and hub memberships; open{" "}
                 <Link
                   href={user ? portalPathsForUser(user).inventory : "/library"}
                   className={PORTAL_INLINE_LINK}
@@ -130,7 +130,7 @@ function AdminUsersContent() {
           <div className="flex w-full min-w-0 flex-col gap-1.5 sm:w-[12rem]">
             <Label
               htmlFor="admin-users-role"
-              className="text-[10px] font-bold uppercase tracking-wide text-foreground"
+              className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70"
             >
               Role
             </Label>
@@ -149,7 +149,7 @@ function AdminUsersContent() {
           <div className="flex w-full min-w-0 flex-col gap-1.5 sm:w-[12rem]">
             <Label
               htmlFor="admin-users-status"
-              className="text-[10px] font-bold uppercase tracking-wide text-foreground"
+              className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70"
             >
               Status
             </Label>
@@ -168,7 +168,7 @@ function AdminUsersContent() {
           <div className="min-w-0 flex-1 basis-[14rem]">
             <Label
               htmlFor="admin-users-search"
-              className="text-[10px] font-bold uppercase tracking-wide text-foreground"
+              className="text-[12px] font-[500] uppercase tracking-wider text-[#1F2937]/70"
             >
               Search
             </Label>
@@ -205,16 +205,16 @@ function AdminUsersContent() {
           <>
             <div className="border-b border-border px-4 py-3">
               <SectionLabel>All users</SectionLabel>
-              <p className="mt-1 text-xs text-muted-foreground">
+              <p className="mt-1 text-[12px] font-[500] text-[#1F2937]/70">
                 {filteredUsers.length === rows.length
                   ? `${rows.length} in scope${q.data && q.data.total > rows.length ? ` · ${q.data.total} match search` : ""}`
                   : `${filteredUsers.length} shown · ${rows.length} in search scope`}
               </p>
             </div>
             {!rows.length ? (
-              <p className="px-4 py-10 text-sm text-muted-foreground sm:px-4">No users match this search.</p>
+              <p className="px-4 py-10 text-[14px] font-[400] text-[#1F2937]/70 sm:px-4">No users match this search.</p>
             ) : !filteredUsers.length ? (
-              <p className="px-4 py-10 text-sm text-muted-foreground sm:px-4">No users match the role filter.</p>
+              <p className="px-4 py-10 text-[14px] font-[400] text-[#1F2937]/70 sm:px-4">No users match the role filter.</p>
             ) : (
               <div className="overflow-x-auto">
                 <Table>
@@ -230,15 +230,15 @@ function AdminUsersContent() {
                   <TableBody>
                     {filteredUsers.map((u) => (
                       <TableRow key={u.id} className="cursor-pointer border-border">
-                        <TableCell className="pl-4 font-medium sm:pl-6">
+                        <TableCell className="pl-4 font-[500] sm:pl-6">
                           <Link href={adminUserPath(u.id)} className={PORTAL_INLINE_LINK}>
                             {u.name}
                           </Link>
-                          <p className="mt-0.5 font-mono text-[11px] text-muted-foreground">
+                          <p className="mt-0.5 font-mono text-[12px] font-[500] text-[#1F2937]/70">
                             {u.publicId ?? u.id.slice(0, 8)}
                           </p>
                         </TableCell>
-                        <TableCell className="text-muted-foreground">{u.email}</TableCell>
+                        <TableCell className="text-[#1F2937]/70">{u.email}</TableCell>
                         <TableCell>
                           <span
                             className={cn(
@@ -254,12 +254,12 @@ function AdminUsersContent() {
                             {baseRoleLabel(u.baseRole)}
                           </span>
                         </TableCell>
-                        <TableCell className="text-muted-foreground">
+                        <TableCell className="text-[#1F2937]/70">
                           {(u.accountStatus ?? "active") === "held"
                             ? "Suspended"
                             : (u.accountStatus ?? "active").replace(/_/g, " ")}
                         </TableCell>
-                        <TableCell className="pr-4 text-muted-foreground sm:pr-6">
+                        <TableCell className="pr-4 text-[#1F2937]/70 sm:pr-6">
                           {new Date(u.createdAt).toLocaleDateString()}
                         </TableCell>
                       </TableRow>

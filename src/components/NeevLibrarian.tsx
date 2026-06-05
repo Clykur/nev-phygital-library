@@ -183,7 +183,7 @@ export const NeevLibrarian: React.FC = () => {
               </div>
 
               {/* Warnings and blocking protocol */}
-              <div className="p-3 bg-amber-950/10 border border-amber-900/40 rounded-xl flex items-start space-x-2.5 text-[11px] text-amber-500/95 leading-relaxed font-sans font-normal">
+              <div className="p-3 bg-amber-950/10 border border-amber-900/40 rounded-xl flex items-start space-x-2.5 text-[11px] text-accent/95 leading-relaxed font-sans font-normal">
                 <AlertTriangle className="w-4 h-4 text-accent shrink-0 mt-0.5 animate-pulse" />
                 <p>
                   <strong className="text-amber-450 font-bold">MANDATORY CAMERA INTERACTION DECK BLOCK:</strong> To protect cash flow and prevent student disputes during eventual deposit returns, you must capture one clear visual stamp of the physical spine and front layout before checking out the textbook to {activeStudent}.
@@ -217,7 +217,7 @@ export const NeevLibrarian: React.FC = () => {
               {/* Simulated camera capture viewfinder */}
               <div className="relative aspect-[16/9] w-full bg-muted/50/85 border border-border/60 rounded-xl overflow-hidden flex items-center justify-center">
                 {/* Center alignment guides */}
-                <div className="absolute inset-8 border border-dashed border-emerald-500/40 rounded flex items-center justify-center">
+                <div className="absolute inset-8 border border-dashed border-secondary/40 rounded flex items-center justify-center">
                   <div className="absolute w-6 h-6 border-t-2 border-l-2 border-secondary top-0 left-0"></div>
                   <div className="absolute w-6 h-6 border-t-2 border-r-2 border-secondary top-0 right-0"></div>
                   <div className="absolute w-6 h-6 border-b-2 border-l-2 border-secondary bottom-0 left-0"></div>
@@ -250,7 +250,7 @@ export const NeevLibrarian: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleSimulateCaptureFinished}
-                  className="px-5 py-2 bg-secondary hover:bg-emerald-555 text-xs font-bold text-foreground rounded-xl shadow-md transition flex items-center space-x-1.5"
+                  className="px-5 py-2 bg-secondary hover:bg-emerald-555 text-xs font-bold text-foreground rounded-xl shadow-sm transition flex items-center space-x-1.5"
                 >
                   <Camera className="w-4 h-4" />
                   <span>Capture & Sync Spine Visual (+50 XP)</span>
@@ -265,7 +265,7 @@ export const NeevLibrarian: React.FC = () => {
               <div className="flex flex-col sm:flex-row justify-between sm:items-start gap-4">
                 <div className="space-y-1.5 flex-1">
                   <div className="flex items-center space-x-2">
-                    <span className="px-1.5 py-0.5 bg-secondary/90 border border-emerald-500/25 text-secondary font-mono text-[9px] font-bold rounded">
+                    <span className="px-1.5 py-0.5 bg-secondary/90 border border-secondary/25 text-secondary font-mono text-[9px] font-bold rounded">
                       DIGITAL STAMP SECURED
                     </span>
                     <span className="text-muted-foreground/60 font-mono text-[9px]">VISUAL_MD5: md5_7a2f_9b4e_2026</span>
@@ -520,7 +520,7 @@ export const NeevLibrarian: React.FC = () => {
             <button
               type="submit"
               disabled={formSubmitted}
-              className="w-full py-2.5 bg-gradient-to-r from-primary to-primary hover:from-primary hover:to-indigo-505 disabled:from-zinc-800 disabled:text-muted-foreground/50 border border-blue-500/10 rounded-xl font-bold text-xs text-foreground tracking-wider flex items-center justify-center space-x-2 transition"
+              className="w-full py-2.5 bg-gradient-to-r from-primary to-primary hover:from-primary hover:to-indigo-505 disabled:from-zinc-800 disabled:text-muted-foreground/50 border border-primary/10 rounded-xl font-bold text-xs text-foreground tracking-wider flex items-center justify-center space-x-2 transition"
             >
               {formSubmitted ? (
                 <>

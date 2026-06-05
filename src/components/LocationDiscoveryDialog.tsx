@@ -139,7 +139,7 @@ export function LocationDiscoveryDialog({ open, onOpenChange, token }: LocationD
                             <div className="mt-1 flex items-center gap-2">
                               <span className={cn(
                                 "text-[10px] px-1.5 py-0.5 rounded font-semibold",
-                                isAvailable ? "bg-emerald-500/10 text-secondary" : "bg-muted text-muted-foreground"
+                                isAvailable ? "bg-secondary/10 text-secondary" : "bg-muted text-muted-foreground"
                               )}>
                                 {isAvailable ? 'Available' : 'Reserved'}
                               </span>
