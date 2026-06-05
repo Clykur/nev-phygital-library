@@ -24,7 +24,7 @@ export const NeevMember: React.FC = () => {
   // Geofencing Reference Protection States
   const [geofenceBreached, setGeofenceBreached] = useState(false);
   const [checkingGps, setCheckingGps] = useState(false);
-  
+
   const levelNames = [
     "Novice Reader",
     "Aisle Voyager",
@@ -107,13 +107,13 @@ export const NeevMember: React.FC = () => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-[20px] duration-500">
-      
+
       {/* Wallet glowing member card and XP progression */}
       <div className="lg:col-span-1 space-y-6">
-        
+
         {/* Apple wallet styled NFC card */}
         <div className="relative aspect-[1.586/1] w-full rounded-2xl bg-gradient-to-tr from-primary via-indigo-900 to-slate-900 border border-indigo-400/40 p-6 shadow-2xl flex flex-col justify-between overflow-hidden group">
-          
+
           {/* Glowing particle background elements */}
           <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 rounded-full blur-2xl group-hover:bg-primary/30 transition-all duration-700 pointer-events-none"></div>
           <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-accent/20 rounded-full blur-xl pointer-events-none"></div>
@@ -124,7 +124,7 @@ export const NeevMember: React.FC = () => {
               <span className="caption-scale font-mono tracking-widest text-primary/20 uppercase font-semibold">Neev Phygital System</span>
               <h3 className="text-sm font-bold tracking-tight text-foreground uppercase">MEMBER TESSERAWALLET</h3>
             </div>
-            
+
             {/* NFC Wireless logo drawing */}
             <div className="w-8 h-8 flex items-center justify-center">
               <svg viewBox="0 0 24 24" className="w-4 h-4 text-primary/20 fill-none stroke-current" strokeWidth="2" strokeLinecap="round">
@@ -137,14 +137,14 @@ export const NeevMember: React.FC = () => {
 
           <div className="space-y-1 z-10">
             <p className="text-xs font-semibold text-muted-foreground">{user?.name || "Member"}</p>
-            <p className="caption-scale font-mono text-foreground/70">CARD ID: NEEV-{user?.userId?.substring(0,8).toUpperCase() || 'NEW'}</p>
+            <p className="caption-scale font-mono text-foreground/70">CARD ID: NEEV-{user?.userId?.substring(0, 8).toUpperCase() || 'NEW'}</p>
           </div>
 
           {/* Barcode representation */}
           <div className="flex items-end justify-between border-t border-overlay-glass-border/10 pt-4 z-10">
             {/* Simulated bar lines */}
             <div className="h-8 w-28 flex gap-[1.5px] items-center bg-surface/95 p-1 rounded-sm">
-              {[2,1,3,1,2,4,1,2,3,1,2,1,4,1,3,2,1,2].map((w, idx) => (
+              {[2, 1, 3, 1, 2, 4, 1, 2, 3, 1, 2, 1, 4, 1, 3, 2, 1, 2].map((w, idx) => (
                 <div key={idx} className="h-full bg-foreground shrink-0" style={{ width: `${w}px` }}></div>
               ))}
             </div>
@@ -155,11 +155,10 @@ export const NeevMember: React.FC = () => {
         </div>
 
         {/* Elastic Credit Buffer Bar (Credit card style limit representation) */}
-        <div className={`bg-zinc-90 w-full border rounded-2xl p-5 space-y-4 transition-all duration-500 relative overflow-hidden ${
-          flashCreditFull 
-            ? 'border-secondary ring-2 ring-emerald-500/20 shadow-[0_0_25px_rgba(16,185,129,0.2)] bg-emerald-950/10' 
+        <div className={`bg-zinc-90 w-full border rounded-2xl p-5 space-y-4 transition-all duration-500 relative overflow-hidden ${flashCreditFull
+            ? 'border-secondary ring-2 ring-emerald-500/20 shadow-[0_0_25px_rgba(16,185,129,0.2)] bg-emerald-950/10'
             : 'border-border/60 bg-muted/50/40'
-        }`}>
+          }`}>
           {flashCreditFull && (
             <div className="absolute top-2 right-2 px-2 py-0.5 bg-secondary/90 border border-secondary/30 text-secondary caption-scale font-bold font-mono rounded animate-pulse">
               ✔ RECONCILED OK
@@ -179,15 +178,14 @@ export const NeevMember: React.FC = () => {
           {/* Elastic bar - showing spent credits from left, available is remaining space */}
           <div className="w-full h-3 bg-background border border-border rounded-lg overflow-hidden flex relative">
             {/* Spent/Blocked Credits segment */}
-            <div 
-              className="h-full bg-muted transition-all duration-700 border-r border-border" 
+            <div
+              className="h-full bg-muted transition-all duration-700 border-r border-border"
               style={{ width: `${(totalBorrowedValue / 5000) * 100}%` }}
             ></div>
             {/* Active Elastic Available credit buffer segment page space */}
-            <div 
-              className={`h-full bg-gradient-to-r from-primary via-primary to-primary transition-all duration-700 ${
-                flashCreditFull ? 'animate-pulse bg-gradient-to-r from-secondary to-secondary' : ''
-              }`} 
+            <div
+              className={`h-full bg-gradient-to-r from-primary via-primary to-primary transition-all duration-700 ${flashCreditFull ? 'animate-pulse bg-gradient-to-r from-secondary to-secondary' : ''
+                }`}
               style={{ width: `${(availableCredits / 5000) * 100}%` }}
             ></div>
           </div>
@@ -219,7 +217,7 @@ export const NeevMember: React.FC = () => {
 
           {/* Progress Tracker Bar */}
           <div className="w-full h-2.5 bg-background border border-border rounded-full overflow-hidden">
-            <div 
+            <div
               className="h-full bg-gradient-to-r from-primary to-primary rounded-full transition-all duration-1000"
               style={{ width: `${levelXpProgress / 10}%` }}
             ></div>
@@ -235,7 +233,7 @@ export const NeevMember: React.FC = () => {
 
       {/* Borrow items active panel list */}
       <div className="lg:col-span-2 space-y-6">
-        
+
         <div className="bg-muted/50/40 border border-border/60 rounded-2xl p-6 space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
@@ -249,7 +247,7 @@ export const NeevMember: React.FC = () => {
             {activeCheckouts.map((checkout) => {
               const rRatio = Math.max(0, Math.min(100, (checkout.daysRemaining / 14) * 100));
               return (
-                <div 
+                <div
                   key={checkout.id}
                   className="p-4 bg-background/60 border border-border rounded-xl relative overflow-hidden flex flex-col md:flex-row justify-between md:items-center gap-4 group transition-colors hover:bg-background"
                 >
@@ -257,14 +255,13 @@ export const NeevMember: React.FC = () => {
                   <div className="space-y-1 tracking-tight min-w-0 flex-1">
                     <h4 className="text-xs font-bold text-foreground uppercase truncate font-sans">{checkout.title}</h4>
                     <p className="caption-scale text-muted-foreground/60">Author: {checkout.author} • Spine tag RFID match verified</p>
-                    
+
                     {/* Countdown meter scale */}
                     <div className="pt-2 w-full max-w-sm space-y-1">
                       <div className="w-full h-1 bg-muted/50 rounded-full overflow-hidden">
-                        <div 
-                          className={`h-full rounded-full transition-all ${
-                            checkout.daysRemaining < 3 ? 'bg-destructive' : checkout.daysRemaining < 7 ? 'bg-accent' : 'bg-secondary'
-                          }`}
+                        <div
+                          className={`h-full rounded-full transition-all ${checkout.daysRemaining < 3 ? 'bg-destructive' : checkout.daysRemaining < 7 ? 'bg-accent' : 'bg-secondary'
+                            }`}
                           style={{ width: `${rRatio}%` }}
                         ></div>
                       </div>
@@ -300,12 +297,11 @@ export const NeevMember: React.FC = () => {
         </div>
 
         {/* Geo-fence monitor safeguard card */}
-        <div className={`border rounded-2xl p-6 space-y-4 transition-all duration-500 relative overflow-hidden ${
-          geofenceBreached 
-            ? 'bg-red-950/15 border-destructive ring-2 ring-red-500/20 shadow-[0_0_20px_rgba(239,68,68,0.15)]' 
+        <div className={`border rounded-2xl p-6 space-y-4 transition-all duration-500 relative overflow-hidden ${geofenceBreached
+            ? 'bg-red-950/15 border-destructive ring-2 ring-red-500/20 shadow-[0_0_20px_rgba(239,68,68,0.15)]'
             : 'bg-muted/50/40 border-border/60 bg-muted/50/40'
-        }`}>
-          
+          }`}>
+
           <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 border-b border-border pb-3">
             <div className="flex items-center space-x-2">
               <Map className={`w-4 h-4 ${geofenceBreached ? 'text-destructive animate-pulse' : 'text-primary'}`} />
@@ -318,47 +314,43 @@ export const NeevMember: React.FC = () => {
             {/* GPS Signal bar */}
             <div className="flex items-center space-x-2 caption-scale font-mono">
               <span className="text-muted-foreground/60 uppercase">GPS Node:</span>
-              <span className={`px-2 py-0.5 rounded caption-scale font-bold ${
-                geofenceBreached 
-                  ? 'bg-red-950 text-destructive border border-red-900' 
+              <span className={`px-2 py-0.5 rounded caption-scale font-bold ${geofenceBreached
+                  ? 'bg-red-950 text-destructive border border-red-900'
                   : 'bg-primary/90 text-primary border border-primary/80'
-              }`}>
+                }`}>
                 {geofenceBreached ? 'OUT_OF_BOUNDS_WARN' : 'IN_LIBRARY_GRID'}
               </span>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-center">
-            
+
             {/* Visual radar grid circle */}
             <div className="md:col-span-2 flex justify-center">
               <div className="relative w-28 h-28 rounded-full border border-border flex items-center justify-center bg-overlay-scrim overflow-hidden shrink-0">
-                
+
                 {/* Radar sweeping green circle */}
-                <div className={`absolute inset-2 rounded-full border border-dashed transition-colors duration-500 ${
-                  geofenceBreached ? 'border-red-500/25 bg-red-500/5' : 'border-secondary/20 bg-secondary/5'
-                }`}></div>
-                
+                <div className={`absolute inset-2 rounded-full border border-dashed transition-colors duration-500 ${geofenceBreached ? 'border-red-500/25 bg-red-500/5' : 'border-secondary/20 bg-secondary/5'
+                  }`}></div>
+
                 <div className="absolute inset-8 rounded-full border border-border/40"></div>
-                
+
                 {/* Crosshairs */}
                 <div className="absolute w-full h-[0.5px] bg-muted/50"></div>
                 <div className="absolute h-full w-[0.5px] bg-muted/50"></div>
 
                 {/* Library boundary indicator */}
-                <div className={`absolute select-none font-mono caption-scale font-bold tracking-widest bottom-2 text-center w-full transition ${
-                  geofenceBreached ? 'text-destructive animate-pulse' : 'text-secondary opacity-60'
-                }`}>
+                <div className={`absolute select-none font-mono caption-scale font-bold tracking-widest bottom-2 text-center w-full transition ${geofenceBreached ? 'text-destructive animate-pulse' : 'text-secondary opacity-60'
+                  }`}>
                   {geofenceBreached ? 'LIMIT BREACHED' : 'LIBRARY BOUNDARY'}
                 </div>
 
                 {/* Animated student GPS dot */}
-                <div 
-                  className={`absolute w-3 h-3 rounded-full border border-overlay-glass-border transition-all duration-700 ${
-                    geofenceBreached 
-                      ? 'left-[82%] top-[15%] bg-destructive shadow-[0_0_8px_var(--destructive)]' 
+                <div
+                  className={`absolute w-3 h-3 rounded-full border border-overlay-glass-border transition-all duration-700 ${geofenceBreached
+                      ? 'left-[82%] top-[15%] bg-destructive shadow-[0_0_8px_var(--destructive)]'
                       : 'left-[46%] top-[46%] bg-primary shadow-[0_0_8px_var(--primary)]'
-                  }`}
+                    }`}
                 >
                   <span className={`absolute inset-0 rounded-full animate-ping opacity-75 ${geofenceBreached ? 'bg-red-450' : 'bg-blue-450'}`}></span>
                 </div>
@@ -376,7 +368,7 @@ export const NeevMember: React.FC = () => {
               </div>
 
               <p className="text-muted-foreground caption-scale leading-relaxed font-light">
-                {geofenceBreached 
+                {geofenceBreached
                   ? "Loophole mitigation protocol active. A reference textbook checked out for in-library use has broken the gate perimeter. Local Ambassador's counter dashboard has been alerted for recovery tracking."
                   : "Reference materials are protected via local geofence workers. Enjoy infinite books anywhere in our college library with seamless digital condition integration."
                 }
@@ -430,17 +422,15 @@ export const NeevMember: React.FC = () => {
             {achievements.map((ach, aIdx) => {
               const AchIcon = ach.icon;
               return (
-                <div 
+                <div
                   key={aIdx}
-                  className={`p-3.5 rounded-xl border flex items-start space-x-3 transition-all ${
-                    ach.unlocked 
-                      ? 'bg-background/80 border-border/60 hover:border-border shadow-sm shadow-amber-500/2' 
+                  className={`p-3.5 rounded-xl border flex items-start space-x-3 transition-all ${ach.unlocked
+                      ? 'bg-background/80 border-border/60 hover:border-border shadow-sm shadow-amber-500/2'
                       : 'bg-muted/50/10 border-border/40 opacity-40'
-                  }`}
+                    }`}
                 >
-                  <div className={`p-2 rounded-lg border flex-shrink-0 ${
-                    ach.unlocked ? 'bg-amber-950/40 border-amber-800/60 text-accent animate-[bounce_3s_ease_infinite]' : 'bg-muted/50 border-border/60 text-foreground-subtle'
-                  }`}>
+                  <div className={`p-2 rounded-lg border flex-shrink-0 ${ach.unlocked ? 'bg-amber-950/40 border-amber-800/60 text-accent animate-[bounce_3s_ease_infinite]' : 'bg-muted/50 border-border/60 text-foreground-subtle'
+                    }`}>
                     <AchIcon className="w-4 h-4" />
                   </div>
                   <div className="space-y-1 min-w-0 text-left">

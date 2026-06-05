@@ -23,24 +23,14 @@ export function Footer({ setActiveTab, setLandingSegment }: FooterProps) {
 
           {/* LEFT COLUMN */}
           <div className="max-w-md">
-            <button
-              onClick={handleLogoClick}
-              className="inline-flex items-center"
-            >
-              <img
-                src="/images/neev.png"
-                alt="Neev Logo"
-                className="h-16 w-auto mix-blend-multiply"
-                onError={(e) => {
-                  // Fallback if image missing
-                  (e.target as HTMLImageElement).style.display = 'none';
-                }}
-              />
-              <div className="flex items-center space-x-1.5 ml-2">
-                <Library className="w-6 h-6" />
-                <span className="text-xl font-bold tracking-tight text-foreground">Neev</span>
+            <div className="flex items-center space-x-3 cursor-pointer group" onClick={() => setActiveTab('overview')}>
+              <div className="relative flex items-center justify-center w-8 h-8 bg-primary rounded-md shadow-sm transition-transform duration-300 group-hover:scale-105">
+                <Library className="w-4 h-4 text-primary-foreground" />
               </div>
-            </button>
+              <div className="flex items-center space-x-1">
+                <span className="text-base font-bold tracking-tight text-foreground">Neev</span>
+              </div>
+            </div>
 
             <p className="mt-6 pl-2 text-base leading-8 text-foreground-muted">
               The modern student library network for
@@ -65,7 +55,6 @@ export function Footer({ setActiveTab, setLandingSegment }: FooterProps) {
                   }}
                   className="flex items-center space-x-2 text-base text-foreground-muted transition-colors hover:text-foreground"
                 >
-                  <Library className="w-4 h-4" />
                   <span>Home</span>
                 </button>
               </li>
@@ -78,7 +67,6 @@ export function Footer({ setActiveTab, setLandingSegment }: FooterProps) {
                   }}
                   className="flex items-center space-x-2 text-base text-foreground-muted transition-colors hover:text-foreground"
                 >
-                  <BookOpen className="w-4 h-4" />
                   <span>Find a Book</span>
                 </button>
               </li>
@@ -92,7 +80,6 @@ export function Footer({ setActiveTab, setLandingSegment }: FooterProps) {
                   }}
                   className="flex items-center space-x-2 text-base text-foreground-muted transition-colors hover:text-foreground"
                 >
-                  <Info className="w-4 h-4" />
                   <span>About</span>
                 </button>
               </li>
@@ -180,7 +167,6 @@ export function Footer({ setActiveTab, setLandingSegment }: FooterProps) {
                     w-10
                     items-center
                     justify-center
-                    bg-surface
                     text-muted-foreground
                     transition-all
                     duration-300

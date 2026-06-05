@@ -74,7 +74,7 @@ function UnifiedAppShell({
               href={shellHome}
               className="font-[var(--font-display)] text-xl font-extrabold tracking-tight text-foreground flex items-center"
             >
-              <div className="relative flex items-center justify-center w-6 h-6 mr-2 shadow-sm">
+              <div className="relative flex items-center justify-center w-6 h-6 mr-2 bg-primary rounded-md shadow-sm">
                 <Library className="w-3.5 h-3.5 text-primary-foreground" />
               </div>
               Neev
@@ -190,7 +190,7 @@ function UnifiedAppShell({
 
 export function StudentAppShell({ children }: { children: ReactNode }) {
   const { user } = useAuth();
-  
+
   if (!user) return null;
 
   if (isHubAccount(user)) {

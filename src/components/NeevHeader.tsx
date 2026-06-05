@@ -34,7 +34,7 @@ export const NeevHeader: React.FC<NeevHeaderProps> = ({
 
           {/* Logo Brand */}
           <div className="flex items-center space-x-3 cursor-pointer group" onClick={() => setActiveTab('overview')}>
-            <div className="relative flex items-center justify-center w-8 h-8 shadow-sm transition-transform duration-300">
+            <div className="relative flex items-center justify-center w-8 h-8 bg-primary rounded-md shadow-sm transition-transform duration-300 group-hover:scale-105">
               <Library className="w-4 h-4 text-primary-foreground" />
             </div>
             <div className="flex items-center space-x-1">
@@ -46,82 +46,82 @@ export const NeevHeader: React.FC<NeevHeaderProps> = ({
           <div className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
             {isLoggedIn ? (
               <nav className="flex space-x-1 items-center">
-              {(() => {
-                const tabs = userRole === 'student' ? [
-                  { id: 'student_dashboard', label: 'Portal', icon: Library },
-                  { id: 'catalog', label: 'Find a Book', icon: BookOpen },
-                  { id: 'member', label: 'Membership', icon: UserCircle2 },
-                ] : (userRole === 'college_ambassador' || userRole === 'admin') ? [
-                  { id: 'college_dashboard', label: 'Kiosk', icon: Cpu },
-                  { id: 'catalog', label: 'Find a Book', icon: BookOpen },
-                  { id: 'map', label: 'Map', icon: Map },
-                  { id: 'college', label: 'Hub', icon: School },
-                  { id: 'librarian', label: 'Ledger', icon: SlidersIcon },
-                ] : [
-                  { id: 'overview', label: 'Overview', icon: Library },
-                  { id: 'catalog', label: 'Find a Book', icon: BookOpen },
-                  { id: 'map', label: 'Map', icon: Map },
-                ];
+                {(() => {
+                  const tabs = userRole === 'student' ? [
+                    { id: 'student_dashboard', label: 'Portal', icon: Library },
+                    { id: 'catalog', label: 'Find a Book', icon: BookOpen },
+                    { id: 'member', label: 'Membership', icon: UserCircle2 },
+                  ] : (userRole === 'college_ambassador' || userRole === 'admin') ? [
+                    { id: 'college_dashboard', label: 'Kiosk', icon: Cpu },
+                    { id: 'catalog', label: 'Find a Book', icon: BookOpen },
+                    { id: 'map', label: 'Map', icon: Map },
+                    { id: 'college', label: 'Hub', icon: School },
+                    { id: 'librarian', label: 'Ledger', icon: SlidersIcon },
+                  ] : [
+                    { id: 'overview', label: 'Overview', icon: Library },
+                    { id: 'catalog', label: 'Find a Book', icon: BookOpen },
+                    { id: 'map', label: 'Map', icon: Map },
+                  ];
 
-                return tabs.map((tab) => {
-                  const isActive = activeTab === tab.id;
+                  return tabs.map((tab) => {
+                    const isActive = activeTab === tab.id;
 
-                  return (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
-                      className={cn(
-                        "px-3 py-1.5 rounded-md text-sm font-medium transition-colors duration-200",
-                        isActive
-                          ? "bg-muted/50 text-foreground"
-                          : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                      )}
-                    >
-                      {tab.label}
-                    </button>
-                  );
-                });
-              })()}
+                    return (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        className={cn(
+                          "px-3 py-1.5 rounded-md text-sm font-medium transition-colors duration-200",
+                          isActive
+                            ? "bg-muted/50 text-foreground"
+                            : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                        )}
+                      >
+                        {tab.label}
+                      </button>
+                    );
+                  });
+                })()}
               </nav>
             ) : (
               <nav className="flex items-center space-x-2">
-              <button
-                onClick={() => {
-                  setLandingSegment?.('students');
-                  setActiveTab('landing');
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-                className={cn(
-                  "px-3 py-1.5 rounded-md text-sm font-medium transition-colors duration-200",
-                  activeTab !== 'catalog' && landingSegment === 'students' ? "bg-muted/50 text-foreground" : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                )}
-              >
-                Home
-              </button>
-              <button
-                onClick={() => {
-                  setActiveTab('catalog');
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-                className={cn(
-                  "px-3 py-1.5 rounded-md text-sm font-medium transition-colors duration-200",
-                  activeTab === 'catalog' ? "bg-muted/50 text-foreground" : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                )}
-              >
-                Find a Book
-              </button>
-              <button
-                onClick={() => {
-                  setActiveTab('landing');
-                  setLandingSegment?.('students');
-                  setTimeout(() => {
-                    document.getElementById('about-section')?.scrollIntoView({ behavior: 'smooth' });
-                  }, 100);
-                }}
-                className="px-3 py-1.5 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-              >
-                About
-              </button>
+                <button
+                  onClick={() => {
+                    setLandingSegment?.('students');
+                    setActiveTab('landing');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className={cn(
+                    "px-3 py-1.5 rounded-md text-sm font-medium transition-colors duration-200",
+                    activeTab !== 'catalog' && landingSegment === 'students' ? "bg-muted/50 text-foreground" : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  )}
+                >
+                  Home
+                </button>
+                <button
+                  onClick={() => {
+                    setActiveTab('catalog');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className={cn(
+                    "px-3 py-1.5 rounded-md text-sm font-medium transition-colors duration-200",
+                    activeTab === 'catalog' ? "bg-muted/50 text-foreground" : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  )}
+                >
+                  Find a Book
+                </button>
+                <button
+                  onClick={() => {
+                    setActiveTab('landing');
+                    setLandingSegment?.('students');
+                    setTimeout(() => {
+                      document.getElementById('about-section')?.scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                  }}
+                  className="px-3 py-1.5 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                >
+                  About
+                </button>
               </nav>
             )}
           </div>

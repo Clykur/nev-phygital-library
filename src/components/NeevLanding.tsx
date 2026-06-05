@@ -1017,7 +1017,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                   /* ================= LOGIN FORM VIEW ================= */
                   <div className="space-y-4 animate-in fade-in duration-300">
                     <div className="space-y-1">
-                      <h3 className="text-base font-bold text-foreground">Access Your Physical Library Account</h3>
+                      <h3 className="text-base font-bold text-foreground">Access Your Student Account</h3>
                       <p className="caption-scale text-muted-foreground font-light">
                         Enter your pre-registered email address and choosing credential passwords to access.
                       </p>
@@ -1084,9 +1084,9 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                   /* ================= SIGN UP FORM VIEW ================= */
                   <div className="space-y-4 animate-in fade-in duration-300">
                     <div className="space-y-1">
-                      <h3 className="text-base font-bold text-foreground">Create Your Neev Account</h3>
+                      <h3 className="text-base font-bold text-foreground">Create Your Neev Student Account</h3>
                       <p className="caption-scale text-muted-foreground font-light">
-                        Register below to instantly connect to your campus hub Hub physical book buffer.
+                        Register below to instantly connect to your campus physical book buffer.
                       </p>
                     </div>
 
@@ -1174,8 +1174,8 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
 
                       {/* Membership Selection */}
                       <div className="pt-4">
-                        <label className="mb-3 block caption-scale font-medium uppercase tracking-wider text-foreground-muted">
-                          Choose Your Membership Plan
+                        <label className="mb-3 block caption-scale font-mono text-muted-foreground uppercase font-bold">
+                          Choose Your Membership Plan:
                         </label>
 
                         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -1197,14 +1197,14 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                                   Premium Membership
                                 </h4>
 
-                                <p className="mt-1 body-scale font-medium text-success">
+                                <p className="mt-1 body-scale font-mono font-bold text-success">
                                   ₹999 / Year
                                 </p>
                               </div>
 
                               {signUpPremium && (
                                 <div className="flex h-6 w-6 items-center justify-center">
-                                  <CheckCircle className="h-4 w-4 text-primary-foreground" />
+                                  <CheckCircle className="h-4 w-4 text-primary" />
                                 </div>
                               )}
                             </div>
@@ -1215,11 +1215,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                               deposits.
                             </p>
 
-                            <div className="mt-4 flex items-center gap-2">
-                              <Badge className="bg-accent/15 text-foreground border-accent/30">
-                                Recommended
-                              </Badge>
-                            </div>
+
                           </button>
 
                           {/* Free Tier */}
@@ -1240,14 +1236,14 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                                   Regular Membership
                                 </h4>
 
-                                <p className="mt-1 body-scale font-medium text-foreground/60">
+                                <p className="mt-1 body-scale font-mono font-bold text-foreground/60">
                                   Free Plan
                                 </p>
                               </div>
 
                               {!signUpPremium && (
                                 <div className="flex h-6 w-6 items-center justify-center">
-                                  <CheckCircle className="h-4 w-4 text-primary-foreground" />
+                                  <CheckCircle className="h-4 w-4 text-primary" />
                                 </div>
                               )}
                             </div>

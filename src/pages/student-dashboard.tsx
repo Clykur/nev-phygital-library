@@ -50,7 +50,7 @@ export default function StudentDashboardPage() {
             <motion.div variants={fadeInUp} initial="hidden" animate="visible">
               <Card variant="bento" className="h-full">
                 <CardHeader className="flex-row items-start justify-between space-y-0 pb-2">
-                  <div className="rounded-lg bg-primary/10 p-2.5">
+                  <div className="rounded-lg p-2.5">
                     <WalletIcon className="h-5 w-5 text-primary" />
                   </div>
                   <span className="section-kicker">Balance</span>
@@ -78,7 +78,7 @@ export default function StudentDashboardPage() {
             >
               <Card variant="bento" className="h-full">
                 <CardHeader className="flex-row items-start justify-between space-y-0 pb-2">
-                  <div className="rounded-lg bg-accent/10 p-2.5">
+                  <div className="rounded-lg p-2.5">
                     <Sparkles className="h-5 w-5 text-accent" />
                   </div>
                   <span className="section-kicker">Plan</span>
