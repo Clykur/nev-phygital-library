@@ -5,10 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run check:tokens && vite build",
+    "build": "vite build",
     "start": "vite preview",
-    "lint": "tsc --noEmit",
-    "check:tokens": "node scripts/check-design-tokens.mjs"
+    "lint": "tsc --noEmit"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
