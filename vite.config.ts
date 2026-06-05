@@ -17,9 +17,7 @@ export default defineConfig(({ mode }) => {
         }
       },
       plugins: [react(), tailwindcss()],
-      define: {
-        'process.env.VITE_GOOGLE_CLIENT_ID': JSON.stringify(process.env.VITE_GOOGLE_CLIENT_ID || env.VITE_GOOGLE_CLIENT_ID || '')
-      },
+
       resolve: {
         alias: {
           '@': path.resolve(__dirname, 'src'),
