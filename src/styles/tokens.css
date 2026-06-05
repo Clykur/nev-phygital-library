@@ -55,13 +55,29 @@
   --destructive-foreground: #ffffff;
 
   --success: #10b981;
-  --success-foreground: #ffffff;
+  --success-surface: color-mix(in srgb, var(--success) 15%, transparent);
+  --success-border: color-mix(in srgb, var(--success) 40%, transparent);
+  --success-foreground: #047857;
+
   --warning: #f59e0b;
-  --warning-foreground: var(--neutral-900);
+  --warning-surface: color-mix(in srgb, var(--warning) 15%, transparent);
+  --warning-border: color-mix(in srgb, var(--warning) 40%, transparent);
+  --warning-foreground: #b45309;
+
   --error: #ef4444;
-  --error-foreground: #ffffff;
+  --error-surface: color-mix(in srgb, var(--error) 15%, transparent);
+  --error-border: color-mix(in srgb, var(--error) 40%, transparent);
+  --error-foreground: #b91c1c;
+
   --info: #3b82f6;
-  --info-foreground: #ffffff;
+  --info-surface: color-mix(in srgb, var(--info) 15%, transparent);
+  --info-border: color-mix(in srgb, var(--info) 40%, transparent);
+  --info-foreground: #1d4ed8;
+
+  --neutral: var(--neutral-500);
+  --neutral-surface: var(--neutral-100);
+  --neutral-border: var(--neutral-200);
+  --neutral-foreground: var(--neutral-700);
 
   --popover: #ffffff;
   --popover-foreground: var(--neutral-900);

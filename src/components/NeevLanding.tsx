@@ -538,7 +538,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                   step: 1,
                   title: "1. The 5,000 Credit Buffer",
                   desc: "Every Premium account gets an instant 5,000 credit bar. High-cost physical books are checked out against this capacity, requiring ZERO cash security deposits.",
-                  icon: <Layers className="w-4 h-4 text-secondary" />
+                  icon: <Layers className="w-4 h-4 text-primary" />
                 },
                 {
                   step: 2,
@@ -550,13 +550,13 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                   step: 3,
                   title: "3. Rapid Replenishment Loop",
                   desc: "Slide the textbook back into your library Hub counter. High-speed feedback instantly refuels your credit capacity so you can get your next volume.",
-                  icon: <Cpu className="w-4 h-4 text-accent" />
+                  icon: <Cpu className="w-4 h-4 text-primary" />
                 },
                 {
                   step: 4,
                   title: "4. The Library Loophole",
                   desc: "Exhausted your home limit? You can still scan and read any textbook on physical tables for free with zero credit deductions—as long as you study inside library walls.",
-                  icon: <Sparkles className="w-4 h-4 text-accent" />
+                  icon: <Sparkles className="w-4 h-4 text-primary" />
                 }
               ].map((flowStep) => (
                 <button
