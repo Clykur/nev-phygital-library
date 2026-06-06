@@ -43,16 +43,16 @@ export default function HubBillingPage({ hubId }: { hubId: string }) {
   const { data: plansData, isLoading: plansLoading } = useQuery({
     queryKey: ["subscriptions", "plans", "hub"],
     queryFn: async () => {
-      const res = await apiFetch("/api/subscriptions/plans?target=hub");
-      return res.plans as Plan[];
+      const res = await apiFetch<{ plans: Plan[] }>("/api/subscriptions/plans?target=hub");
+      return res.plans;
     },
   });
 
   const { data: activeData, isLoading: activeLoading } = useQuery({
     queryKey: ["subscriptions", "hub-active", hubId],
     queryFn: async () => {
-      const res = await apiFetch(`/api/subscriptions/hub-active?hubId=${hubId}`);
-      return res.active as ActiveSub | null;
+      const res = await apiFetch<{ active: ActiveSub | null }>(`/api/subscriptions/hub-active?hubId=${hubId}`);
+      return res.active;
     },
   });
 
@@ -68,8 +68,8 @@ export default function HubBillingPage({ hubId }: { hubId: string }) {
       if (plan) {
         setCheckoutState({
           open: true,
-          intentId: data.intentId,
-          amount: data.amount,
+          intentId: (data as any).intentId,
+          amount: (data as any).amount,
           planName: plan.name,
         });
       }
@@ -83,7 +83,7 @@ export default function HubBillingPage({ hubId }: { hubId: string }) {
         method: "POST",
         body: JSON.stringify({ intentId, status }),
       });
-      if (res.verified) {
+      if ((res as any).verified) {
         toast.success("Hub plan updated successfully!");
         qc.invalidateQueries({ queryKey: ["subscriptions"] });
       } else {

@@ -62,11 +62,6 @@
   --color-info-border: var(--info-border);
   --color-info-foreground: var(--info-foreground);
 
-  --color-neutral: var(--neutral);
-  --color-neutral-surface: var(--neutral-surface);
-  --color-neutral-border: var(--neutral-border);
-  --color-neutral-foreground: var(--neutral-foreground);
-
   --color-on-media: var(--on-media);
   --color-on-media-muted: var(--on-media-muted);
   --color-on-media-subtle: var(--on-media-subtle);
@@ -77,17 +72,7 @@
   --color-modal-overlay: var(--modal-overlay);
   --color-surface-ring: var(--surface-ring);
 
-  --color-neutral-50: var(--neutral-50);
-  --color-neutral-100: var(--neutral-100);
-  --color-neutral-200: var(--neutral-200);
-  --color-neutral-300: var(--neutral-300);
-  --color-neutral-400: var(--neutral-400);
-  --color-neutral-500: var(--neutral-500);
-  --color-neutral-600: var(--neutral-600);
-  --color-neutral-700: var(--neutral-700);
-  --color-neutral-800: var(--neutral-800);
-  --color-neutral-900: var(--neutral-900);
-  --color-neutral-950: var(--neutral-950);
+  --color-shimmer: var(--shimmer);
 
   /* Remap Tailwind text scale → semantic type tokens */
   --text-xs: var(--text-meta);
@@ -320,7 +305,7 @@
   }
 
   .surface-gradient {
-    @apply bg-gradient-to-b from-surface to-background-secondary;
+    @apply bg-background;
   }
 
   /* ─── Card System ─── */
@@ -351,18 +336,18 @@
   }
 
   .bento-card {
-    @apply rounded-2xl border border-border bg-card overflow-hidden;
+    @apply rounded-xl border border-border bg-card overflow-hidden;
     box-shadow: var(--shadow-sm);
     transition: all var(--duration-normal) var(--ease-out);
   }
 
   .bento-card:hover {
-    @apply border-primary/30;
+    @apply border-primary/20;
     box-shadow: var(--shadow-card-hover);
   }
 
   .glass-card {
-    @apply rounded-xl border border-border-subtle backdrop-blur-2xl;
+    @apply rounded-xl border border-border backdrop-blur-2xl;
     background: color-mix(in srgb, var(--surface) 70%, transparent);
     box-shadow: var(--shadow-md);
   }
@@ -385,7 +370,7 @@
   }
 
   .btn-secondary:hover {
-    @apply border-primary bg-background-secondary;
+    @apply border-primary/20 bg-background-secondary;
   }
 
   /* ─── Interaction ─── */
@@ -413,7 +398,7 @@
   }
 
   .home-interactive-card:hover {
-    @apply -translate-y-1 border-primary bg-background-secondary;
+    @apply -translate-y-1 border-primary/20 shadow-md;
   }
 
   .home-stat-chip {
@@ -421,7 +406,7 @@
   }
 
   .home-stat-chip:hover {
-    @apply border-primary bg-background-secondary;
+    @apply border-primary/20 shadow-sm;
   }
 
   .home-stat-chip:nth-child(1) {

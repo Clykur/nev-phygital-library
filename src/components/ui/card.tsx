@@ -11,9 +11,9 @@ const cardVariants = cva(
         default:
           "rounded-xl border border-border bg-card shadow-sm hover:shadow-md",
         bento:
-          "rounded-2xl border border-border bg-card shadow-sm hover:border-primary/30 hover:shadow-[var(--shadow-card-hover)]",
+          "rounded-xl border border-border bg-card shadow-sm hover:border-primary/20 hover:shadow-[var(--shadow-card-hover)]",
         glass:
-          "rounded-xl border border-border-subtle backdrop-blur-2xl bg-surface/70 shadow-md",
+          "rounded-xl border border-border backdrop-blur-2xl bg-surface/70 shadow-md",
         elevated:
           "rounded-xl border border-border bg-surface-elevated shadow-md",
       },

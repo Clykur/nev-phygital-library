@@ -13,6 +13,9 @@ export const ACTIONS = {
   SCAN_BOOK: "SCAN_BOOK",
   APPROVE_P2P: "APPROVE_P2P",
   MANAGE_INVENTORY: "MANAGE_INVENTORY",
+  CREATE_BOUNTY_REQUEST: "CREATE_BOUNTY_REQUEST",
+  MANAGE_BOUNTY_REQUEST: "MANAGE_BOUNTY_REQUEST",
+  SUBMIT_BOUNTY: "SUBMIT_BOUNTY",
 } as const;
 
 export type Action = (typeof ACTIONS)[keyof typeof ACTIONS];
@@ -52,7 +55,8 @@ export type RbacResource =
       dropoffHubId?: string | null;
     }
   | { type: "book_request"; requestId: string; userId: string; hubId: string }
-  | { type: "hub"; hubId: string };
+  | { type: "hub"; hubId: string }
+  | { type: "bounty_request"; requestId: string; hubId: string };
 
 function isHubStaff(user: AuthUser, hubId: string): boolean {
   return user.hubStaffHubIds.includes(hubId);

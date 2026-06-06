@@ -21,7 +21,7 @@ export const PORTAL_INFO_BANNER =
   "border border-primary/20 bg-primary/5 px-4 py-3 body-scale text-foreground";
 
 export const PORTAL_STAT_VALUE =
-  "font-mono h4-scale font-semibold tracking-tight text-foreground tabular-nums";
+  "text-xl font-semibold tracking-tight text-foreground tabular-nums";
 
 export const PORTAL_TABLE_HEAD =
   "caption-scale font-medium uppercase tracking-kicker text-foreground";

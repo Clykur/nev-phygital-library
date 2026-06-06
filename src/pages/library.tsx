@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState, type ReactElement, type KeyboardEvent } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useMemo, useState, type ReactElement, type KeyboardEvent, ReactNode } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
@@ -60,7 +60,6 @@ import {
 } from "@/lib/status-badges";
 import { STUDENT_CARD_CHROME, STUDENT_CARD_SURFACE } from "@/lib/student-ui";
 import { cn } from "@/lib/utils";
-import { bookCoverDisplayUrl } from "@/lib/book-cover-display";
 import { Portal } from "@radix-ui/react-portal";
 
 type Hub = { id: string; name: string; location: string };
@@ -72,6 +71,7 @@ export type InventoryStats = {
 };
 
 export type LibraryCatalogBook = {
+  [x: string]: ReactNode;
   id: string;
   refId?: string | null;
   source?: string;
@@ -137,7 +137,6 @@ export function CatalogBookCard({
   addedAtTitle,
   isSample,
   shelfStatus,
-  inventoryStats,
   /** P2P pipeline listing state — shown on cover (takes priority over `shelfStatus` when both set). */
   pipelineListingStatus,
   action,
@@ -177,13 +176,13 @@ export function CatalogBookCard({
       className={cn(
         STUDENT_CARD_SURFACE,
         "group relative",
-        sharpCover ? "w-full" : "h-full",
+        "w-full",
       )}
     >
       <div
         className={cn(
-          "relative w-full overflow-hidden bg-muted",
-          sharpCover ? "aspect-[2/3]" : "h-full min-h-[200px]",
+          "relative w-full overflow-hidden bg-shimmer",
+          "aspect-[2/3]"
         )}
       >
         {!isSample && (pipelineListingStatus || shelfStatus) ? (
@@ -200,7 +199,7 @@ export function CatalogBookCard({
           alt={title}
           className={cn(
             "h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]",
-            sharpCover && "rounded-2xl",
+            sharpCover && "rounded-xl",
           )}
         />
 
@@ -253,7 +252,7 @@ export function CatalogBookCard({
               </div>
               <div className="flex gap-2">
                 <dt className="shrink-0 text-on-media-subtle">Ref</dt>
-                <dd className="font-mono caption-scale font-semibold tracking-wide" title={fullIdForTitle}>
+                <dd className="caption-scale font-semibold tracking-wide" title={fullIdForTitle}>
                   {refDisplay}
                 </dd>
               </div>
@@ -262,49 +261,8 @@ export function CatalogBookCard({
           </div>
         </div>
       </div>
-      
-      {!hideBottomTitle && (
-      <div className="flex flex-1 flex-col justify-between">
-        <div>
-          <div className="flex items-start justify-between gap-2">
-            <h3
-              className={cn(
-                "font-sans text-base font-semibold leading-snug tracking-tight text-foreground transition-colors group-hover:text-primary",
-                sharpCover ? "line-clamp-2" : "line-clamp-3",
-              )}
-            >
-              {title}
-            </h3>
-            {onOpen && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-6 w-6 shrink-0 rounded-full opacity-0 transition-opacity hover:bg-primary/10 hover:text-primary group-hover:opacity-100"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onOpen();
-                }}
-                aria-label="View details"
-              >
-                <ArrowRight className="h-3.5 w-3.5" />
-              </Button>
-            )}
-          </div>
-          {inventoryStats && inventoryStats.total > 0 && (
-            <div className="mt-1.5 space-y-0.5 caption-scale leading-relaxed text-muted-foreground">
-              <p className="font-medium text-foreground">
-                {inventoryStats.available > 0 
-                  ? `${inventoryStats.available} of ${inventoryStats.total} Copies Available` 
-                  : `${inventoryStats.total} Copies Total`}
-              </p>
-              <p>
-                {inventoryStats.issued} Issued &bull; {inventoryStats.reserved} Reserved
-              </p>
-            </div>
-          )}
-        </div>
-      </div>
-      )}
+
+
     </motion.article>
   );
 }
@@ -325,7 +283,6 @@ export function PeerListingCard({
   onOpen,
   sharpCover,
   hideBottomTitle,
-  inventoryStats,
 }: {
   title: string;
   coverUrl: string | null | undefined;
@@ -344,7 +301,6 @@ export function PeerListingCard({
   hideBottomTitle?: boolean;
   inventoryStats?: InventoryStats;
 }) {
-  const hasUserCover = hasBookCover(coverUrl);
 
   const onKeyDown = (e: KeyboardEvent<HTMLElement>) => {
     if (e.key === "Enter" || e.key === " ") {
@@ -364,12 +320,12 @@ export function PeerListingCard({
       className={cn(
         STUDENT_CARD_SURFACE,
         "group relative cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-        sharpCover ? "w-full" : "h-full",
+        "w-full",
       )}
       onClick={onOpen}
       onKeyDown={onKeyDown}
     >
-      <div className="relative aspect-[2/3] w-full overflow-hidden bg-muted">
+      <div className="relative aspect-[2/3] w-full overflow-hidden bg-shimmer">
         {listingStatus && !isSample && (
           <div className="absolute right-2 top-2 z-10">
             <ShelfPeerStatusBadge status={listingStatus} />
@@ -380,7 +336,7 @@ export function PeerListingCard({
           alt={title}
           className={cn(
             "h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]",
-            sharpCover && "rounded-2xl",
+            sharpCover && "rounded-xl",
           )}
         />
 
@@ -460,7 +416,7 @@ export function PeerListingCard({
               <div className="flex gap-2">
                 <dt className="shrink-0 text-on-media-subtle">Ref</dt>
                 <dd
-                  className="font-mono caption-scale font-semibold tracking-wide"
+                  className="caption-scale font-semibold tracking-wide"
                   title={fullIdForTitle}
                 >
                   {refDisplay}
@@ -473,35 +429,8 @@ export function PeerListingCard({
           </div>
         </div>
       </div>
-      
-      {!hideBottomTitle && (
-      <div className="flex flex-1 flex-col justify-between">
-        <div>
-          <div className="flex items-start justify-between gap-2">
-            <h3
-              className={cn(
-                "font-sans text-base font-semibold leading-snug tracking-tight text-foreground transition-colors group-hover:text-primary",
-                sharpCover ? "line-clamp-2" : "line-clamp-3",
-              )}
-            >
-              {title}
-            </h3>
-          </div>
-          {inventoryStats && inventoryStats.total > 0 && (
-            <div className="mt-1.5 space-y-0.5 caption-scale leading-relaxed text-muted-foreground">
-              <p className="font-medium text-foreground">
-                {inventoryStats.available > 0 
-                  ? `${inventoryStats.available} of ${inventoryStats.total} Copies Available at Hub` 
-                  : `${inventoryStats.total} Copies Total at Hub`}
-              </p>
-              <p>
-                {inventoryStats.issued} Issued &bull; {inventoryStats.reserved} Reserved
-              </p>
-            </div>
-          )}
-        </div>
-      </div>
-      )}
+
+
     </motion.article>
   );
 }
@@ -642,7 +571,6 @@ export default function LibraryPage() {
             ) : (
               <RequestBookSection
                 token={token!}
-                hubs={hubsQ.data?.hubs ?? []}
                 user={user}
                 onDone={() => {
                   void qc.invalidateQueries({ queryKey: ["book-requests"] });
@@ -666,13 +594,13 @@ export default function LibraryPage() {
         )}
 
         {fetchError && (
-          <div className="mb-8 flex flex-col gap-4 rounded-2xl border border-destructive/30 bg-destructive/5 px-5 py-5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mb-8 flex flex-col gap-4 rounded-xl border border-destructive/30 bg-destructive/5 px-5 py-5 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex gap-3">
               <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-destructive" />
               <div>
                 <p className="font-medium text-foreground">Couldn’t load the catalog</p>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Check that the API is running and <code className="rounded bg-muted px-1">/api</code>{" "}
+                  Check that the API is running and <code className="rounded bg-shimmer px-1">/api</code>{" "}
                   is reachable from this app.
                 </p>
               </div>
@@ -688,8 +616,8 @@ export default function LibraryPage() {
           <div className="mb-8 rounded-xl border border-accent/25 bg-accent/5 px-4 py-3 text-sm text-foreground">
             <span className="font-medium text-accent">Live shelf is empty.</span>{" "}
             Tiles below are a sample layout — start the API with{" "}
-            <code className="rounded bg-muted px-1 text-xs">AUTO_SEED=1</code> (default in{" "}
-            <code className="rounded bg-muted px-1 text-xs">npm run dev</code>) to load real copies.
+            <code className="rounded bg-shimmer px-1 text-xs">AUTO_SEED=1</code> (default in{" "}
+            <code className="rounded bg-shimmer px-1 text-xs">npm run dev</code>) to load real copies.
           </div>
         )}
 
@@ -773,9 +701,7 @@ export default function LibraryPage() {
                           {user && token && !isAvailable && (
                             <RequestBookSection
                               token={token}
-                              hubs={hubsQ.data?.hubs ?? []}
                               user={user}
-                              defaultHubId={b.hubId}
                               initialBookTitle={b.title}
                               redirectToActivityAfterSubmit
                               onDone={() => {
@@ -788,7 +714,7 @@ export default function LibraryPage() {
                                   variant="secondary"
                                   className="w-full rounded-full border border-overlay-glass-border bg-overlay-glass text-on-media hover:bg-overlay-glass"
                                 >
-                                  Request via Hub
+                                  Request a book
                                 </Button>
                               }
                             />
@@ -889,21 +815,16 @@ export default function LibraryPage() {
 
 export function RequestBookSection({
   token,
-  hubs,
   user,
   onDone,
   trigger,
-  defaultHubId,
   initialBookTitle,
   redirectToActivityAfterSubmit,
 }: {
   token: string;
-  hubs: readonly { id: string; name: string; location?: string }[];
   user: AuthUser;
   onDone: () => void;
   trigger?: ReactElement;
-  /** Prefer this hub when opening (e.g. copy’s hub). */
-  defaultHubId?: string;
   /** Prefill title (e.g. catalog book or search query). */
   initialBookTitle?: string;
   /** After success, go to My activity in the student shell. */
@@ -911,32 +832,24 @@ export function RequestBookSection({
 }) {
   const inShell = useStudentShell();
   const [, setLocation] = useLocation();
-  const [hubId, setHubId] = useState<string>("");
-  const [hubPickerOpen, setHubPickerOpen] = useState(false);
   const [bookTitle, setBookTitle] = useState("");
+  const [author, setAuthor] = useState("");
+  const [isbn, setIsbn] = useState("");
   const [notes, setNotes] = useState("");
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
     if (!open) return;
-    const first = hubs[0]?.id ?? "";
-    setHubId(defaultHubId ?? first);
     setBookTitle((initialBookTitle ?? "").trim());
+    setAuthor("");
+    setIsbn("");
     setNotes("");
-  }, [open, defaultHubId, initialBookTitle, hubs]);
-
-  useEffect(() => {
-    if (!open) setHubPickerOpen(false);
-  }, [open]);
+  }, [open, initialBookTitle]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isPremiumOk(user)) {
       toast.message("Premium required to request books. Use Upgrade to continue.");
-      return;
-    }
-    if (!hubId) {
-      toast.error("Pick a hub");
       return;
     }
     const titleTrim = bookTitle.trim();
@@ -949,13 +862,13 @@ export function RequestBookSection({
         method: "POST",
         token,
         body: JSON.stringify({
-          hubId,
           bookTitle: titleTrim,
+          author: author.trim() || undefined,
+          isbn: isbn.trim() || undefined,
           notes: notes.trim() || undefined,
         }),
       });
-      const hubLabel = hubs.find((h) => h.id === hubId)?.name ?? "the hub";
-      toast.success(`Request sent to ${hubLabel}`);
+      toast.success("Request sent to all hubs. Track status under My activity.");
       setOpen(false);
       onDone();
       if (redirectToActivityAfterSubmit && inShell) {
@@ -976,88 +889,19 @@ export function RequestBookSection({
         )}
       </DialogTrigger>
       <DialogContent
-        className="
-    max-h-[90vh] overflow-y-auto
-    w-[calc(100%-1rem)]
-    max-w-[calc(100%-1rem)]
-    sm:max-w-lg
-  "
-        onOpenAutoFocus={(e) => e.preventDefault()}>
+        className="max-h-[90vh] overflow-y-auto w-[calc(100%-1rem)] max-w-[calc(100%-1rem)] sm:max-w-lg"
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
         <DialogHeader>
           <p className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">
             Neev
           </p>
-          <DialogTitle className="font-serif">Request via Hub</DialogTitle>
+          <DialogTitle className="font-serif">Request a Book</DialogTitle>
           <DialogDescription>
-            Premium only. The hub desk routes this request; you’ll see status updates under My
-            activity.
+            Premium only. Your request is broadcast to every hub. Track updates under My activity.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={submit} className="space-y-4 pt-2">
-          <div className="space-y-2">
-            <Label htmlFor="request-hub-trigger">Hub</Label>
-            <Popover open={hubPickerOpen} onOpenChange={setHubPickerOpen} modal={false}>
-              <PopoverTrigger asChild>
-                <Button
-                  id="request-hub-trigger"
-                  type="button"
-                  variant="outline"
-                  role="combobox"
-                  aria-expanded={hubPickerOpen}
-                  className="h-11 w-full justify-between rounded-md font-normal"
-                >
-                  <span className="truncate">
-                    {hubId ? (hubs.find((h) => h.id === hubId)?.name ?? "Select hub") : "Select hub"}
-                  </span>
-                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <Portal>
-                <PopoverContent
-                  className="z-[9999] w-[var(--radix-popover-trigger-width)] p-0"
-                  align="start"
-                  sideOffset={4}
-                  onCloseAutoFocus={(e) => e.preventDefault()}
-                >
-                  <div className="max-h-[240px] overflow-y-auto">
-                    <Command>
-                      <CommandInput placeholder="Search hubs…" />
-                      <CommandList>
-                        <CommandEmpty>No hub matches.</CommandEmpty>
-                        <CommandGroup className="flex-1 overflow-y-auto">
-                          {hubs.map((h) => (
-                            <CommandItem
-                              key={h.id}
-                              value={[h.name, h.location, h.id].filter(Boolean).join(" ")}
-                              onSelect={() => {
-                                setHubId(h.id);
-                                setHubPickerOpen(false);
-                              }}
-                            >
-                              <Check
-                                className={cn(
-                                  "mt-0.5 h-4 w-4 shrink-0 self-start",
-                                  hubId === h.id ? "opacity-100" : "opacity-0",
-                                )}
-                              />
-                              <span className="flex min-w-0 flex-col gap-0.5 text-left">
-                                <span className="truncate font-medium">{h.name}</span>
-                                {h.location ? (
-                                  <span className="truncate text-xs text-muted-foreground">
-                                    {h.location}
-                                  </span>
-                                ) : null}
-                              </span>
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      </CommandList>
-                    </Command>
-                  </div>
-                </PopoverContent>
-              </Portal>
-            </Popover>
-          </div>
           <div className="space-y-2">
             <Label htmlFor="request-book-title">
               Book title <span className="text-destructive">*</span>
@@ -1066,14 +910,34 @@ export function RequestBookSection({
               id="request-book-title"
               value={bookTitle}
               onChange={(e) => setBookTitle(e.target.value)}
-              placeholder="Title you need at the hub"
+              placeholder="Title you are looking for"
               maxLength={500}
               required
               aria-required
             />
           </div>
           <div className="space-y-2">
-            <Label>Notes (optional)</Label>
+            <Label htmlFor="request-book-author">Author (optional)</Label>
+            <Input
+              id="request-book-author"
+              value={author}
+              onChange={(e) => setAuthor(e.target.value)}
+              placeholder="Author name"
+              maxLength={300}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="request-book-isbn">ISBN (optional)</Label>
+            <Input
+              id="request-book-isbn"
+              value={isbn}
+              onChange={(e) => setIsbn(e.target.value)}
+              placeholder="ISBN"
+              maxLength={32}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Notes / comments (optional)</Label>
             <Textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
@@ -1089,10 +953,8 @@ export function RequestBookSection({
           )}
           <Button
             type="submit"
-            className="w-full rounded-2xl"
-            disabled={
-              !isPremiumOk(user) || !hubId || hubs.length === 0 || !bookTitle.trim()
-            }
+            className="w-full rounded-xl"
+            disabled={!isPremiumOk(user) || !bookTitle.trim()}
           >
             Submit request
           </Button>

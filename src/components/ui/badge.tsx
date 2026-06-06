@@ -1,7 +1,6 @@
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 
-import { STATUS_CHIP_EMERALD } from "@/lib/status-chip-tones"
 import { cn } from "@/lib/utils"
 
 const badgeVariants = cva(
@@ -19,7 +18,7 @@ const badgeVariants = cva(
         outline: "text-foreground border border-border",
         solid: "border-transparent shadow-xs",
         soft: "",
-        success: "shadow-xs bg-emerald-100/50 text-emerald-800 border-emerald-200", // backward compatibility
+        success: "shadow-xs bg-success-surface text-success-foreground border-success-border",
       },
       status: {
         default: "",
@@ -36,21 +35,21 @@ const badgeVariants = cva(
       { variant: "solid", status: "error", className: "bg-error text-error-foreground" },
       { variant: "solid", status: "warning", className: "bg-warning text-warning-foreground" },
       { variant: "solid", status: "info", className: "bg-info text-info-foreground" },
-      { variant: "solid", status: "neutral", className: "bg-neutral text-neutral-foreground" },
+      { variant: "solid", status: "neutral", className: "bg-background border border-border text-foreground-muted" },
       
       // Soft variants
       { variant: "soft", status: "success", className: "bg-success-surface text-success-foreground border-success-border" },
       { variant: "soft", status: "error", className: "bg-error-surface text-error-foreground border-error-border" },
       { variant: "soft", status: "warning", className: "bg-warning-surface text-warning-foreground border-warning-border" },
       { variant: "soft", status: "info", className: "bg-info-surface text-info-foreground border-info-border" },
-      { variant: "soft", status: "neutral", className: "bg-neutral-surface text-neutral-foreground border-neutral-border" },
+      { variant: "soft", status: "neutral", className: "bg-background text-foreground-muted border-border" },
 
       // Outline variants
       { variant: "outline", status: "success", className: "text-success-foreground border-success bg-transparent" },
       { variant: "outline", status: "error", className: "text-error-foreground border-error bg-transparent" },
       { variant: "outline", status: "warning", className: "text-warning-foreground border-warning bg-transparent" },
       { variant: "outline", status: "info", className: "text-info-foreground border-info bg-transparent" },
-      { variant: "outline", status: "neutral", className: "text-neutral-foreground border-neutral bg-transparent" },
+      { variant: "outline", status: "neutral", className: "text-foreground-muted border-border bg-transparent" },
     ],
     defaultVariants: {
       variant: "default",

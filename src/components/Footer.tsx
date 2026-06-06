@@ -1,5 +1,6 @@
 import { FaYoutube, FaInstagram, FaLinkedin, FaFacebook, FaXTwitter } from "react-icons/fa6";
-import { Library, BookOpen, Map as MapIcon, Info } from "lucide-react";
+import { Library } from "lucide-react";
+import { useLocation } from "wouter";
 
 interface FooterProps {
   setActiveTab?: (tab: string) => void;
@@ -7,12 +8,7 @@ interface FooterProps {
 }
 
 export function Footer({ setActiveTab, setLandingSegment }: FooterProps) {
-  const handleLogoClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setActiveTab?.('landing');
-    setLandingSegment?.('students');
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+  const [, setLocation] = useLocation();
 
   return (
     <footer className="border-t border-border bg-background">
@@ -28,7 +24,7 @@ export function Footer({ setActiveTab, setLandingSegment }: FooterProps) {
                 <Library className="w-4 h-4 text-primary-foreground" />
               </div>
               <div className="flex items-center space-x-1">
-                <span className="text-base font-bold tracking-tight text-foreground">Neev</span>
+                <span className="font-display text-base font-bold tracking-tight text-foreground">Neev</span>
               </div>
             </div>
 
@@ -62,8 +58,9 @@ export function Footer({ setActiveTab, setLandingSegment }: FooterProps) {
               <li>
                 <button
                   onClick={() => {
+                    setLocation('/marketplace');
                     setActiveTab?.('catalog');
-                    window.scrollTo({ top: 0, behavior: "smooth" });
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
                   className="flex items-center space-x-2 text-base text-foreground-muted transition-colors hover:text-foreground"
                 >
@@ -160,8 +157,7 @@ export function Footer({ setActiveTab, setLandingSegment }: FooterProps) {
                   href={item.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="
-                    group
+                  className="                    group
                     flex
                     h-10
                     w-10

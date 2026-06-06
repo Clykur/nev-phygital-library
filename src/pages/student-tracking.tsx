@@ -20,6 +20,11 @@ import { Loader2 } from "lucide-react";
 import { Link } from "wouter";
 import { isHubAccount, portalPathsForUser } from "@/lib/app-paths";
 import { STATUS_CHIP_EMERALD } from "@/lib/status-chip-tones";
+import {
+  bookRequestAssignedHubId,
+  bookRequestStatusLabel,
+  normalizeBookRequestStatus,
+} from "@/lib/book-requests";
 
 type BookRow = {
   id: string;
@@ -40,7 +45,11 @@ type BookRow = {
 type RequestRow = {
   id: string;
   hubId: string;
+  assignedHubId?: string | null;
+  fulfilledByHubId?: string | null;
   bookTitle?: string | null;
+  author?: string | null;
+  isbn?: string | null;
   notes?: string | null;
   status: string;
   readyAt?: string | null;
@@ -76,8 +85,8 @@ type P2pRow = {
   soldAt?: string | null;
 };
 
-function fmtInr(n: number) {
-  return new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(n);
+function fmtCredits(n: number) {
+  return `${new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(n)} Credits`;
 }
 
 function fmtDateShort(iso: string | undefined | null) {
@@ -113,8 +122,8 @@ function fmtKindLabel(kind: string) {
 }
 
 function notificationPriority(kind: string) {
-  if (kind === "book_request_ready") return 1;
-  if (kind === "book_request_routed" || kind === "book_request_fulfilled") return 2;
+  if (kind === "book_request_available" || kind === "book_request_ready") return 1;
+  if (kind === "book_request_new" || kind === "book_request_routed" || kind === "book_request_fulfilled") return 2;
   if (kind === "hub_return_confirmation" || kind === "p2p_return_confirmation") return 3;
   if (kind === "p2p_purchase_confirmation" || kind === "hub_purchase_confirmation") return 3;
   if (kind === "book_request_expired" || kind === "book_request_cancelled") return 4;
@@ -135,7 +144,7 @@ function resolveAlertNav(n: NotifRow, activity: string, borrow: string): AlertNa
     "book_request_expired",
     "book_request_picked",
   ]);
-  if (n.kind === "book_request_ready") {
+  if (n.kind === "book_request_available" || n.kind === "book_request_ready") {
     const ref = n.bookRequestId ?? null;
     return {
       type: "ready_for_pickup",
@@ -198,7 +207,7 @@ function tableShell(children: ReactNode) {
   return <div className="overflow-x-auto">{children}</div>;
 }
 
-const outline = "rounded-md border border-border bg-background";
+const outline = "rounded-xl border border-border bg-background";
 
 function hubStatusLabel(status: string) {
   if (status === "checked_out") return "Checked out";
@@ -208,36 +217,32 @@ function hubStatusLabel(status: string) {
 }
 
 function requestStatusLabel(status: string) {
-  if (status === "requested") return "Requested";
-  if (status === "routed") return "Finding";
-  if (status === "fulfilled") return "Set aside";
-  if (status === "ready") return "Ready for pickup";
-  if (status === "picked") return "Picked";
-  if (status === "expired") return "Expired";
-  if (status === "cancelled") return "Cancelled";
-  return status.replace(/_/g, " ");
+  return bookRequestStatusLabel(status);
 }
 
 function requestStepIndex(status: string) {
-  if (status === "requested") return 0;
-  if (status === "routed") return 1;
-  if (status === "fulfilled") return 2;
-  if (status === "ready") return 3;
-  if (status === "picked") return 4;
+  const n = normalizeBookRequestStatus(status);
+  if (n === "pending") return 0;
+  if (n === "available_for_collection") return 1;
+  if (n === "delivered") return 2;
   return -1;
 }
 
-function requestNextText(status: string) {
-  if (status === "requested") return "What happens next: desk starts matching copies.";
-  if (status === "routed") return "What happens next: staff is finding an available copy.";
-  if (status === "fulfilled") return "What happens next: copy is set aside for you.";
-  if (status === "ready") return "What happens next: collect at hub desk (ready for pickup).";
-  if (status === "picked") return "What happens next: completed and moved to history.";
+function requestNextText(status: string, hubLabel: string) {
+  const n = normalizeBookRequestStatus(status);
+  if (n === "pending") return "What happens next: hubs across the network can fulfill your request.";
+  if (n === "available_for_collection") {
+    return hubLabel
+      ? `What happens next: visit ${hubLabel} to collect your book, then confirm below.`
+      : "What happens next: visit the assigned hub to collect your book.";
+  }
+  if (n === "delivered") return "Completed — this request is in your history.";
+  if (n === "cancelled") return "This request was cancelled.";
   return "What happens next: no action required.";
 }
 
 function RequestProgress({ status }: { status: string }) {
-  const steps = ["Requested", "Finding", "Set aside", "Ready for pickup", "Picked"];
+  const steps = ["Pending", "Available for Collection", "Delivered"];
   const idx = requestStepIndex(status);
   return (
     <div className="mt-2 space-y-1">
@@ -247,7 +252,7 @@ function RequestProgress({ status }: { status: string }) {
             key={s}
             className={cn(
               "h-1.5 flex-1 rounded-sm",
-              idx >= i ? "bg-primary/70" : "bg-muted",
+              idx >= i ? "bg-primary/70" : "bg-shimmer",
             )}
             title={s}
           />
@@ -274,7 +279,7 @@ function FlatStatus({
         tone === "emerald" && STATUS_CHIP_EMERALD,
         tone === "amber" && "border-primary/30 bg-primary/10 text-foreground",
         tone === "destructive" && "border-destructive/30 bg-destructive/10 text-destructive",
-        tone === "neutral" && "border-border bg-muted/40 text-foreground",
+        tone === "neutral" && "border-border  text-foreground",
       )}
     >
       {label}
@@ -371,13 +376,19 @@ export default function StudentTrackingPage() {
     queryFn: () => apiFetch<{ listings: P2pRow[] }>("/api/p2p/listings", { token: token! }),
   });
 
-  const overviewQ = useQuery({
-    queryKey: ["hub", "overview", token, "activity"],
-    enabled: !!token && hubDesk,
-    queryFn: () => {
-      const path = user?.baseRole === "super_admin" ? "/api/hub/super-admin-overview" : "/api/hub/overview";
-      return apiFetch<any>(`${path}?range=week`, { token: token! });
+  const confirmDelivery = useMutation({
+    mutationFn: async (requestId: string) => {
+      await apiFetch(`/api/book-requests/${requestId}/confirm-delivery`, {
+        method: "POST",
+        token: token!,
+      });
     },
+    onSuccess: () => {
+      toast.success("Collection confirmed. Thank you!");
+      void qc.invalidateQueries({ queryKey: ["book-requests"] });
+      void qc.invalidateQueries({ queryKey: ["notifications"] });
+    },
+    onError: (e) => toast.error(e instanceof ApiError ? e.message : "Could not confirm collection"),
   });
 
   const hubLabel = (hubId: string | null | undefined) =>
@@ -460,20 +471,13 @@ export default function StudentTrackingPage() {
   const notifications = notifQ.data?.notifications ?? [];
   const unreadAlerts = notifications.filter((n) => !n.readAt).length;
 
-  const hubAlerts = useMemo(() => {
-    if (!overviewQ.data?.overview?.alerts?.length) return [];
-    const SEVERITY_ORDER: Record<string, number> = { critical: 0, warning: 1, info: 2 };
-    return [...overviewQ.data.overview.alerts].sort((a: any, b: any) => {
-      const sa = SEVERITY_ORDER[a.severity] ?? 9;
-      const sb = SEVERITY_ORDER[b.severity] ?? 9;
-      if (sa !== sb) return sa - sb;
-      return 0;
-    });
-  }, [overviewQ.data]);
 
   const sortedNotifications = useMemo(() => {
     const actionableKinds = new Set([
+      "book_request_new",
+      "book_request_available",
       "book_request_ready",
+      "book_request_delivered",
       "book_request_routed",
       "book_request_fulfilled",
       "book_request_cancelled",
@@ -506,7 +510,7 @@ export default function StudentTrackingPage() {
   const top = inShell ? "" : "pt-24";
   const pageWrap = inShell ? "w-full" : PORTAL_PAGE_CONTAINER;
 
-  const rowStripe = "even:bg-muted/[0.35]";
+  const rowStripe = "even:";
 
   const purchaseRows = [
     ...hubPurchasesOrdered.map((b) => ({ kind: "hub" as const, hub: b })),
@@ -551,7 +555,9 @@ export default function StudentTrackingPage() {
       if (t < now) return true;
       return t - now < weekMs;
     });
-    const pickupReady = requestsByRecent.filter((r) => r.status === "ready");
+    const pickupReady = requestsByRecent.filter(
+      (r) => normalizeBookRequestStatus(r.status) === "available_for_collection",
+    );
     return { returnSoon, pickupReady };
   }, [onLoan, requestsByRecent]);
 
@@ -606,7 +612,7 @@ export default function StudentTrackingPage() {
   return (
     <div className={cn("min-h-[100dvh] bg-background pb-20", top)}>
       <div className={cn("mx-auto", pageWrap)}>
-        <div className="mb-8 border-b border-border/30 pb-2">
+        <div className="mb-8 border-b border-border pb-2">
           <h1 className="mt-1 h3-scale font-bold tracking-tight text-foreground">
             Activity
           </h1>
@@ -655,7 +661,7 @@ export default function StudentTrackingPage() {
           <section className={cn(outline, "mt-4 overflow-hidden")}>
             <div className="border-b border-border px-5 py-3">
               <p className="text-sm font-semibold tracking-tight text-foreground">
-                Total spent: ₹{fmtInr(totalSpent)}
+                Total spent: {fmtCredits(totalSpent)}
               </p>
             </div>
             <div className="p-4">
@@ -666,13 +672,13 @@ export default function StudentTrackingPage() {
                   {recentPayments.map((row, idx) => (
                     <li
                       key={`${row.kind}-${idx}`}
-                      className="flex items-center justify-between rounded-md border border-border px-3 py-2 text-sm"
+                      className="flex items-center justify-between rounded-xl border border-border px-3 py-2 text-sm"
                     >
                       <span className="truncate pr-3 text-muted-foreground">
                         {row.label} · <span className="text-foreground">{row.title}</span>
                       </span>
                       <span className="shrink-0 font-medium tabular-nums">
-                        ₹{fmtInr(row.amount)}
+                        {fmtCredits(row.amount)}
                       </span>
                     </li>
                   ))}
@@ -729,72 +735,6 @@ export default function StudentTrackingPage() {
           </>
         ) : null}
 
-        {hubDesk && (
-          <>
-            <Separator className="my-8" />
-            <section aria-label="Alerts">
-              <SectionHeading
-                kicker="Alerts"
-                title="Notifications & Updates"
-                description="Prioritized for pickup, request updates, and purchase confirmations."
-              />
-              <div className="mt-4 space-y-6">
-                <BlockCard
-                  title="Hub notifications"
-                  description="Recent alerts requiring your attention across managed hubs."
-                  isLoading={overviewQ.isLoading}
-                >
-                  <div className="px-4 pb-4 sm:px-0">
-                    {overviewQ.isError ? (
-                      <p className="px-5 text-sm text-destructive">
-                        {overviewQ.error instanceof ApiError ? overviewQ.error.message : "Could not load alerts."}
-                      </p>
-                    ) : hubAlerts.length === 0 ? (
-                      <p className="px-5 text-sm text-muted-foreground">
-                        All clear.
-                      </p>
-                    ) : (
-                      <div className="space-y-6 px-5 sm:px-0">
-                        <ul className="divide-y divide-border">
-                          {hubAlerts.map((a: any) => (
-                            <li
-                              key={a.kind}
-                              className="flex flex-wrap items-center justify-between gap-3 px-5 py-3"
-                            >
-                              <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
-                                <span
-                                  className={cn(
-                                    "inline-flex h-7 items-center whitespace-nowrap rounded-sm border px-3 caption-scale font-semibold uppercase tracking-kicker",
-                                    a.severity === "critical"
-                                      ? "border-destructive/30 bg-destructive/10 text-destructive"
-                                      : a.severity === "warning"
-                                        ? "border-primary/30 bg-primary/10 text-foreground"
-                                        : "border-border bg-muted/40 text-foreground"
-                                  )}
-                                >
-                                  {a.severity ?? "warning"}
-                                </span>
-                                <span className="min-w-0 body-scale font-normal text-foreground">
-                                  {a.message}
-                                </span>
-                              </div>
-                              {a.count != null ? (
-                                <span className="font-mono body-scale tabular-nums text-foreground-muted">
-                                  {a.count}
-                                </span>
-                              ) : null}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                </BlockCard>
-              </div>
-            </section>
-          </>
-        )}
-
         {showYourActions ? (
           <>
             <Separator className="my-8" />
@@ -813,7 +753,7 @@ export default function StudentTrackingPage() {
                     {tableShell(
                       <Table>
                         <TableHeader>
-                          <TableRow className="border-border/50 hover:bg-transparent">
+                          <TableRow className="border-border hover:bg-transparent">
                             <TableHead className="w-[min(28%,200px)] pl-5">Title</TableHead>
                             <TableHead className="hidden md:table-cell">Hub</TableHead>
                             <TableHead className="whitespace-nowrap text-right">Borrow fee</TableHead>
@@ -828,7 +768,7 @@ export default function StudentTrackingPage() {
                               <TableCell className="pl-5 align-top font-medium">
                                 <span className="line-clamp-2">{b.title}</span>
                                 {hubLabel(b.hubId) ? (
-                                  <p className="mt-1 font-mono caption-scale text-muted-foreground md:hidden">
+                                  <p className="mt-1 caption-scale text-muted-foreground md:hidden">
                                     {hubLabel(b.hubId)}
                                   </p>
                                 ) : null}
@@ -837,10 +777,10 @@ export default function StudentTrackingPage() {
                                 {hubLabel(b.hubId) || null}
                               </TableCell>
                               <TableCell className="align-top text-right text-sm tabular-nums">
-                                ₹{fmtInr(b.borrowPrice ?? 0)}
+                                {fmtCredits(b.borrowPrice ?? 0)}
                               </TableCell>
                               <TableCell className="align-top text-right text-sm tabular-nums text-muted-foreground">
-                                ₹{fmtInr(b.buyPrice ?? 0)}
+                                {fmtCredits(b.buyPrice ?? 0)}
                               </TableCell>
                               <TableCell className="align-top text-sm text-muted-foreground">
                                 {fmtDue(b.dueAt) || null}
@@ -888,14 +828,14 @@ export default function StudentTrackingPage() {
                         return (
                           <div
                             key={key}
-                            className="rounded-lg border border-border bg-card/60 p-3 text-sm"
+                            className="rounded-xl border border-border bg-card/60 p-3 text-sm"
                           >
                             <div className="flex flex-wrap items-start justify-between gap-2">
                               <p className="font-medium text-foreground line-clamp-2 flex-1">{title}</p>
                               <FlatStatus label={isHub ? "Hub purchase" : "Peer purchase"} tone="neutral" />
                             </div>
                             <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                              <span>Paid: <span className="font-semibold text-foreground tabular-nums">₹{fmtInr(amount)}</span></span>
+                              <span>Paid: <span className="font-semibold text-foreground tabular-nums">{fmtCredits(amount)}</span></span>
                               {fmtDateShort(when) && <span>{fmtDateShort(when)}</span>}
                             </div>
                           </div>
@@ -907,11 +847,11 @@ export default function StudentTrackingPage() {
                     {tableShell(
                       <Table className="hidden sm:table">
                         <TableHeader>
-                          <TableRow className="border-border/50 hover:bg-transparent">
+                          <TableRow className="border-border hover:bg-transparent">
                             <TableHead className="w-[150px] pl-5">Channel</TableHead>
                             <TableHead>Title</TableHead>
                             <TableHead className="hidden md:table-cell">Hub / pickup</TableHead>
-                            <TableHead className="whitespace-nowrap text-right">Paid ₹</TableHead>
+                            <TableHead className="whitespace-nowrap text-right">Paid</TableHead>
                             <TableHead className="whitespace-nowrap pr-5 text-right">When</TableHead>
                           </TableRow>
                         </TableHeader>
@@ -934,7 +874,7 @@ export default function StudentTrackingPage() {
                                   {hubLabel(row.hub.hubId) || null}
                                 </TableCell>
                                 <TableCell className="align-top text-right tabular-nums">
-                                  ₹{fmtInr(row.hub.buyPrice ?? 0)}
+                                  {fmtCredits(row.hub.buyPrice ?? 0)}
                                 </TableCell>
                                 <TableCell className="pr-5 align-top text-right">
                                   <time dateTime={row.hub.soldAt ?? undefined} className="text-xs tabular-nums text-muted-foreground">
@@ -959,7 +899,7 @@ export default function StudentTrackingPage() {
                                   {hubLabel(row.peer.dropoffHubId) || null}
                                 </TableCell>
                                 <TableCell className="align-top text-right tabular-nums">
-                                  ₹{fmtInr(row.peer.price)}
+                                  {fmtCredits(row.peer.price)}
                                 </TableCell>
                                 <TableCell className="pr-5 align-top text-right">
                                   <span className="text-xs tabular-nums text-muted-foreground">
@@ -985,7 +925,7 @@ export default function StudentTrackingPage() {
                     {tableShell(
                       <Table className="w-full table-fixed">
                         <TableHeader>
-                          <TableRow className="border-border/50 hover:bg-transparent">
+                          <TableRow className="border-border hover:bg-transparent">
                             <TableHead className="w-[28%] pl-5">Book &amp; notes</TableHead>
                             <TableHead className="hidden w-[22%] lg:table-cell">Hub</TableHead>
                             <TableHead className="w-[12%] whitespace-nowrap">Requested</TableHead>
@@ -1007,14 +947,14 @@ export default function StudentTrackingPage() {
                                   </p>
                                 ) : null}
                                 <RequestProgress status={r.status} />
-                                {hubLabel(r.hubId) ? (
+                                {hubLabel(bookRequestAssignedHubId(r)) ? (
                                   <p className="mt-1 caption-scale text-muted-foreground lg:hidden">
-                                    {hubLabel(r.hubId)}
+                                    {hubLabel(bookRequestAssignedHubId(r))}
                                   </p>
                                 ) : null}
                               </TableCell>
                               <TableCell className="hidden align-top text-sm text-muted-foreground lg:table-cell">
-                                {hubLabel(r.hubId) || null}
+                                {hubLabel(bookRequestAssignedHubId(r)) || "—"}
                               </TableCell>
                               <TableCell className="align-top text-xs text-muted-foreground">
                                 {fmtDateOnly(r.createdAt) || null}
@@ -1030,16 +970,31 @@ export default function StudentTrackingPage() {
                                   <FlatStatus
                                     label={requestStatusLabel(r.status)}
                                     tone={
-                                      r.status === "expired" || r.status === "cancelled"
+                                      normalizeBookRequestStatus(r.status) === "cancelled"
                                         ? "destructive"
-                                        : r.status === "ready" || r.status === "fulfilled"
-                                          ? "amber"
-                                          : "neutral"
+                                        : normalizeBookRequestStatus(r.status) === "available_for_collection"
+                                          ? "emerald"
+                                          : normalizeBookRequestStatus(r.status) === "delivered"
+                                            ? "neutral"
+                                            : "amber"
                                     }
                                   />
                                 </div>
+                                {!hubDesk &&
+                                normalizeBookRequestStatus(r.status) === "available_for_collection" ? (
+                                  <Button
+                                    type="button"
+                                    size="sm"
+                                    variant="secondary"
+                                    className="mt-2 h-8 rounded-md"
+                                    disabled={confirmDelivery.isPending}
+                                    onClick={() => confirmDelivery.mutate(r.id)}
+                                  >
+                                    Mark as collected
+                                  </Button>
+                                ) : null}
                                 <p className="mt-2 text-left caption-scale text-muted-foreground sm:text-right">
-                                  {requestNextText(r.status)}
+                                  {requestNextText(r.status, hubLabel(bookRequestAssignedHubId(r)))}
                                 </p>
                               </TableCell>
                             </TableRow>
@@ -1061,7 +1016,7 @@ export default function StudentTrackingPage() {
                       {myListings.map((l) => (
                         <div
                           key={l.id}
-                          className="rounded-lg border border-border bg-card/60 p-3 text-sm"
+                          className="rounded-xl border border-border bg-card/60 p-3 text-sm"
                         >
                           <div className="flex flex-wrap items-start justify-between gap-2">
                             <p className="font-medium text-foreground line-clamp-2 flex-1">{l.bookTitle}</p>
@@ -1081,9 +1036,9 @@ export default function StudentTrackingPage() {
                             />
                           </div>
                           <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                            <span>Buy: <span className="font-medium text-foreground tabular-nums">₹{fmtInr(l.price)}</span></span>
-                            <span>Borrow: <span className="font-medium text-foreground tabular-nums">₹{fmtInr(l.borrowPrice ?? 0)}</span></span>
-                            {l.refId && <span className="font-mono">{l.refId}</span>}
+                            <span>Buy: <span className="font-medium text-foreground tabular-nums">{fmtCredits(l.price)}</span></span>
+                            <span>Borrow: <span className="font-medium text-foreground tabular-nums">{fmtCredits(l.borrowPrice ?? 0)}</span></span>
+                            {l.refId && <span className="tabular-nums">{l.refId}</span>}
                             {fmtDateShort(l.updatedAt) && <span>{fmtDateShort(l.updatedAt)}</span>}
                           </div>
                         </div>
@@ -1094,11 +1049,11 @@ export default function StudentTrackingPage() {
                     {tableShell(
                       <Table className="hidden w-full table-fixed sm:table">
                         <TableHeader>
-                          <TableRow className="border-border/50 hover:bg-transparent">
+                          <TableRow className="border-border hover:bg-transparent">
                             <TableHead className="w-[30%] pl-5">Title</TableHead>
                             <TableHead className="hidden w-[15%] sm:table-cell">Ref ID</TableHead>
-                            <TableHead className="w-[10%] whitespace-nowrap text-right">Buy ₹</TableHead>
-                            <TableHead className="w-[10%] whitespace-nowrap text-right">Borrow ₹</TableHead>
+                            <TableHead className="w-[10%] whitespace-nowrap text-right">Buy</TableHead>
+                            <TableHead className="w-[10%] whitespace-nowrap text-right">Borrow</TableHead>
                             <TableHead className="hidden w-[16%] md:table-cell">Drop-off hub</TableHead>
                             <TableHead className="hidden w-[10%] whitespace-nowrap lg:table-cell">Updated</TableHead>
                             <TableHead className="w-[14%] pr-5 text-right">Status</TableHead>
@@ -1110,12 +1065,12 @@ export default function StudentTrackingPage() {
                               <TableCell className="min-w-0 pl-5 align-top font-medium">
                                 <span className="line-clamp-2">{l.bookTitle}</span>
                               </TableCell>
-                              <TableCell className="hidden align-top font-mono caption-scale text-muted-foreground sm:table-cell">
+                              <TableCell className="hidden align-top caption-scale text-muted-foreground sm:table-cell">
                                 {l.refId ?? "—"}
                               </TableCell>
-                              <TableCell className="align-top text-right tabular-nums">₹{fmtInr(l.price)}</TableCell>
+                              <TableCell className="align-top text-right tabular-nums">{fmtCredits(l.price)}</TableCell>
                               <TableCell className="align-top text-right tabular-nums text-muted-foreground">
-                                ₹{fmtInr(l.borrowPrice ?? 0)}
+                                {fmtCredits(l.borrowPrice ?? 0)}
                               </TableCell>
                               <TableCell className="hidden align-top text-sm text-muted-foreground md:table-cell">
                                 {hubLabel(l.dropoffHubId) || null}
@@ -1171,12 +1126,12 @@ export default function StudentTrackingPage() {
                   {tableShell(
                     <Table>
                       <TableHeader>
-                        <TableRow className="border-border/50 hover:bg-transparent">
+                        <TableRow className="border-border hover:bg-transparent">
                           <TableHead className="pl-5">Title</TableHead>
                           <TableHead className="hidden sm:table-cell">Pickup hub</TableHead>
                           <TableHead className="whitespace-nowrap">Due</TableHead>
-                          <TableHead className="whitespace-nowrap text-right">Fee ₹</TableHead>
-                          <TableHead className="whitespace-nowrap text-right">Buy was ₹</TableHead>
+                          <TableHead className="whitespace-nowrap text-right">Fee</TableHead>
+                          <TableHead className="whitespace-nowrap text-right">Buy was</TableHead>
                           <TableHead className="pr-5 text-right">Status</TableHead>
                         </TableRow>
                       </TableHeader>
@@ -1198,10 +1153,10 @@ export default function StudentTrackingPage() {
                               {fmtDue(l.borrowDueAt) || null}
                             </TableCell>
                             <TableCell className="align-top text-right tabular-nums">
-                              ₹{fmtInr(l.borrowPrice ?? 0)}
+                              {fmtCredits(l.borrowPrice ?? 0)}
                             </TableCell>
                             <TableCell className="align-top text-right tabular-nums text-muted-foreground">
-                              ₹{fmtInr(l.price)}
+                              {fmtCredits(l.price)}
                             </TableCell>
                             <TableCell className="pr-5 align-top text-right">
                               <div className="flex flex-wrap items-center justify-end gap-2">

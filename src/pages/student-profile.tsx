@@ -175,7 +175,7 @@ export default function StudentProfilePage() {
               {user.hubMemberships.map((m) => {
                 const hub = hubsQ.data?.hubs.find((h) => h.id === m.hubId);
                 return (
-                  <li key={`${m.hubId}-${m.role}`} className="rounded-md border border-border bg-muted/20 px-3 py-2 body-scale font-normal leading-relaxed">
+                  <li key={`${m.hubId}-${m.role}`} className="rounded-xl border border-border  px-3 py-2 body-scale font-normal leading-relaxed">
                     <span className="font-semibold text-foreground">{hub?.name ?? "Hub"}</span>
                     <span className="mt-0.5 block caption-scale font-medium text-foreground-muted">
                       {hubKindLabel(hub?.kind)} · {hubMembershipRoleLabel(m.role)}
@@ -194,42 +194,42 @@ export default function StudentProfilePage() {
             Details
           </h3>
           <dl className="mt-4 space-y-4 body-scale font-normal leading-relaxed">
-            <div className="flex flex-col gap-1 border-b border-border/50 pb-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-1 border-b border-border pb-4 sm:flex-row sm:items-center sm:justify-between">
               <dt className="text-foreground-muted">Phone</dt>
               <dd className="font-semibold text-foreground">{user.phone || "—"}</dd>
             </div>
-            <div className="flex flex-col gap-1 border-b border-border/50 pb-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-1 border-b border-border pb-4 sm:flex-row sm:items-center sm:justify-between">
               <dt className="text-foreground-muted">Registration date</dt>
               <dd className="font-semibold text-foreground">
                 {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "—"}
               </dd>
             </div>
-            <div className="flex flex-col gap-1 border-b border-border/50 pb-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-1 border-b border-border pb-4 sm:flex-row sm:items-center sm:justify-between">
               <dt className="text-foreground-muted">Account status</dt>
               <dd>
                 <span className={cn(
                   "inline-flex h-7 items-center rounded-md border px-3 caption-scale font-medium uppercase tracking-wide",
-                  user.accountStatus === "active" ? STATUS_CHIP_EMERALD : "border-border bg-muted text-foreground"
+                  user.accountStatus === "active" ? STATUS_CHIP_EMERALD : "border-border bg-background text-foreground"
                 )}>
                   {user.accountStatus}
                 </span>
               </dd>
             </div>
-            <div className="flex flex-col gap-1 border-b border-border/50 pb-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-1 border-b border-border pb-4 sm:flex-row sm:items-center sm:justify-between">
               <dt className="text-foreground-muted">Role</dt>
               <dd>
-                <span className="inline-flex h-7 items-center rounded-md border border-border bg-muted/30 px-3 caption-scale font-medium uppercase tracking-wide text-foreground">
+                <span className="inline-flex h-7 items-center rounded-xl border border-border  px-3 caption-scale font-medium uppercase tracking-wide text-foreground">
                   {user.baseRole}
                 </span>
               </dd>
             </div>
-            <div className="flex flex-col gap-1 border-b border-border/50 pb-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-1 border-b border-border pb-4 sm:flex-row sm:items-center sm:justify-between">
               <dt className="text-foreground-muted">Premium</dt>
               <dd>
                 <span
                   className={cn(
                     "inline-flex h-7 items-center rounded-md border px-3 caption-scale font-medium uppercase tracking-wide",
-                    isPremiumOk(user) ? STATUS_CHIP_EMERALD : "border-border bg-muted text-foreground",
+                    isPremiumOk(user) ? STATUS_CHIP_EMERALD : "border-border bg-background text-foreground",
                   )}
                 >
                   {isPremiumOk(user)
@@ -240,7 +240,7 @@ export default function StudentProfilePage() {
                 </span>
               </dd>
             </div>
-            <div className="flex flex-col gap-1 border-b border-border/50 pb-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-1 border-b border-border pb-4 sm:flex-row sm:items-center sm:justify-between">
               <dt className="text-foreground-muted">Current plan</dt>
               <dd className="font-semibold text-foreground">{isPremiumOk(user) ? "Premium" : "Free"}</dd>
             </div>
@@ -261,7 +261,7 @@ export default function StudentProfilePage() {
           {!isPremiumOk(user) && (
             <Button
               type="button"
-              className="mt-8 h-11 w-full rounded-2xl font-semibold sm:w-auto"
+              className="mt-8 h-11 w-full rounded-xl font-semibold sm:w-auto"
               onClick={() => setUpgradeOpen(true)}
             >
               <Sparkles className="mr-2 h-4 w-4" />
@@ -273,7 +273,7 @@ export default function StudentProfilePage() {
       </div>
 
       <Dialog open={upgradeOpen} onOpenChange={setUpgradeOpen}>
-        <DialogContent className="font-sans w-[calc(100%-32px)] sm:w-full rounded-2xl sm:max-w-sm">
+        <DialogContent className="font-sans w-[calc(100%-32px)] sm:w-full rounded-xl sm:max-w-sm">
           <DialogHeader>
             <DialogTitle className={PORTAL_DIALOG_TITLE}>Demo premium</DialogTitle>
             <DialogDescription className={PORTAL_DIALOG_DESC}>
@@ -281,7 +281,7 @@ export default function StudentProfilePage() {
             </DialogDescription>
           </DialogHeader>
           <Button
-            className="h-11 w-full rounded-2xl font-semibold"
+            className="h-11 w-full rounded-xl font-semibold"
             disabled={upgradeBusy}
             onClick={() => void runUpgrade()}
           >

@@ -14,13 +14,13 @@ export function getStatusColorClasses(status: string): string {
   const s = status.toLowerCase();
   
   // Available (Emerald)
-  if (["available", "ready", "on marketplace"].includes(s)) {
+  if (["available", "ready", "on marketplace", "available_for_collection", "delivered"].includes(s)) {
     return "border border-success/30 bg-success/10 text-success";
   }
   
   // Approved (Sky)
-  if (["approved", "listed", "requested", "new"].includes(s)) {
-    return "border border-primary/30 bg-primary/10 text-primary-foreground";
+  if (["approved", "listed", "requested", "new", "pending"].includes(s)) {
+    return "border border-primary/30 bg-primary/10 text-primary";
   }
   
   // Set Aside (Amber)
@@ -43,13 +43,13 @@ export function getStatusColorClasses(status: string): string {
     return "border border-destructive/30 bg-destructive/10 text-destructive";
   }
   
-  // Cancelled (Slate)
+  // Cancelled / completed (default ink hierarchy)
   if (["cancelled", "sold", "withdrawn", "picked", "completed"].includes(s)) {
-    return "border border-muted-foreground/25 bg-muted/50 text-muted-foreground";
+    return "border border-border bg-background text-foreground-muted";
   }
 
-  // Fallback (Slate)
-  return "border border-muted-foreground/25 bg-muted/50 text-muted-foreground";
+  // Fallback
+  return "border border-border bg-background text-foreground-muted";
 }
 
 /** Staff-facing label: reserved copies are held for desk pickup. */
@@ -166,20 +166,20 @@ export function ShelfPeerStatusBadge({
 
 export function requestStatusLabel(status: string): string {
   switch (status) {
+    case "pending":
     case "requested":
-      return "New";
     case "routed":
-      return "Finding";
+      return "Pending";
+    case "available_for_collection":
     case "fulfilled":
-      return "Set aside";
     case "ready":
-      return "In catalog";
+      return "Available for Collection";
+    case "delivered":
     case "picked":
-      return "Completed";
-    case "expired":
-      return "Timed out";
+      return "Delivered";
     case "cancelled":
-      return "Withdrawn";
+    case "expired":
+      return "Cancelled";
     default:
       return status.replace(/_/g, " ");
   }

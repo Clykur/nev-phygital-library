@@ -3,13 +3,14 @@ import { BookOpen, Clock, Wallet as WalletIcon, TrendingUp, ShoppingBag, Tag, Sp
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useWallet } from "@/context/wallet-context";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { STUDENT_WALLET_PATH, STUDENT_BORROW_PATH, STUDENT_SELL_PATH } from "@/lib/app-paths";
 import { useAuth } from "@/context/auth-context";
 import { PORTAL_PAGE_CONTAINER } from "@/lib/student-ui";
 import { PORTAL_PAGE_LEAD, PORTAL_PAGE_TITLE, PORTAL_SECTION_LABEL, PORTAL_STAT_VALUE } from "@/lib/portal-typography";
 import { PORTAL_INLINE_LINK } from "@/lib/student-ui";
 import { cn } from "@/lib/utils";
+import { useStudentDashboard } from "@/hooks/use-student-dashboard";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 16 },
@@ -19,19 +20,9 @@ const fadeInUp = {
 export default function StudentDashboardPage() {
   const { user } = useAuth();
   const { balance, subscription } = useWallet();
+  const [, setLocation] = useLocation();
 
-  const MOCK_RECENT_BOOKS = [
-    { id: 1, title: "Introduction to Algorithms", author: "Thomas H. Cormen" },
-    { id: 2, title: "Clean Code", author: "Robert C. Martin" },
-  ];
-
-  const MOCK_ACTIVE_LISTINGS = [
-    { id: 1, title: "Calculus Vol 1", price: 1500, status: "Active" },
-  ];
-
-  const MOCK_PURCHASED = [
-    { id: 1, title: "The Pragmatic Programmer", date: "2 days ago" },
-  ];
+  const { data, isLoading } = useStudentDashboard();
 
   return (
     <div className={cn(PORTAL_PAGE_CONTAINER, "space-y-8 py-8")}>
@@ -103,19 +94,42 @@ export default function StudentDashboardPage() {
                 Recently Viewed
               </h2>
               <div className="space-y-3">
-                {MOCK_RECENT_BOOKS.map((book) => (
-                  <Card key={book.id} interactive className="p-4">
-                    <div className="flex items-center gap-4">
-                      <div className="flex h-12 w-10 shrink-0 items-center justify-center">
-                        <BookOpen className="h-4 w-4 text-foreground-muted" />
+                {isLoading ? (
+                  Array(2).fill(0).map((_, i) => (
+                    <Card key={i} className="p-4">
+                      <div className="flex items-center gap-4">
+                        <div className="h-12 w-10 animate-pulse rounded bg-shimmer" />
+                        <div className="min-w-0 flex-1 space-y-2">
+                          <div className="h-4 w-3/4 animate-pulse rounded bg-shimmer" />
+                          <div className="h-3 w-1/2 animate-pulse rounded bg-shimmer" />
+                        </div>
                       </div>
-                      <div className="min-w-0">
-                        <p className="truncate body-scale font-semibold">{book.title}</p>
-                        <p className="body-scale text-foreground-muted">{book.author}</p>
+                    </Card>
+                  ))
+                ) : data?.recentBooks && data.recentBooks.length > 0 ? (
+                  data.recentBooks.map((book) => (
+                    <Card 
+                      key={book.id} 
+                      interactive 
+                      className="p-4" 
+                      onClick={() => setLocation(`${STUDENT_BORROW_PATH}?focus=book&ref=${book.id}`)}
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="flex h-12 w-10 shrink-0 items-center justify-center">
+                          <BookOpen className="h-4 w-4 text-foreground-muted" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="truncate body-scale font-semibold">{book.title}</p>
+                          <p className="body-scale text-foreground-muted">{book.author}</p>
+                        </div>
                       </div>
-                    </div>
-                  </Card>
-                ))}
+                    </Card>
+                  ))
+                ) : (
+                  <div className="rounded-xl border border-dashed border-border p-6 text-center">
+                    <p className="body-scale text-foreground-muted">No recently viewed books.</p>
+                  </div>
+                )}
                 <Button variant="outline" className="mt-2 w-full" asChild>
                   <Link href={STUDENT_BORROW_PATH}>Browse More</Link>
                 </Button>
@@ -128,19 +142,35 @@ export default function StudentDashboardPage() {
                 Active Listings
               </h2>
               <div className="space-y-3">
-                {MOCK_ACTIVE_LISTINGS.map((listing) => (
-                  <Card key={listing.id} interactive className="p-4">
+                {isLoading ? (
+                  <Card className="p-4">
                     <div className="flex items-center justify-between gap-3">
-                      <div className="min-w-0">
-                        <p className="truncate body-scale font-semibold">{listing.title}</p>
-                        <p className="body-scale font-semibold text-primary">{listing.price} Credits</p>
+                      <div className="min-w-0 flex-1 space-y-2">
+                        <div className="h-4 w-3/4 animate-pulse rounded bg-shimmer" />
+                        <div className="h-3 w-1/4 animate-pulse rounded bg-shimmer" />
                       </div>
-                      <span className="caption-scale shrink-0 rounded-md border border-success/30 bg-success/10 px-2 py-1 font-semibold uppercase tracking-kicker text-success">
-                        {listing.status}
-                      </span>
+                      <div className="h-6 w-16 animate-pulse rounded bg-shimmer" />
                     </div>
                   </Card>
-                ))}
+                ) : data?.activeListings && data.activeListings.length > 0 ? (
+                  data.activeListings.map((listing) => (
+                    <Card key={listing.id} interactive className="p-4">
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="truncate body-scale font-semibold">{listing.title}</p>
+                          <p className="body-scale font-semibold text-primary">{listing.price} Credits</p>
+                        </div>
+                        <span className="caption-scale shrink-0 rounded-md border border-success/30 bg-success/10 px-2 py-1 font-semibold uppercase tracking-kicker text-success">
+                          {listing.status}
+                        </span>
+                      </div>
+                    </Card>
+                  ))
+                ) : (
+                  <div className="rounded-xl border border-dashed border-border p-6 text-center">
+                    <p className="body-scale text-foreground-muted">No active listings.</p>
+                  </div>
+                )}
                 <Button variant="outline" className="mt-2 w-full" asChild>
                   <Link href={STUDENT_SELL_PATH}>Manage Listings</Link>
                 </Button>
@@ -166,15 +196,15 @@ export default function StudentDashboardPage() {
               <CardContent className="space-y-5">
                 <div>
                   <p className={cn(PORTAL_SECTION_LABEL, "mb-1")}>Total Books Bought</p>
-                  <p className={PORTAL_STAT_VALUE}>12</p>
+                  {isLoading ? <div className="h-6 w-12 animate-pulse rounded bg-shimmer" /> : <p className={PORTAL_STAT_VALUE}>{data?.stats.totalBought}</p>}
                 </div>
                 <div>
                   <p className={cn(PORTAL_SECTION_LABEL, "mb-1")}>Total Books Sold</p>
-                  <p className={cn(PORTAL_STAT_VALUE, "text-success")}>4</p>
+                  {isLoading ? <div className="h-6 w-12 animate-pulse rounded bg-shimmer" /> : <p className={cn(PORTAL_STAT_VALUE, "text-success")}>{data?.stats.totalSold}</p>}
                 </div>
                 <div>
                   <p className={cn(PORTAL_SECTION_LABEL, "mb-1")}>Credits Earned All Time</p>
-                  <p className={cn(PORTAL_STAT_VALUE, "text-accent")}>12,500</p>
+                  {isLoading ? <div className="h-6 w-20 animate-pulse rounded bg-shimmer" /> : <p className={cn(PORTAL_STAT_VALUE, "text-accent")}>{data?.stats.creditsEarned.toLocaleString()}</p>}
                 </div>
               </CardContent>
             </Card>
@@ -194,15 +224,26 @@ export default function StudentDashboardPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                {MOCK_PURCHASED.map((p) => (
-                  <div
-                    key={p.id}
-                    className="flex items-start justify-between gap-4 border-b border-border-subtle pb-3 last:border-0 last:pb-0"
-                  >
-                    <p className="body-scale font-semibold">{p.title}</p>
-                    <p className="caption-scale shrink-0 text-foreground-muted">{p.date}</p>
+                {isLoading ? (
+                  <div className="flex items-start justify-between gap-4 border-b border-border pb-3">
+                    <div className="h-4 w-3/4 animate-pulse rounded bg-shimmer" />
+                    <div className="h-3 w-1/4 animate-pulse rounded bg-shimmer" />
                   </div>
-                ))}
+                ) : data?.recentPurchases && data.recentPurchases.length > 0 ? (
+                  data.recentPurchases.map((p) => (
+                    <div
+                      key={p.id}
+                      className="flex items-start justify-between gap-4 border-b border-border pb-3 last:border-0 last:pb-0"
+                    >
+                      <p className="body-scale font-semibold">{p.title}</p>
+                      <p className="caption-scale shrink-0 text-foreground-muted">{p.date}</p>
+                    </div>
+                  ))
+                ) : (
+                  <div className="rounded-xl border border-dashed border-border py-6 text-center">
+                    <p className="body-scale text-foreground-muted">No recent purchases.</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </motion.div>

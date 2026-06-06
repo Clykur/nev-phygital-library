@@ -13,7 +13,6 @@ import {
   Radio,
   Tag,
   Users,
-  Wallet,
   Sparkles,
   CreditCard,
 } from "lucide-react";
@@ -28,6 +27,8 @@ import {
   SUPER_ADMIN_OPERATIONS_PATH,
   SUPER_ADMIN_CATALOG_PATH,
   SUPER_ADMIN_INVENTORY_PATH,
+  SUPER_ADMIN_BOUNTY_BOOKS_PATH,
+  HUB_BOUNTY_BOOKS_PATH,
   SUPER_ADMIN_P2P_LISTINGS_PATH,
   HUB_P2P_LISTINGS_PATH,
   hubOverviewPathForUser,
@@ -158,9 +159,9 @@ export function hubDeskGroupsForUser(user: AuthUser): DeskGroup[] {
         tabs: [
           allCopiesTab,
           {
-            href: p.p2pListings,
-            label: "Peer-to-Peer",
-            hint: "Pre-shelf pipeline",
+            href: p.bountyBooks ?? p.p2pListings,
+            label: "Bounty Books",
+            hint: "Acquisition requests",
             Icon: ListOrdered,
           },
         ],
@@ -197,27 +198,21 @@ export function hubDeskGroupsForUser(user: AuthUser): DeskGroup[] {
         {
           href: overviewHref,
           label: "Dashboard",
-          hint: "Alerts & metrics",
+          hint: "Metrics & triage",
           Icon: LayoutDashboard,
         },
         {
           href: p.requests,
-          label: "Requests",
-          hint: "Request lifecycle",
+          label: "Book Requests",
+          hint: "Global request queue",
           Icon: ClipboardList,
         },
         allCopiesTab,
         {
-          href: p.p2pListings,
-          label: "Peer-to-Peer",
-          hint: "Pipeline · not on shelf yet",
+          href: p.bountyBooks ?? p.p2pListings,
+          label: "Bounty Books",
+          hint: "Acquisition requests",
           Icon: ListOrdered,
-        },
-        {
-          href: p.activity,
-          label: "Activity",
-          hint: "Personal loans & requests",
-          Icon: History,
         },
       ],
     },
@@ -234,8 +229,18 @@ export function isHubDeskPathActive(location: string, href: string): boolean {
       location === SUPER_ADMIN_CATALOG_PATH
     );
   }
-  if (href === HUB_P2P_LISTINGS_PATH || href === SUPER_ADMIN_P2P_LISTINGS_PATH) {
-    return location === HUB_P2P_LISTINGS_PATH || location === SUPER_ADMIN_P2P_LISTINGS_PATH;
+  if (
+    href === HUB_BOUNTY_BOOKS_PATH ||
+    href === SUPER_ADMIN_BOUNTY_BOOKS_PATH ||
+    href === HUB_P2P_LISTINGS_PATH ||
+    href === SUPER_ADMIN_P2P_LISTINGS_PATH
+  ) {
+    return (
+      location === HUB_BOUNTY_BOOKS_PATH ||
+      location === SUPER_ADMIN_BOUNTY_BOOKS_PATH ||
+      location === HUB_P2P_LISTINGS_PATH ||
+      location === SUPER_ADMIN_P2P_LISTINGS_PATH
+    );
   }
   if (href === ADMIN_USERS_PATH) {
     return location === ADMIN_USERS_PATH || location.startsWith(`${ADMIN_USERS_PATH}/`);
@@ -269,7 +274,7 @@ export function DeskSidebarNav({
 
       {groups.map((group, gi) => (
         <div key={group.id}>
-          {gi > 0 ? <div className="mb-2 border-t border-border/60 pt-3" aria-hidden /> : null}
+          {gi > 0 ? <div className="mb-2 border-t border-border pt-3" aria-hidden /> : null}
           <div className="mb-1.5 px-1">
             <p className="caption-scale font-semibold uppercase tracking-[0.16em] text-muted-foreground/90">
               {group.title}
@@ -289,7 +294,7 @@ export function DeskSidebarNav({
                     "group flex items-center gap-3 rounded-lg px-2 py-2 text-sm font-medium transition-colors",
                     active
                       ? "bg-primary/10 text-foreground"
-                      : "text-muted-foreground hover:bg-muted/70 hover:text-foreground",
+                      : "text-muted-foreground hover: hover:text-foreground",
                   )}
                 >
                   <Icon
@@ -348,7 +353,7 @@ export function HubDeskMobileTabStrip() {
                 "flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
                 active
                   ? "border-primary/35 bg-primary/10 text-foreground"
-                  : "border-border/50 text-muted-foreground hover:border-primary/25 hover:bg-muted/50 hover:text-foreground",
+                  : "border-border text-muted-foreground hover:border-primary/20 hover: hover:text-foreground",
               )}
             >
               <Icon className="h-3.5 w-3.5 shrink-0 opacity-90" aria-hidden />

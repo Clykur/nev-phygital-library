@@ -44,7 +44,7 @@ export function MockCheckoutDialog({
         </DialogHeader>
         
         <div className="py-6">
-          <div className="rounded-lg border bg-muted/50 p-4 flex items-center justify-between">
+          <div className="rounded-xl border border-border p-4 flex items-center justify-between">
             <span className="text-sm font-medium text-muted-foreground">Total Amount</span>
             <span className="text-2xl font-bold">₹{(amount / 100).toFixed(2)}</span>
           </div>

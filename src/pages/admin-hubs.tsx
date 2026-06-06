@@ -237,7 +237,7 @@ function AdminHubsContent() {
                           <Link href={adminHubPath(h.id)} className={PORTAL_INLINE_LINK}>
                             {h.name}
                           </Link>
-                          <p className="mt-0.5 font-mono caption-scale font-medium text-foreground-muted">
+                          <p className="mt-0.5 caption-scale font-medium text-foreground-muted">
                             {h.publicId ?? h.id.slice(0, 8)}
                           </p>
                         </TableCell>
@@ -248,10 +248,10 @@ function AdminHubsContent() {
                           </span>
                         </TableCell>
                         <TableCell className="tabular-nums text-foreground-muted">{h.memberCount}</TableCell>
-                        <TableCell className="text-right font-mono tabular-nums text-foreground-muted">
+                        <TableCell className="text-right tabular-nums text-foreground-muted">
                           {h.bookCount}
                         </TableCell>
-                        <TableCell className="text-right font-mono tabular-nums text-foreground-muted">
+                        <TableCell className="text-right tabular-nums text-foreground-muted">
                           {h.activeRequestCount}
                         </TableCell>
                         <TableCell className="body-scale font-normal text-foreground-muted">

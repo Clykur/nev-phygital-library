@@ -42,10 +42,14 @@ export function hubOverviewPathForUser(user: Pick<AuthUser, "baseRole"> | null |
 export const STUDENT_DASHBOARD_PATH = `${STUDENT_APP_PREFIX}/dashboard`;
 export const STUDENT_WALLET_PATH = `${STUDENT_APP_PREFIX}/wallet`;
 export const STUDENT_BORROW_PATH = `${STUDENT_APP_PREFIX}/borrow`;
-export const STUDENT_SELL_PATH = `${STUDENT_APP_PREFIX}/sell`;
+/** Student bounty books — library acquisition requests. */
+export const STUDENT_BOUNTY_PATH = `${STUDENT_APP_PREFIX}/bounty-books`;
+/** @deprecated P2P sell removed — redirects to bounty books. */
+export const STUDENT_SELL_PATH = STUDENT_BOUNTY_PATH;
 export const STUDENT_LIBRARY_PATH = `${STUDENT_APP_PREFIX}/library`;
 export const STUDENT_ACTIVITY_PATH = `${STUDENT_APP_PREFIX}/activity`;
 export const STUDENT_ALERTS_PATH = `${STUDENT_APP_PREFIX}/alerts`;
+export const STUDENT_REQUESTS_PATH = `${STUDENT_APP_PREFIX}/requests`;
 export const STUDENT_PROFILE_PATH = `${STUDENT_APP_PREFIX}/profile`;
 
 /** @deprecated Use {@link HUB_CATALOG_PATH}; kept for redirects only. */
@@ -61,9 +65,13 @@ export const HUB_INVENTORY_PATH = `${HUB_BASE}/inventory`;
 /** Hub staff: desk book-request queue. */
 export const HUB_REQUESTS_PATH = `${HUB_BASE}/requests`;
 /** Hub staff: rentals & purchases (members at desk + hub account shopping elsewhere). */
-/** Peer listings not yet a physical copy (pipeline; pre–drop-off / no `books` row). */
-export const HUB_P2P_LISTINGS_PATH = `${HUB_BASE}/p2p-listings`;
-export const SUPER_ADMIN_P2P_LISTINGS_PATH = `${SUPER_ADMIN_BASE}/p2p-listings`;
+/** Hub staff: bounty book acquisition requests. */
+export const HUB_BOUNTY_BOOKS_PATH = `${HUB_BASE}/bounty-books`;
+export const SUPER_ADMIN_BOUNTY_BOOKS_PATH = `${SUPER_ADMIN_BASE}/bounty-books`;
+/** @deprecated Use {@link HUB_BOUNTY_BOOKS_PATH} */
+export const HUB_P2P_LISTINGS_PATH = HUB_BOUNTY_BOOKS_PATH;
+/** @deprecated Use {@link SUPER_ADMIN_BOUNTY_BOOKS_PATH} */
+export const SUPER_ADMIN_P2P_LISTINGS_PATH = SUPER_ADMIN_BOUNTY_BOOKS_PATH;
 /** @deprecated Use HUB_OVERVIEW_PATH */
 export const HUB_DESK_PATH = HUB_OVERVIEW_PATH;
 
@@ -78,8 +86,8 @@ export const HUB_DESK_ROUTES = [
   SUPER_ADMIN_INVENTORY_PATH,
   HUB_REQUESTS_PATH,
   SUPER_ADMIN_REQUESTS_PATH,
-  HUB_P2P_LISTINGS_PATH,
-  SUPER_ADMIN_P2P_LISTINGS_PATH,
+  HUB_BOUNTY_BOOKS_PATH,
+  SUPER_ADMIN_BOUNTY_BOOKS_PATH,
 ] as const;
 
 export function isHubDeskRoute(pathname: string): boolean {
@@ -102,14 +110,15 @@ export function portalPathsForUser(user: AuthUser | null) {
       prefix: p,
       borrow: `${p}/borrow`,
       catalog: STUDENT_BORROW_PATH,
-      sell: `${p}/sell`,
+      sell: STUDENT_BOUNTY_PATH,
+      bountyBooks: STUDENT_BOUNTY_PATH,
       library: `${p}/library`,
       activity: `${p}/activity`,
       alerts: `${p}/alerts`,
       profile: `${p}/profile`,
       overview: HUB_OVERVIEW_PATH,
       inventory: HUB_INVENTORY_PATH,
-      p2pListings: "/marketplace",
+      p2pListings: STUDENT_BOUNTY_PATH,
       requests: HUB_REQUESTS_PATH,
     };
   }
@@ -127,7 +136,8 @@ export function portalPathsForUser(user: AuthUser | null) {
       profile: SUPER_ADMIN_PROFILE_PATH,
       overview,
       inventory: SUPER_ADMIN_INVENTORY_PATH,
-      p2pListings: SUPER_ADMIN_P2P_LISTINGS_PATH,
+      p2pListings: SUPER_ADMIN_BOUNTY_BOOKS_PATH,
+      bountyBooks: SUPER_ADMIN_BOUNTY_BOOKS_PATH,
       requests: SUPER_ADMIN_REQUESTS_PATH,
     };
   }
@@ -143,7 +153,8 @@ export function portalPathsForUser(user: AuthUser | null) {
     profile: HUB_PROFILE_PATH,
     overview: HUB_OVERVIEW_PATH,
     inventory: HUB_INVENTORY_PATH,
-    p2pListings: HUB_P2P_LISTINGS_PATH,
+    p2pListings: HUB_BOUNTY_BOOKS_PATH,
+    bountyBooks: HUB_BOUNTY_BOOKS_PATH,
     requests: HUB_REQUESTS_PATH,
   };
 }

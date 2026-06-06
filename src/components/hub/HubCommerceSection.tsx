@@ -1,12 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState, type ReactNode } from "react";
-import { Link } from "wouter";
-import { useStudentShell } from "@/components/layout/StudentAppShell";
-import { useAuth } from "@/context/auth-context"; 
+import { useAuth } from "@/context/auth-context";
 import { apiFetch, ApiError } from "@/lib/api";
 import { cn } from "@/lib/utils";
-import { PORTAL_KICKER_COLOR, PORTAL_PAGE_GUTTER_X } from "@/lib/student-ui";
-import { portalPathsForUser } from "@/lib/app-paths";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
@@ -24,7 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Loader2, Shield } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 type Hub = { id: string; name: string; kind?: string };
 
@@ -47,7 +43,7 @@ type HubCommercePayload = {
 };
 
 /** One border, flat panel — matches hub book requests. */
-const outline = "rounded-md border border-border bg-background";
+const outline = "rounded-xl border border-border bg-background";
 
 function SectionLabel({ children }: { children: ReactNode }) {
   return (
@@ -94,7 +90,6 @@ function commerceEventSource(
 
 export function HubCommerceSection() {
   const { token, user, loading } = useAuth();
-  const inShell = useStudentShell();
   const [commerceHubId, setCommerceHubId] = useState<string>("all");
   const [typeFilter, setTypeFilter] = useState<"all" | "borrow" | "buy" | "return">("all");
   const [sourceFilter, setSourceFilter] = useState<"all" | "hub" | "p2p">("all");
@@ -144,7 +139,7 @@ export function HubCommerceSection() {
   }, [rawOutbound, typeFilter, sourceFilter]);
   const scopeLabel = commerceQ.data?.hubScope.label ?? "—";
 
-  const selectTriggerClass = "h-10 w-full rounded-md border-border bg-background";
+  const selectTriggerClass = "h-10 w-full rounded-xl border-border bg-background";
 
   const clearCommerceFilters = () => {
     setTypeFilter("all");
@@ -276,7 +271,7 @@ export function HubCommerceSection() {
                       <TableCell className="hidden align-top text-xs text-muted-foreground md:table-cell">
                         {r.atHubName ?? "—"}
                       </TableCell>
-                      <TableCell className="hidden align-top font-mono caption-scale text-muted-foreground lg:table-cell pr-4 sm:pr-6">
+                      <TableCell className="hidden align-top caption-scale text-muted-foreground lg:table-cell pr-4 sm:pr-6">
                         {r.actorUserId ? `${r.actorUserId.slice(0, 8)}…` : "—"}
                       </TableCell>
                     </TableRow>

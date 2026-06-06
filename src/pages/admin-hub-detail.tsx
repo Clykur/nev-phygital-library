@@ -138,7 +138,7 @@ function CoverCell({ title, url }: { title: string; url?: string | null }) {
   const src = bookCoverDisplayUrl(url ? apiPublicUrl(url) : null);
   return (
     <div className="flex items-center gap-3">
-      <div className="h-12 w-9 overflow-hidden rounded border border-border bg-muted">
+      <div className="h-12 w-9 overflow-hidden rounded border border-border bg-shimmer">
         <img
           src={src}
           alt={title}
@@ -274,7 +274,7 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
             </div>
             <div>
               <p className="section-kicker">Hub ID</p>
-              <p className="mt-1 font-mono body-scale font-normal">{hub.publicId}</p>
+              <p className="mt-1 body-scale font-normal">{hub.publicId}</p>
             </div>
             <div>
               <p className="section-kicker">Kind</p>
@@ -420,7 +420,7 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
                       <TableCell className="pl-4 sm:pl-6">
                         <CoverCell title={r.title} url={r.coverImageUrl} />
                       </TableCell>
-                      <TableCell className="font-mono body-scale font-normal">{r.borrowerMasked}</TableCell>
+                      <TableCell className="body-scale font-normal">{r.borrowerMasked}</TableCell>
                       <TableCell>
                         <span className={cn(uniformBadgeShape, getStatusColorClasses(r.status.toLowerCase() === "active" || r.status.toLowerCase() === "checked_out" ? "checked out" : r.status.toLowerCase() === "overdue" ? "overdue" : "available"), "font-medium")}>
                           {r.status.replace(/_/g, " ")}
@@ -461,7 +461,7 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
                       <TableCell className="text-foreground-muted">
                         {r.source === "hub_inventory" ? "Hub owned" : "Peer consignment"}
                       </TableCell>
-                      <TableCell className="font-mono body-scale font-normal">{r.buyerMasked}</TableCell>
+                      <TableCell className="body-scale font-normal">{r.buyerMasked}</TableCell>
                       <TableCell className="pr-4 sm:pr-6">{fmtDate(r.soldAt)}</TableCell>
                     </TableRow>
                   ))}
@@ -556,7 +556,7 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle className="font-sans h4-scale font-semibold text-foreground">
+            <AlertDialogTitle className="h4-scale font-semibold text-foreground">
               {confirmAction === "enable"
                 ? "Enable this hub?"
                 : confirmAction === "disable"

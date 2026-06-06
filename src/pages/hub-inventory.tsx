@@ -35,14 +35,13 @@ import { portalPathsForUser } from "@/lib/app-paths";
 import { hubKindLabel } from "@/lib/hub-display";
 import {
   PORTAL_INLINE_LINK,
-  PORTAL_KICKER_COLOR,
   PORTAL_PAGE_GUTTER_X,
   STUDENT_CARD_SURFACE,
 } from "@/lib/student-ui";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { Check, ChevronsUpDown, ImagePlus, Loader2, Plus, Shield } from "lucide-react";
-import { shelfFilterChipClass, shelfFilterChipOnDarkClass } from "@/lib/status-badges";
+
 import { Link } from "wouter";
 import { CatalogBookCard, addedLabel, catalogRefLabel } from "@/pages/library";
 
@@ -86,7 +85,7 @@ type HubBookRow = {
 const PAGE_SIZE = 50;
 
 /** One border, flat panel — matches book requests & overview. */
-const outline = "rounded-md border border-border bg-background";
+const outline = "rounded-xl border border-border bg-background";
 
 function SectionLabel({ children }: { children: ReactNode }) {
   return (
@@ -181,6 +180,7 @@ function InventoryPaginationBar({
 function sourceLabel(source: string) {
   if (source === "hub_inventory") return "Hub stock";
   if (source === "p2p") return "Student consignment (on shelf)";
+  if (source === "bounty") return "Bounty acquisition";
   return source;
 }
 
@@ -194,7 +194,7 @@ export default function HubInventoryPage() {
   );
   const qc = useQueryClient();
   const [hubId, setHubId] = useState<string>("all");
-  const [source, setSource] = useState<"all" | "hub_inventory" | "p2p">("all");
+  const [source, setSource] = useState<"all" | "hub_inventory" | "p2p" | "bounty">("all");
   const [status, setStatus] = useState<string>("all");
   const [q, setQ] = useState("");
   const [page, setPage] = useState(0);
@@ -539,8 +539,8 @@ export default function HubInventoryPage() {
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   const rows = booksQ.data?.books ?? [];
 
-  const selectTriggerClass = "h-10 w-full text-primary rounded-md border-border bg-background";
-  const inputClass = "h-10 w-full rounded-md border-border bg-background text-sm";
+  const selectTriggerClass = "h-10 w-full text-primary rounded-xl border-border bg-background";
+  const inputClass = "h-10 w-full rounded-xl border-border bg-background text-sm";
 
   return (
     <div className={cn(topPad, "pb-10 lg:pb-10")}>
@@ -548,34 +548,7 @@ export default function HubInventoryPage() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
           <div className="min-w-0 font-sans">
             <h1 className="mt-1 h3-scale font-bold tracking-tight text-foreground">Inventory</h1>
-            {isSuperAdmin ? (
-              <p className="mt-2 w-full body-scale text-foreground-muted leading-relaxed">
-                Every row is a <span className="font-semibold text-foreground">physical copy</span> (hub stock or student
-                consignment on shelf). P2P listings that are not a copy yet are not mixed in here; open{" "}
-                {deskPaths ? (
-                  <Link href={deskPaths.p2pListings} className={PORTAL_INLINE_LINK}>
-                    P2P Listings
-                  </Link>
-                ) : (
-                  <span className="font-semibold text-foreground">P2P Listings</span>
-                )}{" "}
-                for the pre–drop-off pipeline. Use <span className="font-semibold text-foreground">Scope</span>,{" "}
-                <span className="font-semibold text-foreground">Source</span>, and{" "}
-                <span className="font-semibold text-foreground">Status</span> to filter.
-              </p>
-            ) : (
-              <p className="mt-2 w-full body-scale text-foreground-muted leading-relaxed">
-                On-shelf and consigned physical copies for your managed hubs. Use{" "}
-                <span className="font-semibold text-foreground">Source</span> to separate hub stock from student consignment
-                on shelf. Pre–drop-off peer listings are under{" "}
-                {deskPaths ? (
-                  <Link href={deskPaths.p2pListings} className={PORTAL_INLINE_LINK}>
-                    P2P Listings
-                  </Link>
-                ) : null}
-                {deskPaths ? "." : "P2P Listings in the desk menu."}
-              </p>
-            )}
+            <p className="mt-2 w-full body-scale text-foreground-muted leading-relaxed">All physical copies in your hub.</p>
           </div>
           {!isSuperAdmin ? (
             <Button
@@ -662,6 +635,7 @@ export default function HubInventoryPage() {
                 <SelectItem value="all">All</SelectItem>
                 <SelectItem value="hub_inventory">Hub-owned</SelectItem>
                 <SelectItem value="p2p">Peer consignment</SelectItem>
+                <SelectItem value="bounty">Bounty acquisition</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -786,7 +760,7 @@ export default function HubInventoryPage() {
                         </span>
                         {b.source === "hub_inventory" ? (
                           <span
-                            className="shrink-0 font-mono caption-scale font-medium tabular-nums text-foreground-muted"
+                            className="shrink-0 caption-scale font-medium tabular-nums text-foreground-muted"
                             title={b.id}
                           >
                             {refShort}
@@ -794,18 +768,7 @@ export default function HubInventoryPage() {
                         ) : null}
                       </div>
                       <CopyLifecycleStrip status={b.status} />
-                      {b.inventoryStats && b.inventoryStats.total > 0 && (
-                        <div className="mt-1 space-y-0.5 caption-scale leading-relaxed text-foreground-muted">
-                          <p className="font-medium text-foreground">
-                            {b.inventoryStats.available > 0
-                              ? `${b.inventoryStats.available} of ${b.inventoryStats.total} Copies Available at this Hub`
-                              : `${b.inventoryStats.total} Copies Total at this Hub`}
-                          </p>
-                          <p>
-                            {b.inventoryStats.issued} Issued &bull; {b.inventoryStats.reserved} Reserved
-                          </p>
-                        </div>
-                      )}
+
                       {b.status === "reserved" && b.request ? (
                         <div className="space-y-1.5 rounded-md border border-primary/25 bg-primary/[0.04] p-2 text-xs">
                           <div className="flex items-center gap-2">
@@ -856,17 +819,16 @@ export default function HubInventoryPage() {
                               </p>
                             ) : null}
                             <p className="font-medium tabular-nums">
-                              ₹{b.borrowPrice.toLocaleString("en-IN")} borrow · ₹
-                              {b.buyPrice.toLocaleString("en-IN")} buy
+                              {b.borrowPrice.toLocaleString("en-IN")} Credits borrow · {b.buyPrice.toLocaleString("en-IN")} Credits buy
                             </p>
                             <div className="flex flex-wrap items-center gap-1.5">
-                              <span className="inline-flex h-5 items-center rounded-sm bg-muted px-1.5 caption-scale font-medium uppercase tracking-wider text-foreground md:bg-overlay-backdrop md:text-on-media-muted">
+                              <span className="inline-flex h-5 items-center rounded-sm bg-shimmer px-1.5 caption-scale font-medium uppercase tracking-wider text-foreground md:bg-overlay-backdrop md:text-on-media-muted">
                                 {sourceLabel(b.source)}
                               </span>
-                              <span className="inline-flex h-5 items-center rounded-sm bg-muted px-1.5 caption-scale font-medium uppercase tracking-wider text-foreground md:bg-overlay-backdrop md:text-on-media-muted">
+                              <span className="inline-flex h-5 items-center rounded-sm bg-shimmer px-1.5 caption-scale font-medium uppercase tracking-wider text-foreground md:bg-overlay-backdrop md:text-on-media-muted">
                                 {b.condition.replace(/_/g, " ")}
                               </span>
-                              <span className="inline-flex h-5 items-center rounded-sm bg-muted px-1.5 caption-scale font-medium uppercase tracking-wider text-foreground md:bg-overlay-backdrop md:text-on-media-muted">
+                              <span className="inline-flex h-5 items-center rounded-sm bg-shimmer px-1.5 caption-scale font-medium uppercase tracking-wider text-foreground md:bg-overlay-backdrop md:text-on-media-muted">
                                 {b.status === "available"
                                   ? "Available"
                                   : b.status === "reserved"
@@ -998,7 +960,7 @@ export default function HubInventoryPage() {
                               </Button>
                             ) : null}
                             <p
-                              className="font-mono caption-scale font-medium text-foreground-subtle"
+                              className="caption-scale font-medium text-foreground-subtle"
                               title={new Date(b.updatedAt).toLocaleString()}
                             >
                               Updated · {new Date(b.updatedAt).toLocaleDateString()}
@@ -1042,10 +1004,10 @@ export default function HubInventoryPage() {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="font-sans h4-scale font-semibold text-foreground">New shelf copy</DialogTitle>
+            <DialogTitle className="h4-scale font-semibold text-foreground">New shelf copy</DialogTitle>
             <DialogDescription className="body-scale text-foreground-muted">
               Register one hub-owned copy on the shelf. Set a <strong className="font-semibold text-foreground">buy</strong> price and a{" "}
-              <strong className="font-semibold text-foreground">borrow</strong> fee (whole rupees; borrow may be ₹0). Book photo is optional same as
+              <strong className="font-semibold text-foreground">borrow</strong> fee (whole credits; borrow may be 0 credits). Book photo is optional same as
               student listings.
             </DialogDescription>
           </DialogHeader>
@@ -1125,7 +1087,7 @@ export default function HubInventoryPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="add-buy">Buy price (₹)</Label>
+              <Label htmlFor="add-buy">Buy price (Credits)</Label>
               <Input
                 id="add-buy"
                 inputMode="numeric"
@@ -1136,11 +1098,11 @@ export default function HubInventoryPage() {
                 onChange={(e) => setAddBuy(e.target.value.replace(/[^\d]/g, ""))}
               />
               {!addBuyValid && addBuy.trim() !== "" ? (
-                <p className="caption-scale font-medium text-destructive">Enter a whole number ₹0 or more.</p>
+                <p className="caption-scale font-medium text-destructive">Enter a whole number 0 or more.</p>
               ) : null}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="add-borrow">Borrow fee (₹)</Label>
+              <Label htmlFor="add-borrow">Borrow fee (Credits)</Label>
               <Input
                 id="add-borrow"
                 inputMode="numeric"
@@ -1151,7 +1113,7 @@ export default function HubInventoryPage() {
                 onChange={(e) => setAddBorrow(e.target.value.replace(/[^\d]/g, ""))}
               />
               {!addBorrowValid && addBorrow.trim() !== "" ? (
-                <p className="caption-scale font-medium text-destructive">Enter a whole number ₹0 or more.</p>
+                <p className="caption-scale font-medium text-destructive">Enter a whole number 0 or more.</p>
               ) : null}
             </div>
             <div className="space-y-2">

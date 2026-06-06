@@ -119,7 +119,7 @@ function CoverCell({ title, url }: { title: string; url?: string | null }) {
   const src = bookCoverDisplayUrl(url ? apiPublicUrl(url) : null);
   return (
     <div className="flex items-center gap-3">
-      <div className="h-12 w-9 overflow-hidden rounded border border-border bg-muted">
+      <div className="h-12 w-9 overflow-hidden rounded border border-border bg-shimmer">
         <img
           src={src}
           alt={title}
@@ -264,7 +264,7 @@ function AdminUserDetailContent({ userId }: { userId: string }) {
             </div>
             <div>
               <p className="section-kicker">Student ID</p>
-              <p className="mt-1 font-mono body-scale font-normal">{user.publicId}</p>
+              <p className="mt-1 body-scale font-normal">{user.publicId}</p>
             </div>
             <div>
               <p className="section-kicker">Base role</p>
@@ -384,7 +384,7 @@ function AdminUserDetailContent({ userId }: { userId: string }) {
                         <CoverCell title={r.title} url={r.coverImageUrl} />
                       </TableCell>
                       <TableCell>₹{r.price.toLocaleString("en-IN")}</TableCell>
-                      <TableCell className="font-mono body-scale font-normal">{r.buyerMasked}</TableCell>
+                      <TableCell className="body-scale font-normal">{r.buyerMasked}</TableCell>
                       <TableCell>{r.hubName}</TableCell>
                       <TableCell className="pr-4 sm:pr-6">{fmtDate(r.date)}</TableCell>
                     </TableRow>
@@ -477,7 +477,7 @@ function AdminUserDetailContent({ userId }: { userId: string }) {
       <AlertDialog open={confirmAction != null} onOpenChange={(o) => !o && setConfirmAction(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle className="font-sans h4-scale font-semibold text-foreground">{confirmTitle}</AlertDialogTitle>
+            <AlertDialogTitle className="h4-scale font-semibold text-foreground">{confirmTitle}</AlertDialogTitle>
             <AlertDialogDescription className="body-scale text-foreground-muted">{confirmBody}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

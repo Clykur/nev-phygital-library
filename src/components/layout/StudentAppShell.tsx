@@ -5,7 +5,7 @@ import {
 } from "react";
 import { Link, useLocation } from "wouter";
 import type { LucideIcon } from "lucide-react";
-import { LogOut, Library, LayoutDashboard, BookOpen, Tag, Wallet } from "lucide-react";
+import { LogOut, Library, LayoutDashboard, BookOpen, Tag, Wallet, ClipboardList } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProfileAvatar } from "@/components/profile-avatar";
 import { useAuth } from "@/context/auth-context";
@@ -20,8 +20,9 @@ import {
   STUDENT_PROFILE_PATH,
   STUDENT_DASHBOARD_PATH,
   STUDENT_BORROW_PATH,
-  STUDENT_SELL_PATH,
+  STUDENT_BOUNTY_PATH,
   STUDENT_WALLET_PATH,
+  STUDENT_REQUESTS_PATH,
 } from "@/lib/app-paths";
 import {
   hubDeskGroupsForUser,
@@ -68,11 +69,11 @@ function UnifiedAppShell({
     <StudentShellContext.Provider value={true}>
       <div className="min-h-[100dvh] bg-background flex flex-col">
         {/* Top Navigation for Desktop */}
-        <header className="sticky top-0 z-40 hidden w-full h-16 border-b border-border/80 bg-background/95 backdrop-blur md:flex items-center justify-between px-6">
+        <header className="sticky top-0 z-40 hidden w-full h-16 backdrop-blur md:flex items-center justify-between px-6">
           <div className="flex items-center gap-8">
             <Link
               href={shellHome}
-              className="font-[var(--font-display)] text-xl font-extrabold tracking-tight text-foreground flex items-center"
+              className="font-display text-xl font-extrabold tracking-tight text-foreground flex items-center"
             >
               <div className="relative flex items-center justify-center w-6 h-6 mr-2 bg-primary rounded-md shadow-sm">
                 <Library className="w-3.5 h-3.5 text-primary-foreground" />
@@ -124,10 +125,10 @@ function UnifiedAppShell({
         </header>
 
         {/* Mobile Header */}
-        <header className="sticky top-0 z-40 flex h-16 w-full items-center justify-between border-b border-border/80 bg-background/95 px-4 backdrop-blur md:hidden">
+        <header className="sticky top-0 z-40 flex h-16 w-full items-center justify-between px-4 backdrop-blur md:hidden">
           <Link
             href={shellHome}
-            className="font-[var(--font-display)] text-lg font-extrabold tracking-tight text-foreground flex items-center"
+            className="font-display text-lg font-extrabold tracking-tight text-foreground flex items-center"
           >
             Neev
           </Link>
@@ -164,7 +165,7 @@ function UnifiedAppShell({
         </main>
 
         {/* Bottom Navigation for Mobile */}
-        <nav className="fixed bottom-0 left-0 right-0 z-50 flex h-16 items-center justify-around border-t border-border/80 bg-background/95 backdrop-blur md:hidden">
+        <nav className="fixed bottom-0 left-0 right-0 z-50 flex h-16 items-center justify-around border-t border-border bg-background/95 backdrop-blur md:hidden">
           {MOBILE_NAV_ITEMS.map((item) => {
             const active = checkActive(location, item.href);
             const Icon = item.icon;
@@ -225,7 +226,8 @@ export function StudentAppShell({ children }: { children: ReactNode }) {
   const studentNavItems = [
     { label: "Dashboard", href: STUDENT_DASHBOARD_PATH, icon: LayoutDashboard },
     { label: "Browse Books", href: STUDENT_BORROW_PATH, icon: BookOpen },
-    { label: "Sell", href: STUDENT_SELL_PATH, icon: Tag },
+    { label: "Requests", href: STUDENT_REQUESTS_PATH, icon: ClipboardList },
+    { label: "Bounty Books", href: STUDENT_BOUNTY_PATH, icon: Tag },
     { label: "Wallet", href: STUDENT_WALLET_PATH, icon: Wallet },
   ];
 

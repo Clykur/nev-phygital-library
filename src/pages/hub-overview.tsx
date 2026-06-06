@@ -2,8 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { HubCommerceSection } from "@/components/hub/HubCommerceSection";
 import { HubStudentAnalytics, HubStudentsSection } from "@/components/hub/HubStudentsManagement";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { getStatusColorClasses, uniformBadgeShape } from "@/lib/status-badges";
+import { uniformBadgeShape } from "@/lib/status-badges";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -19,7 +18,6 @@ import { cn } from "@/lib/utils";
 import { hubKindLabel } from "@/lib/hub-display";
 import {
   PORTAL_INLINE_LINK,
-  PORTAL_KICKER_COLOR,
   PORTAL_PAGE_GUTTER_X,
   PORTAL_PANEL_SURFACE,
 } from "@/lib/student-ui";
@@ -27,9 +25,7 @@ import { PORTAL_PAGE_LEAD, PORTAL_PAGE_TITLE, PORTAL_STAT_VALUE } from "@/lib/po
 import { adminSelectTrigger } from "@/lib/admin-desk-ui";
 import { portalPathsForUser } from "@/lib/app-paths";
 import {
-  BookOpen,
   ClipboardList,
-  History,
   Loader2,
   Package,
   Shield,
@@ -67,6 +63,11 @@ type HubOverviewPayload = {
     readyForPickup: number;
     p2pPending: number;
     p2pOnShelf: number;
+    bountyOpenRequests?: number;
+    bountyBooksAcquired?: number;
+    bountyPendingDeliveries?: number;
+    bountyTotalRewardValue?: number;
+    bountyFulfilledRequests?: number;
     transactionsToday: number;
     transactionsInRange: number;
   };
@@ -122,6 +123,13 @@ type HubOverviewPayload = {
     count?: number;
     severity: "critical" | "warning" | "info";
   }>;
+  bounty?: {
+    openRequests: number;
+    booksAcquired: number;
+    pendingDeliveries: number;
+    totalRewardValue: number;
+    fulfilledRequests: number;
+  };
   topRequestedTitles: Array<{ title: string; count: number }>;
 };
 
@@ -165,17 +173,13 @@ type SuperAdminOverviewPayload = HubOverviewPayload & {
   };
 };
 
-const SEVERITY_ORDER: Record<string, number> = { critical: 0, warning: 1, info: 2 };
 
 /** Second-key sort: pending → ready pickup → consignment / low stock → expired. */
 
 const REQUEST_KEYS = [
-  "requested",
-  "routed",
-  "fulfilled",
-  "ready",
-  "picked",
-  "expired",
+  "pending",
+  "available_for_collection",
+  "delivered",
   "cancelled",
 ] as const;
 
@@ -203,7 +207,7 @@ function DeskQuickLink({
       href={href}
       className={cn(
         PORTAL_PANEL_SURFACE,
-        "flex items-start gap-3 p-4 transition-colors hover:bg-muted/30",
+        "flex items-start gap-3 p-4 transition-colors hover:",
       )}
     >
       <Icon className="mt-0.5 h-4 w-4 shrink-0 text-foreground-muted" aria-hidden />
@@ -234,27 +238,17 @@ function StatCell({
   );
 }
 
-function hubNameInScope(hubId: string, hubs: Hub[] | undefined): string | null {
-  const n = hubs?.find((h) => h.id === hubId)?.name;
-  return n && n.length > 0 ? n : null;
-}
 
 function pipelineBarLabel(key: string): string {
   switch (key) {
-    case "requested":
-      return "Requested";
-    case "routed":
-      return "Finding";
-    case "fulfilled":
-      return "Set aside";
-    case "ready":
-      return "Ready for pickup";
-    case "picked":
-      return "Picked";
-    case "expired":
-      return "Timed out";
+    case "pending":
+      return "Pending";
+    case "available_for_collection":
+      return "Available for Collection";
+    case "delivered":
+      return "Delivered";
     case "cancelled":
-      return "Withdrawn";
+      return "Cancelled";
     default:
       return key.replace(/_/g, " ");
   }
@@ -265,10 +259,10 @@ function executiveFunnelFromBreakdown(
 ) {
   const g = (k: string) => requestBreakdown[k] ?? 0;
   return {
-    needAction: g("requested") + g("routed"),
-    inPrep: g("fulfilled") + g("ready"),
-    completed: g("picked"),
-    closed: g("expired") + g("cancelled"),
+    needAction: g("pending"),
+    inPrep: g("available_for_collection"),
+    completed: g("delivered"),
+    closed: g("cancelled"),
   };
 }
 
@@ -327,7 +321,7 @@ export default function HubOverviewPage() {
       <div className={cn("mx-auto max-w-lg pb-20 text-center", PORTAL_PAGE_GUTTER_X, inShell ? "pt-8" : "pt-28")}>
         <div
           className={cn(
-            "mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-border/60 bg-muted/30",
+            "mx-auto flex h-14 w-14 items-center justify-center rounded-xl border border-border ",
           )}
         >
           <Shield className="h-7 w-7 text-foreground-muted" />
@@ -444,11 +438,6 @@ export default function HubOverviewPage() {
         </div>
       </div>
 
-      <div className="space-y-6 pt-6 pb-6">
-        <HubStudentAnalytics overviewHubId={overviewHubId} />
-        <HubStudentsSection overviewHubId={overviewHubId} />
-      </div>
-
       {overviewQ.isLoading ? (
         <div className="flex justify-center py-24">
           <Loader2 className="h-9 w-9 animate-spin text-foreground-muted" />
@@ -465,11 +454,11 @@ export default function HubOverviewPage() {
                 <SectionLabel>Health</SectionLabel>
                 <div className="mt-2 grid grid-cols-1 gap-2 text-sm sm:grid-cols-3">
                   <p className="text-foreground-muted">
-                    Queue backlog: <span className="font-mono text-foreground">{execFunnel.needAction}</span>
+                    Queue backlog: <span className="text-foreground">{execFunnel.needAction}</span>
                   </p>
                   <p className="text-foreground-muted">
                     Stale requests:{" "}
-                    <span className="font-mono text-foreground">{ov.requestBreakdown["expired"] ?? 0}</span>
+                    <span className="text-foreground">{ov.requestBreakdown["expired"] ?? 0}</span>
                   </p>
                 </div>
               </section>
@@ -572,12 +561,12 @@ export default function HubOverviewPage() {
                                 {row.isActive ? "" : " · inactive"}
                               </div>
                             </td>
-                            <td className="px-4 py-2 font-mono tabular-nums">{row.attentionScore}</td>
-                            <td className="px-4 py-2 font-mono tabular-nums">{row.pendingDesk}</td>
-                            <td className="px-4 py-2 font-mono tabular-nums">{row.readyPickup}</td>
-                            <td className="px-4 py-2 font-mono tabular-nums">{row.p2pDropoffsPending}</td>
-                            <td className="px-4 py-2 font-mono tabular-nums">{row.onShelfCopies}</td>
-                            <td className="px-4 py-2 font-mono tabular-nums">{row.shelfUtilizationPct}%</td>
+                            <td className="px-4 py-2 tabular-nums">{row.attentionScore}</td>
+                            <td className="px-4 py-2 tabular-nums">{row.pendingDesk}</td>
+                            <td className="px-4 py-2 tabular-nums">{row.readyPickup}</td>
+                            <td className="px-4 py-2 tabular-nums">{row.p2pDropoffsPending}</td>
+                            <td className="px-4 py-2 tabular-nums">{row.onShelfCopies}</td>
+                            <td className="px-4 py-2 tabular-nums">{row.shelfUtilizationPct}%</td>
                           </tr>
                         ))}
                       </tbody>
@@ -591,8 +580,8 @@ export default function HubOverviewPage() {
                 <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-3">
                   <DeskQuickLink
                     href={d.requests}
-                    title="Requests"
-                    hint="Triage the desk queue"
+                    title="Book Requests"
+                    hint="Global request queue"
                     icon={ClipboardList}
                   />
                   <DeskQuickLink
@@ -618,7 +607,7 @@ export default function HubOverviewPage() {
                 <div className="mt-2 grid gap-2 sm:grid-cols-2">
                   {ov.metrics.pendingRequests > 0 ? (
                     <Link href={d.requests} className={cn("text-sm", PORTAL_INLINE_LINK)}>
-                      Pending requests need action ({ov.metrics.pendingRequests}) → Open Requests
+                      Pending requests need action ({ov.metrics.pendingRequests}) → Open Book Requests
                     </Link>
                   ) : (
                     <p className="body-scale font-normal text-foreground-muted">Request queue is healthy.</p>
@@ -654,6 +643,41 @@ export default function HubOverviewPage() {
                   />
                 </div>
               </section>
+
+              <section className={cn(PORTAL_PANEL_SURFACE, "overflow-hidden")} aria-label="Bounty Books">
+                <div className="border-b border-border px-4 py-3">
+                  <SectionLabel>Bounty Books</SectionLabel>
+                  <p className="mt-1 caption-scale font-medium text-foreground-muted">
+                    Library acquisition requests.{" "}
+                    <Link href={d.bountyBooks ?? d.p2pListings} className="underline underline-offset-2">
+                      Manage bounties
+                    </Link>
+                  </p>
+                </div>
+                <div className="grid grid-cols-2 divide-x divide-y divide-border sm:grid-cols-3">
+                  <StatCell
+                    label="Open requests"
+                    value={ov.bounty?.openRequests ?? ov.metrics.bountyOpenRequests ?? 0}
+                  />
+                  <StatCell
+                    label="Pending deliveries"
+                    value={ov.bounty?.pendingDeliveries ?? ov.metrics.bountyPendingDeliveries ?? 0}
+                  />
+                  <StatCell
+                    label="Books acquired"
+                    value={ov.bounty?.booksAcquired ?? ov.metrics.bountyBooksAcquired ?? 0}
+                  />
+                  <StatCell
+                    label="Fulfilled"
+                    value={ov.bounty?.fulfilledRequests ?? ov.metrics.bountyFulfilledRequests ?? 0}
+                  />
+                  <StatCell
+                    label="Total reward value"
+                    value={`₹${(ov.bounty?.totalRewardValue ?? ov.metrics.bountyTotalRewardValue ?? 0).toLocaleString("en-IN")}`}
+                    sub="open bounties"
+                  />
+                </div>
+              </section>
             </>
           ) : (
             <p className={cn(PORTAL_PANEL_SURFACE, "px-4 py-3 text-sm text-foreground-muted")}>
@@ -671,13 +695,13 @@ export default function HubOverviewPage() {
                 </Link>
               </p>
             </div>
-            <div className="grid grid-cols-2 divide-x divide-y divide-border sm:grid-cols-4 lg:grid-cols-7">
+            <div className="grid grid-cols-2 divide-x divide-y divide-border sm:grid-cols-4">
               {REQUEST_KEYS.map((key) => (
                 <div key={key} className="p-3 text-center">
                   <p className="section-kicker text-foreground">
                     {pipelineBarLabel(key)}
                   </p>
-                  <p className="mt-1 font-mono text-base tabular-nums text-foreground">
+                  <p className="mt-1 text-base tabular-nums text-foreground">
                     {ov.requestBreakdown[key] ?? 0}
                   </p>
                 </div>
@@ -704,7 +728,7 @@ export default function HubOverviewPage() {
                     className="flex items-center justify-between gap-3 px-4 py-2.5 text-sm"
                   >
                     <span className="min-w-0 text-foreground">{t.title}</span>
-                    <span className="shrink-0 font-mono tabular-nums text-foreground-muted">{t.count}</span>
+                    <span className="shrink-0 tabular-nums text-foreground-muted">{t.count}</span>
                   </li>
                 ))}
               </ul>

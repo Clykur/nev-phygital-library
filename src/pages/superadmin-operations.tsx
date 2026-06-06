@@ -79,7 +79,7 @@ type Hub = { id: string; name: string };
 function severityClass(s: Severity) {
   if (s === "critical") return "border-destructive/50 bg-destructive/5";
   if (s === "warning") return "border-accent/35 bg-accent/5";
-  return "border-border bg-muted/30";
+  return "border-border ";
 }
 
 function severityBadgeClass(s: Severity) {
@@ -444,7 +444,7 @@ function SuperAdminOperationsContent() {
       <Dialog open={!!reassignIssue} onOpenChange={(open) => !open && setReassignIssue(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="font-sans h4-scale font-semibold text-foreground">Reassign request to another hub</DialogTitle>
+            <DialogTitle className="h4-scale font-semibold text-foreground">Reassign request to another hub</DialogTitle>
             <DialogDescription className="body-scale text-foreground-muted">Choose the destination hub and apply immediately.</DialogDescription>
           </DialogHeader>
           <div className="space-y-3">
@@ -485,7 +485,7 @@ function SuperAdminOperationsContent() {
       <Dialog open={!!assignIssue} onOpenChange={(open) => !open && setAssignIssue(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="font-sans h4-scale font-semibold text-foreground">Assign copy confirmation</DialogTitle>
+            <DialogTitle className="h4-scale font-semibold text-foreground">Assign copy confirmation</DialogTitle>
             <DialogDescription className="body-scale text-foreground-muted">Have you physically verified this book on shelf?</DialogDescription>
           </DialogHeader>
           <div className="grid gap-2">

@@ -119,7 +119,7 @@ export default function StudentSubscriptionPage() {
 
   return (
     <div className={cn("mx-auto max-w-5xl py-8", PORTAL_PAGE_CONTAINER)}>
-      <div className="mb-8 rounded-xl bg-gradient-to-r from-primary/10 to-primary/5 p-8 border border-primary/20">
+      <div className="mb-8 rounded-xl border border-primary/20 bg-primary/5 p-8 border border-primary/20">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold tracking-tight mb-2">Your Subscription</h1>
@@ -141,7 +141,7 @@ export default function StudentSubscriptionPage() {
           <div 
             key={plan.id} 
             className={cn(
-              "relative flex flex-col rounded-2xl border p-8 shadow-sm transition-all hover:shadow-md",
+              "relative flex flex-col rounded-xl border p-8 shadow-sm transition-all hover:shadow-md",
               activePlan === plan.tier ? "border-primary ring-1 ring-primary" : "border-border"
             )}
           >
@@ -198,7 +198,7 @@ export default function StudentSubscriptionPage() {
         </div>
         <div className="p-0">
           {historyData && historyData.length > 0 ? (
-            <div className="divide-y">
+            <div className="divide-y divide-border">
               {historyData.map((h) => (
                 <div key={h.id} className="flex items-center justify-between p-6">
                   <div>
@@ -211,9 +211,9 @@ export default function StudentSubscriptionPage() {
                     <p className="font-medium">₹{(h.amount / 100).toFixed(2)}</p>
                     <span className={cn(
                       "inline-flex mt-1 items-center rounded-full px-2 py-0.5 text-xs font-medium",
-                      h.status === "succeeded" ? "bg-emerald-100 text-emerald-800" :
-                      h.status === "failed" ? "bg-red-100 text-red-800" :
-                      "bg-yellow-100 text-yellow-800"
+                      h.status === "succeeded" ? "bg-success-surface text-success-foreground" :
+                      h.status === "failed" ? "bg-error-surface text-error-foreground" :
+                      "bg-warning-surface text-warning-foreground"
                     )}>
                       {h.status.charAt(0).toUpperCase() + h.status.slice(1)}
                     </span>

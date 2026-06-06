@@ -1,7 +1,7 @@
 'use client';
 
-import React from 'react';
-import { BookOpen, Map, MapPin, Wallet, Cpu, Library, School, LogOut, User, UserCircle2 } from 'lucide-react';
+import type { FC } from 'react';
+import { BookOpen, Map, Cpu, Library, School, LogOut, UserCircle2 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
 interface NeevHeaderProps {
@@ -16,7 +16,7 @@ interface NeevHeaderProps {
   setLandingSegment?: (segment: 'students' | 'colleges') => void;
 }
 
-export const NeevHeader: React.FC<NeevHeaderProps> = ({
+export const NeevHeader: FC<NeevHeaderProps> = ({
   activeTab,
   setActiveTab,
   branch,
@@ -38,7 +38,7 @@ export const NeevHeader: React.FC<NeevHeaderProps> = ({
               <Library className="w-4 h-4 text-primary-foreground" />
             </div>
             <div className="flex items-center space-x-1">
-              <span className="text-base font-bold tracking-tight text-foreground">Neev</span>
+              <span className="font-display text-base font-bold tracking-tight text-foreground">Neev</span>
             </div>
           </div>
 
@@ -73,8 +73,8 @@ export const NeevHeader: React.FC<NeevHeaderProps> = ({
                         className={cn(
                           "px-3 py-1.5 rounded-md text-sm font-medium transition-colors duration-200",
                           isActive
-                            ? "bg-muted/50 text-foreground"
-                            : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                            ? " text-foreground"
+                            : "text-muted-foreground hover:text-foreground hover:shadow-sm"
                         )}
                       >
                         {tab.label}
@@ -93,7 +93,7 @@ export const NeevHeader: React.FC<NeevHeaderProps> = ({
                   }}
                   className={cn(
                     "px-3 py-1.5 rounded-md text-sm font-medium transition-colors duration-200",
-                    activeTab !== 'catalog' && landingSegment === 'students' ? "bg-muted/50 text-foreground" : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                    activeTab !== 'catalog' && landingSegment === 'students' ? " text-foreground" : "text-muted-foreground hover:text-foreground hover:shadow-sm"
                   )}
                 >
                   Home
@@ -105,7 +105,7 @@ export const NeevHeader: React.FC<NeevHeaderProps> = ({
                   }}
                   className={cn(
                     "px-3 py-1.5 rounded-md text-sm font-medium transition-colors duration-200",
-                    activeTab === 'catalog' ? "bg-muted/50 text-foreground" : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                    activeTab === 'catalog' ? " text-foreground" : "text-muted-foreground hover:text-foreground hover:shadow-sm"
                   )}
                 >
                   Find a Book
@@ -118,7 +118,7 @@ export const NeevHeader: React.FC<NeevHeaderProps> = ({
                       document.getElementById('about-section')?.scrollIntoView({ behavior: 'smooth' });
                     }, 100);
                   }}
-                  className="px-3 py-1.5 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                  className="px-3 py-1.5 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:shadow-sm transition-colors"
                 >
                   About
                 </button>
@@ -130,7 +130,7 @@ export const NeevHeader: React.FC<NeevHeaderProps> = ({
           <div className="flex items-center space-x-3">
             {/* Campus selector */}
             {isLoggedIn && (
-              <div className="flex items-center space-x-2 px-3 py-1.5 rounded-md border border-border">
+              <div className="flex items-center space-x-2 px-3 py-1.5 rounded-xl border border-border">
                 <select
                   value={branch}
                   onChange={(e) => setBranch(e.target.value)}
@@ -156,7 +156,7 @@ export const NeevHeader: React.FC<NeevHeaderProps> = ({
                 <div className="h-6 w-px bg-border mx-1 hidden sm:block" />
                 <button
                   onClick={onLogout}
-                  className="flex items-center justify-center w-8 h-8 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                  className="flex items-center justify-center w-8 h-8 rounded-md text-muted-foreground hover:text-foreground hover: transition-colors"
                   title="Sign Out"
                 >
                   <LogOut className="w-4 h-4" />
@@ -173,7 +173,7 @@ export const NeevHeader: React.FC<NeevHeaderProps> = ({
                       document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
                     }, 100);
                   }}
-                  className="px-4 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                  className="px-4 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:shadow-sm transition-colors"
                 >
                   Log In
                 </button>

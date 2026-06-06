@@ -10,7 +10,7 @@ import { SuperAdminRoute } from "@/components/super-admin-route";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { getStatusColorClasses, uniformBadgeShape } from "@/lib/status-badges";
+import { uniformBadgeShape } from "@/lib/status-badges";
 import {
   Select,
   SelectContent,
@@ -230,7 +230,7 @@ function AdminUsersContent() {
                           <Link href={adminUserPath(u.id)} className={PORTAL_INLINE_LINK}>
                             {u.name}
                           </Link>
-                          <p className="mt-0.5 font-mono caption-scale font-medium text-foreground-muted">
+                          <p className="mt-0.5 caption-scale font-medium text-foreground-muted">
                             {u.publicId ?? u.id.slice(0, 8)}
                           </p>
                         </TableCell>

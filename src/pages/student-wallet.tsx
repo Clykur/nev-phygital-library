@@ -27,13 +27,7 @@ const fadeInUp = {
 export default function StudentWalletPage() {
   const { balance, transactions, subscription, subscribe } = useWallet();
 
-  const totalEarned = transactions
-    .filter((t) => t.type === "credit")
-    .reduce((sum, t) => sum + t.amount, 0);
-
-  const totalSpent = transactions
-    .filter((t) => t.type === "debit")
-    .reduce((sum, t) => sum + t.amount, 0);
+  const consumedCredits = Math.max(0, 5000 - balance);
 
   return (
     <div className={cn(PORTAL_PAGE_CONTAINER, "space-y-8 py-8")}>
@@ -71,29 +65,17 @@ export default function StudentWalletPage() {
           <div className="grid grid-cols-2 gap-4">
             <Card variant="default">
               <CardContent className="p-6">
-                <p className={PORTAL_SECTION_LABEL}>Total earned</p>
-                <p className={cn(PORTAL_STAT_VALUE, "mt-2")}>{totalEarned.toLocaleString()}</p>
+                <p className={PORTAL_SECTION_LABEL}>Max capacity</p>
+                <p className={cn(PORTAL_STAT_VALUE, "mt-2")}>5,000</p>
               </CardContent>
             </Card>
             <Card variant="default">
               <CardContent className="p-6">
-                <p className={PORTAL_SECTION_LABEL}>Total spent</p>
-                <p className={cn(PORTAL_STAT_VALUE, "mt-2")}>{totalSpent.toLocaleString()}</p>
+                <p className={PORTAL_SECTION_LABEL}>Consumed credits</p>
+                <p className={cn(PORTAL_STAT_VALUE, "mt-2")}>{consumedCredits.toLocaleString()}</p>
               </CardContent>
             </Card>
           </div>
-
-          <Card variant="default" className="border-primary/20 bg-primary/5">
-            <CardContent className="flex items-start gap-4 p-6">
-              <Sparkles className="h-6 w-6 shrink-0 text-primary" aria-hidden />
-              <div>
-                <h3 className="h4-scale font-semibold text-foreground">Earn more credits</h3>
-                <p className="mt-1 body-scale text-foreground-muted">
-                  Borrow books, write reviews, participate in community events, and earn rewards.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
 
           <section className="space-y-4">
             <h2 className="h4-scale font-semibold text-foreground">Transaction history</h2>
@@ -118,7 +100,7 @@ export default function StudentWalletPage() {
                             "rounded-full p-3",
                             t.type === "credit"
                               ? "bg-success/10 text-success"
-                              : "bg-muted text-foreground-muted",
+                              : "bg-shimmer text-foreground-muted",
                           )}
                         >
                           {t.type === "credit" ? (
@@ -136,7 +118,7 @@ export default function StudentWalletPage() {
                       </div>
                       <p
                         className={cn(
-                          "shrink-0 font-mono h4-scale font-semibold tabular-nums",
+                          "shrink-0 text-xl font-semibold tabular-nums",
                           t.type === "credit" ? "text-success" : "text-foreground",
                         )}
                       >

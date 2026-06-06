@@ -142,7 +142,7 @@ function Section({
         <div className="overflow-x-auto px-2 pb-4 pt-2">
           <Table>
             <TableHeader>
-              <TableRow className="border-border/50 hover:bg-transparent">
+              <TableRow className="border-border hover:bg-transparent">
                 <TableHead className="pl-5">Title</TableHead>
                 <TableHead>Pickup hub</TableHead>
                 <TableHead>Due date</TableHead>
@@ -155,7 +155,7 @@ function Section({
                 <TableRow
                   key={r.id}
                   className={cn(
-                    "even:bg-muted/[0.35]",
+                    "even:",
                     r.state === "overdue" && "border-l-2 border-l-destructive/80",
                     r.state === "soon" && "border-l-2 border-l-accent/80",
                   )}
@@ -287,7 +287,7 @@ export default function StudentLibraryPage() {
 
   const pendingPickupPurchases = useMemo(() => {
     const ready = (reqQ.data?.requests ?? [])
-      .filter((r) => r.status === "ready")
+      .filter((r) => r.status === "available_for_collection" || r.status === "ready")
       .map((r) => ({
         id: r.id,
         title: r.bookTitle?.trim() || "Requested title",
@@ -345,7 +345,7 @@ export default function StudentLibraryPage() {
           </div>
 
           {confirmReturn ? (
-            <div className={cn("mx-6 mt-5 flex gap-3 p-4", STUDENT_CARD_CHROME, "bg-muted/25")}>
+            <div className={cn("mx-6 mt-5 flex gap-3 p-4", STUDENT_CARD_CHROME, "")}>
               <div className="flex h-10 w-10 shrink-0 items-center justify-center text-primary">
                 <RotateCcw className="h-5 w-5" aria-hidden />
               </div>
@@ -361,11 +361,11 @@ export default function StudentLibraryPage() {
             </div>
           ) : null}
 
-          <DialogFooter className="mt-6 border-t border-border bg-muted/15 px-6 py-4 sm:justify-end">
+          <DialogFooter className="mt-6 border-t border-border  px-6 py-4 sm:justify-end">
             <Button
               type="button"
               variant="outline"
-              className="h-11 rounded-2xl border-border sm:min-w-[100px]"
+              className="h-11 rounded-xl border-border sm:min-w-[100px]"
               disabled={returnHubBook.isPending || returnPeerBorrow.isPending}
               onClick={() => setConfirmReturn(null)}
             >
@@ -373,7 +373,7 @@ export default function StudentLibraryPage() {
             </Button>
             <Button
               type="button"
-              className="h-11 rounded-2xl font-semibold sm:min-w-[160px]"
+              className="h-11 rounded-xl font-semibold sm:min-w-[160px]"
               disabled={returnHubBook.isPending || returnPeerBorrow.isPending || !confirmReturn}
               onClick={() => {
                 if (!confirmReturn) return;

@@ -1,22 +1,25 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Switch, Route, Router as WouterRouter, useLocation, Redirect } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster as SonnerToaster } from "sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/context/auth-context";
+import { toast } from "@/hooks/use-toast";
 import NotFound from "@/pages/not-found";
 import { StudentAppShell } from "@/components/layout/StudentAppShell";
 import Marketplace from "@/pages/marketplace";
 import HubOverviewPage from "@/pages/hub-overview";
 import HubInventoryPage from "@/pages/hub-inventory";
 import HubBookRequestsPage from "@/pages/hub-requests";
-import HubDeskP2pListingsPage from "@/pages/hub-desk-p2p-listings";
+import HubDeskBountyBooksPage from "@/pages/hub-desk-bounty-books";
+import StudentBountyBooksPage from "@/pages/student-bounty-books";
 import StudentSubscriptionPage from "@/pages/student-subscription";
 import HubBillingPage from "@/pages/hub-billing";
 
 import StudentTrackingPage from "@/pages/student-tracking";
 import StudentAlertsPage from "@/pages/student-alerts";
+import StudentRequestsPage from "@/pages/student-requests";
 import StudentProfilePage from "@/pages/student-profile";
 import StudentLibraryPage from "@/pages/student-library";
 import {
@@ -29,6 +32,7 @@ import {
   HUB_CATALOG_PATH,
   HUB_INVENTORY_PATH,
   HUB_OVERVIEW_PATH,
+  HUB_BOUNTY_BOOKS_PATH,
   HUB_P2P_LISTINGS_PATH,
   HUB_REQUESTS_PATH,
   HUB_PROFILE_PATH,
@@ -37,17 +41,19 @@ import {
   SUPER_ADMIN_INVENTORY_PATH,
   SUPER_ADMIN_OPERATIONS_PATH,
   SUPER_ADMIN_OVERVIEW_PATH,
+  SUPER_ADMIN_BOUNTY_BOOKS_PATH,
   SUPER_ADMIN_P2P_LISTINGS_PATH,
+  STUDENT_BOUNTY_PATH,
   SUPER_ADMIN_PROFILE_PATH,
   SUPER_ADMIN_REQUESTS_PATH,
   STUDENT_DASHBOARD_PATH,
   STUDENT_WALLET_PATH,
   STUDENT_ACTIVITY_PATH,
   STUDENT_ALERTS_PATH,
+  STUDENT_REQUESTS_PATH,
   STUDENT_BORROW_PATH,
   STUDENT_LIBRARY_PATH,
   STUDENT_PROFILE_PATH,
-  STUDENT_SELL_PATH,
 } from "@/lib/app-paths";
 import AdminUsersPage from "@/pages/admin-users";
 import AdminUserDetailPage from "@/pages/admin-user-detail";
@@ -167,12 +173,16 @@ function HubBorrowLegacyRedirect() {
   return <Redirect to={user?.baseRole === "super_admin" ? SUPER_ADMIN_INVENTORY_PATH : HUB_CATALOG_PATH} />;
 }
 
-function StudentSellRoute() {
+function StudentBountyRoute() {
   const { user } = useAuth();
   if (user?.baseRole === "hub" || user?.baseRole === "super_admin") {
     return <Redirect to={defaultLoggedInHome(user)} />;
   }
-  return <Marketplace studentMode="sell" />;
+  return <StudentBountyBooksPage />;
+}
+
+function StudentSellRoute() {
+  return <Redirect to={STUDENT_BOUNTY_PATH} />;
 }
 
 function HubSellRemovedRedirect() {
@@ -191,7 +201,16 @@ function StudentAlertsRoute() {
   const { user } = useAuth();
   if (user?.baseRole === "super_admin") return <Redirect to={SUPER_ADMIN_ACTIVITY_PATH} />;
   if (user?.baseRole === "hub") return <Redirect to={HUB_ACTIVITY_PATH} />;
-  return <StudentAlertsPage />;
+  // Alerts tab removed — redirect to the requests page which surfaces request notifications
+  return <Redirect to={STUDENT_REQUESTS_PATH} />;
+}
+
+function StudentRequestsRoute() {
+  const { user } = useAuth();
+  if (user?.baseRole === "hub" || user?.baseRole === "super_admin") {
+    return <Redirect to={defaultLoggedInHome(user)} />;
+  }
+  return <StudentRequestsPage />;
 }
 
 function HubActivityRoute() {
@@ -259,19 +278,27 @@ function SuperAdminBookRequestsRoute() {
   return <Redirect to={SUPER_ADMIN_OVERVIEW_PATH} />;
 }
 
-function HubP2pListingsDeskRoute() {
+function HubBountyBooksDeskRoute() {
   const { user } = useAuth();
   if (!hasHubPortalAccess(user?.baseRole)) return <Redirect to={STUDENT_DASHBOARD_PATH} />;
-  if (user?.baseRole === "super_admin") return <Redirect to={SUPER_ADMIN_P2P_LISTINGS_PATH} />;
-  return <HubDeskP2pListingsPage />;
+  if (user?.baseRole === "super_admin") return <Redirect to={SUPER_ADMIN_BOUNTY_BOOKS_PATH} />;
+  return <HubDeskBountyBooksPage />;
+}
+
+function SuperAdminBountyBooksRoute() {
+  const { user } = useAuth();
+  if (!hasHubPortalAccess(user?.baseRole)) return <Redirect to={STUDENT_BORROW_PATH} />;
+  if (user?.baseRole === "hub") return <Redirect to={HUB_BOUNTY_BOOKS_PATH} />;
+  if (user?.baseRole !== "super_admin") return <Redirect to={STUDENT_BORROW_PATH} />;
+  return <HubDeskBountyBooksPage />;
+}
+
+function HubP2pListingsDeskRoute() {
+  return <Redirect to={HUB_BOUNTY_BOOKS_PATH} />;
 }
 
 function SuperAdminP2pListingsRoute() {
-  const { user } = useAuth();
-  if (!hasHubPortalAccess(user?.baseRole)) return <Redirect to={STUDENT_BORROW_PATH} />;
-  if (user?.baseRole === "hub") return <Redirect to={HUB_P2P_LISTINGS_PATH} />;
-  if (user?.baseRole !== "super_admin") return <Redirect to={STUDENT_BORROW_PATH} />;
-  return <HubDeskP2pListingsPage />;
+  return <Redirect to={SUPER_ADMIN_BOUNTY_BOOKS_PATH} />;
 }
 
 function StudentDashboardRoute() {
@@ -299,7 +326,7 @@ function StudentWalletRoute() {
 }
 
 function PublicRoutes() {
-  const { login, loginGoogle, register, user, token } = useAuth();
+  const { login, loginGoogle, register, user, logout } = useAuth();
   const [landingSegment, setLandingSegment] = useState<'students' | 'colleges'>('students');
   const [branch, setBranch] = useState<string>('RVCE-BLR');
   const [activeTab, setActiveTab] = useState<string>('landing');
@@ -326,18 +353,47 @@ function PublicRoutes() {
             setActiveSegment={setLandingSegment}
             onLogin={async (email: string, password?: string) => {
               if (password) {
-                await login(email, password);
+                try {
+                  const loggedInUser = await login(email, password);
+                  if (loggedInUser) {
+                    if (landingSegment === 'students' && loggedInUser.baseRole === 'hub') {
+                      logout();
+                      throw new Error("Invalid credentials for Student Portal.");
+                    } else if (landingSegment === 'colleges' && (loggedInUser.baseRole === 'user' || loggedInUser.baseRole === 'student')) {
+                      logout();
+                      throw new Error("Invalid credentials for Hub Portal.");
+                    }
+                  }
+                } catch (error: any) {
+                  const msg = landingSegment === 'colleges' ? "Invalid credentials for Hub Portal." : "Invalid credentials for Student Portal.";
+                  toast({ variant: "destructive", title: "Login failed", description: msg });
+                }
               }
             }}
             onGoogleLogin={async (token: string, extra?: { accountType?: string, hubLocation?: string, hubName?: string, hubKind?: string }) => {
-              await loginGoogle({ token, ...extra });
+              try {
+                const loggedInUser = await loginGoogle({ token, ...extra });
+                if (loggedInUser) {
+                  if (landingSegment === 'students' && loggedInUser.baseRole === 'hub') {
+                    logout();
+                    throw new Error("Invalid credentials for Student Portal.");
+                  } else if (landingSegment === 'colleges' && (loggedInUser.baseRole === 'user' || loggedInUser.baseRole === 'student')) {
+                    logout();
+                    throw new Error("Invalid credentials for Hub Portal.");
+                  }
+                }
+              } catch (error: any) {
+                const msg = landingSegment === 'colleges' ? "Invalid credentials for Hub Portal." : "Invalid credentials for Student Portal.";
+                toast({ variant: "destructive", title: "Login failed", description: msg });
+              }
             }}
-            onSignUp={async (name: string, email: string, isPremium: boolean, hubLocationId: string, password?: string, role?: string, hubName?: string, hubKind?: string) => {
+            onSignUp={async (name: string, email: string, _isPremium: boolean, hubLocationId: string, password?: string, role?: string, hubName?: string, hubKind?: string, phone?: string) => {
               if (password) {
                 await register({
                   name,
                   email,
                   password,
+                  phone,
                   accountType: role === "super_admin" ? "super_admin" : role === "hub" ? "hub" : "user",
                   ...(role === "hub" || role === "super_admin" ? { hubName: hubName || name, hubLocation: hubLocationId, hubKind: hubKind || "college" } : { hubLocation: hubLocationId })
                 } as any);
@@ -349,7 +405,7 @@ function PublicRoutes() {
           />
         )}
       </main>
-      <Footer setActiveTab={() => { }} setLandingSegment={setLandingSegment} />
+      <Footer setActiveTab={setActiveTab} setLandingSegment={setLandingSegment} />
     </div>
   );
 }
@@ -365,10 +421,12 @@ function LoggedInRoutes() {
         <Route path="/student/buy">
           <Redirect to={STUDENT_BORROW_PATH} />
         </Route>
+        <Route path={STUDENT_BOUNTY_PATH} component={StudentBountyRoute} />
         <Route path="/student/sell" component={StudentSellRoute} />
-        <Route path="/student/activity" component={StudentActivityRoute} />
+        <Route path={STUDENT_ACTIVITY_PATH} component={StudentActivityRoute} />
         <Route path={STUDENT_LIBRARY_PATH} component={StudentLibraryRoute} />
         <Route path={STUDENT_ALERTS_PATH} component={StudentAlertsRoute} />
+        <Route path={STUDENT_REQUESTS_PATH} component={StudentRequestsRoute} />
         <Route path="/student/profile" component={StudentProfileRoute} />
         <Route path="/student/subscription" component={StudentSubscriptionPage} />
         <Route path="/student/tracking">
@@ -405,6 +463,8 @@ function LoggedInRoutes() {
         <Route path={HUB_INVENTORY_PATH} component={HubInventoryDeskRoute} />
         <Route path={SUPER_ADMIN_REQUESTS_PATH} component={SuperAdminBookRequestsRoute} />
         <Route path={HUB_REQUESTS_PATH} component={HubBookRequestsDeskRoute} />
+        <Route path={SUPER_ADMIN_BOUNTY_BOOKS_PATH} component={SuperAdminBountyBooksRoute} />
+        <Route path={HUB_BOUNTY_BOOKS_PATH} component={HubBountyBooksDeskRoute} />
         <Route path={SUPER_ADMIN_P2P_LISTINGS_PATH} component={SuperAdminP2pListingsRoute} />
         <Route path={HUB_P2P_LISTINGS_PATH} component={HubP2pListingsDeskRoute} />
         <Route path={SUPER_ADMIN_OPERATIONS_PATH} component={SuperAdminOperationsPage} />

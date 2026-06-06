@@ -39,8 +39,8 @@ function fmtKindLabel(kind: string) {
 }
 
 function notificationPriority(kind: string) {
-  if (kind === "book_request_ready") return 1;
-  if (kind === "book_request_routed" || kind === "book_request_fulfilled") return 2;
+  if (kind === "book_request_available" || kind === "book_request_ready") return 1;
+  if (kind === "book_request_new" || kind === "book_request_routed" || kind === "book_request_fulfilled") return 2;
   if (kind === "hub_return_confirmation" || kind === "p2p_return_confirmation") return 3;
   if (kind === "p2p_purchase_confirmation" || kind === "hub_purchase_confirmation") return 3;
   if (kind === "book_request_expired" || kind === "book_request_cancelled") return 4;
@@ -61,7 +61,7 @@ function resolveAlertNav(n: NotifRow, activity: string, borrow: string): AlertNa
     "book_request_expired",
     "book_request_picked",
   ]);
-  if (n.kind === "book_request_ready") {
+  if (n.kind === "book_request_available" || n.kind === "book_request_ready") {
     const ref = n.bookRequestId ?? null;
     return {
       type: "ready_for_pickup",
@@ -109,7 +109,7 @@ function resolveAlertNav(n: NotifRow, activity: string, borrow: string): AlertNa
 
 function FlatStatus({ label }: { label: string }) {
   return (
-    <span className="inline-flex h-6 items-center whitespace-nowrap rounded-md border border-border bg-muted/30 px-2.5 caption-scale font-semibold uppercase tracking-kicker text-foreground">
+    <span className="inline-flex h-6 items-center whitespace-nowrap rounded-xl border border-border  px-2.5 caption-scale font-semibold uppercase tracking-kicker text-foreground">
       {label}
     </span>
   );
@@ -122,7 +122,7 @@ export default function StudentAlertsPage() {
   const portalPaths = portalPathsForUser(user);
   const top = inShell ? "" : "pt-24";
   const pageWrap = inShell ? "w-full" : PORTAL_PAGE_CONTAINER;
-  const rowStripe = "even:bg-muted/[0.35]";
+  const rowStripe = "even:";
 
   const notifQ = useQuery({
     queryKey: ["notifications", "mine", "alerts-page"],
@@ -143,6 +143,13 @@ export default function StudentAlertsPage() {
       "hub_purchase_confirmation",
       "hub_return_confirmation",
       "p2p_return_confirmation",
+      "bounty_submission_received",
+      "bounty_submission_approved",
+      "bounty_submission_rejected",
+      "bounty_delivery_required",
+      "bounty_book_delivered",
+      "bounty_added_to_inventory",
+      "bounty_new_submission",
     ]);
     const rows = (notifQ.data?.notifications ?? []).filter(
       (n) => actionableKinds.has(n.kind) && !(n.readAt && notificationPriority(n.kind) >= 4),
@@ -227,7 +234,7 @@ export default function StudentAlertsPage() {
                                 </div>
                                 <p className="mt-2 leading-relaxed text-foreground">{n.body}</p>
                                 <Link href={nav.href} className="mt-2 block">
-                                  <span className="inline-flex h-8 items-center rounded-md border border-border bg-muted/30 px-3 text-xs font-medium text-foreground">
+                                  <span className="inline-flex h-8 items-center rounded-xl border border-border  px-3 text-xs font-medium text-foreground">
                                     Take action
                                   </span>
                                 </Link>
@@ -239,7 +246,7 @@ export default function StudentAlertsPage() {
                         {/* Desktop: table */}
                         <Table className="hidden w-full table-fixed sm:table">
                           <TableHeader>
-                            <TableRow className="border-border/50 hover:bg-transparent">
+                            <TableRow className="border-border hover:bg-transparent">
                               <TableHead className="w-[18%] pl-5">When</TableHead>
                               <TableHead className="w-[20%]">Type</TableHead>
                               <TableHead className="w-[62%] pr-5">Message</TableHead>
@@ -258,7 +265,7 @@ export default function StudentAlertsPage() {
                                   <div className="space-y-1">
                                     <p>{n.body}</p>
                                     <Link href={resolveAlertNav(n, portalPaths.activity, portalPaths.borrow).href}>
-                                      <span className="inline-flex h-7 items-center rounded-md border border-border bg-muted/30 px-3 text-xs font-medium text-foreground">
+                                      <span className="inline-flex h-7 items-center rounded-xl border border-border  px-3 text-xs font-medium text-foreground">
                                         Take action
                                       </span>
                                     </Link>

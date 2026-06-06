@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { apiFetch } from '../lib/api';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
@@ -46,7 +46,7 @@ export function LocationDiscoveryDialog({ open, onOpenChange, token }: LocationD
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md md:max-w-2xl max-h-[85vh] overflow-hidden flex flex-col p-0 bg-background border-border">
-        <DialogHeader className="px-6 py-4 border-b border-border/60 bg-muted/30">
+        <DialogHeader className="px-6 py-4 border-b border-border ">
           <DialogTitle className="flex items-center gap-2 text-xl font-bold text-foreground">
             <MapPin className="w-5 h-5 text-primary" />
             Location Discovery
@@ -74,7 +74,7 @@ export function LocationDiscoveryDialog({ open, onOpenChange, token }: LocationD
               <p className="text-sm text-muted-foreground max-w-md leading-relaxed">
                 {locError || "We need your location to show nearby hubs and books. Please enable location services in your browser settings to use this feature."}
               </p>
-              <button 
+              <button
                 onClick={requestLocation}
                 className="mt-6 px-4 py-2 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors shadow-sm"
               >
@@ -91,11 +91,11 @@ export function LocationDiscoveryDialog({ open, onOpenChange, token }: LocationD
                   <h4 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Nearby Hubs & Libraries</h4>
                   {hubsQ.isLoading && <Loader2 className="w-3 h-3 animate-spin text-muted-foreground" />}
                 </div>
-                
+
                 {hubsQ.isSuccess && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {hubsQ.data.hubs.slice(0, 4).map((hub) => (
-                      <div key={hub.id} className="flex items-start gap-3 p-3 rounded-xl border border-border bg-card hover:border-primary/50 transition-colors cursor-pointer group">
+                      <div key={hub.id} className="flex items-start gap-3 p-3 rounded-xl border border-border bg-card hover:border-primary/20 transition-colors cursor-pointer group">
                         <div className="w-10 h-10 flex items-center justify-center shrink-0">
                           <School className="w-5 h-5 text-primary group-hover:scale-110 transition-transform" />
                         </div>
@@ -115,7 +115,7 @@ export function LocationDiscoveryDialog({ open, onOpenChange, token }: LocationD
 
               {/* Books Section */}
               <div className="space-y-4">
-                <div className="flex items-center justify-between border-t border-border/50 pt-6">
+                <div className="flex items-center justify-between border-t border-border pt-6">
                   <h4 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Available Books Near You</h4>
                   {booksQ.isLoading && <Loader2 className="w-3 h-3 animate-spin text-muted-foreground" />}
                 </div>
@@ -125,7 +125,7 @@ export function LocationDiscoveryDialog({ open, onOpenChange, token }: LocationD
                     {booksQ.data.books.slice(0, 5).map((book) => {
                       const isAvailable = book.status === 'available';
                       return (
-                        <div key={book.id} className="flex items-center gap-4 p-3 rounded-xl border border-border bg-card hover:bg-muted/50 transition-colors">
+                        <div key={book.id} className="flex items-center gap-4 p-3 rounded-xl border border-border bg-card hover: transition-colors">
                           <div className="w-10 h-14 shrink-0 flex items-center justify-center overflow-hidden">
                             {book.coverImageUrl ? (
                               <img src={book.coverImageUrl} alt={book.title} className="w-full h-full object-cover" />
@@ -135,11 +135,11 @@ export function LocationDiscoveryDialog({ open, onOpenChange, token }: LocationD
                           </div>
                           <div className="flex-1 min-w-0">
                             <h5 className="text-sm font-bold text-foreground truncate">{book.title}</h5>
-                            <p className="text-xs text-muted-foreground truncate">{book.author}</p>
+                            <p className="text-xs text-muted-foreground truncate">{(book as any).author}</p>
                             <div className="mt-1 flex items-center gap-2">
                               <span className={cn(
                                 "caption-scale px-1.5 py-0.5 rounded font-semibold",
-                                isAvailable ? "bg-secondary/10 text-secondary" : "bg-muted text-muted-foreground"
+                                isAvailable ? "border border-success/30 bg-success/10 text-success" : "border border-border bg-background text-muted-foreground"
                               )}>
                                 {isAvailable ? 'Available' : 'Reserved'}
                               </span>
@@ -148,7 +148,7 @@ export function LocationDiscoveryDialog({ open, onOpenChange, token }: LocationD
                               </span>
                             </div>
                           </div>
-                          <button className="px-3 py-1.5 bg-background border border-border shadow-sm rounded-md text-xs font-medium text-foreground hover:bg-muted transition-colors whitespace-nowrap">
+                          <button className="px-3 py-1.5 bg-background border border-border shadow-sm rounded-xl text-xs font-medium text-foreground hover:shadow-sm transition-colors whitespace-nowrap">
                             View
                           </button>
                         </div>

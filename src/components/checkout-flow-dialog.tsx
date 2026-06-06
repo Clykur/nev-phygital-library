@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -22,6 +21,8 @@ import { STUDENT_CARD_CHROME } from "@/lib/student-ui";
 import { cn } from "@/lib/utils";
 import { CheckCircle2, Loader2, Wallet } from "lucide-react";
 import { useWallet } from "@/context/wallet-context";
+import { useAuth } from "@/context/auth-context";
+import { isPremiumOk } from "@/lib/rbac";
 
 export type CheckoutFlowItem =
   | {
@@ -43,8 +44,8 @@ export type CheckoutFlowItem =
 
 type Step = "details" | "payment" | "success";
 
-function fmtInr(n: number) {
-  return `₹${n.toLocaleString("en-IN")}`;
+function fmtCredits(n: number) {
+  return `${n.toLocaleString("en-IN")} Credits`;
 }
 
 export function CheckoutFlowDialog({
@@ -67,11 +68,12 @@ export function CheckoutFlowDialog({
 }) {
   const [step, setStep] = useState<Step>("details");
   const [mode, setMode] = useState<"borrow" | "buy">(initialMode);
-  const [cardName, setCardName] = useState("");
   const [payError, setPayError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [acquireHubId, setAcquireHubId] = useState("");
   const { balance, spendCredits } = useWallet();
+  const { user } = useAuth();
+  const isPremium = user ? isPremiumOk(user) : false;
 
   useEffect(() => {
     if (!open || !item) return;
@@ -91,7 +93,10 @@ export function CheckoutFlowDialog({
 
   if (!item) return null;
 
-  const amount = mode === "borrow" ? item.borrowPrice : item.buyPrice;
+  if (!item) return null;
+
+  const actualBorrowPrice = isPremium ? 0 : item.borrowPrice;
+  const amount = mode === "borrow" ? actualBorrowPrice : item.buyPrice;
   const hubLine = item.kind === "hub" ? item.hubName : item.hubName ?? "Campus hub (TBD)";
   const pickupRef =
     item.kind === "hub" ? `REF-${item.bookId.slice(0, 8).toUpperCase()}` : `REF-${item.listingId.slice(0, 8).toUpperCase()}`;
@@ -146,11 +151,11 @@ export function CheckoutFlowDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         className={cn(
-          "gap-0 overflow-hidden p-0 w-[calc(100%-1rem)] max-w-[calc(100%-1rem)] sm:max-w-md sm:rounded-2xl",
+          "gap-0 overflow-hidden p-0 w-[calc(100%-1rem)] max-w-[calc(100%-1rem)] sm:max-w-md sm:rounded-xl",
           STUDENT_CARD_CHROME,
         )}
       >
-        <div className="border-b border-border/70 bg-gradient-to-b from-muted/50 to-muted/20 px-6 pb-4 pt-6">
+        <div className="border-b border-border px-6 pb-4 pt-6">
           <DialogHeader className="space-y-1 text-left">
             <DialogTitle className="font-serif text-xl font-light tracking-tight">
               {step === "success"
@@ -170,41 +175,41 @@ export function CheckoutFlowDialog({
         <div className="space-y-5 px-6 py-5">
           {step === "details" && (
             <>
-              <div className="rounded-xl border border-border/70 bg-card/60 p-4 text-sm">
+              <div className="rounded-xl border border-border bg-card/60 p-4 text-sm">
                 <p className="font-medium text-foreground">{item.title}</p>
                 <p className="mt-1 text-muted-foreground">
                   <span className="text-foreground/90">{hubLine}</span>
                   {item.kind === "p2p" ? " · Peer listing" : " · Hub catalog"}
                 </p>
-                <div className="mt-4 grid gap-2 border-t border-border/50 pt-3">
+                <div className="mt-4 grid gap-2 border-t border-border pt-3">
                   <button
                     type="button"
                     onClick={() => setMode("borrow")}
                     className={cn(
-                      "flex w-full items-center justify-between rounded-lg border px-3 py-2.5 text-left text-sm transition-colors",
+                      "flex w-full items-center justify-between rounded-xl border border-border px-3 py-2.5 text-left text-sm transition-colors",
                       mode === "borrow"
-                        ? "border-primary/90 bg-primary/30"
-                        : "border-border/80 hover:bg-muted/40",
+                        ? "border-primary bg-primary/30"
+                        : "border-border hover:shadow-sm",
                     )}
                   >
                     <span className="font-medium">Borrow</span>
                     <span className="tabular-nums text-primary">
-                      {fmtInr(item.borrowPrice)}
+                      {isPremium ? "Free (Premium)" : fmtCredits(item.borrowPrice)}
                     </span>
                   </button>
                   <button
                     type="button"
                     onClick={() => setMode("buy")}
                     className={cn(
-                      "flex w-full items-center justify-between rounded-lg border px-3 py-2.5 text-left text-sm transition-colors",
+                      "flex w-full items-center justify-between rounded-xl border border-border px-3 py-2.5 text-left text-sm transition-colors",
                       mode === "buy"
-                        ? "border-primary/90 bg-primary/30"
-                        : "border-border/80 hover:bg-muted/40",
+                        ? "border-primary bg-primary/30"
+                        : "border-border hover:shadow-sm",
                     )}
                   >
                     <span className="font-medium">Buy</span>
                     <span className="tabular-nums text-primary">
-                      {fmtInr(item.buyPrice)}
+                      {fmtCredits(item.buyPrice)}
                     </span>
                   </button>
                 </div>
@@ -235,13 +240,13 @@ export function CheckoutFlowDialog({
                     </p>
                   </div>
                 ) : (
-                  <p className="rounded-lg border border-border/60 bg-muted/30 px-3 py-2 caption-scale leading-relaxed text-muted-foreground">
+                  <p className="rounded-xl border border-border px-3 py-2 caption-scale leading-relaxed text-muted-foreground">
                     Buying adds this copy to <span className="font-medium text-foreground">{deskAcquireHubs[0]!.name}</span>{" "}
                     shelf inventory as hub-owned stock.
                   </p>
                 ))}
               <Button
-                className="h-11 w-full rounded-2xl bg-primary/90 text-accent-foreground hover:bg-primary-400"
+                className="h-11 w-full rounded-xl bg-primary/90 text-accent-foreground hover:bg-primary-400"
                 onClick={() => setStep("payment")}
               >
                 Continue to payment
@@ -251,14 +256,16 @@ export function CheckoutFlowDialog({
 
           {step === "payment" && (
             <>
-              <div className="rounded-xl border border-border/70 bg-card/60 p-4 text-sm">
+              <div className="rounded-xl border border-border bg-card/60 p-4 text-sm">
                 <p className="text-muted-foreground">Amount due</p>
                 <p className="mt-1 text-2xl font-semibold tabular-nums text-foreground">
                   {amount.toLocaleString()} <span className="text-sm font-normal text-muted-foreground">Credits</span>
                 </p>
                 <p className="mt-2 text-xs text-muted-foreground">
                   {mode === "borrow"
-                    ? "Borrow fee for this loan period. Return the copy on time."
+                    ? isPremium
+                      ? "Premium Benefit Applied. Borrow Cost: Free. Return the copy on time."
+                      : "Borrow fee for this loan period. Return the copy on time."
                     : deskAcquireHubs?.length
                       ? "Desk shelf acquisition — copy becomes hub-owned stock at the hub you selected."
                       : "Full purchase, you keep this copy (hub or peer rules apply at pickup)."}
@@ -276,14 +283,14 @@ export function CheckoutFlowDialog({
                 <Button
                   type="button"
                   variant="outline"
-                  className="flex-1 rounded-2xl"
+                  className="flex-1 rounded-xl"
                   disabled={pending}
                   onClick={() => setStep("details")}
                 >
                   Back
                 </Button>
                 <Button
-                  className="flex-1 rounded-2xl bg-primary/90 text-primary-foreground hover:bg-primary/80"
+                  className="flex-1 rounded-xl bg-primary/90 text-primary-foreground hover:bg-primary/80"
                   disabled={pending || balance < amount || !!(shelfAcquireBody && deskAcquireHubs && deskAcquireHubs.length > 1 && !acquireHubId)}
                   onClick={() => void runPayment()}
                 >
@@ -305,7 +312,7 @@ export function CheckoutFlowDialog({
           {step === "success" && (
             <div className="flex flex-col items-center gap-4 py-2 text-center">
               <CheckCircle2 className="h-14 w-14 text-secondary" aria-hidden />
-              <div className="w-full rounded-md border border-border bg-muted/20 p-3 text-left">
+              <div className="w-full rounded-xl border border-border  p-3 text-left">
                 <p className="text-sm font-medium text-foreground">Pick up at {hubLine}</p>
                 <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
                   Bring your student ID, mention this reference at the desk, and collect within desk hours.
@@ -313,13 +320,13 @@ export function CheckoutFlowDialog({
                     ? " Returns are processed at the same hub desk."
                     : " Staff will confirm handover before completion."}
                 </p>
-                <p className="mt-2 font-mono text-xs text-accent">
+                <p className="mt-2 text-xs text-accent">
                   Pickup ref: {pickupRef}
                 </p>
                 <p className="mt-1 caption-scale text-muted-foreground">QR support can be added on top of this ref in the next phase.</p>
               </div>
               <Button
-                className="w-full rounded-2xl"
+                className="w-full rounded-xl"
                 onClick={() => {
                   onOpenChange(false);
                   setStep("details");
@@ -334,3 +341,7 @@ export function CheckoutFlowDialog({
     </Dialog>
   );
 }
+function setCardName(arg0: string) {
+  throw new Error("Function not implemented.");
+}
+
