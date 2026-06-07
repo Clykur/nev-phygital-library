@@ -2,11 +2,17 @@ import { createContext, useContext, useState, ReactNode, useEffect, useCallback 
 import { toast } from "sonner";
 import { apiFetch } from "@/lib/api";
 import { useAuth } from "./auth-context";
+import { INITIAL_FREE_CREDITS } from "@/lib/credits";
 
 export type Transaction = {
   id: string;
-  type: "credit" | "debit" | "transfer";
+  type: "credit" | "debit" | "transfer" | "bounty_reward_credit" | "bounty_reward_cash_request" | string;
   amount: number;
+  creditsAdded?: number;
+  creditsDeducted?: number;
+  rupeeValue?: number;
+  rewardAmount?: number;
+  status?: string;
   description: string;
   createdAt: string;
 };
@@ -42,6 +48,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         apiFetch<{ active?: { plan: string } }>("/api/subscriptions/active", { token }),
       ]);
       if (balanceRes.balance !== undefined) setBalance(balanceRes.balance);
+      else setBalance(INITIAL_FREE_CREDITS);
       if (txRes.transactions) setTransactions(txRes.transactions);
       if (subRes.active?.plan) setSubscription(subRes.active.plan as SubscriptionPlan);
     } catch (err) {

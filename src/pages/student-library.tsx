@@ -3,26 +3,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/context/auth-context";
 import { apiFetch } from "@/lib/api";
 import { useStudentShell } from "@/components/layout/StudentAppShell";
-import { CardContent } from "@/components/ui/card";
-import { PORTAL_PAGE_CONTAINER, PORTAL_PANEL_SURFACE, STUDENT_CARD_CHROME } from "@/lib/student-ui";
+import { PORTAL_PAGE_CONTAINER, STUDENT_CARD_CHROME } from "@/lib/student-ui";
 import { PORTAL_PAGE_LEAD, PORTAL_PAGE_TITLE, PORTAL_DIALOG_TITLE } from "@/lib/portal-typography";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-import {
-  STATUS_CHIP_AMBER_SOFT,
-  STATUS_CHIP_DESTRUCTIVE_SOFT,
-  STATUS_CHIP_EMERALD,
-} from "@/lib/status-chip-tones";
 import { isHubAccount } from "@/lib/app-paths";
-import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -34,15 +19,20 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { RotateCcw } from "lucide-react";
+import { BorrowingsTable, type BorrowingRow } from "@/components/student/BorrowingsTable";
 
 type Hub = { id: string; name: string };
 type BookRow = {
   id: string;
   title: string;
+  author?: string | null;
+  coverImageUrl?: string | null;
   hubId: string;
   status: string;
   borrowerUserId: string | null;
   dueAt?: string | null;
+  updatedAt?: string | null;
+  borrowPrice?: number;
   soldToUserId?: string | null;
   soldAt?: string | null;
 };
@@ -53,6 +43,9 @@ type P2pRow = {
   buyerId: string | null;
   borrowerUserId?: string | null;
   borrowDueAt?: string | null;
+  updatedAt?: string | null;
+  borrowPrice?: number;
+  coverImageUrl?: string | null;
   dropoffHubId?: string | null;
   soldAt?: string | null;
 };
@@ -84,108 +77,6 @@ function dueState(dueAt: string | null | undefined): "active" | "soon" | "overdu
   if (due < now) return "overdue";
   if (due - now < 2 * 24 * 60 * 60 * 1000) return "soon";
   return "active";
-}
-
-function statusLabel(state: "active" | "soon" | "overdue") {
-  if (state === "soon") return "Due soon";
-  if (state === "overdue") return "Overdue";
-  return "Active";
-}
-
-function StatusChip({ state }: { state: "active" | "soon" | "overdue" }) {
-  return (
-    <span
-      className={cn(
-        "inline-flex h-7 items-center rounded-sm border px-3 caption-scale font-semibold uppercase tracking-kicker",
-        state === "active" && STATUS_CHIP_EMERALD,
-        state === "soon" && STATUS_CHIP_AMBER_SOFT,
-        state === "overdue" && STATUS_CHIP_DESTRUCTIVE_SOFT,
-      )}
-    >
-      {statusLabel(state)}
-    </span>
-  );
-}
-
-function Section({
-  title,
-  rows,
-}: {
-  title: string;
-  rows: Array<{
-    id: string;
-    title: string;
-    hub: string;
-    due: string;
-    state: "active" | "soon" | "overdue";
-    ctaLabel: string;
-    onCta?: () => void;
-    ctaHref?: string;
-  }>;
-}) {
-  return (
-    <section className={cn(PORTAL_PANEL_SURFACE, "overflow-hidden")}>
-      <div className="border-b border-border px-6 py-4">
-        <h3 className="h4-scale font-semibold text-foreground">{title}</h3>
-      </div>
-      {rows.length === 0 ? (
-        <CardContent className="px-6 py-8">
-          <p className="body-scale text-foreground-muted">
-            No items here yet.{" "}
-            <Link href="/student/borrow" className="font-medium text-primary underline-offset-2 hover:underline">
-              Browse books
-            </Link>
-            .
-          </p>
-        </CardContent>
-      ) : (
-        <div className="overflow-x-auto px-2 pb-4 pt-2">
-          <Table>
-            <TableHeader>
-              <TableRow className="border-border hover:bg-transparent">
-                <TableHead className="pl-5">Title</TableHead>
-                <TableHead>Pickup hub</TableHead>
-                <TableHead>Due date</TableHead>
-                <TableHead>Action</TableHead>
-                <TableHead className="pr-5 text-right">Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {rows.map((r) => (
-                <TableRow
-                  key={r.id}
-                  className={cn(
-                    "even:",
-                    r.state === "overdue" && "border-l-2 border-l-destructive/80",
-                    r.state === "soon" && "border-l-2 border-l-accent/80",
-                  )}
-                  data-library-row-id={r.id}
-                >
-                  <TableCell className="pl-5 font-medium">{r.title}</TableCell>
-                  <TableCell className="text-muted-foreground">{r.hub || "Hub"}</TableCell>
-                  <TableCell className="text-muted-foreground">{r.due}</TableCell>
-                  <TableCell>
-                    {r.onCta ? (
-                      <Button size="sm" variant="outline" className="rounded-md" onClick={r.onCta}>
-                        {r.ctaLabel}
-                      </Button>
-                    ) : r.ctaHref ? (
-                      <Button size="sm" variant="outline" className="rounded-md" asChild>
-                        <Link href={r.ctaHref}>{r.ctaLabel}</Link>
-                      </Button>
-                    ) : (
-                      <span className="text-xs text-muted-foreground">—</span>
-                    )}
-                  </TableCell>
-                  <TableCell className="pr-5 text-right"><StatusChip state={r.state} /></TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      )}
-    </section>
-  );
 }
 
 export default function StudentLibraryPage() {
@@ -227,6 +118,8 @@ export default function StudentLibraryPage() {
       setConfirmReturn(null);
       void qc.invalidateQueries({ queryKey: ["catalog", "books"] });
       void qc.invalidateQueries({ queryKey: ["book-requests"] });
+      void qc.invalidateQueries({ queryKey: ["student-dashboard"] });
+      void qc.invalidateQueries({ queryKey: ["activity", "timeline"] });
     },
     onError: () => toast.error("Could not process return."),
   });
@@ -239,6 +132,8 @@ export default function StudentLibraryPage() {
       setConfirmReturn(null);
       void qc.invalidateQueries({ queryKey: ["p2p-listings"] });
       void qc.invalidateQueries({ queryKey: ["book-requests"] });
+      void qc.invalidateQueries({ queryKey: ["student-dashboard"] });
+      void qc.invalidateQueries({ queryKey: ["activity", "timeline"] });
     },
     onError: () => toast.error("Could not process return."),
   });
@@ -246,7 +141,7 @@ export default function StudentLibraryPage() {
   const hubName = (hubId: string | undefined | null) =>
     hubId ? hubsQ.data?.hubs.find((h) => h.id === hubId)?.name ?? "Hub" : "Hub";
 
-  const borrowedFromHub = useMemo(() => {
+  const borrowedFromHub = useMemo<BorrowingRow[]>(() => {
     const rows = booksQ.data?.books ?? [];
     return rows
       .filter(
@@ -255,25 +150,34 @@ export default function StudentLibraryPage() {
       .map((b) => ({
         id: b.id,
         title: b.title,
+        author: b.author,
+        coverImageUrl: b.coverImageUrl,
         hub: hubName(b.hubId),
+        borrowedAt: b.updatedAt,
+        dueAt: b.dueAt,
         due: fmtDue(b.dueAt),
         state: dueState(b.dueAt),
+        creditsUsed: b.borrowPrice ?? 0,
         ctaLabel: "Return this book",
         onCta: () =>
           setConfirmReturn({ type: "hub", id: b.id, hubName: hubName(b.hubId), title: b.title }),
       }));
   }, [booksQ.data?.books, user?.userId, hubsQ.data?.hubs]);
 
-  const peerBorrows = useMemo(() => {
+  const peerBorrows = useMemo<BorrowingRow[]>(() => {
     const rows = p2pQ.data?.listings ?? [];
     return rows
       .filter((l) => l.borrowerUserId === user?.userId && l.status === "reserved")
       .map((l) => ({
         id: l.id,
         title: l.bookTitle,
+        coverImageUrl: l.coverImageUrl,
         hub: hubName(l.dropoffHubId),
+        borrowedAt: l.updatedAt,
+        dueAt: l.borrowDueAt,
         due: fmtDue(l.borrowDueAt),
         state: dueState(l.borrowDueAt),
+        creditsUsed: l.borrowPrice ?? 0,
         ctaLabel: "Return to hub",
         onCta: () =>
           setConfirmReturn({
@@ -285,15 +189,18 @@ export default function StudentLibraryPage() {
       }));
   }, [p2pQ.data?.listings, user?.userId, hubsQ.data?.hubs]);
 
-  const pendingPickupPurchases = useMemo(() => {
+  const pendingPickupPurchases = useMemo<BorrowingRow[]>(() => {
     const ready = (reqQ.data?.requests ?? [])
       .filter((r) => r.status === "available_for_collection" || r.status === "ready")
       .map((r) => ({
         id: r.id,
         title: r.bookTitle?.trim() || "Requested title",
         hub: hubName(r.hubId),
+        borrowedAt: null,
+        dueAt: null,
         due: "Pickup pending",
         state: "active" as const,
+        creditsUsed: 0,
         ctaLabel: "View pickup details",
         ctaHref: `/student/borrow?focus=request&ref=${encodeURIComponent(r.id)}`,
       }));
@@ -317,7 +224,7 @@ export default function StudentLibraryPage() {
   }, [pendingPickupPurchases]);
 
   return (
-    <div className={cn("min-h-[100dvh] bg-background pb-20", top)}>
+    <div className={cn(PORTAL_PAGE_CONTAINER, "space-y-8 py-8")}>
       <div className={cn("mx-auto", pageWrap)}>
         <header className="mb-8 border-b border-border pb-6">
           <h1 className={PORTAL_PAGE_TITLE}>My library</h1>
@@ -326,9 +233,16 @@ export default function StudentLibraryPage() {
           </p>
         </header>
         <section className="space-y-6">
-          <Section title="Borrowed from hub" rows={borrowedFromHub} />
-          <Section title="Peer borrows" rows={peerBorrows} />
-          <Section title="Purchased (not yet picked up)" rows={pendingPickupPurchases} />
+          <BorrowingsTable
+            title="Books borrowed from library"
+            rows={borrowedFromHub}
+            loading={booksQ.isLoading || hubsQ.isLoading}
+          />
+          <BorrowingsTable
+            title="Books purchased (not yet picked up)"
+            rows={pendingPickupPurchases}
+            loading={reqQ.isLoading || hubsQ.isLoading}
+          />
         </section>
         <Separator className="my-8" />
       </div>

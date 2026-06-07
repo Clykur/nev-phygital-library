@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactElement, type KeyboardEvent, ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactElement, type KeyboardEvent, type ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -71,7 +71,6 @@ export type InventoryStats = {
 };
 
 export type LibraryCatalogBook = {
-  [x: string]: ReactNode;
   id: string;
   refId?: string | null;
   source?: string;
@@ -160,7 +159,7 @@ export function CatalogBookCard({
   shelfStatus?: string;
   inventoryStats?: InventoryStats;
   pipelineListingStatus?: string;
-  action: React.ReactNode;
+  action: ReactNode;
   onOpen?: () => void;
   sharpCover?: boolean;
   hideBottomTitle?: boolean;
@@ -471,6 +470,9 @@ export default function LibraryPage() {
     void qc.invalidateQueries({ queryKey: ["hub", "books"] });
     void qc.invalidateQueries({ queryKey: ["hub", "overview"] });
     void qc.invalidateQueries({ queryKey: ["book-requests", "hub"] });
+    void qc.invalidateQueries({ queryKey: ["wallet"] });
+    void qc.invalidateQueries({ queryKey: ["student-dashboard"] });
+    void qc.invalidateQueries({ queryKey: ["notifications"] });
   };
 
   const deskAcquireHubs = useMemo(() => {
@@ -588,8 +590,7 @@ export default function LibraryPage() {
 
         {user && !isPremiumOk(user) && (
           <div className={cn(STUDENT_CARD_SURFACE, "mb-8 bg-card/80 px-5 py-4 text-sm")}>
-            Premium unlocks checkout and book requests. Use <strong>Upgrade</strong>{" "}
-            {inShell ? "in the sidebar" : "in the header"} for the demo plan.
+            Free members can borrow and buy with credits. Premium members borrow free; book requests still require an upgrade.
           </div>
         )}
 
@@ -667,7 +668,6 @@ export default function LibraryPage() {
                       bookId: b.id,
                     });
                   const isAvailable = b.status === "available";
-                  const upgradeWhere = inShell ? "sidebar" : "header";
                   return (
                     <CatalogBookCard
                       key={b.id}
@@ -726,7 +726,7 @@ export default function LibraryPage() {
                               className="w-full rounded-full"
                               onClick={() =>
                                 toast.message(
-                                  `Premium unlocks checkout. Use Upgrade in the ${upgradeWhere}.`,
+                                  "This account cannot borrow this copy. Check your wallet or account permissions.",
                                 )
                               }
                             >

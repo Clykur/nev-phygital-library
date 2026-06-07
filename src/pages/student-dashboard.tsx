@@ -1,16 +1,22 @@
 import { motion } from "framer-motion";
-import { BookOpen, Clock, Wallet as WalletIcon, TrendingUp, ShoppingBag, Tag, Sparkles } from "lucide-react";
+import { Wallet as WalletIcon, TrendingUp, ShoppingBag, Sparkles, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useWallet } from "@/context/wallet-context";
-import { Link, useLocation } from "wouter";
-import { STUDENT_WALLET_PATH, STUDENT_BORROW_PATH, STUDENT_SELL_PATH } from "@/lib/app-paths";
+import { Link } from "wouter";
+import { STUDENT_WALLET_PATH, STUDENT_BORROW_PATH } from "@/lib/app-paths";
 import { useAuth } from "@/context/auth-context";
 import { PORTAL_PAGE_CONTAINER } from "@/lib/student-ui";
 import { PORTAL_PAGE_LEAD, PORTAL_PAGE_TITLE, PORTAL_SECTION_LABEL, PORTAL_STAT_VALUE } from "@/lib/portal-typography";
 import { PORTAL_INLINE_LINK } from "@/lib/student-ui";
 import { cn } from "@/lib/utils";
 import { useStudentDashboard } from "@/hooks/use-student-dashboard";
+import { fmtCreditWithRupeeEquivalent, fmtCredits } from "@/lib/credits";
+import { apiFetch, apiPublicUrl } from "@/lib/api";
+import { useQuery } from "@tanstack/react-query";
+import { BorrowingsTable, type BorrowingRow } from "@/components/student/BorrowingsTable";
+import { BookCoverImage } from "@/components/ui/book-cover-image";
+import { addedLabel } from "@/pages/library";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 16 },
@@ -18,11 +24,107 @@ const fadeInUp = {
 };
 
 export default function StudentDashboardPage() {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const { balance, subscription } = useWallet();
-  const [, setLocation] = useLocation();
 
   const { data, isLoading } = useStudentDashboard();
+  const hubsQ = useQuery({
+    queryKey: ["catalog", "hubs", "student-dashboard"],
+    enabled: !!token,
+    queryFn: () => apiFetch<{ hubs: { id: string; name: string }[] }>("/api/catalog/hubs", { token: token! }),
+  });
+  const booksQ = useQuery({
+    queryKey: ["catalog", "books", "student-dashboard", user?.userId],
+    enabled: !!token && !!user,
+    queryFn: () =>
+      apiFetch<{
+        books: Array<{
+          id: string;
+          title: string;
+          author?: string | null;
+          coverImageUrl?: string | null;
+          hubId: string;
+          status: string;
+          borrowerUserId: string | null;
+          dueAt?: string | null;
+          updatedAt?: string | null;
+          borrowPrice?: number;
+        }>;
+      }>("/api/catalog/books", { token: token! }),
+  });
+  const p2pQ = useQuery({
+    queryKey: ["p2p-listings", "student-dashboard", user?.userId],
+    enabled: !!token && !!user,
+    queryFn: () =>
+      apiFetch<{
+        listings: Array<{
+          id: string;
+          bookTitle: string;
+          coverImageUrl?: string | null;
+          status: string;
+          borrowerUserId?: string | null;
+          borrowDueAt?: string | null;
+          updatedAt?: string | null;
+          borrowPrice?: number;
+          dropoffHubId?: string | null;
+          hubId?: string | null;
+        }>;
+      }>("/api/p2p/listings", { token: token! }),
+  });
+
+  const hubName = (hubId: string | undefined | null) =>
+    hubId ? hubsQ.data?.hubs.find((h) => h.id === hubId)?.name ?? "Hub" : "Hub";
+
+  const fmtDue = (iso: string | undefined | null) => {
+    if (!iso) return "—";
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return "—";
+    return d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+  };
+
+  const dueState = (dueAt: string | null | undefined): BorrowingRow["state"] => {
+    if (!dueAt) return "active";
+    const due = new Date(dueAt).getTime();
+    const now = Date.now();
+    if (Number.isNaN(due)) return "active";
+    if (due < now) return "overdue";
+    if (due - now < 2 * 24 * 60 * 60 * 1000) return "soon";
+    return "active";
+  };
+
+  const borrowingRows: BorrowingRow[] = [
+    ...((booksQ.data?.books ?? [])
+      .filter((b) => b.borrowerUserId === user?.userId && (b.status === "checked_out" || b.status === "overdue"))
+      .map((b) => ({
+        id: b.id,
+        title: b.title,
+        author: b.author,
+        coverImageUrl: b.coverImageUrl ? apiPublicUrl(b.coverImageUrl) : b.coverImageUrl,
+        hub: hubName(b.hubId),
+        borrowedAt: b.updatedAt,
+        dueAt: b.dueAt,
+        due: fmtDue(b.dueAt),
+        state: dueState(b.dueAt),
+        creditsUsed: b.borrowPrice ?? 0,
+        ctaLabel: "Open library",
+        ctaHref: "/student/library",
+      })) satisfies BorrowingRow[]),
+    ...((p2pQ.data?.listings ?? [])
+      .filter((l) => l.borrowerUserId === user?.userId && l.status === "reserved")
+      .map((l) => ({
+        id: l.id,
+        title: l.bookTitle,
+        coverImageUrl: l.coverImageUrl ? apiPublicUrl(l.coverImageUrl) : l.coverImageUrl,
+        hub: hubName(l.dropoffHubId ?? l.hubId),
+        borrowedAt: l.updatedAt,
+        dueAt: l.borrowDueAt,
+        due: fmtDue(l.borrowDueAt),
+        state: dueState(l.borrowDueAt),
+        creditsUsed: l.borrowPrice ?? 0,
+        ctaLabel: "Open library",
+        ctaHref: "/student/library",
+      })) satisfies BorrowingRow[]),
+  ];
 
   return (
     <div className={cn(PORTAL_PAGE_CONTAINER, "space-y-8 py-8")}>
@@ -40,20 +142,33 @@ export default function StudentDashboardPage() {
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <motion.div variants={fadeInUp} initial="hidden" animate="visible">
               <Card variant="bento" className="h-full">
-                <CardHeader className="flex-row items-start justify-between space-y-0 pb-2">
-                  <div className="rounded-lg p-2.5">
-                    <WalletIcon className="h-5 w-5 text-primary" />
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <span className="section-kicker">Wallet Balance</span>
+
+                    <div className="rounded-lg p-2">
+                      <WalletIcon className="h-5 w-5 text-primary" />
+                    </div>
                   </div>
-                  <span className="section-kicker">Balance</span>
+
+                  <div className="mt-3">
+                    <h3 className={PORTAL_STAT_VALUE}>
+                      {fmtCredits(balance)}
+                    </h3>
+
+                    <p className="mt-1 text-sm text-foreground-muted">
+                      Available credits for borrowing books
+                    </p>
+                  </div>
                 </CardHeader>
-                <CardContent>
-                  <p className={PORTAL_STAT_VALUE}>
-                    {balance.toLocaleString()}{" "}
-                    <span className="body-scale font-normal text-foreground-muted">Credits</span>
-                  </p>
+
+                <CardContent className="pt-0">
                   <Link
                     href={STUDENT_WALLET_PATH}
-                    className={cn("mt-3 inline-block body-scale font-semibold", PORTAL_INLINE_LINK)}
+                    className={cn(
+                      "inline-flex items-center font-semibold",
+                      PORTAL_INLINE_LINK
+                    )}
                   >
                     View Wallet →
                   </Link>
@@ -68,17 +183,35 @@ export default function StudentDashboardPage() {
               transition={{ delay: 0.05 }}
             >
               <Card variant="bento" className="h-full">
-                <CardHeader className="flex-row items-start justify-between space-y-0 pb-2">
-                  <div className="rounded-lg p-2.5">
-                    <Sparkles className="h-5 w-5 text-accent" />
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <span className="section-kicker">Subscription Plan</span>
+
+                    <div className="rounded-lg p-2">
+                      <Sparkles className="h-5 w-5 text-accent" />
+                    </div>
                   </div>
-                  <span className="section-kicker">Plan</span>
+
+                  <div className="mt-3">
+                    <h3 className={cn(PORTAL_STAT_VALUE, "capitalize")}>
+                      {subscription} Tier
+                    </h3>
+
+                    <p className="mt-1 text-sm text-foreground-muted">
+                      {subscription === "pro"
+                        ? "Premium Member — Unlimited free borrowing"
+                        : "Use wallet credits to borrow books"}
+                    </p>
+                  </div>
                 </CardHeader>
-                <CardContent>
-                  <p className={cn(PORTAL_STAT_VALUE, "capitalize")}>{subscription} Tier</p>
+
+                <CardContent className="pt-0">
                   <Link
                     href={STUDENT_WALLET_PATH}
-                    className={cn("mt-3 inline-block body-scale font-semibold", PORTAL_INLINE_LINK)}
+                    className={cn(
+                      "inline-flex items-center font-semibold",
+                      PORTAL_INLINE_LINK
+                    )}
                   >
                     Manage Subscription →
                   </Link>
@@ -87,96 +220,11 @@ export default function StudentDashboardPage() {
             </motion.div>
           </div>
 
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
-            <section>
-              <h2 className="h4-scale mb-4 flex items-center gap-2">
-                <Clock className="h-5 w-5 text-foreground-muted" />
-                Recently Viewed
-              </h2>
-              <div className="space-y-3">
-                {isLoading ? (
-                  Array(2).fill(0).map((_, i) => (
-                    <Card key={i} className="p-4">
-                      <div className="flex items-center gap-4">
-                        <div className="h-12 w-10 animate-pulse rounded bg-shimmer" />
-                        <div className="min-w-0 flex-1 space-y-2">
-                          <div className="h-4 w-3/4 animate-pulse rounded bg-shimmer" />
-                          <div className="h-3 w-1/2 animate-pulse rounded bg-shimmer" />
-                        </div>
-                      </div>
-                    </Card>
-                  ))
-                ) : data?.recentBooks && data.recentBooks.length > 0 ? (
-                  data.recentBooks.map((book) => (
-                    <Card 
-                      key={book.id} 
-                      interactive 
-                      className="p-4" 
-                      onClick={() => setLocation(`${STUDENT_BORROW_PATH}?focus=book&ref=${book.id}`)}
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="flex h-12 w-10 shrink-0 items-center justify-center">
-                          <BookOpen className="h-4 w-4 text-foreground-muted" />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="truncate body-scale font-semibold">{book.title}</p>
-                          <p className="body-scale text-foreground-muted">{book.author}</p>
-                        </div>
-                      </div>
-                    </Card>
-                  ))
-                ) : (
-                  <div className="rounded-xl border border-dashed border-border p-6 text-center">
-                    <p className="body-scale text-foreground-muted">No recently viewed books.</p>
-                  </div>
-                )}
-                <Button variant="outline" className="mt-2 w-full" asChild>
-                  <Link href={STUDENT_BORROW_PATH}>Browse More</Link>
-                </Button>
-              </div>
-            </section>
-
-            <section>
-              <h2 className="h4-scale mb-4 flex items-center gap-2">
-                <Tag className="h-5 w-5 text-foreground-muted" />
-                Active Listings
-              </h2>
-              <div className="space-y-3">
-                {isLoading ? (
-                  <Card className="p-4">
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="min-w-0 flex-1 space-y-2">
-                        <div className="h-4 w-3/4 animate-pulse rounded bg-shimmer" />
-                        <div className="h-3 w-1/4 animate-pulse rounded bg-shimmer" />
-                      </div>
-                      <div className="h-6 w-16 animate-pulse rounded bg-shimmer" />
-                    </div>
-                  </Card>
-                ) : data?.activeListings && data.activeListings.length > 0 ? (
-                  data.activeListings.map((listing) => (
-                    <Card key={listing.id} interactive className="p-4">
-                      <div className="flex items-center justify-between gap-3">
-                        <div className="min-w-0">
-                          <p className="truncate body-scale font-semibold">{listing.title}</p>
-                          <p className="body-scale font-semibold text-primary">{listing.price} Credits</p>
-                        </div>
-                        <span className="caption-scale shrink-0 rounded-md border border-success/30 bg-success/10 px-2 py-1 font-semibold uppercase tracking-kicker text-success">
-                          {listing.status}
-                        </span>
-                      </div>
-                    </Card>
-                  ))
-                ) : (
-                  <div className="rounded-xl border border-dashed border-border p-6 text-center">
-                    <p className="body-scale text-foreground-muted">No active listings.</p>
-                  </div>
-                )}
-                <Button variant="outline" className="mt-2 w-full" asChild>
-                  <Link href={STUDENT_SELL_PATH}>Manage Listings</Link>
-                </Button>
-              </div>
-            </section>
-          </div>
+          <BorrowingsTable
+            title="All Borrowings"
+            rows={borrowingRows}
+            loading={booksQ.isLoading || p2pQ.isLoading || hubsQ.isLoading}
+          />
         </div>
 
         <aside className="space-y-6 md:col-span-4">
@@ -204,7 +252,15 @@ export default function StudentDashboardPage() {
                 </div>
                 <div>
                   <p className={cn(PORTAL_SECTION_LABEL, "mb-1")}>Credits Earned All Time</p>
-                  {isLoading ? <div className="h-6 w-20 animate-pulse rounded bg-shimmer" /> : <p className={cn(PORTAL_STAT_VALUE, "text-accent")}>{data?.stats.creditsEarned.toLocaleString()}</p>}
+                  {isLoading ? <div className="h-6 w-20 animate-pulse rounded bg-shimmer" /> : <p className={cn(PORTAL_STAT_VALUE, "text-accent")}>{fmtCredits(data?.stats.creditsEarned ?? 0)}</p>}
+                </div>
+                <div>
+                  <p className={cn(PORTAL_SECTION_LABEL, "mb-1")}>Active Borrowings</p>
+                  {isLoading ? <div className="h-6 w-12 animate-pulse rounded bg-shimmer" /> : <p className={PORTAL_STAT_VALUE}>{data?.stats.activeBorrowings ?? borrowingRows.length}</p>}
+                </div>
+                <div>
+                  <p className={cn(PORTAL_SECTION_LABEL, "mb-1")}>Recently Viewed</p>
+                  {isLoading ? <div className="h-6 w-12 animate-pulse rounded bg-shimmer" /> : <p className={PORTAL_STAT_VALUE}>{data?.stats.recentlyViewedCount ?? 0}</p>}
                 </div>
               </CardContent>
             </Card>
@@ -244,6 +300,60 @@ export default function StudentDashboardPage() {
                     <p className="body-scale text-foreground-muted">No recent purchases.</p>
                   </div>
                 )}
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          <motion.div
+            variants={fadeInUp}
+            initial="hidden"
+            animate="visible"
+            transition={{ delay: 0.2 }}
+          >
+            <Card variant="elevated">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Eye className="h-4 w-4 text-primary" />
+                  Recently Viewed
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {isLoading ? (
+                  <div className="h-16 animate-pulse rounded bg-shimmer" />
+                ) : data?.recentBooks && data.recentBooks.length > 0 ? (
+                  data.recentBooks.map((book) => (
+                    <Link
+                      key={book.id}
+                      href={STUDENT_BORROW_PATH}
+                      className="flex items-center gap-3 border-b border-border pb-3 last:border-0 last:pb-0"
+                    >
+                      <BookCoverImage
+                        src={book.coverImageUrl ? apiPublicUrl(book.coverImageUrl) : null}
+                        alt={book.title}
+                        className="h-16 w-11 shrink-0 object-cover"
+                      />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate body-scale font-semibold">{book.title}</p>
+                        {book.author ? (
+                          <p className="truncate caption-scale text-foreground-muted">{book.author}</p>
+                        ) : null}
+                        <p className="mt-1 caption-scale text-foreground-muted">
+                          {fmtCreditWithRupeeEquivalent(book.buyPrice)} · Borrow {fmtCredits(book.borrowPrice)}
+                        </p>
+                        <p className="mt-0.5 caption-scale text-foreground-muted">
+                          Viewed {addedLabel(book.lastViewedAt)}
+                        </p>
+                      </div>
+                    </Link>
+                  ))
+                ) : (
+                  <div className="rounded-xl border border-dashed border-border py-6 text-center">
+                    <p className="body-scale text-foreground-muted">No recently viewed books.</p>
+                  </div>
+                )}
+                <Button variant="outline" className="mt-2 w-full" asChild>
+                  <Link href={STUDENT_BORROW_PATH}>Browse Books</Link>
+                </Button>
               </CardContent>
             </Card>
           </motion.div>

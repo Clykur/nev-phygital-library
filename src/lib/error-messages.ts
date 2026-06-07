@@ -31,7 +31,9 @@ export function httpErrorMessage(status: number, rawBody?: string): string {
       ? raw
       : "Your session expired or sign-in didn't work. Please sign in again.";
   }
-  if (status === 403) return "You don't have permission to do that.";
+  if (status === 403) {
+    return bodyUsable ? raw : "You don't have permission to do that.";
+  }
   if (status === 404)
     return "We couldn't find what you're looking for.";
   if (status === 409) {

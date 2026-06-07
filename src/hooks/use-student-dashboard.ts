@@ -3,16 +3,17 @@ import { apiFetch } from '@/lib/api';
 import { useAuth } from '@/context/auth-context';
 
 export interface RecentBook {
-  id: number;
+  id: string;
+  source: "hub" | "p2p";
+  bookId?: string | null;
+  listingId?: string | null;
   title: string;
-  author: string;
-}
-
-export interface ActiveListing {
-  id: number;
-  title: string;
-  price: number;
-  status: string;
+  author?: string | null;
+  coverImageUrl?: string | null;
+  buyPrice: number;
+  borrowPrice: number;
+  hubName?: string | null;
+  lastViewedAt: string;
 }
 
 export interface RecentPurchase {
@@ -25,11 +26,13 @@ export interface DashboardStats {
   totalBought: number;
   totalSold: number;
   creditsEarned: number;
+  activeBorrowings: number;
+  totalBorrowed: number;
+  recentlyViewedCount: number;
 }
 
 export interface StudentDashboardData {
   recentBooks: RecentBook[];
-  activeListings: ActiveListing[];
   recentPurchases: RecentPurchase[];
   stats: DashboardStats;
 }
@@ -46,7 +49,7 @@ export function useStudentDashboard() {
       // Connect to real endpoint
       return await apiFetch<StudentDashboardData>('/api/student/dashboard', { token: token! });
     },
-    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
+    staleTime: 30 * 1000,
     enabled: !!token,
   });
 }

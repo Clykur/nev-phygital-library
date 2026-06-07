@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useStudentShell } from "@/components/layout/StudentAppShell";
 import { PORTAL_PAGE_CONTAINER } from "@/lib/student-ui";
 import { Button } from "@/components/ui/button";
 import { apiFetch } from "@/lib/api";
@@ -8,6 +7,7 @@ import { toast } from "sonner";
 import { Loader2, CheckCircle2, ShieldAlert } from "lucide-react";
 import { MockCheckoutDialog } from "@/components/MockCheckoutDialog";
 import { cn } from "@/lib/utils";
+import { INITIAL_FREE_CREDITS, fmtCreditWithRupeeEquivalent } from "@/lib/credits";
 
 type Plan = {
   id: string;
@@ -33,9 +33,6 @@ type HistoryEntry = {
 };
 
 export default function StudentSubscriptionPage() {
-  const { setTitle } = useStudentShell();
-  setTitle("Subscription");
-
   const qc = useQueryClient();
   const [checkoutState, setCheckoutState] = useState<{
     open: boolean;
@@ -47,30 +44,30 @@ export default function StudentSubscriptionPage() {
   const { data: plansData, isLoading: plansLoading } = useQuery({
     queryKey: ["subscriptions", "plans", "student"],
     queryFn: async () => {
-      const res = await apiFetch("/api/subscriptions/plans?target=student");
-      return res.plans as Plan[];
+      const res = await apiFetch<{ plans: Plan[] }>("/api/subscriptions/plans?target=student");
+      return res.plans;
     },
   });
 
   const { data: activeData, isLoading: activeLoading } = useQuery({
     queryKey: ["subscriptions", "active"],
     queryFn: async () => {
-      const res = await apiFetch("/api/subscriptions/active");
-      return res.active as ActiveSub | null;
+      const res = await apiFetch<{ active: ActiveSub | null }>("/api/subscriptions/active");
+      return res.active;
     },
   });
 
   const { data: historyData } = useQuery({
     queryKey: ["subscriptions", "history"],
     queryFn: async () => {
-      const res = await apiFetch("/api/subscriptions/history");
-      return res.history as HistoryEntry[];
+      const res = await apiFetch<{ history: HistoryEntry[] }>("/api/subscriptions/history");
+      return res.history;
     },
   });
 
   const createIntent = useMutation({
     mutationFn: async (planId: string) => {
-      return await apiFetch("/api/subscriptions/create-intent", {
+      return await apiFetch<{ intentId: string; amount: number }>("/api/subscriptions/create-intent", {
         method: "POST",
         body: JSON.stringify({ planId }),
       });
@@ -91,13 +88,15 @@ export default function StudentSubscriptionPage() {
 
   const handleVerify = async (intentId: string, status: "success" | "failure") => {
     try {
-      const res = await apiFetch("/api/subscriptions/verify", {
+      const res = await apiFetch<{ verified: boolean }>("/api/subscriptions/verify", {
         method: "POST",
         body: JSON.stringify({ intentId, status }),
       });
       if (res.verified) {
         toast.success("Subscription updated successfully!");
         qc.invalidateQueries({ queryKey: ["subscriptions"] });
+        qc.invalidateQueries({ queryKey: ["wallet"] });
+        qc.invalidateQueries({ queryKey: ["student-dashboard"] });
       } else {
         toast.error("Payment failed");
       }
@@ -129,7 +128,7 @@ export default function StudentSubscriptionPage() {
                   <CheckCircle2 className="w-5 h-5 mr-2" /> You are on the {activeData.planName} plan.
                 </span>
               ) : (
-                "Upgrade to Student Premium to unlock all features."
+                "Free members can borrow with wallet credits. Upgrade for credit-free borrowing."
               )}
             </p>
           </div>
@@ -162,15 +161,17 @@ export default function StudentSubscriptionPage() {
               {plan.tier === "free" ? (
                 <>
                   <li className="flex items-center"><CheckCircle2 className="mr-2 h-4 w-4 text-primary" /> Basic access to hub resources</li>
+                  <li className="flex items-center"><CheckCircle2 className="mr-2 h-4 w-4 text-primary" /> Initial {fmtCreditWithRupeeEquivalent(INITIAL_FREE_CREDITS)} wallet balance</li>
+                  <li className="flex items-center"><CheckCircle2 className="mr-2 h-4 w-4 text-primary" /> Borrow and buy with credits</li>
                   <li className="flex items-center"><CheckCircle2 className="mr-2 h-4 w-4 text-primary" /> Standard support</li>
                 </>
               ) : (
                 <>
-                  <li className="flex items-center"><CheckCircle2 className="mr-2 h-4 w-4 text-primary" /> Unlimited borrowing across all hubs</li>
+                  <li className="flex items-center"><CheckCircle2 className="mr-2 h-4 w-4 text-primary" /> Unlimited borrowing across all hubs — no credits required</li>
                   <li className="flex items-center"><CheckCircle2 className="mr-2 h-4 w-4 text-primary" /> Free initial peer-to-peer delivery</li>
                   <li className="flex items-center"><CheckCircle2 className="mr-2 h-4 w-4 text-primary" /> Priority requests and reservations</li>
                   {plan.creditReward > 0 && (
-                    <li className="flex items-center"><CheckCircle2 className="mr-2 h-4 w-4 text-primary" /> Includes ₹{plan.creditReward} wallet credit</li>
+                    <li className="flex items-center"><CheckCircle2 className="mr-2 h-4 w-4 text-primary" /> Includes {fmtCreditWithRupeeEquivalent(plan.creditReward)} wallet credit</li>
                   )}
                 </>
               )}

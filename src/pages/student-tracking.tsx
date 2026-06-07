@@ -25,6 +25,7 @@ import {
   bookRequestStatusLabel,
   normalizeBookRequestStatus,
 } from "@/lib/book-requests";
+import { fmtCreditWithRupeeEquivalent, fmtCredits } from "@/lib/credits";
 
 type BookRow = {
   id: string;
@@ -84,10 +85,6 @@ type P2pRow = {
   updatedAt?: string;
   soldAt?: string | null;
 };
-
-function fmtCredits(n: number) {
-  return `${new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(n)} Credits`;
-}
 
 function fmtDateShort(iso: string | undefined | null) {
   if (!iso) return "";

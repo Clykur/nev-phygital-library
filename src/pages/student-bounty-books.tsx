@@ -24,17 +24,22 @@ import { useStudentShell } from "@/components/layout/StudentAppShell";
 import { useAuth } from "@/context/auth-context";
 import { apiFetch, ApiError } from "@/lib/api";
 import {
+  BOUNTY_STUDENT_STEPS,
   bountyRequestStatusLabel,
+  bountyRewardStatusLabel,
+  bountySubmissionStep,
   bountySubmissionStatusLabel,
   fmtBountyReward,
   type BountyRequestRow,
   type BountySubmissionRow,
 } from "@/lib/bounty";
+import { refreshBountyQueries } from "@/lib/bounty-cache";
 import { PORTAL_PAGE_LEAD, PORTAL_PAGE_TITLE } from "@/lib/portal-typography";
 import { PORTAL_PAGE_CONTAINER, STUDENT_CARD_SURFACE } from "@/lib/student-ui";
 import { cn } from "@/lib/utils";
 import { BookOpen, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { rupeesToCredits, fmtCreditWithRupeeEquivalent } from "@/lib/credits";
 
 export default function StudentBountyBooksPage() {
   const { token } = useAuth();
@@ -45,6 +50,7 @@ export default function StudentBountyBooksPage() {
   const [condition, setCondition] = useState("good");
   const [edition, setEdition] = useState("");
   const [notes, setNotes] = useState("");
+  const [rewardTarget, setRewardTarget] = useState<BountySubmissionRow | null>(null);
 
   const topPad = inShell ? "" : "pt-24";
   const pageWrap = inShell ? "w-full" : PORTAL_PAGE_CONTAINER;
@@ -69,9 +75,8 @@ export default function StudentBountyBooksPage() {
         method: "POST",
         body: JSON.stringify(body),
       }),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["bounty"] });
-      qc.invalidateQueries({ queryKey: ["notifications"] });
+    onSuccess: async () => {
+      await refreshBountyQueries(qc);
       toast.success("Submission sent to the hub.");
       setSubmitTarget(null);
       setEdition("");
@@ -79,6 +84,25 @@ export default function StudentBountyBooksPage() {
       setCondition("good");
     },
     onError: (err: ApiError) => toast.error(err.message),
+  });
+
+  const acceptRewardMutation = useMutation({
+    mutationFn: ({ id, method }: { id: string; method: "credits" | "cash" }) =>
+      apiFetch(`/api/bounty/submissions/${id}/accept-reward`, {
+        token: token!,
+        method: "POST",
+        body: JSON.stringify({ method }),
+      }),
+    onSuccess: async (_data, variables) => {
+      await refreshBountyQueries(qc);
+      toast.success(
+        variables.method === "credits"
+          ? "Reward accepted. Credits added successfully."
+          : "Cash payout request submitted.",
+      );
+      setRewardTarget(null);
+    },
+    onError: (err: ApiError) => toast.error(err.message || "Reward could not be accepted."),
   });
 
   const requests = requestsQ.data?.requests ?? [];
@@ -94,6 +118,22 @@ export default function StudentBountyBooksPage() {
   }, [requests, q]);
 
   const mySubmissions = mySubmissionsQ.data?.submissions ?? [];
+  const rewardAlreadyAccepted = (sub: BountySubmissionRow) =>
+    !!sub.rewardAcceptedAt ||
+    !!sub.rewardMethod ||
+    ["credits_accepted", "cash_requested", "completed", "paid"].includes(sub.rewardStatus ?? "");
+  const canAcceptReward = (sub: BountySubmissionRow) =>
+    (sub.status === "inventory_confirmed" && sub.rewardStatus === "awaiting_acceptance") ||
+    (
+      !rewardAlreadyAccepted(sub) &&
+      (
+        sub.rewardStatus === "awaiting_acceptance" ||
+        sub.rewardStatus === "delivered" ||
+        sub.rewardStatus === "approved" ||
+        sub.status === "awaiting_acceptance" ||
+        sub.status === "inventory_confirmed"
+      )
+    );
 
   return (
     <div className={cn(PORTAL_PAGE_CONTAINER, "space-y-8 py-8")}>
@@ -177,28 +217,103 @@ export default function StudentBountyBooksPage() {
           </div>
         )}
 
-        {mySubmissions.length > 0 ? (
-          <section className="mt-10" aria-label="My submissions">
-            <h2 className="h4-scale font-semibold text-foreground">My submissions</h2>
-            <ul className="mt-4 divide-y divide-border rounded-xl border border-border bg-card">
+        <section className="mt-10" aria-label="My Bounty Books">
+          <h2 className="h4-scale font-semibold text-foreground">My Bounty Books</h2>
+          <p className="mt-1 text-sm text-foreground-muted">
+            Track delivery, hub approval, inventory intake, and reward payout.
+          </p>
+          {mySubmissionsQ.isLoading ? (
+            <div className="flex justify-center py-12">
+              <Loader2 className="h-7 w-7 animate-spin text-foreground-muted" />
+            </div>
+          ) : mySubmissions.length > 0 ? (
+            <ul className="mt-4 space-y-4">
               {mySubmissions.map((sub) => (
-                <li key={sub.id} className="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
-                  <div>
-                    <p className="font-medium text-foreground">{sub.bountyTitle}</p>
-                    <p className="caption-scale text-foreground-muted">
-                      {sub.hubName} · {bountySubmissionStatusLabel(sub.status)}
-                    </p>
+                <li key={sub.id} className={cn(STUDENT_CARD_SURFACE, "p-5")}>
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <p className="font-semibold text-foreground">{sub.bountyTitle}</p>
+                      <p className="caption-scale text-foreground-muted">{sub.hubName}</p>
+                    </div>
+                    <Badge
+                      variant="outline"
+                      status={sub.status === "rejected" ? "error" : "neutral"}
+                    >
+                      {bountySubmissionStatusLabel(sub.status)}
+                    </Badge>
                   </div>
-                  {sub.rewardAmount != null ? (
-                    <span className="text-sm font-semibold tabular-nums text-primary">
-                      {fmtBountyReward(sub.rewardAmount)}
-                    </span>
+                  <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-3">
+                    <div>
+                      <dt className="caption-scale text-foreground-muted">Requested reward</dt>
+                      <dd className="font-semibold tabular-nums text-primary">
+                        {fmtBountyReward(sub.rewardAmount ?? 0)} · {fmtCreditWithRupeeEquivalent(rupeesToCredits(sub.rewardAmount ?? 0))}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="caption-scale text-foreground-muted">Inventory</dt>
+                      <dd className="font-medium text-foreground">
+                        {sub.status === "inventory_confirmed" ? "Added to Inventory" : "Pending"}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="caption-scale text-foreground-muted">Reward payout</dt>
+                      <dd className="font-medium text-foreground">
+                        {bountyRewardStatusLabel(sub.rewardStatus)}
+                      </dd>
+                      {sub.rewardMethod ? (
+                        <p className="caption-scale text-foreground-muted">
+                          Selected: {sub.rewardMethod === "credits" ? "Credits" : "Cash offline"}
+                        </p>
+                      ) : null}
+                    </div>
+                  </dl>
+                  {canAcceptReward(sub) ? (
+                    <div className="mt-4">
+                      <Button
+                        type="button"
+                        className="rounded-xl"
+                        onClick={() => setRewardTarget(sub)}
+                      >
+                        Accept Reward
+                      </Button>
+                    </div>
                   ) : null}
+                  {sub.status === "rejected" ? (
+                    <p className="mt-4 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive">
+                      This submission was not accepted by the hub.
+                    </p>
+                  ) : (
+                    <ol className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
+                      {BOUNTY_STUDENT_STEPS.map((step, index) => {
+                        const reached = index <= bountySubmissionStep(sub.status);
+                        return (
+                          <li
+                            key={step.status}
+                            className={cn(
+                              "rounded-lg border px-2 py-2 text-center caption-scale font-medium",
+                              reached
+                                ? "border-primary/30 bg-primary/10 text-primary"
+                                : "border-border text-foreground-subtle",
+                            )}
+                          >
+                            {step.label}
+                          </li>
+                        );
+                      })}
+                    </ol>
+                  )}
+                  <p className="mt-3 caption-scale text-foreground-muted">
+                    Updated {new Date(sub.updatedAt).toLocaleString()}
+                  </p>
                 </li>
               ))}
             </ul>
-          </section>
-        ) : null}
+          ) : (
+            <div className={cn(STUDENT_CARD_SURFACE, "mt-4 p-6 text-center text-foreground-muted")}>
+              You have not submitted a bounty book yet.
+            </div>
+          )}
+        </section>
 
       <Dialog open={!!submitTarget} onOpenChange={(open) => !open && setSubmitTarget(null)}>
         <DialogContent className="sm:max-w-md">
@@ -254,6 +369,47 @@ export default function StudentBountyBooksPage() {
               Submit to hub
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={!!rewardTarget} onOpenChange={(open) => !open && setRewardTarget(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Accept Reward</DialogTitle>
+            <DialogDescription>
+              Choose how you want to receive this bounty reward. This can only be accepted once.
+            </DialogDescription>
+          </DialogHeader>
+          {rewardTarget ? (
+            <div className="space-y-4">
+              <div className="rounded-xl border border-border bg-card/60 p-4 text-sm">
+                <p className="font-medium text-foreground">{rewardTarget.bountyTitle}</p>
+                <p className="mt-1 text-foreground-muted">
+                  Reward: {fmtBountyReward(rewardTarget.rewardAmount ?? 0)} ·{" "}
+                  {fmtCreditWithRupeeEquivalent(rupeesToCredits(rewardTarget.rewardAmount ?? 0))}
+                </p>
+              </div>
+              <Button
+                type="button"
+                className="w-full rounded-xl"
+                disabled={acceptRewardMutation.isPending}
+                onClick={() => acceptRewardMutation.mutate({ id: rewardTarget.id, method: "credits" })}
+              >
+                Receive Credits
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full rounded-xl"
+                disabled={acceptRewardMutation.isPending}
+                onClick={() => acceptRewardMutation.mutate({ id: rewardTarget.id, method: "cash" })}
+              >
+                Receive Cash Offline
+              </Button>
+              <p className="caption-scale text-foreground-muted">
+                Credits are added to your wallet with a bounty reward transaction. Cash requests do not change wallet balance.
+              </p>
+            </div>
+          ) : null}
         </DialogContent>
       </Dialog>
     </div>

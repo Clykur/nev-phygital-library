@@ -67,6 +67,7 @@ import {
   CheckoutFlowDialog,
   type CheckoutFlowItem,
 } from "@/components/checkout-flow-dialog";
+import { recordRecentlyViewed } from "@/lib/recently-viewed";
 
 type P2pListing = {
   id: string;
@@ -129,10 +130,12 @@ function peerRowVisibleInPublicBrowse(status: string) {
 function MarketplacePeerCard({
   listing: l,
   onSelect,
+  onViewed,
   hideBottomTitle,
 }: {
   listing: P2pListing;
   onSelect: (listing: P2pListing) => void;
+  onViewed?: (listing: P2pListing) => void;
   hideBottomTitle?: boolean;
 }) {
   const priceOk = isValidListingPrice(l.price);
@@ -159,6 +162,7 @@ function MarketplacePeerCard({
       hideBottomTitle={hideBottomTitle}
       onOpen={() => {
         pushRecentViewedTitle(l.bookTitle);
+        onViewed?.(l);
         onSelect(l);
       }}
     />
@@ -604,6 +608,15 @@ export default function Marketplace(props?: MarketplaceProps) {
     ).slice(0, 6);
   }, [reqQ.data?.requests]);
 
+  const recentViewsQ = useQuery({
+    queryKey: ["student", "recently-viewed", token],
+    enabled: !!token && !!user,
+    queryFn: () =>
+      apiFetch<{
+        items: Array<{ title: string }>;
+      }>("/api/student/recently-viewed?limit=6", { token: token! }),
+  });
+
   const popularAtHub = useMemo(() => {
     const counts = new Map<string, number>();
     for (const b of hubBooksSorted) {
@@ -618,7 +631,9 @@ export default function Marketplace(props?: MarketplaceProps) {
   const similarBooks = useMemo(() => {
     const seed = search.trim().toLowerCase();
     let recent: string[] = [];
-    if (typeof window !== "undefined") {
+    if (user && recentViewsQ.data?.items) {
+      recent = recentViewsQ.data.items.map((item) => item.title).filter(Boolean);
+    } else if (typeof window !== "undefined") {
       try {
         const raw = window.localStorage.getItem(RECENT_VIEWED_KEY);
         recent = raw ? (JSON.parse(raw) as string[]) : [];
@@ -629,7 +644,7 @@ export default function Marketplace(props?: MarketplaceProps) {
     if (!seed) return recent.slice(0, 6);
     const matching = searchSuggestions.filter((t) => t.toLowerCase().includes(seed));
     return Array.from(new Set([...matching, ...recent])).slice(0, 6);
-  }, [search, searchSuggestions]);
+  }, [search, searchSuggestions, user, recentViewsQ.data?.items]);
 
   const peerGridTotalPages = Math.max(1, Math.ceil(peerShelfOrdered.length / CATALOG_PAGE_SIZE));
   const peerGridRows = useMemo(
@@ -678,6 +693,22 @@ export default function Marketplace(props?: MarketplaceProps) {
     void qc.invalidateQueries({ queryKey: ["hub", "books"] });
     void qc.invalidateQueries({ queryKey: ["hub", "overview"] });
     void qc.invalidateQueries({ queryKey: ["book-requests", "hub"] });
+    void qc.invalidateQueries({ queryKey: ["wallet"] });
+    void qc.invalidateQueries({ queryKey: ["student-dashboard"] });
+    void qc.invalidateQueries({ queryKey: ["student", "recently-viewed"] });
+    void qc.invalidateQueries({ queryKey: ["notifications"] });
+  };
+
+  const persistRecentView = (payload: { bookId?: string; listingId?: string }) => {
+    if (!token || (!payload.bookId && !payload.listingId)) return;
+    void recordRecentlyViewed(payload.bookId ? { bookId: payload.bookId } : { listingId: payload.listingId! }, token)
+      .then(() => {
+        void qc.invalidateQueries({ queryKey: ["student-dashboard"] });
+        void qc.invalidateQueries({ queryKey: ["student", "recently-viewed"] });
+      })
+      .catch(() => {
+        /* Non-blocking analytics write. */
+      });
   };
 
   const deskAcquireHubs = useMemo(() => {
@@ -885,7 +916,7 @@ export default function Marketplace(props?: MarketplaceProps) {
         title: "Browse books",
         accent: "Together in one place.",
         body: inShell
-          ? "Use the filters and search to focus on shelf copies, student sellers, or both. Premium unlocks checkout and purchases after hub approval."
+          ? "Use the filters and search to focus on shelf copies, student sellers, or both. Free members use credits; Premium members borrow free."
           : "Browse hub and peer copies in one view. Sign in for checkout, requests, and purchases.",
       }
     : studentMode === "sell"
@@ -1596,7 +1627,6 @@ export default function Marketplace(props?: MarketplaceProps) {
                             bookId: b.id,
                           });
                         const isAvailable = b.status === "available";
-                        const upgradeWhere = inShell ? "sidebar" : "header";
                         const refShort = catalogRefLabel(b.refId ?? b.id, null);
                         return (
                           <div
@@ -1692,7 +1722,7 @@ export default function Marketplace(props?: MarketplaceProps) {
                                       className={cn("w-full", studentShellFlat ? "rounded-xl" : "rounded-xl")}
                                       onClick={() =>
                                         toast.message(
-                                          `Premium unlocks borrow and buy. Use Upgrade in the ${upgradeWhere}.`,
+                                          "This account cannot borrow this copy. Check your wallet or account permissions.",
                                         )
                                       }
                                     >
@@ -1707,8 +1737,9 @@ export default function Marketplace(props?: MarketplaceProps) {
                                         "w-full bg-primary text-primary-foreground hover:bg-primary/90",
                                         studentShellFlat ? "rounded-xl" : "rounded-xl",
                                       )}
-                                      onClick={() =>
-                                      (pushRecentViewedTitle(b.title),
+                                      onClick={() => {
+                                        pushRecentViewedTitle(b.title);
+                                        persistRecentView({ bookId: b.id });
                                         setCheckout({
                                           item: {
                                             kind: "hub",
@@ -1719,8 +1750,8 @@ export default function Marketplace(props?: MarketplaceProps) {
                                             borrowPrice: b.borrowPrice ?? 0,
                                           },
                                           initialMode: "borrow",
-                                        }))
-                                      }
+                                        });
+                                      }}
                                     >
                                       <BookOpen className="mr-2 h-4 w-4" />
                                       Borrow or buy
@@ -1759,11 +1790,12 @@ export default function Marketplace(props?: MarketplaceProps) {
                               </p>
                             </div>
                           ) : null}
-                          <MarketplacePeerCard
-                            listing={listing}
-                            onSelect={setSelected}
-                            hideBottomTitle
-                          />
+                            <MarketplacePeerCard
+                              listing={listing}
+                              onSelect={setSelected}
+                              onViewed={(row) => persistRecentView({ listingId: row.id })}
+                              hideBottomTitle
+                            />
                         </div>
                       );
                     })}
@@ -1823,7 +1855,12 @@ export default function Marketplace(props?: MarketplaceProps) {
                                 </p>
                               </div>
                             ) : null}
-                            <MarketplacePeerCard listing={l} onSelect={setSelected} hideBottomTitle />
+                            <MarketplacePeerCard
+                              listing={l}
+                              onSelect={setSelected}
+                              onViewed={(listing) => persistRecentView({ listingId: listing.id })}
+                              hideBottomTitle
+                            />
                           </div>
                         ))}
                       </div>
@@ -1965,7 +2002,9 @@ export default function Marketplace(props?: MarketplaceProps) {
                           Buy {selected.price.toLocaleString("en-IN")} Credits
                         </p>
                         <p className="text-lg font-semibold tabular-nums tracking-tight text-foreground/90">
-                          Borrow {selected.borrowPrice.toLocaleString("en-IN")} Credits
+                          {user && isPremiumOk(user)
+                            ? "Premium Member — Borrow Free"
+                            : `Borrow ${selected.borrowPrice.toLocaleString("en-IN")} Credits`}
                         </p>
                       </div>
                       <p className="text-muted-foreground">Peer-to-peer · campus hub pickup</p>
@@ -2271,17 +2310,6 @@ export default function Marketplace(props?: MarketplaceProps) {
 
                     {user &&
                       !isDemoListingId(selected.id) &&
-                      selected.ownerId !== user.userId &&
-                      selected.status === "available" &&
-                      !isPremiumOk(user) && (
-                        <p className="text-sm text-muted-foreground">
-                          Premium required to borrow or buy — use Upgrade in the{" "}
-                          {inShell ? "sidebar" : "header"}.
-                        </p>
-                      )}
-
-                    {user &&
-                      !isDemoListingId(selected.id) &&
                       selected.borrowerUserId === user.userId &&
                       selected.status === "reserved" && (
                         <Button
@@ -2317,7 +2345,9 @@ export default function Marketplace(props?: MarketplaceProps) {
                               )}
                               onClick={() => openPeerCheckout(selected, "borrow")}
                             >
-                              Borrow for {selected.borrowPrice.toLocaleString("en-IN")} Credits
+                              {isPremiumOk(user)
+                                ? "Premium Member — Borrow Free"
+                                : `Borrow for ${selected.borrowPrice.toLocaleString("en-IN")} Credits`}
                             </Button>
                           )}
                           <Button
@@ -2336,7 +2366,6 @@ export default function Marketplace(props?: MarketplaceProps) {
                     {user &&
                       !isDemoListingId(selected.id) &&
                       selected.ownerId !== user.userId &&
-                      isPremiumOk(user) &&
                       selected.status !== "sold" &&
                       selected.status !== "available" && (
                         <Button

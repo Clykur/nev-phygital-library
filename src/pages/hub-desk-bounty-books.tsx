@@ -38,11 +38,13 @@ import { PORTAL_PAGE_LEAD, PORTAL_PAGE_TITLE } from "@/lib/portal-typography";
 import { PORTAL_INLINE_LINK, PORTAL_PAGE_GUTTER_X } from "@/lib/student-ui";
 import {
   bountyRequestStatusLabel,
+  bountyRewardStatusLabel,
   bountySubmissionStatusLabel,
   fmtBountyReward,
   type BountyRequestRow,
   type BountySubmissionRow,
 } from "@/lib/bounty";
+import { refreshBountyQueries } from "@/lib/bounty-cache";
 import { cn } from "@/lib/utils";
 import { Loader2, Plus, Shield } from "lucide-react";
 import { toast } from "sonner";
@@ -89,6 +91,9 @@ export default function HubDeskBountyBooksPage() {
   const [detailId, setDetailId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [createHubId, setCreateHubId] = useState("");
+  const [inventoryPricingTarget, setInventoryPricingTarget] = useState<BountySubmissionRow | null>(null);
+  const [inventoryBorrowPrice, setInventoryBorrowPrice] = useState("");
+  const [inventoryBuyPrice, setInventoryBuyPrice] = useState("");
 
   const topPad = inShell ? "" : "pt-24";
   const overviewHubId =
@@ -130,9 +135,8 @@ export default function HubDeskBountyBooksPage() {
         method: "POST",
         body: JSON.stringify(body),
       }),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["bounty"] });
-      qc.invalidateQueries({ queryKey: ["hub", "overview"] });
+    onSuccess: async () => {
+      await refreshBountyQueries(qc);
       toast.success("Bounty request created.");
       setCreateOpen(false);
       setForm(emptyForm);
@@ -147,8 +151,8 @@ export default function HubDeskBountyBooksPage() {
         method: "PATCH",
         body: JSON.stringify({ status }),
       }),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["bounty"] });
+    onSuccess: async () => {
+      await refreshBountyQueries(qc);
       toast.success("Bounty request updated.");
     },
     onError: (err: ApiError) => toast.error(err.message),
@@ -161,24 +165,34 @@ export default function HubDeskBountyBooksPage() {
         method: "PATCH",
         body: JSON.stringify({ status }),
       }),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["bounty"] });
+    onSuccess: async () => {
+      await refreshBountyQueries(qc);
       toast.success("Submission updated.");
     },
     onError: (err: ApiError) => toast.error(err.message),
   });
 
   const confirmReceiptMutation = useMutation({
-    mutationFn: (submissionId: string) =>
+    mutationFn: ({
+      submissionId,
+      borrowPrice,
+      buyPrice,
+    }: {
+      submissionId: string;
+      borrowPrice: number;
+      buyPrice: number;
+    }) =>
       apiFetch(`/api/bounty/hub/submissions/${submissionId}/confirm-receipt`, {
         token: token!,
         method: "POST",
+        body: JSON.stringify({ borrowPrice, buyPrice }),
       }),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["bounty"] });
-      qc.invalidateQueries({ queryKey: ["hub", "books"] });
-      qc.invalidateQueries({ queryKey: ["hub", "overview"] });
+    onSuccess: async () => {
+      await refreshBountyQueries(qc);
       toast.success("Book added to inventory.");
+      setInventoryPricingTarget(null);
+      setInventoryBorrowPrice("");
+      setInventoryBuyPrice("");
     },
     onError: (err: ApiError) => toast.error(err.message),
   });
@@ -246,6 +260,31 @@ export default function HubDeskBountyBooksPage() {
       rewardAmount: Number(form.rewardAmount) || 0,
       notes: form.notes || undefined,
       expiryDate: form.expiryDate ? new Date(form.expiryDate).toISOString() : null,
+    });
+  };
+
+  const openInventoryPricing = (sub: BountySubmissionRow) => {
+    setInventoryPricingTarget(sub);
+    setInventoryBorrowPrice("");
+    setInventoryBuyPrice(String(sub.rewardAmount ?? ""));
+  };
+
+  const submitInventoryPricing = () => {
+    if (!inventoryPricingTarget) return;
+    const borrowPrice = Number.parseInt(inventoryBorrowPrice, 10);
+    const buyPrice = Number.parseInt(inventoryBuyPrice, 10);
+    if (!Number.isFinite(borrowPrice) || borrowPrice < 0) {
+      toast.error("Enter a valid borrow price in credits.");
+      return;
+    }
+    if (!Number.isFinite(buyPrice) || buyPrice <= 0) {
+      toast.error("Enter a valid buy/new book price.");
+      return;
+    }
+    confirmReceiptMutation.mutate({
+      submissionId: inventoryPricingTarget.id,
+      borrowPrice,
+      buyPrice,
     });
   };
 
@@ -389,7 +428,7 @@ export default function HubDeskBountyBooksPage() {
                           Pause
                         </Button>
                       ) : null}
-                      {row.status === "paused" ? (
+                      {["paused", "closed"].includes(row.status) ? (
                         <Button
                           size="sm"
                           variant="ghost"
@@ -519,7 +558,13 @@ export default function HubDeskBountyBooksPage() {
           ) : detailQ.data ? (
             <div className="space-y-4">
               <div className="rounded-xl border border-border bg-card/60 p-4 text-sm">
-                <p>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-foreground-muted">Request status:</span>
+                  <Badge variant="outline" status="neutral">
+                    {bountyRequestStatusLabel(detailQ.data.request.status)}
+                  </Badge>
+                </div>
+                <p className="mt-2">
                   <span className="text-foreground-muted">Reward:</span>{" "}
                   {fmtBountyReward(detailQ.data.request.rewardAmount)} ·{" "}
                   <span className="text-foreground-muted">Qty:</span> {detailQ.data.request.quantity}
@@ -546,12 +591,33 @@ export default function HubDeskBountyBooksPage() {
                         </Badge>
                       </div>
                       {sub.notes ? <p className="text-sm text-foreground-muted">{sub.notes}</p> : null}
+                      <dl className="grid gap-2 text-sm sm:grid-cols-2">
+                        <div>
+                          <dt className="caption-scale text-foreground-muted">Inventory state</dt>
+                          <dd className="font-medium text-foreground">
+                            {sub.status === "inventory_confirmed" ? "Added to Inventory" : "Not added"}
+                          </dd>
+                        </div>
+                        <div>
+                          <dt className="caption-scale text-foreground-muted">Reward state</dt>
+                          <dd className="font-medium text-foreground">
+                            {bountyRewardStatusLabel(sub.rewardStatus)}
+                          </dd>
+                          {sub.rewardMethod ? (
+                            <p className="caption-scale text-foreground-muted">
+                              Method: {sub.rewardMethod === "credits" ? "Credits issued" : "Cash offline"}
+                              {sub.cashPayoutStatus ? ` · ${sub.cashPayoutStatus.replace(/_/g, " ")}` : ""}
+                            </p>
+                          ) : null}
+                        </div>
+                      </dl>
                       <div className="flex flex-wrap gap-2">
                         {sub.status === "submitted" ? (
                           <>
                             <Button
                               size="sm"
                               className="rounded-xl"
+                              disabled={submissionMutation.isPending}
                               onClick={() => submissionMutation.mutate({ id: sub.id, status: "awaiting_drop_off" })}
                             >
                               Approve submission
@@ -560,43 +626,39 @@ export default function HubDeskBountyBooksPage() {
                               size="sm"
                               variant="destructive"
                               className="rounded-xl"
+                              disabled={submissionMutation.isPending}
                               onClick={() => submissionMutation.mutate({ id: sub.id, status: "rejected" })}
                             >
                               Reject
                             </Button>
                           </>
                         ) : null}
-                        {["awaiting_drop_off", "approved"].includes(sub.status) ? (
+                        {sub.status === "awaiting_drop_off" ? (
                           <Button
                             size="sm"
                             variant="outline"
                             className="rounded-xl"
+                            disabled={submissionMutation.isPending}
                             onClick={() => submissionMutation.mutate({ id: sub.id, status: "delivered" })}
                           >
                             Mark delivered
                           </Button>
                         ) : null}
-                      {["delivered", "under_review", "approved", "awaiting_drop_off"].includes(sub.status) ? (
-  sub.inventoryBookId ? (
-    <Button
-      size="sm"
-      className="rounded-xl"
-      disabled
-      variant="outline"
-    >
-      Added to Inventory
-    </Button>
-  ) : (
-    <Button
-      size="sm"
-      className="rounded-xl"
-      disabled={confirmReceiptMutation.isPending}
-      onClick={() => confirmReceiptMutation.mutate(sub.id)}
-    >
-      Confirm Receipt → Inventory
-    </Button>
-  )
-) : null}
+                        {sub.status === "delivered" ? (
+                          <Button
+                            size="sm"
+                            className="rounded-xl"
+                            disabled={confirmReceiptMutation.isPending}
+                            onClick={() => openInventoryPricing(sub)}
+                          >
+                            Confirm Receipt → Add to Inventory
+                          </Button>
+                        ) : null}
+                        {sub.status === "inventory_confirmed" ? (
+                          <Button size="sm" className="rounded-xl" disabled variant="outline">
+                            Added to Inventory
+                          </Button>
+                        ) : null}
                       </div>
                     </li>
                   ))}
@@ -604,6 +666,137 @@ export default function HubDeskBountyBooksPage() {
               )}
             </div>
           ) : null}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={!!inventoryPricingTarget}
+        onOpenChange={(open) => !open && setInventoryPricingTarget(null)}
+      >
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Add to Inventory</DialogTitle>
+            <DialogDescription>
+              Set pricing for "{inventoryPricingTarget?.bountyTitle}" before adding to inventory.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-3 py-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="borrow-price">Borrow Price (Credits)</Label>
+              <Input
+                id="borrow-price"
+                type="number"
+                min={0}
+                className="rounded-xl"
+                value={inventoryBorrowPrice}
+                onChange={(e) => setInventoryBorrowPrice(e.target.value)}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="buy-price">Buy Price (New Book Cost)</Label>
+              <Input
+                id="buy-price"
+                type="number"
+                min={0}
+                className="rounded-xl"
+                value={inventoryBuyPrice}
+                onChange={(e) => setInventoryBuyPrice(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              className="rounded-xl"
+              onClick={() => setInventoryPricingTarget(null)}
+            >
+              Cancel
+            </Button>
+            <Button
+              className="rounded-xl"
+              disabled={confirmReceiptMutation.isPending}
+              onClick={submitInventoryPricing}
+            >
+              Confirm & Add to Inventory
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Dialog
+        open={!!inventoryPricingTarget}
+        onOpenChange={(open) => !open && setInventoryPricingTarget(null)}
+      >
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Configure Inventory Pricing</DialogTitle>
+            <DialogDescription>
+              Set borrowing and purchase prices before adding this bounty book to hub inventory.
+            </DialogDescription>
+          </DialogHeader>
+          {inventoryPricingTarget ? (
+            <div className="space-y-4 py-2">
+              <div className="rounded-xl border border-border bg-card/60 p-4 text-sm">
+                <p className="font-medium text-foreground">
+                  {inventoryPricingTarget.bountyTitle ?? detailQ.data?.request.title ?? "Bounty book"}
+                </p>
+                <p className="mt-1 text-foreground-muted">
+                  Student: {inventoryPricingTarget.studentName ?? "Student"} · Condition: {inventoryPricingTarget.condition}
+                </p>
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="bounty-inventory-borrow-price">Borrow Price (Credits)</Label>
+                <Input
+                  id="bounty-inventory-borrow-price"
+                  type="number"
+                  min={0}
+                  inputMode="numeric"
+                  className="rounded-xl"
+                  value={inventoryBorrowPrice}
+                  onChange={(e) => setInventoryBorrowPrice(e.target.value.replace(/[^\d]/g, ""))}
+                  placeholder="e.g. 50"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="bounty-inventory-buy-price">Buy Price (New Book Cost)</Label>
+                <Input
+                  id="bounty-inventory-buy-price"
+                  type="number"
+                  min={1}
+                  inputMode="numeric"
+                  className="rounded-xl"
+                  value={inventoryBuyPrice}
+                  onChange={(e) => setInventoryBuyPrice(e.target.value.replace(/[^\d]/g, ""))}
+                  placeholder="e.g. 450"
+                />
+                <p className="caption-scale text-foreground-muted">
+                  This price is used when students purchase the copy from the hub.
+                </p>
+              </div>
+            </div>
+          ) : null}
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              className="rounded-xl"
+              disabled={confirmReceiptMutation.isPending}
+              onClick={() => setInventoryPricingTarget(null)}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              className="rounded-xl"
+              disabled={
+                confirmReceiptMutation.isPending ||
+                inventoryBorrowPrice.trim() === "" ||
+                inventoryBuyPrice.trim() === ""
+              }
+              onClick={submitInventoryPricing}
+            >
+              Add to Inventory
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

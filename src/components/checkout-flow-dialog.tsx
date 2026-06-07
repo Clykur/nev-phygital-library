@@ -23,6 +23,7 @@ import { CheckCircle2, Loader2, Wallet } from "lucide-react";
 import { useWallet } from "@/context/wallet-context";
 import { useAuth } from "@/context/auth-context";
 import { isPremiumOk } from "@/lib/rbac";
+import { fmtCredits, fmtCreditWithRupeeEquivalent } from "@/lib/credits";
 
 export type CheckoutFlowItem =
   | {
@@ -43,10 +44,6 @@ export type CheckoutFlowItem =
   };
 
 type Step = "details" | "payment" | "success";
-
-function fmtCredits(n: number) {
-  return `${n.toLocaleString("en-IN")} Credits`;
-}
 
 export function CheckoutFlowDialog({
   open,
@@ -71,7 +68,7 @@ export function CheckoutFlowDialog({
   const [payError, setPayError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [acquireHubId, setAcquireHubId] = useState("");
-  const { balance, spendCredits } = useWallet();
+  const { balance, refreshWallet } = useWallet();
   const { user } = useAuth();
   const isPremium = user ? isPremiumOk(user) : false;
 
@@ -79,7 +76,6 @@ export function CheckoutFlowDialog({
     if (!open || !item) return;
     setStep("details");
     setMode(initialMode);
-    setCardName("");
     setPayError(null);
   }, [open, item, initialMode]);
 
@@ -93,10 +89,9 @@ export function CheckoutFlowDialog({
 
   if (!item) return null;
 
-  if (!item) return null;
-
   const actualBorrowPrice = isPremium ? 0 : item.borrowPrice;
   const amount = mode === "borrow" ? actualBorrowPrice : item.buyPrice;
+  const requiresWalletDebit = amount > 0;
   const hubLine = item.kind === "hub" ? item.hubName : item.hubName ?? "Campus hub (TBD)";
   const pickupRef =
     item.kind === "hub" ? `REF-${item.bookId.slice(0, 8).toUpperCase()}` : `REF-${item.listingId.slice(0, 8).toUpperCase()}`;
@@ -113,6 +108,11 @@ export function CheckoutFlowDialog({
     setPending(true);
     setPayError(null);
     try {
+      if (requiresWalletDebit && balance < amount) {
+        throw new Error(
+          `Insufficient credits. You need ${fmtCredits(amount)} but only have ${fmtCredits(balance)}.`,
+        );
+      }
       if (item.kind === "hub") {
         if (mode === "borrow") {
           await apiFetch(`/api/books/${item.bookId}/checkout`, { method: "POST", token });
@@ -134,10 +134,7 @@ export function CheckoutFlowDialog({
           });
         }
       }
-      const success = await spendCredits(amount, `Purchased: ${item.title}`);
-      if (!success) {
-        throw new Error("Payment failed due to insufficient credits.");
-      }
+      await refreshWallet();
       setStep("success");
       onComplete();
     } catch (e: any) {
@@ -194,7 +191,7 @@ export function CheckoutFlowDialog({
                   >
                     <span className="font-medium">Borrow</span>
                     <span className="tabular-nums text-primary">
-                      {isPremium ? "Free (Premium)" : fmtCredits(item.borrowPrice)}
+                      {isPremium ? "Premium Member — Borrow Free" : fmtCredits(item.borrowPrice)}
                     </span>
                   </button>
                   <button
@@ -259,12 +256,16 @@ export function CheckoutFlowDialog({
               <div className="rounded-xl border border-border bg-card/60 p-4 text-sm">
                 <p className="text-muted-foreground">Amount due</p>
                 <p className="mt-1 text-2xl font-semibold tabular-nums text-foreground">
-                  {amount.toLocaleString()} <span className="text-sm font-normal text-muted-foreground">Credits</span>
+                  {mode === "borrow" && isPremium ? (
+                    <span className="text-primary">Premium Member — Borrow Free</span>
+                  ) : (
+                    fmtCreditWithRupeeEquivalent(amount)
+                  )}
                 </p>
                 <p className="mt-2 text-xs text-muted-foreground">
                   {mode === "borrow"
                     ? isPremium
-                      ? "Premium Benefit Applied. Borrow Cost: Free. Return the copy on time."
+                      ? "No credits required for borrowing. Return the copy on time."
                       : "Borrow fee for this loan period. Return the copy on time."
                     : deskAcquireHubs?.length
                       ? "Desk shelf acquisition — copy becomes hub-owned stock at the hub you selected."
@@ -302,7 +303,7 @@ export function CheckoutFlowDialog({
                   ) : balance < amount ? (
                     "Insufficient Credits"
                   ) : (
-                    `Pay ${amount.toLocaleString()} Credits`
+                    amount === 0 ? "Confirm Free Borrow" : `Pay ${fmtCredits(amount)}`
                   )}
                 </Button>
               </div>
@@ -341,7 +342,3 @@ export function CheckoutFlowDialog({
     </Dialog>
   );
 }
-function setCardName(arg0: string) {
-  throw new Error("Function not implemented.");
-}
-

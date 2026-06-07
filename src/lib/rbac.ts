@@ -91,15 +91,19 @@ export function authorize(
 
   if (freeAllowed) return true;
 
-  const premiumAllowed =
+  const creditWalletAllowed =
     action === ACTIONS.CHECKOUT_BOOK ||
     action === ACTIONS.PURCHASE_BOOK ||
-    action === ACTIONS.REQUEST_BOOK ||
-    action === ACTIONS.CREATE_P2P_LISTING ||
     action === ACTIONS.BUY_P2P ||
     action === ACTIONS.BORROW_P2P;
 
-  if (premiumAllowed && !isPremiumOk(user)) return false;
+  if (!creditWalletAllowed) {
+    const premiumAllowed =
+      action === ACTIONS.REQUEST_BOOK ||
+      action === ACTIONS.CREATE_P2P_LISTING;
+
+    if (premiumAllowed && !isPremiumOk(user)) return false;
+  }
 
   if (action === ACTIONS.EDIT_P2P_LISTING || action === ACTIONS.DELETE_P2P_LISTING) {
     if (resource.type !== "p2p_listing") return false;
