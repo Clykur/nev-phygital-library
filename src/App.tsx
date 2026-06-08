@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/context/auth-context";
 import { toast } from "@/hooks/use-toast";
+import { userFacingErrorMessage } from "@/lib/error-messages";
 import NotFound from "@/pages/not-found";
 import { StudentAppShell } from "@/components/layout/StudentAppShell";
 import Marketplace from "@/pages/marketplace";
@@ -327,9 +328,22 @@ function StudentWalletRoute() {
 
 function PublicRoutes() {
   const { login, loginGoogle, register, user, logout } = useAuth();
+  const [, setLocation] = useLocation();
   const [landingSegment, setLandingSegment] = useState<'students' | 'colleges'>('students');
   const [branch, setBranch] = useState<string>('RVCE-BLR');
   const [activeTab, setActiveTab] = useState<string>('landing');
+
+  function ensurePortalAccess(loggedInUser: NonNullable<typeof user>) {
+    if (landingSegment === 'students' && hasHubPortalAccess(loggedInUser.baseRole)) {
+      logout();
+      throw new Error("Invalid credentials for Student Portal.");
+    }
+    if (landingSegment === 'colleges' && !hasHubPortalAccess(loggedInUser.baseRole)) {
+      logout();
+      throw new Error("Invalid credentials for Hub Portal.");
+    }
+    setLocation(defaultLoggedInHome(loggedInUser));
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans flex flex-col relative overflow-x-hidden">
@@ -352,39 +366,28 @@ function PublicRoutes() {
             activeSegment={landingSegment}
             setActiveSegment={setLandingSegment}
             onLogin={async (email: string, password?: string) => {
-              if (password) {
-                try {
-                  const loggedInUser = await login(email, password);
-                  if (loggedInUser) {
-                    if (landingSegment === 'students' && loggedInUser.baseRole === 'hub') {
-                      logout();
-                      throw new Error("Invalid credentials for Student Portal.");
-                    } else if (landingSegment === 'colleges' && (loggedInUser.baseRole === 'user' || loggedInUser.baseRole === 'student')) {
-                      logout();
-                      throw new Error("Invalid credentials for Hub Portal.");
-                    }
-                  }
-                } catch (error: any) {
-                  const msg = landingSegment === 'colleges' ? "Invalid credentials for Hub Portal." : "Invalid credentials for Student Portal.";
-                  toast({ variant: "destructive", title: "Login failed", description: msg });
-                }
+              if (!password) return;
+              try {
+                const loggedInUser = await login(email.trim().toLowerCase(), password);
+                ensurePortalAccess(loggedInUser);
+              } catch (error) {
+                toast({
+                  variant: "destructive",
+                  title: "Login failed",
+                  description: userFacingErrorMessage(error),
+                });
               }
             }}
             onGoogleLogin={async (token: string, extra?: { accountType?: string, hubLocation?: string, hubName?: string, hubKind?: string }) => {
               try {
                 const loggedInUser = await loginGoogle({ token, ...extra });
-                if (loggedInUser) {
-                  if (landingSegment === 'students' && loggedInUser.baseRole === 'hub') {
-                    logout();
-                    throw new Error("Invalid credentials for Student Portal.");
-                  } else if (landingSegment === 'colleges' && (loggedInUser.baseRole === 'user' || loggedInUser.baseRole === 'student')) {
-                    logout();
-                    throw new Error("Invalid credentials for Hub Portal.");
-                  }
-                }
-              } catch (error: any) {
-                const msg = landingSegment === 'colleges' ? "Invalid credentials for Hub Portal." : "Invalid credentials for Student Portal.";
-                toast({ variant: "destructive", title: "Login failed", description: msg });
+                ensurePortalAccess(loggedInUser);
+              } catch (error) {
+                toast({
+                  variant: "destructive",
+                  title: "Login failed",
+                  description: userFacingErrorMessage(error),
+                });
               }
             }}
             onSignUp={async (name: string, email: string, _isPremium: boolean, hubLocationId: string, password?: string, role?: string, hubName?: string, hubKind?: string, phone?: string) => {

@@ -1028,6 +1028,8 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                           text="continue_with"
                           shape="pill"
                           size="large"
+                          ux_mode="popup"
+                          use_fedcm_for_button
                         />
                       </div>
 
@@ -1098,6 +1100,8 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                           text="continue_with"
                           shape="pill"
                           size="large"
+                          ux_mode="popup"
+                          use_fedcm_for_button
                         />
                       </div>
 
@@ -1609,6 +1613,8 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                           text="continue_with"
                           shape="pill"
                           size="large"
+                          ux_mode="popup"
+                          use_fedcm_for_button
                         />
                       </div>
 
@@ -1681,6 +1687,8 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({ onLogin, onGoogleLogin
                         text="continue_with"
                         shape="pill"
                         size="large"
+                        ux_mode="popup"
+                        use_fedcm_for_button
                       />
                     </div>
                     <div className="flex items-center space-x-2 select-none my-1">

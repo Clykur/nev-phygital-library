@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "start": "vite preview",
+    "type-check": "tsc --noEmit",
     "lint": "tsc --noEmit"
   },
   "dependencies": {
