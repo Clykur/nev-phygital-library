@@ -7,9 +7,14 @@
  */
 import { httpErrorMessage, wrapNetworkFailure } from "./error-messages";
 
+/** Render API used when the production build has no VITE_API_URL (local dev keeps proxy via empty base). */
+const PRODUCTION_API_DEFAULT = "https://phygital-backend-qatz.onrender.com";
+
 function resolveApiBase(): string {
   const explicit = (import.meta.env.VITE_API_URL as string | undefined)?.trim();
   if (explicit) return explicit.replace(/\/$/, "");
+
+  if (import.meta.env.PROD) return PRODUCTION_API_DEFAULT;
 
   return "";
 }

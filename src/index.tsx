@@ -7,9 +7,9 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import { AuthBootstrap } from "./components/AuthBootstrap";
 import { GoogleAuthDebugBootstrap } from "./components/GoogleAuthDebugBootstrap";
 import { logGoogleAuthEnvironment } from "./lib/google-auth-debug";
-import { supabaseBrowserConfigured } from "./lib/supabase-client";
 import App from "./App";
 
 const queryClient = new QueryClient();
@@ -24,10 +24,6 @@ import { AuthProvider } from "./context/auth-context";
 const clientId =
   (import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined)?.trim() ||
   "missing-client-id-configure-in-env";
-
-if (!supabaseBrowserConfigured()) {
-  logGoogleAuthEnvironment(clientId);
-}
 
 function AppTree() {
   return (
@@ -45,12 +41,20 @@ function AppTree() {
 const root = ReactDOM.createRoot(rootElement);
 root.render(
   <React.StrictMode>
-    {supabaseBrowserConfigured() ? (
-      <AppTree />
-    ) : (
-      <GoogleOAuthProvider clientId={clientId}>
-        <AppTree />
-      </GoogleOAuthProvider>
-    )}
+    <AuthBootstrap>
+      {({ useSupabaseGoogle }) => {
+        if (!useSupabaseGoogle && import.meta.env.DEV) {
+          logGoogleAuthEnvironment(clientId);
+        }
+        if (useSupabaseGoogle) {
+          return <AppTree />;
+        }
+        return (
+          <GoogleOAuthProvider clientId={clientId}>
+            <AppTree />
+          </GoogleOAuthProvider>
+        );
+      }}
+    </AuthBootstrap>
   </React.StrictMode>,
 );
