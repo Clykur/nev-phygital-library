@@ -266,17 +266,7 @@ export default function StudentBountyBooksPage() {
                     ) : null}
                   </div>
                 </dl>
-                {canAcceptReward(sub) ? (
-                  <div className="mt-4">
-                    <Button
-                      type="button"
-                      className="rounded-xl"
-                      onClick={() => setRewardTarget(sub)}
-                    >
-                      Accept Reward
-                    </Button>
-                  </div>
-                ) : null}
+
                 {sub.status === "rejected" ? (
                   <p className="mt-4 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive">
                     This submission was not accepted by the hub.

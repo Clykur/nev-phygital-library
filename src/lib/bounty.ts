@@ -152,7 +152,6 @@ export const BOUNTY_STUDENT_STEPS = [
   { status: "under_review", label: "Under Review" },
   { status: "approved", label: "Approved" },
   { status: "inventory_confirmed", label: "Added to Inventory" },
-  { status: "awaiting_acceptance", label: "Accept Reward" },
 ] as const;
 
 export function bountySubmissionStep(status: BountySubmissionStatus): number {

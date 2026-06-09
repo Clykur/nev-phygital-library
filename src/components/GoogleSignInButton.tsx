@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { GoogleLogin } from "@react-oauth/google";
-import { logGoogleCredentialError, logGoogleCredentialSuccess } from "@/lib/google-auth-debug";
+//import { GoogleLogin } from "@react-oauth/google";
+import { logGoogleCredentialError } from "@/lib/google-auth-debug";
 import { supabaseBrowserConfigured } from "@/lib/supabase-client";
 import {
   startSupabaseGoogleOAuthRedirect,
@@ -72,7 +72,6 @@ function SupabaseGoogleSignInButton({
     </button>
   );
 }
-
 export function GoogleSignInButton({
   context,
   landingSegment,
@@ -90,17 +89,18 @@ export function GoogleSignInButton({
   }
 
   return (
-    <GoogleLogin
-      {...defaultButtonProps}
-      onSuccess={(credentialResponse) => {
-        logGoogleCredentialSuccess(context, credentialResponse);
-        if (credentialResponse.credential) {
-          onCredential(credentialResponse.credential);
-        }
-      }}
-      onError={() => {
-        logGoogleCredentialError(context);
-      }}
-    />
+    //   // <GoogleLogin
+    //   //   {...defaultButtonProps}
+    //   //   onSuccess={(credentialResponse) => {
+    //   //     logGoogleCredentialSuccess(context, credentialResponse);
+    //   //     if (credentialResponse.credential) {
+    //   //       onCredential(credentialResponse.credential);
+    //   //     }
+    //   //   }}
+    //   //   onError={() => {
+    //   //     logGoogleCredentialError(context);
+    //   //   }}
+    //   // />
+    null
   );
 }

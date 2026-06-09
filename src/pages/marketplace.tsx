@@ -873,8 +873,6 @@ export default function Marketplace(props?: MarketplaceProps) {
   const peerListingsError = listingsQueryEnabled && listingsQ.isError;
 
   /** Public `/marketplace` (`studentMode` unset): extra space below fixed navbar — Layout only applies `pt-16`. */
-  const topPad = !inShell && studentMode === undefined ? "pt-8 md:pt-10" : "";
-  const upgradeHint = inShell ? "Upgrade in the sidebar" : "Upgrade in the header";
 
   const hubNameBorrow = (id: string) =>
     hubsQ.data?.hubs.find((h) => h.id === id)?.name ?? id.slice(0, 8);
@@ -1060,11 +1058,6 @@ export default function Marketplace(props?: MarketplaceProps) {
               )}
             </div>
             <div className="flex flex-wrap items-center gap-3">
-              {user && !isPremiumOk(user) && (
-                <p className="max-w-xs text-sm text-muted-foreground">
-                  {upgradeHint} to list on the shelf or complete a purchase.
-                </p>
-              )}
               {user && showListCta ? (
                 <>
                   <Button
@@ -1245,15 +1238,6 @@ export default function Marketplace(props?: MarketplaceProps) {
                 <RefreshCw className="mr-2 h-4 w-4" />
                 Retry
               </Button>
-            </div>
-          )}
-
-          {useDemoPreview && !peerListingsError && (
-            <div className="mb-6 border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-foreground">
-              <span className="font-semibold text-foreground">No live listings yet.</span> Showing
-              sample covers so guests see how Discover looks — start the API with seeding (e.g.{" "}
-              <code className="rounded bg-shimmer px-1 text-xs">AUTO_SEED=1</code>) or publish a
-              listing after signing in.
             </div>
           )}
 

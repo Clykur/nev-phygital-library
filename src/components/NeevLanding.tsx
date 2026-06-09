@@ -35,6 +35,11 @@ interface NeevLandingProps {
     hubName?: string,
     hubKind?: string,
     phone?: string,
+    address?: string,
+    city?: string,
+    district?: string,
+    state?: string,
+    postalCode?: string,
   ) => void;
   addXp: (amount: number) => void;
   activeSegment: "students" | "colleges";
@@ -209,7 +214,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({
       setRfidActiveSim(false);
     }, 4500);
   };
-
+  const [authLoading, setAuthLoading] = useState(false);
   // Google Authenticater simulations
   const [_googleLoading, setGoogleLoading] = useState(false);
   const [showGoogleModal, setShowGoogleModal] = useState(false);
@@ -267,8 +272,14 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({
   const [_otpError, setOtpError] = useState<string | null>(null);
   const [_otpResending, setOtpResending] = useState(false);
 
-  const initiateSecureLogin = (email: string, password?: string, isGoogle?: boolean) => {
-    onLogin(email, password, isGoogle);
+  const initiateSecureLogin = async (email: string, password?: string, isGoogle?: boolean) => {
+    setAuthLoading(true);
+
+    try {
+      await onLogin(email, password, isGoogle);
+    } finally {
+      setAuthLoading(false);
+    }
   };
 
   const _handleVerifyOtp = (e: React.FormEvent) => {
@@ -285,10 +296,12 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({
     }
   };
 
-  const handleEmailFormSubmit = (e: React.FormEvent) => {
+  const handleEmailFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!loginEmail.trim()) return;
-    initiateSecureLogin(loginEmail.trim().toLowerCase(), loginPassword);
+
+    await initiateSecureLogin(loginEmail.trim().toLowerCase(), loginPassword);
   };
 
   const handleSignUpFormSubmit = (e: React.FormEvent) => {
@@ -1344,6 +1357,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({
                           <input
                             type="email"
                             required
+                            autoComplete="email"
                             value={loginEmail}
                             onChange={(e) => setLoginEmail(e.target.value)}
                             placeholder="Enter Your Email"
@@ -1358,6 +1372,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({
                           <input
                             type="password"
                             required
+                            autoComplete="current-password"
                             value={loginPassword}
                             onChange={(e) => setLoginPassword(e.target.value)}
                             placeholder="Enter Your Password"
@@ -1367,9 +1382,17 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({
 
                         <button
                           type="submit"
-                          className="w-full py-3 bg-primary hover:bg-primary/90 text-primary-foreground border-t border-border rounded-xl text-xs font-semibold uppercase tracking-wider flex items-center justify-center space-x-1.5 transition mt-2"
+                          disabled={authLoading}
+                          className="w-full py-3 bg-primary text-primary-foreground rounded-xl disabled:opacity-70 disabled:cursor-not-allowed"
                         >
-                          <span>Login to Neev &rarr;</span>
+                          {authLoading ? (
+                            <span className="flex items-center justify-center gap-2">
+                              <div className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                              Signing In...
+                            </span>
+                          ) : (
+                            <span>Login to Neev &rarr;</span>
+                          )}
                         </button>
                       </form>
                     </div>
@@ -1414,11 +1437,12 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({
                         {/* Name input */}
                         <div className="space-y-2 text-xs">
                           <label className="caption-scale text-muted-foreground uppercase font-bold">
-                            Full Student Name:
+                            Student Name:
                           </label>
                           <input
                             type="text"
                             required
+                            autoComplete="name"
                             value={signUpName}
                             onChange={(e) => setSignUpName(e.target.value)}
                             placeholder="Enter your name"
@@ -1429,11 +1453,12 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({
                         {/* Email input */}
                         <div className="space-y-2 text-xs">
                           <label className="caption-scale text-muted-foreground uppercase font-bold">
-                            Academic Email Address:
+                            Email Address:
                           </label>
                           <input
                             type="email"
                             required
+                            autoComplete="email"
                             value={signUpEmail}
                             onChange={(e) => setSignUpEmail(e.target.value)}
                             placeholder="Enter your email"
@@ -1449,6 +1474,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({
                           <input
                             type="tel"
                             value={signUpPhone}
+                            autoComplete="tel"
                             onChange={(e) => setSignUpPhone(e.target.value)}
                             placeholder="Enter your mobile number"
                             className="w-full bg-background border border-border rounded-xl p-3 text-foreground/90 focus:border-border outline-none placeholder-foreground-subtle text-xs"
@@ -1458,19 +1484,34 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({
                         {/* Password input */}
                         <div className="space-y-2 text-xs">
                           <label className="caption-scale text-muted-foreground uppercase font-bold">
-                            Choose Password protection:
+                            Create Password:
                           </label>
                           <input
                             type="password"
                             required
+                            autoComplete="new-password"
                             value={signUpPassword}
                             onChange={(e) => setSignUpPassword(e.target.value)}
-                            placeholder="Create secure password"
+                            placeholder="Create password"
                             className="w-full bg-background border border-border rounded-xl p-3 text-foreground/90 focus:border-border outline-none placeholder-foreground-subtle text-xs"
                           />
-                          <p className="caption-scale text-muted-foreground/60 ">
-                            Create a password of at least 8 characters to protect your account.
-                          </p>
+                          <label className="caption-scale text-muted-foreground uppercase font-bold">
+                            Confirm Password:
+                          </label>
+                          <input
+                            type="password"
+                            required
+                            autoComplete="new-password"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            placeholder="Confirm password"
+                            className="w-full bg-background border border-border rounded-xl p-3 text-foreground/90 focus:border-border outline-none placeholder-foreground-subtle text-xs"
+                          />
+                          {signUpPassword !== confirmPassword && (
+                            <p className="caption-scale text-danger mt-1">
+                              Passwords do not match.
+                            </p>
+                          )}
                         </div>
 
                         {/* Membership Selection */}
@@ -1555,9 +1596,17 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({
 
                         <button
                           type="submit"
-                          className="w-full py-3 bg-primary hover:from-primary hover:to-primary text-primary-foreground font-bold border-t border-primary/30 rounded-xl caption-scale uppercase tracking-kicker flex items-center justify-center space-x-1.5 shadow-lg transition"
+                          disabled={authLoading}
+                          className="w-full py-3 bg-primary text-primary-foreground rounded-xl disabled:opacity-70"
                         >
-                          <span>Complete Registration &rarr;</span>
+                          {authLoading ? (
+                            <span className="flex items-center justify-center gap-2">
+                              <div className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                              Creating Account...
+                            </span>
+                          ) : (
+                            <span>Complete Registration →</span>
+                          )}
                         </button>
 
                         <div className="text-center">
@@ -2004,6 +2053,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({
                           <input
                             type="email"
                             required
+                            autoComplete="email"
                             value={collegeEmail}
                             onChange={(e) => setCollegeEmail(e.target.value)}
                             placeholder="Enter Hub Email"
@@ -2019,6 +2069,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({
                           <input
                             type="password"
                             required
+                            autoComplete="current-password"
                             value={collegePassword}
                             onChange={(e) => setCollegePassword(e.target.value)}
                             placeholder="Password"
@@ -2028,9 +2079,17 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({
 
                         <button
                           type="submit"
-                          className="w-full py-3 bg-primary hover:bg-primary/90 text-primary-foreground border-t border-border rounded-xl text-xs font-semibold uppercase tracking-wider flex items-center justify-center space-x-1.5 transition mt-2"
+                          disabled={authLoading}
+                          className="w-full py-3 bg-primary hover:bg-primary/90 text-primary-foreground border-t border-border rounded-xl text-xs font-semibold uppercase tracking-wider flex items-center justify-center transition mt-2 disabled:opacity-70 disabled:cursor-not-allowed"
                         >
-                          <span>Login&rarr;</span>
+                          {authLoading ? (
+                            <>
+                              <div className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                              <span>Signing In...</span>
+                            </>
+                          ) : (
+                            <span>Login &rarr;</span>
+                          )}
                         </button>
                       </form>
                     </div>
@@ -2098,6 +2157,12 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({
                             role,
                             institutionName.trim(),
                             institutionType,
+                            phone,
+                            address,
+                            city,
+                            district,
+                            adminState,
+                            postalCode,
                           );
                         }}
                         className="space-y-4"
@@ -2130,25 +2195,31 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({
                             className="w-full rounded-xl border border-border bg-background p-3 text-sm focus:outline-none"
                           />
                         </div>
-                        <div className="border border-border rounded-xl p-4 space-y-3">
+                        <div className="border border-border rounded-xl p-4 space-y-4">
                           <h4 className="text-xs font-semibold uppercase tracking-wider text-foreground">
                             Institution Information
                           </h4>
+
                           <input
                             type="text"
                             required
                             value={institutionName}
                             onChange={(e) => setInstitutionName(e.target.value)}
                             placeholder="Institution / College Name"
-                            className="w-full rounded-xl border border-border bg-background p-3 text-sm focus:outline-none"
+                            autoComplete="organization"
+                            className="w-full rounded-xl border border-border bg-background p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                           />
-                          <input
-                            type="text"
-                            value={country}
-                            onChange={(e) => setCountry(e.target.value)}
-                            placeholder="Country"
-                            className="w-full rounded-xl border border-border bg-background p-3 text-sm focus:outline-none"
+
+                          <textarea
+                            rows={3}
+                            required
+                            value={address}
+                            onChange={(e) => setAddress(e.target.value)}
+                            placeholder="Street Address, Area, Landmark"
+                            autoComplete="street-address"
+                            className="w-full rounded-xl border border-border bg-background p-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/20"
                           />
+
                           <div className="grid grid-cols-2 gap-3">
                             <input
                               type="text"
@@ -2156,38 +2227,49 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({
                               value={adminState}
                               onChange={(e) => setAdminState(e.target.value)}
                               placeholder="State"
-                              className="rounded-xl border border-border bg-background p-3 text-sm focus:outline-none"
+                              autoComplete="address-level1"
+                              className="rounded-xl border border-border bg-background p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                             />
+
                             <input
                               type="text"
                               required
                               value={city}
                               onChange={(e) => setCity(e.target.value)}
                               placeholder="City"
-                              className="rounded-xl border border-border bg-background p-3 text-sm focus:outline-none"
+                              autoComplete="address-level2"
+                              className="rounded-xl border border-border bg-background p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                             />
                           </div>
-                          <input
-                            type="text"
-                            value={district}
-                            onChange={(e) => setDistrict(e.target.value)}
-                            placeholder="District"
-                            className="w-full rounded-xl border border-border bg-background p-3 text-sm focus:outline-none"
-                          />
-                          <textarea
-                            value={address}
-                            onChange={(e) => setAddress(e.target.value)}
-                            placeholder="Full Address"
-                            rows={3}
-                            className="w-full rounded-xl border border-border bg-background p-3 text-sm resize-none focus:outline-none"
-                          />
-                          <input
-                            type="text"
-                            value={postalCode}
-                            onChange={(e) => setPostalCode(e.target.value)}
-                            placeholder="PIN / Postal Code"
-                            className="w-full rounded-xl border border-border bg-background p-3 text-sm focus:outline-none"
-                          />
+
+                          <div className="grid grid-cols-2 gap-3">
+                            <input
+                              type="text"
+                              required
+                              value={district}
+                              onChange={(e) => setDistrict(e.target.value)}
+                              placeholder="District"
+                              className="rounded-xl border border-border bg-background p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                            />
+
+                            <input
+                              type="text"
+                              required
+                              value={postalCode}
+                              autoComplete="postal-code"
+                              inputMode="numeric"
+                              maxLength={6}
+                              onChange={(e) =>
+                                setPostalCode(e.target.value.replace(/\D/g, "").slice(0, 6))
+                              }
+                              placeholder="PIN Code"
+                              className="rounded-xl border border-border bg-background p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                            />
+                          </div>
+
+                          <p className="text-xs text-muted-foreground">
+                            This information will be used to verify and register your institution.
+                          </p>
                         </div>
                         <div className="space-y-3">
                           <label className="text-xs font-medium text-muted-foreground">
@@ -2196,6 +2278,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({
                           <input
                             type="password"
                             required
+                            autoComplete="new-password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             placeholder="Create Password"
@@ -2207,6 +2290,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({
                           <input
                             type="password"
                             required
+                            autoComplete="new-password"
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                             placeholder="Confirm Password"
@@ -2222,9 +2306,17 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({
                         </label>
                         <button
                           type="submit"
-                          className="w-full rounded-xl bg-primary text-primary-foreground py-3 text-sm font-semibold transition hover:opacity-90"
+                          disabled={authLoading}
+                          className="w-full rounded-xl bg-primary text-primary-foreground py-3 text-sm font-semibold transition hover:opacity-90 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                         >
-                          Create Hub Account &rarr;
+                          {authLoading ? (
+                            <>
+                              <div className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                              Creating Hub Account...
+                            </>
+                          ) : (
+                            <>Create Hub Account &rarr;</>
+                          )}
                         </button>
                       </form>
                     </div>
@@ -2358,17 +2450,46 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({
               </div>
             ) : (
               <form
-                onSubmit={(e) => {
+                onSubmit={async (e) => {
                   e.preventDefault();
-                  if (!googleCustomEmail.trim() || !googleCustomEmail.includes("@")) return;
-                  const enteredEmail = googleCustomEmail.trim().toLowerCase();
-                  const partName = enteredEmail
-                    .split("@")[0]
-                    .split(".")
-                    .map((s: string) => s.charAt(0).toUpperCase() + s.slice(1))
-                    .join(" ");
-                  registerCustomGoogleAccount(enteredEmail, partName);
-                  handleSelectGoogleAccount(enteredEmail, partName);
+
+                  if (
+                    !adminName.trim() ||
+                    !adminEmail.trim() ||
+                    !institutionName.trim() ||
+                    !adminState.trim() ||
+                    !city.trim() ||
+                    !password ||
+                    password !== confirmPassword
+                  ) {
+                    return;
+                  }
+
+                  try {
+                    setAuthLoading(true);
+
+                    const role = adminRole === "super_admin" ? "super_admin" : "hub";
+                    const locationString = `${city.trim()}, ${adminState.trim()}, ${country.trim()}`;
+
+                    await onSignUp(
+                      adminName.trim(),
+                      adminEmail.trim().toLowerCase(),
+                      true,
+                      locationString,
+                      password,
+                      role,
+                      institutionName.trim(),
+                      institutionType,
+                      phone,
+                      address,
+                      city,
+                      district,
+                      adminState,
+                      postalCode,
+                    );
+                  } catch (error) {
+                    setAuthLoading(false);
+                  }
                 }}
                 className="space-y-4 py-2 animate-in slide-in-from-right-3 duration-200"
               >

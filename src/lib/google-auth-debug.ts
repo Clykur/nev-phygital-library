@@ -1,4 +1,4 @@
-import type { CredentialResponse } from "@react-oauth/google";
+//import type { CredentialResponse } from "@react-oauth/google";
 
 const LOG_PREFIX = "[Google Auth]";
 
@@ -164,14 +164,14 @@ export function logGooglePortalAccessDenied(
   console.groupEnd();
 }
 
-export function logGoogleCredentialSuccess(context: string, response: CredentialResponse): void {
-  if (!isDev()) return;
-  if (response.credential) {
-    console.info(`${LOG_PREFIX} credential received (${context}) — sending to /api/auth/google`);
-    return;
-  }
-  console.warn(`${LOG_PREFIX} onSuccess without credential (${context})`, response);
-}
+// export function logGoogleCredentialSuccess(context: string, response: CredentialResponse): void {
+//   if (!isDev()) return;
+//   if (response.credential) {
+//     console.info(`${LOG_PREFIX} credential received (${context}) — sending to /api/auth/google`);
+//     return;
+//   }
+//   console.warn(`${LOG_PREFIX} onSuccess without credential (${context})`, response);
+// }
 
 export function logGoogleCredentialError(context: string, reason?: unknown): void {
   if (!isDev()) return;

@@ -45,7 +45,6 @@ function fmtPremiumUntil(iso: string | null) {
 export default function StudentProfilePage() {
   const { user, loading, token, refreshUser, activateDemoPremium } = useAuth();
   const inShell = useStudentShell();
-  const hubDesk = !!user && isHubAccount(user);
 
   const hubsQ = useQuery({
     queryKey: ["catalog", "hubs", "profile", user?.userId],
@@ -73,7 +72,23 @@ export default function StudentProfilePage() {
       setUpgradeBusy(false);
     }
   };
-
+  const hubProfileQ = useQuery({
+    queryKey: ["hub-profile"],
+    enabled: !!token && user?.baseRole === "hub",
+    queryFn: () =>
+      apiFetch<{
+        hub: {
+          name: string;
+          kind: string;
+          address: string;
+          city: string;
+          district: string;
+          state: string;
+          postalCode: string;
+          contactPhone: string;
+        };
+      }>("/api/auth/hub-profile", { token: token! }),
+  });
   const onPickPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = "";
@@ -202,10 +217,13 @@ export default function StudentProfilePage() {
         <Card variant="default" className="overflow-hidden font-sans">
           <CardContent className="p-6 sm:p-8">
             <h3 className="section-kicker">Details</h3>
+
             <dl className="mt-4 space-y-4 body-scale font-normal leading-relaxed">
               <div className="flex flex-col gap-1 border-b border-border pb-4 sm:flex-row sm:items-center sm:justify-between">
                 <dt className="text-foreground-muted">Phone</dt>
-                <dd className="font-semibold text-foreground">{user.phone || "—"}</dd>
+                <dd className="font-semibold text-foreground">
+                  {isHubAccount ? hubProfileQ.data?.hub?.contactPhone || "—" : user.phone || "—"}
+                </dd>
               </div>
               <div className="flex flex-col gap-1 border-b border-border pb-4 sm:flex-row sm:items-center sm:justify-between">
                 <dt className="text-foreground-muted">Registration date</dt>
@@ -236,55 +254,82 @@ export default function StudentProfilePage() {
                   </span>
                 </dd>
               </div>
-              <div className="flex flex-col gap-1 border-b border-border pb-4 sm:flex-row sm:items-center sm:justify-between">
-                <dt className="text-foreground-muted">Premium</dt>
-                <dd>
-                  <span
-                    className={cn(
-                      "inline-flex h-7 items-center rounded-md border px-3 caption-scale font-medium uppercase tracking-wide",
-                      isPremiumOk(user)
-                        ? STATUS_CHIP_EMERALD
-                        : "border-border bg-background text-foreground",
-                    )}
-                  >
-                    {isPremiumOk(user)
-                      ? user.baseRole === "super_admin"
-                        ? "Full access"
-                        : "Active"
-                      : "Not active"}
-                  </span>
-                </dd>
-              </div>
-              <div className="flex flex-col gap-1 border-b border-border pb-4 sm:flex-row sm:items-center sm:justify-between">
-                <dt className="text-foreground-muted">Current plan</dt>
-                <dd className="font-semibold text-foreground">
-                  {isPremiumOk(user) ? "Premium" : "Free"}
-                </dd>
-              </div>
-              <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-                <dt className="text-foreground-muted">Premium until</dt>
-                <dd className="font-semibold text-foreground">
-                  {user.baseRole === "super_admin" && !user.premiumActive
-                    ? "— (all features)"
-                    : user.premiumUntil
-                      ? fmtPremiumUntil(user.premiumUntil)
-                      : user.premiumActive
-                        ? "Active"
-                        : "—"}
-                </dd>
-              </div>
-            </dl>
+              {isHubAccount(user) && hubProfileQ && (
+                <>
+                  <h3 className="section-kicker">Address</h3>
+                  <dl className="mt-4 space-y-4">
+                    <div className="flex justify-between border-b border-border pb-4">
+                      <dt className="text-foreground-muted">Address</dt>
+                      <dd className="font-semibold text-right">
+                        {hubProfileQ.data?.hub.address || "—"}
+                      </dd>
+                    </div>
 
-            {!isPremiumOk(user) && (
-              <Button
-                type="button"
-                className="mt-8 h-11 w-full rounded-xl font-semibold sm:w-auto"
-                onClick={() => setUpgradeOpen(true)}
-              >
-                <Sparkles className="mr-2 h-4 w-4" />
-                Upgrade to Premium
-              </Button>
-            )}
+                    <div className="flex justify-between border-b border-border pb-4">
+                      <dt className="text-foreground-muted">City</dt>
+                      <dd className="font-semibold">{hubProfileQ.data?.hub.city || "—"}</dd>
+                    </div>
+
+                    <div className="flex justify-between border-b border-border pb-4">
+                      <dt className="text-foreground-muted">District</dt>
+                      <dd className="font-semibold">{hubProfileQ.data?.hub.district || "—"}</dd>
+                    </div>
+
+                    <div className="flex justify-between border-b border-border pb-4">
+                      <dt className="text-foreground-muted">State</dt>
+                      <dd className="font-semibold">{hubProfileQ.data?.hub.state || "—"}</dd>
+                    </div>
+
+                    <div className="flex justify-between">
+                      <dt className="text-foreground-muted">PIN Code</dt>
+                      <dd className="font-semibold">{hubProfileQ.data?.hub.postalCode || "—"}</dd>
+                    </div>
+                  </dl>
+                </>
+              )}
+              {!isHubAccount(user) && (
+                <>
+                  <div className="flex flex-col gap-1 border-b border-border pb-4 sm:flex-row sm:items-center sm:justify-between">
+                    <dt className="text-foreground-muted">Premium</dt>
+                    <dd>
+                      <span
+                        className={cn(
+                          "inline-flex h-7 items-center rounded-md border px-3 caption-scale font-medium uppercase tracking-wide",
+                          isPremiumOk(user)
+                            ? STATUS_CHIP_EMERALD
+                            : "border-border bg-background text-foreground",
+                        )}
+                      >
+                        {isPremiumOk(user)
+                          ? user.baseRole === "super_admin"
+                            ? "Full access"
+                            : "Active"
+                          : "Not active"}
+                      </span>
+                    </dd>
+                  </div>
+
+                  <div className="flex flex-col gap-1 border-b border-border pb-4 sm:flex-row sm:items-center sm:justify-between">
+                    <dt className="text-foreground-muted">Current plan</dt>
+                    <dd className="font-semibold text-foreground">
+                      {isPremiumOk(user) ? "Premium" : "Free"}
+                    </dd>
+                  </div>
+                  <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                    <dt className="text-foreground-muted">Premium until</dt>
+                    <dd className="font-semibold text-foreground">
+                      {user.baseRole === "super_admin" && !user.premiumActive
+                        ? "— (all features)"
+                        : user.premiumUntil
+                          ? fmtPremiumUntil(user.premiumUntil)
+                          : user.premiumActive
+                            ? "Active"
+                            : "—"}
+                    </dd>
+                  </div>
+                </>
+              )}
+            </dl>
           </CardContent>
         </Card>
       </div>

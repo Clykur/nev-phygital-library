@@ -39,6 +39,13 @@ export type RegisterPayload =
       hubName: string;
       hubLocation: string;
       hubKind: HubKindValue;
+
+      phone?: string;
+      address?: string;
+      city?: string;
+      district?: string;
+      state?: string;
+      postalCode?: string;
     }
   | {
       name: string;
@@ -211,6 +218,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             hubName: payload.hubName,
             hubLocation: payload.hubLocation,
             hubKind: payload.hubKind,
+
+            phone: payload.phone,
+            address: payload.address,
+            city: payload.city,
+            district: payload.district,
+            state: payload.state,
+            postalCode: payload.postalCode,
           }
         : payload.accountType === "super_admin"
           ? {

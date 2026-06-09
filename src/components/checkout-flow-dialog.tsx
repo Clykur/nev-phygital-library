@@ -19,7 +19,7 @@ import { apiFetch } from "@/lib/api";
 import { userFacingErrorMessage } from "@/lib/error-messages";
 import { STUDENT_CARD_CHROME } from "@/lib/student-ui";
 import { cn } from "@/lib/utils";
-import { CheckCircle2, Loader2, Wallet } from "lucide-react";
+import { CheckCircle, CheckCircle2, Loader2, Wallet } from "lucide-react";
 import { useWallet } from "@/context/wallet-context";
 import { useAuth } from "@/context/auth-context";
 import { isPremiumOk } from "@/lib/rbac";
@@ -149,7 +149,7 @@ export function CheckoutFlowDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         className={cn(
-          "gap-0 overflow-hidden p-0 w-[calc(100%-1rem)] max-w-[calc(100%-1rem)] sm:max-w-md sm:rounded-xl",
+          "gap-0 overflow-hidden p-0 w-[calc(100%-1rem)] max-w-[calc(100%-1rem)] sm:max-w-md sm:rounded-xl overflow-y-auto",
           STUDENT_CARD_CHROME,
         )}
       >
@@ -324,24 +324,50 @@ export function CheckoutFlowDialog({
           )}
 
           {step === "success" && (
-            <div className="flex flex-col items-center gap-4 py-2 text-center">
-              <CheckCircle2 className="h-14 w-14 text-secondary" aria-hidden />
-              <div className="w-full rounded-xl border border-border  p-3 text-left">
-                <p className="text-sm font-medium text-foreground">Pick up at {hubLine}</p>
-                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                  Bring your student ID, mention this reference at the desk, and collect within desk
-                  hours.
-                  {mode === "borrow"
-                    ? " Returns are processed at the same hub desk."
-                    : " Staff will confirm handover before completion."}
-                </p>
-                <p className="mt-2 text-xs text-accent">Pickup ref: {pickupRef}</p>
-                <p className="mt-1 caption-scale text-muted-foreground">
-                  QR support can be added on top of this ref in the next phase.
+            <div className="flex flex-col items-center gap-5 py-3">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-secondary/10">
+                <CheckCircle className="h-10 w-10 text-success" aria-hidden />
+              </div>
+
+              <div className="space-y-1 text-center">
+                <h3 className="text-lg font-semibold text-foreground">
+                  {mode === "borrow" ? "Borrow Request Confirmed" : "Purchase Confirmed"}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Your request has been successfully recorded.
                 </p>
               </div>
+
+              <div className="w-full rounded-xl border border-border bg-card/50 p-4">
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                      Pickup Location
+                    </p>
+                    <p className="mt-1 text-sm font-semibold text-foreground">{hubLine}</p>
+                  </div>
+
+                  <div>
+                    <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                      Reference ID
+                    </p>
+                    <p className="mt-1 font-mono text-sm font-semibold text-primary">{pickupRef}</p>
+                  </div>
+
+                  <div className="border-t border-border pt-3">
+                    <p className="text-sm leading-relaxed text-muted-foreground">
+                      Bring your student ID and provide the reference ID at the desk during
+                      operating hours.
+                      {mode === "borrow"
+                        ? " Returns can be processed at the same hub."
+                        : " The desk staff will verify ownership before handover."}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               <Button
-                className="w-full rounded-xl"
+                className="h-11 w-full rounded-xl"
                 onClick={() => {
                   onOpenChange(false);
                   setStep("details");

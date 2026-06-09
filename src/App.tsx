@@ -447,15 +447,20 @@ function PublicRoutes() {
               }
             }}
             onSignUp={async (
-              name: string,
-              email: string,
-              _isPremium: boolean,
-              hubLocationId: string,
-              password?: string,
-              role?: string,
-              hubName?: string,
-              hubKind?: string,
-              phone?: string,
+              name,
+              email,
+              _isPremium,
+              hubLocationId,
+              password,
+              role,
+              hubName,
+              hubKind,
+              phone,
+              address,
+              city,
+              district,
+              state,
+              postalCode,
             ) => {
               if (!password) {
                 toast({
@@ -474,11 +479,18 @@ function PublicRoutes() {
                   phone,
                   accountType:
                     role === "super_admin" ? "super_admin" : role === "hub" ? "hub" : "user",
+
                   ...(role === "hub" || role === "super_admin"
                     ? {
                         hubName: hubName || name,
                         hubLocation: hubLocationId,
                         hubKind: hubKind || "college",
+
+                        address,
+                        city,
+                        district,
+                        state,
+                        postalCode,
                       }
                     : { hubLocation: hubLocationId }),
                 } as any);

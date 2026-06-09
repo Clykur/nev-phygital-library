@@ -6,10 +6,10 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { GoogleOAuthProvider } from "@react-oauth/google";
+//import { GoogleOAuthProvider } from "@react-oauth/google";
 import { AuthBootstrap } from "./components/AuthBootstrap";
-import { GoogleAuthDebugBootstrap } from "./components/GoogleAuthDebugBootstrap";
-import { logGoogleAuthEnvironment } from "./lib/google-auth-debug";
+//import { GoogleAuthDebugBootstrap } from "./components/GoogleAuthDebugBootstrap";
+//import { logGoogleAuthEnvironment } from "./lib/google-auth-debug";
 import App from "./App";
 
 const queryClient = new QueryClient();
@@ -21,14 +21,14 @@ if (!rootElement) {
 
 import { AuthProvider } from "./context/auth-context";
 
-const clientId =
-  (import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined)?.trim() ||
-  "missing-client-id-configure-in-env";
+// const clientId =
+//   (import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined)?.trim() ||
+//   "missing-client-id-configure-in-env";
 
 function AppTree() {
   return (
     <>
-      <GoogleAuthDebugBootstrap />
+      {/* <GoogleAuthDebugBootstrap /> */}
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <App />
@@ -43,16 +43,16 @@ root.render(
   <React.StrictMode>
     <AuthBootstrap>
       {({ useSupabaseGoogle }) => {
-        if (!useSupabaseGoogle && import.meta.env.DEV) {
-          logGoogleAuthEnvironment(clientId);
-        }
+        // if (!useSupabaseGoogle && import.meta.env.DEV) {
+        //   logGoogleAuthEnvironment(clientId);
+        // }
         if (useSupabaseGoogle) {
           return <AppTree />;
         }
         return (
-          <GoogleOAuthProvider clientId={clientId}>
-            <AppTree />
-          </GoogleOAuthProvider>
+          // <GoogleOAuthProvider clientId={clientId}>
+          <AppTree />
+          // </GoogleOAuthProvider>
         );
       }}
     </AuthBootstrap>
