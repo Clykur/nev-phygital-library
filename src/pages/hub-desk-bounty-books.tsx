@@ -91,13 +91,19 @@ export default function HubDeskBountyBooksPage() {
   const [detailId, setDetailId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [createHubId, setCreateHubId] = useState("");
-  const [inventoryPricingTarget, setInventoryPricingTarget] = useState<BountySubmissionRow | null>(null);
+  const [inventoryPricingTarget, setInventoryPricingTarget] = useState<BountySubmissionRow | null>(
+    null,
+  );
   const [inventoryBorrowPrice, setInventoryBorrowPrice] = useState("");
   const [inventoryBuyPrice, setInventoryBuyPrice] = useState("");
 
   const topPad = inShell ? "" : "pt-24";
   const overviewHubId =
-    user && user.hubStaffHubIds.length === 1 ? user.hubStaffHubIds[0]! : hubId === "all" ? undefined : hubId;
+    user && user.hubStaffHubIds.length === 1
+      ? user.hubStaffHubIds[0]!
+      : hubId === "all"
+        ? undefined
+        : hubId;
 
   const listUrl = useMemo(() => {
     const p = new URLSearchParams();
@@ -210,9 +216,7 @@ export default function HubDeskBountyBooksPage() {
           (x.department?.toLowerCase().includes(t) ?? false),
       );
     }
-    return [...r].sort(
-      (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
-    );
+    return [...r].sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
   }, [rows, statusQ, q]);
 
   if (loading) {
@@ -225,7 +229,13 @@ export default function HubDeskBountyBooksPage() {
 
   if (!user?.hubStaffHubIds.length) {
     return (
-      <div className={cn("mx-auto max-w-lg pb-20 text-center", PORTAL_PAGE_GUTTER_X, inShell ? "pt-8" : "pt-28")}>
+      <div
+        className={cn(
+          "mx-auto max-w-lg pb-20 text-center",
+          PORTAL_PAGE_GUTTER_X,
+          inShell ? "pt-8" : "pt-28",
+        )}
+      >
         <Shield className="mx-auto h-7 w-7 text-foreground-muted" />
         <h1 className="mt-6 h4-scale font-semibold text-foreground">Restricted</h1>
         <p className="mt-2 body-scale text-foreground-muted">Hub staff only.</p>
@@ -295,8 +305,8 @@ export default function HubDeskBountyBooksPage() {
           <div className="min-w-0 flex-1">
             <h1 className={cn("mt-1", PORTAL_PAGE_TITLE)}>Bounty Books</h1>
             <p className={cn("mt-2 w-full max-w-none", PORTAL_PAGE_LEAD)}>
-              Library acquisition requests — post books you need and reward students who bring them in.
-              Accepted copies move to{" "}
+              Library acquisition requests — post books you need and reward students who bring them
+              in. Accepted copies move to{" "}
               <Link href={p.inventory} className={PORTAL_INLINE_LINK}>
                 Inventory
               </Link>{" "}
@@ -328,7 +338,10 @@ export default function HubDeskBountyBooksPage() {
                 Scope
               </Label>
               <Select value={hubId} onValueChange={setHubId}>
-                <SelectTrigger id="bounty-desk-scope" className={cn(adminSelectTrigger, "text-primary")}>
+                <SelectTrigger
+                  id="bounty-desk-scope"
+                  className={cn(adminSelectTrigger, "text-primary")}
+                >
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -347,7 +360,10 @@ export default function HubDeskBountyBooksPage() {
               Status
             </Label>
             <Select value={statusQ} onValueChange={setStatusQ}>
-              <SelectTrigger id="bounty-desk-status" className={cn(adminSelectTrigger, "text-primary")}>
+              <SelectTrigger
+                id="bounty-desk-status"
+                className={cn(adminSelectTrigger, "text-primary")}
+              >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -407,7 +423,9 @@ export default function HubDeskBountyBooksPage() {
                     {[row.department, row.semester].filter(Boolean).join(" · ") || "—"}
                   </TableCell>
                   <TableCell className="tabular-nums">{row.quantity}</TableCell>
-                  <TableCell className="tabular-nums">{fmtBountyReward(row.rewardAmount)}</TableCell>
+                  <TableCell className="tabular-nums">
+                    {fmtBountyReward(row.rewardAmount)}
+                  </TableCell>
                   <TableCell>
                     <Badge variant="outline" status="neutral">
                       {bountyRequestStatusLabel(row.status)}
@@ -415,7 +433,12 @@ export default function HubDeskBountyBooksPage() {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex flex-wrap justify-end gap-1">
-                      <Button size="sm" variant="outline" className="rounded-xl" onClick={() => setDetailId(row.id)}>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="rounded-xl"
+                        onClick={() => setDetailId(row.id)}
+                      >
                         Review
                       </Button>
                       {row.status === "open" ? (
@@ -423,7 +446,9 @@ export default function HubDeskBountyBooksPage() {
                           size="sm"
                           variant="ghost"
                           className="rounded-xl"
-                          onClick={() => updateStatusMutation.mutate({ id: row.id, status: "paused" })}
+                          onClick={() =>
+                            updateStatusMutation.mutate({ id: row.id, status: "paused" })
+                          }
                         >
                           Pause
                         </Button>
@@ -433,7 +458,9 @@ export default function HubDeskBountyBooksPage() {
                           size="sm"
                           variant="ghost"
                           className="rounded-xl"
-                          onClick={() => updateStatusMutation.mutate({ id: row.id, status: "open" })}
+                          onClick={() =>
+                            updateStatusMutation.mutate({ id: row.id, status: "open" })
+                          }
                         >
                           Reopen
                         </Button>
@@ -443,7 +470,9 @@ export default function HubDeskBountyBooksPage() {
                           size="sm"
                           variant="ghost"
                           className="rounded-xl text-destructive"
-                          onClick={() => updateStatusMutation.mutate({ id: row.id, status: "closed" })}
+                          onClick={() =>
+                            updateStatusMutation.mutate({ id: row.id, status: "closed" })
+                          }
                         >
                           Close
                         </Button>
@@ -485,58 +514,106 @@ export default function HubDeskBountyBooksPage() {
             ) : null}
             <div className="space-y-1.5">
               <Label>Book title *</Label>
-              <Input className="rounded-xl" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
+              <Input
+                className="rounded-xl"
+                value={form.title}
+                onChange={(e) => setForm({ ...form, title: e.target.value })}
+              />
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <Label>Author</Label>
-                <Input className="rounded-xl" value={form.author} onChange={(e) => setForm({ ...form, author: e.target.value })} />
+                <Input
+                  className="rounded-xl"
+                  value={form.author}
+                  onChange={(e) => setForm({ ...form, author: e.target.value })}
+                />
               </div>
               <div className="space-y-1.5">
                 <Label>Edition</Label>
-                <Input className="rounded-xl" value={form.edition} onChange={(e) => setForm({ ...form, edition: e.target.value })} />
+                <Input
+                  className="rounded-xl"
+                  value={form.edition}
+                  onChange={(e) => setForm({ ...form, edition: e.target.value })}
+                />
               </div>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <Label>Department</Label>
-                <Input className="rounded-xl" value={form.department} onChange={(e) => setForm({ ...form, department: e.target.value })} />
+                <Input
+                  className="rounded-xl"
+                  value={form.department}
+                  onChange={(e) => setForm({ ...form, department: e.target.value })}
+                />
               </div>
               <div className="space-y-1.5">
                 <Label>Semester</Label>
-                <Input className="rounded-xl" value={form.semester} onChange={(e) => setForm({ ...form, semester: e.target.value })} />
+                <Input
+                  className="rounded-xl"
+                  value={form.semester}
+                  onChange={(e) => setForm({ ...form, semester: e.target.value })}
+                />
               </div>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <Label>Subject</Label>
-                <Input className="rounded-xl" value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value })} />
+                <Input
+                  className="rounded-xl"
+                  value={form.subject}
+                  onChange={(e) => setForm({ ...form, subject: e.target.value })}
+                />
               </div>
               <div className="space-y-1.5">
                 <Label>ISBN</Label>
-                <Input className="rounded-xl" value={form.isbn} onChange={(e) => setForm({ ...form, isbn: e.target.value })} />
+                <Input
+                  className="rounded-xl"
+                  value={form.isbn}
+                  onChange={(e) => setForm({ ...form, isbn: e.target.value })}
+                />
               </div>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <Label>Desired quantity</Label>
-                <Input type="number" min={1} className="rounded-xl" value={form.quantity} onChange={(e) => setForm({ ...form, quantity: e.target.value })} />
+                <Input
+                  type="number"
+                  min={1}
+                  className="rounded-xl"
+                  value={form.quantity}
+                  onChange={(e) => setForm({ ...form, quantity: e.target.value })}
+                />
               </div>
               <div className="space-y-1.5">
                 <Label>Reward amount (₹)</Label>
-                <Input type="number" min={0} className="rounded-xl" value={form.rewardAmount} onChange={(e) => setForm({ ...form, rewardAmount: e.target.value })} />
+                <Input
+                  type="number"
+                  min={0}
+                  className="rounded-xl"
+                  value={form.rewardAmount}
+                  onChange={(e) => setForm({ ...form, rewardAmount: e.target.value })}
+                />
               </div>
             </div>
             <div className="space-y-1.5">
               <Label>Notes</Label>
-              <Textarea className="rounded-xl min-h-[72px]" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
+              <Textarea
+                className="rounded-xl min-h-[72px]"
+                value={form.notes}
+                onChange={(e) => setForm({ ...form, notes: e.target.value })}
+              />
             </div>
           </div>
           <DialogFooter>
             <Button variant="outline" className="rounded-xl" onClick={() => setCreateOpen(false)}>
               Cancel
             </Button>
-            <Button className="rounded-xl" onClick={handleCreate} disabled={createMutation.isPending}>
+            <Button
+              className="rounded-xl"
+              onClick={handleCreate}
+              disabled={createMutation.isPending}
+            >
               Create request
             </Button>
           </DialogFooter>
@@ -567,7 +644,8 @@ export default function HubDeskBountyBooksPage() {
                 <p className="mt-2">
                   <span className="text-foreground-muted">Reward:</span>{" "}
                   {fmtBountyReward(detailQ.data.request.rewardAmount)} ·{" "}
-                  <span className="text-foreground-muted">Qty:</span> {detailQ.data.request.quantity}
+                  <span className="text-foreground-muted">Qty:</span>{" "}
+                  {detailQ.data.request.quantity}
                 </p>
                 {detailQ.data.request.notes ? (
                   <p className="mt-2 text-foreground-muted">{detailQ.data.request.notes}</p>
@@ -581,7 +659,9 @@ export default function HubDeskBountyBooksPage() {
                     <li key={sub.id} className="space-y-2 p-4">
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <div>
-                          <p className="font-medium text-foreground">{sub.studentName ?? "Student"}</p>
+                          <p className="font-medium text-foreground">
+                            {sub.studentName ?? "Student"}
+                          </p>
                           <p className="caption-scale text-foreground-muted">
                             {bountySubmissionStatusLabel(sub.status)} · Condition: {sub.condition}
                           </p>
@@ -590,12 +670,16 @@ export default function HubDeskBountyBooksPage() {
                           {bountySubmissionStatusLabel(sub.status)}
                         </Badge>
                       </div>
-                      {sub.notes ? <p className="text-sm text-foreground-muted">{sub.notes}</p> : null}
+                      {sub.notes ? (
+                        <p className="text-sm text-foreground-muted">{sub.notes}</p>
+                      ) : null}
                       <dl className="grid gap-2 text-sm sm:grid-cols-2">
                         <div>
                           <dt className="caption-scale text-foreground-muted">Inventory state</dt>
                           <dd className="font-medium text-foreground">
-                            {sub.status === "inventory_confirmed" ? "Added to Inventory" : "Not added"}
+                            {sub.status === "inventory_confirmed"
+                              ? "Added to Inventory"
+                              : "Not added"}
                           </dd>
                         </div>
                         <div>
@@ -605,8 +689,11 @@ export default function HubDeskBountyBooksPage() {
                           </dd>
                           {sub.rewardMethod ? (
                             <p className="caption-scale text-foreground-muted">
-                              Method: {sub.rewardMethod === "credits" ? "Credits issued" : "Cash offline"}
-                              {sub.cashPayoutStatus ? ` · ${sub.cashPayoutStatus.replace(/_/g, " ")}` : ""}
+                              Method:{" "}
+                              {sub.rewardMethod === "credits" ? "Credits issued" : "Cash offline"}
+                              {sub.cashPayoutStatus
+                                ? ` · ${sub.cashPayoutStatus.replace(/_/g, " ")}`
+                                : ""}
                             </p>
                           ) : null}
                         </div>
@@ -618,7 +705,12 @@ export default function HubDeskBountyBooksPage() {
                               size="sm"
                               className="rounded-xl"
                               disabled={submissionMutation.isPending}
-                              onClick={() => submissionMutation.mutate({ id: sub.id, status: "awaiting_drop_off" })}
+                              onClick={() =>
+                                submissionMutation.mutate({
+                                  id: sub.id,
+                                  status: "awaiting_drop_off",
+                                })
+                              }
                             >
                               Approve submission
                             </Button>
@@ -627,7 +719,9 @@ export default function HubDeskBountyBooksPage() {
                               variant="destructive"
                               className="rounded-xl"
                               disabled={submissionMutation.isPending}
-                              onClick={() => submissionMutation.mutate({ id: sub.id, status: "rejected" })}
+                              onClick={() =>
+                                submissionMutation.mutate({ id: sub.id, status: "rejected" })
+                              }
                             >
                               Reject
                             </Button>
@@ -639,7 +733,9 @@ export default function HubDeskBountyBooksPage() {
                             variant="outline"
                             className="rounded-xl"
                             disabled={submissionMutation.isPending}
-                            onClick={() => submissionMutation.mutate({ id: sub.id, status: "delivered" })}
+                            onClick={() =>
+                              submissionMutation.mutate({ id: sub.id, status: "delivered" })
+                            }
                           >
                             Mark delivered
                           </Button>
@@ -737,10 +833,13 @@ export default function HubDeskBountyBooksPage() {
             <div className="space-y-4 py-2">
               <div className="rounded-xl border border-border bg-card/60 p-4 text-sm">
                 <p className="font-medium text-foreground">
-                  {inventoryPricingTarget.bountyTitle ?? detailQ.data?.request.title ?? "Bounty book"}
+                  {inventoryPricingTarget.bountyTitle ??
+                    detailQ.data?.request.title ??
+                    "Bounty book"}
                 </p>
                 <p className="mt-1 text-foreground-muted">
-                  Student: {inventoryPricingTarget.studentName ?? "Student"} · Condition: {inventoryPricingTarget.condition}
+                  Student: {inventoryPricingTarget.studentName ?? "Student"} · Condition:{" "}
+                  {inventoryPricingTarget.condition}
                 </p>
               </div>
               <div className="space-y-1.5">

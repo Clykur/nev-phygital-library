@@ -72,7 +72,7 @@ function fmtDeskReqDate(iso: string | undefined | null) {
 function deskInventoryHref(
   inventoryPath: string,
   hubId: string,
-  bookTitle: string | null | undefined
+  bookTitle: string | null | undefined,
 ): string {
   const p = new URLSearchParams();
   p.set("hubId", hubId);
@@ -95,10 +95,7 @@ export default function HubBookRequestsPage() {
   // Assign-copy dialog
   const [assignTarget, setAssignTarget] = useState<BookRequestRow | null>(null);
 
-  const deskPaths = useMemo(
-    () => (user ? portalPathsForUser(user) : null),
-    [user]
-  );
+  const deskPaths = useMemo(() => (user ? portalPathsForUser(user) : null), [user]);
 
   const hubsQ = useQuery({
     queryKey: ["catalog", "hubs", "hub-requests"],
@@ -120,14 +117,11 @@ export default function HubBookRequestsPage() {
 
   const claimMutation = useMutation({
     mutationFn: async (input: { id: string; hubId: string }) =>
-      apiFetch<{ request: BookRequestRow }>(
-        `/api/book-requests/${input.id}/claim`,
-        {
-          method: "POST",
-          token: token!,
-          body: JSON.stringify({ confirm: true, hubId: input.hubId }),
-        }
-      ),
+      apiFetch<{ request: BookRequestRow }>(`/api/book-requests/${input.id}/claim`, {
+        method: "POST",
+        token: token!,
+        body: JSON.stringify({ confirm: true, hubId: input.hubId }),
+      }),
     onSuccess: () => {
       toast.success("Request claimed. Student has been notified.");
       setClaimTarget(null);
@@ -135,8 +129,7 @@ export default function HubBookRequestsPage() {
       void qc.invalidateQueries({ queryKey: ["book-requests"] });
       void qc.invalidateQueries({ queryKey: ["hub", "overview"] });
     },
-    onError: (e) =>
-      toast.error(e instanceof ApiError ? e.message : "Could not claim request"),
+    onError: (e) => toast.error(e instanceof ApiError ? e.message : "Could not claim request"),
   });
 
   const assignCopyMutation = useMutation({
@@ -150,7 +143,7 @@ export default function HubBookRequestsPage() {
             confirm: true,
             assignmentVerified: input.verified,
           }),
-        }
+        },
       ),
     onSuccess: (data) => {
       if (data.warning) {
@@ -161,40 +154,33 @@ export default function HubBookRequestsPage() {
       setAssignTarget(null);
       void qc.invalidateQueries({ queryKey: ["book-requests"] });
     },
-    onError: (e) =>
-      toast.error(e instanceof ApiError ? e.message : "Could not assign copy"),
+    onError: (e) => toast.error(e instanceof ApiError ? e.message : "Could not assign copy"),
   });
 
   const releaseAssignmentMutation = useMutation({
     mutationFn: async (id: string) =>
-      apiFetch<{ request: BookRequestRow }>(
-        `/api/book-requests/${id}/release-assignment`,
-        { method: "POST", token: token! }
-      ),
+      apiFetch<{ request: BookRequestRow }>(`/api/book-requests/${id}/release-assignment`, {
+        method: "POST",
+        token: token!,
+      }),
     onSuccess: () => {
       toast.success("Copy assignment released.");
       void qc.invalidateQueries({ queryKey: ["book-requests"] });
     },
-    onError: (e) =>
-      toast.error(
-        e instanceof ApiError ? e.message : "Could not release assignment"
-      ),
+    onError: (e) => toast.error(e instanceof ApiError ? e.message : "Could not release assignment"),
   });
 
   const verifyAssignmentMutation = useMutation({
     mutationFn: async (id: string) =>
-      apiFetch<{ request: BookRequestRow }>(
-        `/api/book-requests/${id}/verify-assignment`,
-        { method: "POST", token: token! }
-      ),
+      apiFetch<{ request: BookRequestRow }>(`/api/book-requests/${id}/verify-assignment`, {
+        method: "POST",
+        token: token!,
+      }),
     onSuccess: () => {
       toast.success("Assignment verified — copy is shelf-confirmed.");
       void qc.invalidateQueries({ queryKey: ["book-requests"] });
     },
-    onError: (e) =>
-      toast.error(
-        e instanceof ApiError ? e.message : "Could not verify assignment"
-      ),
+    onError: (e) => toast.error(e instanceof ApiError ? e.message : "Could not verify assignment"),
   });
 
   // ── Helpers ──────────────────────────────────────────────────────────────
@@ -204,13 +190,12 @@ export default function HubBookRequestsPage() {
       if (!id) return "Unassigned";
       return hubsQ.data?.hubs.find((h) => h.id === id)?.name ?? `${id.slice(0, 8)}…`;
     },
-    [hubsQ.data?.hubs]
+    [hubsQ.data?.hubs],
   );
 
   const hubLocation = useCallback(
-    (id: string | null | undefined) =>
-      hubsQ.data?.hubs.find((h) => h.id === id)?.location ?? null,
-    [hubsQ.data?.hubs]
+    (id: string | null | undefined) => hubsQ.data?.hubs.find((h) => h.id === id)?.location ?? null,
+    [hubsQ.data?.hubs],
   );
 
   const requestsRaw = deskRequestsQ.data?.requests ?? [];
@@ -240,9 +225,7 @@ export default function HubBookRequestsPage() {
     if (statusFilter === "active") {
       rows = rows.filter((r) => isActiveBookRequest(r.status));
     } else if (statusFilter !== "all") {
-      rows = rows.filter(
-        (r) => normalizeBookRequestStatus(r.status) === statusFilter
-      );
+      rows = rows.filter((r) => normalizeBookRequestStatus(r.status) === statusFilter);
     }
     if (searchTitle.trim()) {
       rows = rows.filter((r) =>
@@ -250,8 +233,8 @@ export default function HubBookRequestsPage() {
           r.bookTitle,
           [r.notes, r.author, r.isbn].filter(Boolean).join(" "),
           searchTitle,
-          hubName(bookRequestAssignedHubId(r))
-        )
+          hubName(bookRequestAssignedHubId(r)),
+        ),
       );
     }
     return rows;
@@ -265,8 +248,7 @@ export default function HubBookRequestsPage() {
   // ── Action predicates ─────────────────────────────────────────────────────
 
   const canClaim = (r: BookRequestRow) =>
-    normalizeBookRequestStatus(r.status) === "pending" &&
-    !bookRequestAssignedHubId(r);
+    normalizeBookRequestStatus(r.status) === "pending" && !bookRequestAssignedHubId(r);
 
   const isAssignedToMyHub = (r: BookRequestRow) => {
     const hid = bookRequestAssignedHubId(r);
@@ -275,11 +257,12 @@ export default function HubBookRequestsPage() {
 
   const canAssignCopy = (r: BookRequestRow) =>
     isAssignedToMyHub(r) &&
-    (normalizeBookRequestStatus(r.status) === "pending" || normalizeBookRequestStatus(r.status) === "lease_requested" || normalizeBookRequestStatus(r.status) === "lease_approved") &&
+    (normalizeBookRequestStatus(r.status) === "pending" ||
+      normalizeBookRequestStatus(r.status) === "lease_requested" ||
+      normalizeBookRequestStatus(r.status) === "lease_approved") &&
     !r.assignedCopyId;
 
-  const canReleaseAssignment = (r: BookRequestRow) =>
-    isAssignedToMyHub(r) && !!r.assignedCopyId;
+  const canReleaseAssignment = (r: BookRequestRow) => isAssignedToMyHub(r) && !!r.assignedCopyId;
 
   const canVerifyAssignment = (r: BookRequestRow) =>
     isAssignedToMyHub(r) && !!r.assignedCopyId && !r.assignmentVerified;
@@ -288,12 +271,7 @@ export default function HubBookRequestsPage() {
 
   if (loading) {
     return (
-      <div
-        className={cn(
-          "flex min-h-[50dvh] items-center justify-center",
-          topPad
-        )}
-      >
+      <div className={cn("flex min-h-[50dvh] items-center justify-center", topPad)}>
         <Loader2 className="h-8 w-8 animate-spin text-foreground-muted" />
       </div>
     );
@@ -305,7 +283,7 @@ export default function HubBookRequestsPage() {
         className={cn(
           "mx-auto max-w-lg pb-20 text-center",
           PORTAL_PAGE_GUTTER_X,
-          inShell ? "pt-8" : "pt-28"
+          inShell ? "pt-8" : "pt-28",
         )}
       >
         <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl border border-border">
@@ -318,9 +296,7 @@ export default function HubBookRequestsPage() {
           Hub staff memberships unlock this queue.
         </p>
         <Button asChild className="mt-8 rounded-md">
-          <Link href={user ? portalPathsForUser(user).borrow : "/library"}>
-            Back to catalog
-          </Link>
+          <Link href={user ? portalPathsForUser(user).borrow : "/library"}>Back to catalog</Link>
         </Button>
       </div>
     );
@@ -332,9 +308,8 @@ export default function HubBookRequestsPage() {
       <div className="mb-6 border-b border-border pb-5">
         <h1 className={cn("mt-1", PORTAL_PAGE_TITLE)}>Book Requests</h1>
         <p className={cn("mt-4 max-w-2xl", PORTAL_PAGE_LEAD)}>
-          All student requests are broadcast network-wide. Claim requests your
-          hub can fulfill, assign a physical copy, and mark assignments as
-          verified before the student collects.
+          All student requests are broadcast network-wide. Claim requests your hub can fulfill,
+          assign a physical copy, and mark assignments as verified before the student collects.
         </p>
         <div className="mt-4 flex w-full min-w-0 flex-col gap-3 sm:flex-row sm:flex-nowrap sm:items-end">
           <div className="flex min-w-0 flex-[3] flex-col gap-1.5">
@@ -353,23 +328,15 @@ export default function HubBookRequestsPage() {
             <Label htmlFor="hub-req-status" className="section-kicker">
               Status
             </Label>
-            <Select
-              value={statusFilter}
-              onValueChange={(v) => setStatusFilter(v as StatusFilter)}
-            >
-              <SelectTrigger
-                id="hub-req-status"
-                className={cn(adminSelectTrigger, "text-primary")}
-              >
+            <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as StatusFilter)}>
+              <SelectTrigger id="hub-req-status" className={cn(adminSelectTrigger, "text-primary")}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All statuses</SelectItem>
                 <SelectItem value="active">Active</SelectItem>
                 <SelectItem value="pending">Pending</SelectItem>
-                <SelectItem value="available_for_collection">
-                  Available for Collection
-                </SelectItem>
+                <SelectItem value="available_for_collection">Available for Collection</SelectItem>
                 <SelectItem value="delivered">Delivered</SelectItem>
                 <SelectItem value="cancelled">Cancelled</SelectItem>
                 <SelectItem value="lease_requested">Lease Requested</SelectItem>
@@ -385,10 +352,7 @@ export default function HubBookRequestsPage() {
       </div>
 
       {/* ── Request queue ── */}
-      <section
-        className={cn(adminPanel, "overflow-hidden")}
-        aria-label="Book request queue"
-      >
+      <section className={cn(adminPanel, "overflow-hidden")} aria-label="Book request queue">
         <div className="border-b border-border px-4 py-3">
           <h2 className="section-kicker">Request queue</h2>
           <p className="mt-1 caption-scale font-medium text-foreground-muted">
@@ -414,8 +378,7 @@ export default function HubBookRequestsPage() {
           <ul className="divide-y divide-border">
             {filteredRequests.map((r) => {
               const assignedHub = bookRequestAssignedHubId(r);
-              const claimedElsewhere =
-                !!assignedHub && !isAssignedToMyHub(r);
+              const claimedElsewhere = !!assignedHub && !isAssignedToMyHub(r);
               const showClaim = canClaim(r);
               const nStatus = normalizeBookRequestStatus(r.status);
               const showInventory =
@@ -441,14 +404,10 @@ export default function HubBookRequestsPage() {
                           <RequestStatusBadge status={r.status} />
                         </div>
                         {r.author?.trim() ? (
-                          <p className="caption-scale text-foreground-muted">
-                            Author: {r.author}
-                          </p>
+                          <p className="caption-scale text-foreground-muted">Author: {r.author}</p>
                         ) : null}
                         {r.isbn?.trim() ? (
-                          <p className="caption-scale text-foreground-muted">
-                            ISBN: {r.isbn}
-                          </p>
+                          <p className="caption-scale text-foreground-muted">ISBN: {r.isbn}</p>
                         ) : null}
                         {r.notes?.trim() ? (
                           <p className="rounded-xl border border-border px-3 py-2 body-scale text-foreground-muted">
@@ -460,37 +419,26 @@ export default function HubBookRequestsPage() {
                         <div className="grid gap-2 rounded-xl border border-border px-3 py-2.5 caption-scale sm:grid-cols-2 lg:grid-cols-4">
                           <div>
                             <p className="text-foreground-muted">Student</p>
-                            <p className="text-foreground">
-                              {r.requesterPublicId ?? "Student"}
-                            </p>
+                            <p className="text-foreground">{r.requesterPublicId ?? "Student"}</p>
                           </div>
                           <div>
-                            <p className="text-foreground-muted">
-                              Assigned hub
-                            </p>
-                            <p className="text-foreground">
-                              {hubName(assignedHub)}
-                            </p>
+                            <p className="text-foreground-muted">Assigned hub</p>
+                            <p className="text-foreground">{hubName(assignedHub)}</p>
                             {hubLocation(assignedHub) ? (
-                              <p className="text-foreground-subtle">
-                                {hubLocation(assignedHub)}
-                              </p>
+                              <p className="text-foreground-subtle">{hubLocation(assignedHub)}</p>
                             ) : null}
                           </div>
                           <div>
                             <p className="text-foreground-muted">Requested</p>
-                            <p className="text-foreground">
-                              {fmtDeskReqDate(r.createdAt)}
-                            </p>
+                            <p className="text-foreground">{fmtDeskReqDate(r.createdAt)}</p>
                           </div>
                           <div>
                             <p className="text-foreground-muted">Updated</p>
                             <p className="text-foreground">
                               {r.createdAt
-                                ? formatDistanceToNow(
-                                    new Date(r.updatedAt ?? r.createdAt),
-                                    { addSuffix: true }
-                                  )
+                                ? formatDistanceToNow(new Date(r.updatedAt ?? r.createdAt), {
+                                    addSuffix: true,
+                                  })
                                 : "—"}
                             </p>
                           </div>
@@ -500,18 +448,13 @@ export default function HubBookRequestsPage() {
                         {r.assignedCopyId && (
                           <div className="flex flex-wrap gap-3 rounded-xl border border-border px-3 py-2 caption-scale">
                             <div>
-                              <span className="text-foreground-muted">
-                                Copy ref:{" "}
-                              </span>
+                              <span className="text-foreground-muted">Copy ref: </span>
                               <span className="font-mono text-foreground">
-                                {(r as any).assignedCopyRefId ??
-                                  r.assignedCopyId.slice(0, 8) + "…"}
+                                {(r as any).assignedCopyRefId ?? r.assignedCopyId.slice(0, 8) + "…"}
                               </span>
                             </div>
                             <div>
-                              <span className="text-foreground-muted">
-                                Shelf verified:{" "}
-                              </span>
+                              <span className="text-foreground-muted">Shelf verified: </span>
                               <span
                                 className={
                                   r.assignmentVerified
@@ -527,8 +470,7 @@ export default function HubBookRequestsPage() {
 
                         {claimedElsewhere ? (
                           <p className="caption-scale font-medium text-foreground-muted">
-                            Claimed by {hubName(assignedHub)} — no further
-                            action available.
+                            Claimed by {hubName(assignedHub)} — no further action available.
                           </p>
                         ) : null}
                       </div>
@@ -569,7 +511,7 @@ export default function HubBookRequestsPage() {
                               href={deskInventoryHref(
                                 deskPaths.inventory,
                                 assignedHub,
-                                r.bookTitle
+                                r.bookTitle,
                               )}
                             >
                               Open inventory
@@ -598,9 +540,7 @@ export default function HubBookRequestsPage() {
                             size="sm"
                             className="h-9 rounded-md border-success/30 text-success hover:bg-success/5"
                             disabled={verifyAssignmentMutation.isPending}
-                            onClick={() =>
-                              verifyAssignmentMutation.mutate(r.id)
-                            }
+                            onClick={() => verifyAssignmentMutation.mutate(r.id)}
                           >
                             <CheckSquare className="mr-1.5 h-4 w-4" />
                             {verifyAssignmentMutation.isPending
@@ -616,14 +556,10 @@ export default function HubBookRequestsPage() {
                             size="sm"
                             className="h-9 rounded-md text-muted-foreground hover:text-destructive"
                             disabled={releaseAssignmentMutation.isPending}
-                            onClick={() =>
-                              releaseAssignmentMutation.mutate(r.id)
-                            }
+                            onClick={() => releaseAssignmentMutation.mutate(r.id)}
                           >
                             <RotateCcw className="mr-1.5 h-4 w-4" />
-                            {releaseAssignmentMutation.isPending
-                              ? "Releasing…"
-                              : "Release copy"}
+                            {releaseAssignmentMutation.isPending ? "Releasing…" : "Release copy"}
                           </Button>
                         ) : null}
                       </div>
@@ -637,23 +573,18 @@ export default function HubBookRequestsPage() {
       </section>
 
       {/* ── Claim dialog ── */}
-      <Dialog
-        open={!!claimTarget}
-        onOpenChange={(o) => !o && setClaimTarget(null)}
-      >
+      <Dialog open={!!claimTarget} onOpenChange={(o) => !o && setClaimTarget(null)}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Claim for your hub</DialogTitle>
             <DialogDescription>
-              This assigns the request to your hub and notifies the student that
-              the book is available for collection.
+              This assigns the request to your hub and notifies the student that the book is
+              available for collection.
             </DialogDescription>
           </DialogHeader>
           {claimTarget ? (
             <div className="space-y-3 py-2">
-              <p className="text-sm font-medium text-foreground">
-                {claimTarget.bookTitle}
-              </p>
+              <p className="text-sm font-medium text-foreground">{claimTarget.bookTitle}</p>
               <div className="space-y-1.5">
                 <Label htmlFor="claim-hub">Your hub</Label>
                 <Select value={claimHubId} onValueChange={setClaimHubId}>
@@ -672,11 +603,7 @@ export default function HubBookRequestsPage() {
             </div>
           ) : null}
           <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setClaimTarget(null)}
-            >
+            <Button type="button" variant="outline" onClick={() => setClaimTarget(null)}>
               Cancel
             </Button>
             <Button
@@ -704,32 +631,22 @@ export default function HubBookRequestsPage() {
       </Dialog>
 
       {/* ── Assign Copy dialog ── */}
-      <Dialog
-        open={!!assignTarget}
-        onOpenChange={(o) => !o && setAssignTarget(null)}
-      >
+      <Dialog open={!!assignTarget} onOpenChange={(o) => !o && setAssignTarget(null)}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Assign a physical copy</DialogTitle>
             <DialogDescription>
-              The system will match the first available copy in your inventory
-              whose title matches this request. Choose whether the copy has been
-              physically verified on the shelf.
+              The system will match the first available copy in your inventory whose title matches
+              this request. Choose whether the copy has been physically verified on the shelf.
             </DialogDescription>
           </DialogHeader>
           {assignTarget ? (
             <div className="rounded-xl border border-border bg-muted/30 p-4">
-              <p className="text-sm font-medium text-foreground">
-                {assignTarget.bookTitle}
-              </p>
+              <p className="text-sm font-medium text-foreground">{assignTarget.bookTitle}</p>
             </div>
           ) : null}
           <DialogFooter className="flex-col gap-2 sm:flex-row">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setAssignTarget(null)}
-            >
+            <Button type="button" variant="outline" onClick={() => setAssignTarget(null)}>
               Cancel
             </Button>
             <Button

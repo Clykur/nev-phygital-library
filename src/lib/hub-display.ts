@@ -1,11 +1,5 @@
 /** Hub `kind` values stored in the database. */
-export const HUB_KIND_VALUES = [
-  "college",
-  "public",
-  "government",
-  "private",
-  "other",
-] as const;
+export const HUB_KIND_VALUES = ["college", "public", "government", "private", "other"] as const;
 
 export type HubKindValue = (typeof HUB_KIND_VALUES)[number];
 

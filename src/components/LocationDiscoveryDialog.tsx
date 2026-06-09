@@ -1,11 +1,11 @@
-import { useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { apiFetch } from '../lib/api';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
-import { useGeolocation } from '../hooks/use-geolocation';
-import { Loader2, MapPin, School, BookOpen, AlertCircle } from 'lucide-react';
-import { cn } from '../lib/utils';
-import { LibraryCatalogBook } from '../pages/library';
+import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { apiFetch } from "../lib/api";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./ui/dialog";
+import { useGeolocation } from "../hooks/use-geolocation";
+import { Loader2, MapPin, School, BookOpen, AlertCircle } from "lucide-react";
+import { cn } from "../lib/utils";
+import { LibraryCatalogBook } from "../pages/library";
 
 type Hub = { id: string; name: string; location?: string; kind?: string };
 
@@ -15,8 +15,18 @@ interface LocationDiscoveryDialogProps {
   token?: string | null;
 }
 
-export function LocationDiscoveryDialog({ open, onOpenChange, token }: LocationDiscoveryDialogProps) {
-  const { coords, requestLocation, loading: locLoading, error: locError, permissionDenied } = useGeolocation();
+export function LocationDiscoveryDialog({
+  open,
+  onOpenChange,
+  token,
+}: LocationDiscoveryDialogProps) {
+  const {
+    coords,
+    requestLocation,
+    loading: locLoading,
+    error: locError,
+    permissionDenied,
+  } = useGeolocation();
 
   // We request location when the dialog opens, if we don't have it yet.
   useEffect(() => {
@@ -26,20 +36,23 @@ export function LocationDiscoveryDialog({ open, onOpenChange, token }: LocationD
   }, [open, coords, locLoading, locError, permissionDenied, requestLocation]);
 
   const hubsQ = useQuery({
-    queryKey: ['catalog', 'hubs', 'nearby'],
+    queryKey: ["catalog", "hubs", "nearby"],
     enabled: open && !!coords,
-    queryFn: () => apiFetch<{ hubs: Hub[] }>('/api/catalog/hubs', { token: token || undefined }),
+    queryFn: () => apiFetch<{ hubs: Hub[] }>("/api/catalog/hubs", { token: token || undefined }),
   });
 
   const booksQ = useQuery({
-    queryKey: ['catalog', 'books', 'nearby'],
+    queryKey: ["catalog", "books", "nearby"],
     enabled: open && !!coords,
-    queryFn: () => apiFetch<{ books: LibraryCatalogBook[] }>('/api/catalog/books', { token: token || undefined }),
+    queryFn: () =>
+      apiFetch<{ books: LibraryCatalogBook[] }>("/api/catalog/books", {
+        token: token || undefined,
+      }),
   });
 
   // Calculate mock distances deterministically based on hub/book IDs to simulate proximity
   const getMockDistance = (id: string) => {
-    const charCodeSum = id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const charCodeSum = id.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
     return ((charCodeSum % 15) + 1.2).toFixed(1);
   };
 
@@ -72,7 +85,8 @@ export function LocationDiscoveryDialog({ open, onOpenChange, token }: LocationD
               </div>
               <h3 className="text-lg font-bold text-foreground mb-2">Location Access Denied</h3>
               <p className="text-sm text-muted-foreground max-w-md leading-relaxed">
-                {locError || "We need your location to show nearby hubs and books. Please enable location services in your browser settings to use this feature."}
+                {locError ||
+                  "We need your location to show nearby hubs and books. Please enable location services in your browser settings to use this feature."}
               </p>
               <button
                 onClick={requestLocation}
@@ -88,20 +102,29 @@ export function LocationDiscoveryDialog({ open, onOpenChange, token }: LocationD
               {/* Hubs Section */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Nearby Hubs & Libraries</h4>
-                  {hubsQ.isLoading && <Loader2 className="w-3 h-3 animate-spin text-muted-foreground" />}
+                  <h4 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
+                    Nearby Hubs & Libraries
+                  </h4>
+                  {hubsQ.isLoading && (
+                    <Loader2 className="w-3 h-3 animate-spin text-muted-foreground" />
+                  )}
                 </div>
 
                 {hubsQ.isSuccess && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {hubsQ.data.hubs.slice(0, 4).map((hub) => (
-                      <div key={hub.id} className="flex items-start gap-3 p-3 rounded-xl border border-border bg-card hover:border-primary/20 transition-colors cursor-pointer group">
+                      <div
+                        key={hub.id}
+                        className="flex items-start gap-3 p-3 rounded-xl border border-border bg-card hover:border-primary/20 transition-colors cursor-pointer group"
+                      >
                         <div className="w-10 h-10 flex items-center justify-center shrink-0">
                           <School className="w-5 h-5 text-primary group-hover:scale-110 transition-transform" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <h5 className="text-sm font-bold text-foreground truncate">{hub.name}</h5>
-                          <p className="text-xs text-muted-foreground mt-0.5 capitalize">{hub.kind || 'Campus Hub'}</p>
+                          <p className="text-xs text-muted-foreground mt-0.5 capitalize">
+                            {hub.kind || "Campus Hub"}
+                          </p>
                           <div className="mt-2 flex items-center gap-1.5 caption-scale font-medium text-secondary">
                             <MapPin className="w-3 h-3" />
                             {getMockDistance(hub.id)} km away
@@ -116,32 +139,51 @@ export function LocationDiscoveryDialog({ open, onOpenChange, token }: LocationD
               {/* Books Section */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between border-t border-border pt-6">
-                  <h4 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Available Books Near You</h4>
-                  {booksQ.isLoading && <Loader2 className="w-3 h-3 animate-spin text-muted-foreground" />}
+                  <h4 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
+                    Available Books Near You
+                  </h4>
+                  {booksQ.isLoading && (
+                    <Loader2 className="w-3 h-3 animate-spin text-muted-foreground" />
+                  )}
                 </div>
 
                 {booksQ.isSuccess && (
                   <div className="space-y-3">
                     {booksQ.data.books.slice(0, 5).map((book) => {
-                      const isAvailable = book.status === 'available';
+                      const isAvailable = book.status === "available";
                       return (
-                        <div key={book.id} className="flex items-center gap-4 p-3 rounded-xl border border-border bg-card hover: transition-colors">
+                        <div
+                          key={book.id}
+                          className="flex items-center gap-4 p-3 rounded-xl border border-border bg-card hover: transition-colors"
+                        >
                           <div className="w-10 h-14 shrink-0 flex items-center justify-center overflow-hidden">
                             {book.coverImageUrl ? (
-                              <img src={book.coverImageUrl} alt={book.title} className="w-full h-full object-cover" />
+                              <img
+                                src={book.coverImageUrl}
+                                alt={book.title}
+                                className="w-full h-full object-cover"
+                              />
                             ) : (
                               <BookOpen className="w-4 h-4 text-foreground-subtle" />
                             )}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h5 className="text-sm font-bold text-foreground truncate">{book.title}</h5>
-                            <p className="text-xs text-muted-foreground truncate">{(book as any).author}</p>
+                            <h5 className="text-sm font-bold text-foreground truncate">
+                              {book.title}
+                            </h5>
+                            <p className="text-xs text-muted-foreground truncate">
+                              {(book as any).author}
+                            </p>
                             <div className="mt-1 flex items-center gap-2">
-                              <span className={cn(
-                                "caption-scale px-1.5 py-0.5 rounded font-semibold",
-                                isAvailable ? "border border-success/30 bg-success/10 text-success" : "border border-border bg-background text-muted-foreground"
-                              )}>
-                                {isAvailable ? 'Available' : 'Reserved'}
+                              <span
+                                className={cn(
+                                  "caption-scale px-1.5 py-0.5 rounded font-semibold",
+                                  isAvailable
+                                    ? "border border-success/30 bg-success/10 text-success"
+                                    : "border border-border bg-background text-muted-foreground",
+                                )}
+                              >
+                                {isAvailable ? "Available" : "Reserved"}
                               </span>
                               <span className="caption-scale text-muted-foreground flex items-center gap-1">
                                 <MapPin className="w-2.5 h-2.5" /> {getMockDistance(book.id)} km

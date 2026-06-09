@@ -1,8 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import {
-  BOOK_COVER_PLACEHOLDER_URL,
-  bookCoverDisplayUrl,
-} from "@/lib/book-cover-display";
+import { BOOK_COVER_PLACEHOLDER_URL, bookCoverDisplayUrl } from "@/lib/book-cover-display";
 import { cn } from "@/lib/utils";
 
 interface BookCoverImageProps {
@@ -12,16 +9,8 @@ interface BookCoverImageProps {
   priority?: boolean;
 }
 
-export function BookCoverImage({
-  src,
-  alt,
-  className,
-  priority,
-}: BookCoverImageProps) {
-  const resolvedSrc = useMemo(
-    () => bookCoverDisplayUrl(src),
-    [src]
-  );
+export function BookCoverImage({ src, alt, className, priority }: BookCoverImageProps) {
+  const resolvedSrc = useMemo(() => bookCoverDisplayUrl(src), [src]);
 
   const [imageSrc, setImageSrc] = useState(resolvedSrc);
 
@@ -36,10 +25,7 @@ export function BookCoverImage({
       loading={priority ? "eager" : "lazy"}
       fetchPriority={priority ? "high" : "auto"}
       decoding="async"
-      className={cn(
-        "h-full w-full object-cover bg-muted",
-        className
-      )}
+      className={cn("h-full w-full object-cover bg-muted", className)}
       onError={(e) => {
         const img = e.currentTarget;
 

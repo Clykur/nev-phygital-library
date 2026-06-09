@@ -34,7 +34,11 @@ export function bookRequestMatchesSearch(
   const t = normalizeBookTitle(bookTitle ?? "");
   const n = normalizeBookTitle(notes ?? "");
   const x = normalizeBookTitle(extra ?? "");
-  const haystack = [t, n, x].filter((s) => s.length > 0).join(" ").replace(/\s+/g, " ").trim();
+  const haystack = [t, n, x]
+    .filter((s) => s.length > 0)
+    .join(" ")
+    .replace(/\s+/g, " ")
+    .trim();
   if (!haystack) return false;
 
   // Letters + numbers as tokens; strips punctuation that would break `includes` on normalized text

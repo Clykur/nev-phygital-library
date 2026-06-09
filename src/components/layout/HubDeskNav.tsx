@@ -216,7 +216,6 @@ export function hubDeskGroupsForUser(user: AuthUser): DeskGroup[] {
         },
       ],
     },
-
   ];
 }
 
@@ -298,10 +297,7 @@ export function DeskSidebarNav({
                   )}
                 >
                   <Icon
-                    className={cn(
-                      "h-4 w-4 shrink-0",
-                      active ? "text-primary" : "opacity-80",
-                    )}
+                    className={cn("h-4 w-4 shrink-0", active ? "text-primary" : "opacity-80")}
                     aria-hidden
                   />
                   <span className="flex min-w-0 flex-1 flex-col gap-0.5 leading-tight">

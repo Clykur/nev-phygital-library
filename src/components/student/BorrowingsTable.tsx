@@ -104,10 +104,7 @@ export function BorrowingsTable({
       .filter((row) => {
         if (status !== "all" && row.state !== status) return false;
         if (!q) return true;
-        return [row.title, row.author ?? "", row.hub]
-          .join(" ")
-          .toLowerCase()
-          .includes(q);
+        return [row.title, row.author ?? "", row.hub].join(" ").toLowerCase().includes(q);
       })
       .sort((a, b) => {
         if (sort === "title") return a.title.localeCompare(b.title);
@@ -115,7 +112,10 @@ export function BorrowingsTable({
         if (sort === "due") {
           return (new Date(a.dueAt ?? 0).getTime() || 0) - (new Date(b.dueAt ?? 0).getTime() || 0);
         }
-        return (new Date(b.borrowedAt ?? 0).getTime() || 0) - (new Date(a.borrowedAt ?? 0).getTime() || 0);
+        return (
+          (new Date(b.borrowedAt ?? 0).getTime() || 0) -
+          (new Date(a.borrowedAt ?? 0).getTime() || 0)
+        );
       });
     return out;
   }, [rows, search, sort, status]);
@@ -182,7 +182,10 @@ export function BorrowingsTable({
         <div className="px-6 py-8">
           <p className="body-scale text-foreground-muted">
             {emptyMessage}{" "}
-            <Link href="/student/borrow" className="font-medium text-primary underline-offset-2 hover:underline">
+            <Link
+              href="/student/borrow"
+              className="font-medium text-primary underline-offset-2 hover:underline"
+            >
               Browse books
             </Link>
             .
@@ -224,18 +227,31 @@ export function BorrowingsTable({
                         <div className="min-w-0">
                           <p className="truncate font-medium text-foreground">{row.title}</p>
                           {row.author ? (
-                            <p className="truncate caption-scale text-foreground-muted">{row.author}</p>
+                            <p className="truncate caption-scale text-foreground-muted">
+                              {row.author}
+                            </p>
                           ) : null}
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="text-muted-foreground">{fmtDate(row.borrowedAt)}</TableCell>
-                    <TableCell className="text-muted-foreground">{row.due || fmtDate(row.dueAt)}</TableCell>
-                    <TableCell className="tabular-nums text-muted-foreground">{fmtCredits(row.creditsUsed)}</TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {fmtDate(row.borrowedAt)}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {row.due || fmtDate(row.dueAt)}
+                    </TableCell>
+                    <TableCell className="tabular-nums text-muted-foreground">
+                      {fmtCredits(row.creditsUsed)}
+                    </TableCell>
                     <TableCell className="text-muted-foreground">{row.hub || "Hub"}</TableCell>
                     <TableCell>
                       {row.onCta && row.ctaLabel ? (
-                        <Button size="sm" variant="outline" className="rounded-md" onClick={row.onCta}>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="rounded-md"
+                          onClick={row.onCta}
+                        >
                           {row.ctaLabel}
                         </Button>
                       ) : row.ctaHref && row.ctaLabel ? (

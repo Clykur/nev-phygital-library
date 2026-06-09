@@ -86,7 +86,12 @@ export default function StudentLibraryPage() {
   const hubDesk = !!user && isHubAccount(user);
   const top = inShell ? "" : "pt-24";
   const pageWrap = inShell ? "w-full" : PORTAL_PAGE_CONTAINER;
-  const [confirmReturn, setConfirmReturn] = useState<{ type: "hub" | "peer"; id: string; hubName: string; title: string } | null>(null);
+  const [confirmReturn, setConfirmReturn] = useState<{
+    type: "hub" | "peer";
+    id: string;
+    hubName: string;
+    title: string;
+  } | null>(null);
 
   const hubsQ = useQuery({
     queryKey: ["catalog", "hubs"],
@@ -106,7 +111,8 @@ export default function StudentLibraryPage() {
   const reqQ = useQuery({
     queryKey: ["book-requests", "mine"],
     enabled: !!token,
-    queryFn: () => apiFetch<{ requests: RequestRow[] }>("/api/book-requests/mine", { token: token! }),
+    queryFn: () =>
+      apiFetch<{ requests: RequestRow[] }>("/api/book-requests/mine", { token: token! }),
   });
 
   const returnHubBook = useMutation({
@@ -125,7 +131,10 @@ export default function StudentLibraryPage() {
   });
   const returnPeerBorrow = useMutation({
     mutationFn: async (listingId: string) => {
-      await apiFetch(`/api/p2p/listings/${listingId}/return-borrow`, { method: "POST", token: token! });
+      await apiFetch(`/api/p2p/listings/${listingId}/return-borrow`, {
+        method: "POST",
+        token: token!,
+      });
     },
     onSuccess: () => {
       toast.success("Peer borrow return recorded.");
@@ -139,13 +148,15 @@ export default function StudentLibraryPage() {
   });
 
   const hubName = (hubId: string | undefined | null) =>
-    hubId ? hubsQ.data?.hubs.find((h) => h.id === hubId)?.name ?? "Hub" : "Hub";
+    hubId ? (hubsQ.data?.hubs.find((h) => h.id === hubId)?.name ?? "Hub") : "Hub";
 
   const borrowedFromHub = useMemo<BorrowingRow[]>(() => {
     const rows = booksQ.data?.books ?? [];
     return rows
       .filter(
-        (b) => b.borrowerUserId === user?.userId && (b.status === "checked_out" || b.status === "overdue"),
+        (b) =>
+          b.borrowerUserId === user?.userId &&
+          (b.status === "checked_out" || b.status === "overdue"),
       )
       .map((b) => ({
         id: b.id,
@@ -253,7 +264,8 @@ export default function StudentLibraryPage() {
               <p className="section-kicker text-foreground-muted">Return book</p>
               <DialogTitle className={PORTAL_DIALOG_TITLE}>Confirm return</DialogTitle>
               <DialogDescription className="body-scale leading-relaxed text-foreground-muted">
-                Hand the physical copy to the hub desk, then confirm here so your loan clears in Neev.
+                Hand the physical copy to the hub desk, then confirm here so your loan clears in
+                Neev.
               </DialogDescription>
             </DialogHeader>
           </div>
@@ -265,9 +277,13 @@ export default function StudentLibraryPage() {
               </div>
               <div className="min-w-0 flex-1">
                 <p className="caption-scale font-semibold uppercase tracking-kicker text-foreground-muted">
-                  {confirmReturn.type === "hub" ? "Borrowed from hub" : "Peer borrow · drop-off hub"}
+                  {confirmReturn.type === "hub"
+                    ? "Borrowed from hub"
+                    : "Peer borrow · drop-off hub"}
                 </p>
-                <p className="mt-1.5 font-medium leading-snug text-foreground">{confirmReturn.title}</p>
+                <p className="mt-1.5 font-medium leading-snug text-foreground">
+                  {confirmReturn.title}
+                </p>
                 <p className="mt-2 body-scale text-foreground-muted">
                   <span className="font-medium text-foreground">{confirmReturn.hubName}</span>
                 </p>
@@ -298,7 +314,9 @@ export default function StudentLibraryPage() {
                 }
               }}
             >
-              {returnHubBook.isPending || returnPeerBorrow.isPending ? "Returning…" : "Confirm return"}
+              {returnHubBook.isPending || returnPeerBorrow.isPending
+                ? "Returning…"
+                : "Confirm return"}
             </Button>
           </DialogFooter>
         </DialogContent>

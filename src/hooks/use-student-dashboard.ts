@@ -1,6 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
-import { apiFetch } from '@/lib/api';
-import { useAuth } from '@/context/auth-context';
+import { useQuery } from "@tanstack/react-query";
+import { apiFetch } from "@/lib/api";
+import { useAuth } from "@/context/auth-context";
 
 export interface RecentBook {
   id: string;
@@ -42,12 +42,12 @@ export interface StudentDashboardData {
  */
 export function useStudentDashboard() {
   const { token } = useAuth();
-  
+
   return useQuery<StudentDashboardData, Error>({
-    queryKey: ['student-dashboard', token],
+    queryKey: ["student-dashboard", token],
     queryFn: async () => {
       // Connect to real endpoint
-      return await apiFetch<StudentDashboardData>('/api/student/dashboard', { token: token! });
+      return await apiFetch<StudentDashboardData>("/api/student/dashboard", { token: token! });
     },
     staleTime: 30 * 1000,
     enabled: !!token,

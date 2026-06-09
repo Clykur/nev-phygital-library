@@ -34,7 +34,9 @@ export function adminHubPath(hubId: string): string {
 }
 
 /** Hub desk “home” / command center: super admin uses {@link SUPER_ADMIN_OVERVIEW_PATH}. */
-export function hubOverviewPathForUser(user: Pick<AuthUser, "baseRole"> | null | undefined): string {
+export function hubOverviewPathForUser(
+  user: Pick<AuthUser, "baseRole"> | null | undefined,
+): string {
   if (user?.baseRole === "super_admin") return SUPER_ADMIN_OVERVIEW_PATH;
   return HUB_OVERVIEW_PATH;
 }

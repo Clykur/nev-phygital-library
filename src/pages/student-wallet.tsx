@@ -36,8 +36,11 @@ export default function StudentWalletPage() {
   const { balance, transactions, subscription, subscribe } = useWallet();
 
   const consumedCredits = Math.max(0, INITIAL_FREE_CREDITS - balance);
-  const transactionAmount = (t: { amount: number; creditsAdded?: number; creditsDeducted?: number }) =>
-    t.creditsAdded ?? t.creditsDeducted ?? t.amount;
+  const transactionAmount = (t: {
+    amount: number;
+    creditsAdded?: number;
+    creditsDeducted?: number;
+  }) => t.creditsAdded ?? t.creditsDeducted ?? t.amount;
   const isCreditTransaction = (type: string) =>
     type === "credit" || type === "bounty_reward_credit";
 
@@ -59,12 +62,15 @@ export default function StudentWalletPage() {
             <Card variant="bento" className="relative overflow-hidden">
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5" />
               <CardHeader className="relative pb-2">
-                <p className={cn(PORTAL_SECTION_LABEL, "text-foreground-muted")}>Available credits</p>
+                <p className={cn(PORTAL_SECTION_LABEL, "text-foreground-muted")}>
+                  Available credits
+                </p>
               </CardHeader>
               <CardContent className="relative pt-0">
                 <p className={PORTAL_STAT_VALUE}>{balance.toLocaleString()}</p>
                 <p className="mt-2 body-scale text-foreground-muted">
-                  Available for borrowing, marketplace purchases, and member services. 1 Credit = {fmtRupees(CREDIT_TO_RUPEE_RATE)}.
+                  Available for borrowing, marketplace purchases, and member services. 1 Credit ={" "}
+                  {fmtRupees(CREDIT_TO_RUPEE_RATE)}.
                 </p>
               </CardContent>
               <WalletIcon
@@ -78,7 +84,9 @@ export default function StudentWalletPage() {
             <Card variant="default">
               <CardContent className="p-6">
                 <p className={PORTAL_SECTION_LABEL}>Max capacity</p>
-                <p className={cn(PORTAL_STAT_VALUE, "mt-2")}>{INITIAL_FREE_CREDITS.toLocaleString("en-IN")}</p>
+                <p className={cn(PORTAL_STAT_VALUE, "mt-2")}>
+                  {INITIAL_FREE_CREDITS.toLocaleString("en-IN")}
+                </p>
               </CardContent>
             </Card>
             <Card variant="default">
@@ -124,10 +132,12 @@ export default function StudentWalletPage() {
                         <div className="min-w-0">
                           <p className="body-scale font-medium text-foreground">{t.description}</p>
                           <p className="caption-scale text-foreground-muted">
-                            {format(new Date(t.createdAt), "MMM d, yyyy • h:mm a")} · {t.type.replace(/_/g, " ")}
+                            {format(new Date(t.createdAt), "MMM d, yyyy • h:mm a")} ·{" "}
+                            {t.type.replace(/_/g, " ")}
                           </p>
                           <p className="caption-scale text-foreground-muted">
-                            Rupee equivalent: {fmtRupees(t.rupeeValue ?? creditsToRupees(transactionAmount(t)))}
+                            Rupee equivalent:{" "}
+                            {fmtRupees(t.rupeeValue ?? creditsToRupees(transactionAmount(t)))}
                           </p>
                         </div>
                       </div>
@@ -158,9 +168,7 @@ export default function StudentWalletPage() {
           <Card variant="elevated">
             <CardHeader>
               <p className={PORTAL_SECTION_LABEL}>Membership status</p>
-              <CardTitle>
-                {subscription === "pro" ? "Pro member" : "Free member"}
-              </CardTitle>
+              <CardTitle>{subscription === "pro" ? "Pro member" : "Free member"}</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="body-scale text-foreground-muted">
@@ -178,9 +186,7 @@ export default function StudentWalletPage() {
 
             <Card
               variant="default"
-              className={cn(
-                subscription === "free" && "border-primary ring-2 ring-primary/10",
-              )}
+              className={cn(subscription === "free" && "border-primary ring-2 ring-primary/10")}
             >
               <CardContent className="p-6">
                 <div className="mb-5 flex items-start justify-between gap-3">
@@ -188,7 +194,9 @@ export default function StudentWalletPage() {
                     <h3 className="h4-scale font-semibold text-foreground">Free tier</h3>
                     <p className={cn(PORTAL_STAT_VALUE, "mt-2")}>
                       ₹0
-                      <span className="ml-1 body-scale font-normal text-foreground-muted">/month</span>
+                      <span className="ml-1 body-scale font-normal text-foreground-muted">
+                        /month
+                      </span>
                     </p>
                   </div>
                   {subscription === "free" ? (
@@ -236,7 +244,9 @@ export default function StudentWalletPage() {
                     <h3 className="h4-scale font-semibold text-foreground">Pro tier</h3>
                     <p className={cn(PORTAL_STAT_VALUE, "mt-2")}>
                       ₹999
-                      <span className="ml-1 body-scale font-normal text-foreground-muted">/year</span>
+                      <span className="ml-1 body-scale font-normal text-foreground-muted">
+                        /year
+                      </span>
                     </p>
                   </div>
                   {subscription === "pro" ? (

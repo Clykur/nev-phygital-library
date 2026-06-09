@@ -67,10 +67,13 @@ export default function StudentSubscriptionPage() {
 
   const createIntent = useMutation({
     mutationFn: async (planId: string) => {
-      return await apiFetch<{ intentId: string; amount: number }>("/api/subscriptions/create-intent", {
-        method: "POST",
-        body: JSON.stringify({ planId }),
-      });
+      return await apiFetch<{ intentId: string; amount: number }>(
+        "/api/subscriptions/create-intent",
+        {
+          method: "POST",
+          body: JSON.stringify({ planId }),
+        },
+      );
     },
     onSuccess: (data, planId) => {
       const plan = plansData?.find((p) => p.id === planId);
@@ -125,7 +128,8 @@ export default function StudentSubscriptionPage() {
             <p className="text-muted-foreground text-lg">
               {isPremium ? (
                 <span className="flex items-center text-primary font-medium">
-                  <CheckCircle2 className="w-5 h-5 mr-2" /> You are on the {activeData.planName} plan.
+                  <CheckCircle2 className="w-5 h-5 mr-2" /> You are on the {activeData.planName}{" "}
+                  plan.
                 </span>
               ) : (
                 "Free members can borrow with wallet credits. Upgrade for credit-free borrowing."
@@ -137,11 +141,11 @@ export default function StudentSubscriptionPage() {
 
       <div className="grid md:grid-cols-2 gap-8 mb-12">
         {plansData?.map((plan) => (
-          <div 
-            key={plan.id} 
+          <div
+            key={plan.id}
             className={cn(
               "relative flex flex-col rounded-xl border p-8 shadow-sm transition-all hover:shadow-md",
-              activePlan === plan.tier ? "border-primary ring-1 ring-primary" : "border-border"
+              activePlan === plan.tier ? "border-primary ring-1 ring-primary" : "border-border",
             )}
           >
             {activePlan === plan.tier && (
@@ -156,22 +160,45 @@ export default function StudentSubscriptionPage() {
                 <span className="text-muted-foreground">/year</span>
               </div>
             </div>
-            
+
             <ul className="flex-1 space-y-3 mb-8 text-sm text-muted-foreground">
               {plan.tier === "free" ? (
                 <>
-                  <li className="flex items-center"><CheckCircle2 className="mr-2 h-4 w-4 text-primary" /> Basic access to hub resources</li>
-                  <li className="flex items-center"><CheckCircle2 className="mr-2 h-4 w-4 text-primary" /> Initial {fmtCreditWithRupeeEquivalent(INITIAL_FREE_CREDITS)} wallet balance</li>
-                  <li className="flex items-center"><CheckCircle2 className="mr-2 h-4 w-4 text-primary" /> Borrow and buy with credits</li>
-                  <li className="flex items-center"><CheckCircle2 className="mr-2 h-4 w-4 text-primary" /> Standard support</li>
+                  <li className="flex items-center">
+                    <CheckCircle2 className="mr-2 h-4 w-4 text-primary" /> Basic access to hub
+                    resources
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle2 className="mr-2 h-4 w-4 text-primary" /> Initial{" "}
+                    {fmtCreditWithRupeeEquivalent(INITIAL_FREE_CREDITS)} wallet balance
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle2 className="mr-2 h-4 w-4 text-primary" /> Borrow and buy with
+                    credits
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle2 className="mr-2 h-4 w-4 text-primary" /> Standard support
+                  </li>
                 </>
               ) : (
                 <>
-                  <li className="flex items-center"><CheckCircle2 className="mr-2 h-4 w-4 text-primary" /> Unlimited borrowing across all hubs — no credits required</li>
-                  <li className="flex items-center"><CheckCircle2 className="mr-2 h-4 w-4 text-primary" /> Free initial peer-to-peer delivery</li>
-                  <li className="flex items-center"><CheckCircle2 className="mr-2 h-4 w-4 text-primary" /> Priority requests and reservations</li>
+                  <li className="flex items-center">
+                    <CheckCircle2 className="mr-2 h-4 w-4 text-primary" /> Unlimited borrowing
+                    across all hubs — no credits required
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle2 className="mr-2 h-4 w-4 text-primary" /> Free initial peer-to-peer
+                    delivery
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle2 className="mr-2 h-4 w-4 text-primary" /> Priority requests and
+                    reservations
+                  </li>
                   {plan.creditReward > 0 && (
-                    <li className="flex items-center"><CheckCircle2 className="mr-2 h-4 w-4 text-primary" /> Includes {fmtCreditWithRupeeEquivalent(plan.creditReward)} wallet credit</li>
+                    <li className="flex items-center">
+                      <CheckCircle2 className="mr-2 h-4 w-4 text-primary" /> Includes{" "}
+                      {fmtCreditWithRupeeEquivalent(plan.creditReward)} wallet credit
+                    </li>
                   )}
                 </>
               )}
@@ -210,12 +237,16 @@ export default function StudentSubscriptionPage() {
                   </div>
                   <div className="text-right">
                     <p className="font-medium">₹{(h.amount / 100).toFixed(2)}</p>
-                    <span className={cn(
-                      "inline-flex mt-1 items-center rounded-full px-2 py-0.5 text-xs font-medium",
-                      h.status === "succeeded" ? "bg-success-surface text-success-foreground" :
-                      h.status === "failed" ? "bg-error-surface text-error-foreground" :
-                      "bg-warning-surface text-warning-foreground"
-                    )}>
+                    <span
+                      className={cn(
+                        "inline-flex mt-1 items-center rounded-full px-2 py-0.5 text-xs font-medium",
+                        h.status === "succeeded"
+                          ? "bg-success-surface text-success-foreground"
+                          : h.status === "failed"
+                            ? "bg-error-surface text-error-foreground"
+                            : "bg-warning-surface text-warning-foreground",
+                      )}
+                    >
                       {h.status.charAt(0).toUpperCase() + h.status.slice(1)}
                     </span>
                   </div>

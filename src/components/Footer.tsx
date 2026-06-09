@@ -4,7 +4,7 @@ import { useLocation } from "wouter";
 
 interface FooterProps {
   setActiveTab?: (tab: string) => void;
-  setLandingSegment?: (segment: 'students' | 'colleges') => void;
+  setLandingSegment?: (segment: "students" | "colleges") => void;
 }
 
 export function Footer({ setActiveTab, setLandingSegment }: FooterProps) {
@@ -13,40 +13,40 @@ export function Footer({ setActiveTab, setLandingSegment }: FooterProps) {
   return (
     <footer className="border-t border-border bg-background">
       <div className="mx-auto max-w-[1280px] px-6 py-6 md:py-6">
-
         {/* TOP SECTION */}
         <div className="grid grid-cols-1 gap-12 md:gap-16 md:grid-cols-[1.4fr_0.7fr_0.7fr]">
-
           {/* LEFT COLUMN */}
           <div className="max-w-md">
-            <div className="flex items-center space-x-3 cursor-pointer group" onClick={() => setActiveTab('overview')}>
+            <div
+              className="flex items-center space-x-3 cursor-pointer group"
+              onClick={() => setActiveTab("overview")}
+            >
               <div className="relative flex items-center justify-center w-8 h-8 bg-primary rounded-md shadow-sm transition-transform duration-300 group-hover:scale-105">
                 <Library className="w-4 h-4 text-primary-foreground" />
               </div>
               <div className="flex items-center space-x-1">
-                <span className="font-display text-base font-bold tracking-tight text-foreground">Neev</span>
+                <span className="font-display text-base font-bold tracking-tight text-foreground">
+                  Neev
+                </span>
               </div>
             </div>
 
             <p className="mt-6 pl-2 text-base leading-8 text-foreground-muted">
-              The modern student library network for
-              quick access, reduced costs, and better reuse
+              The modern student library network for quick access, reduced costs, and better reuse
               across hubs.
             </p>
           </div>
 
           {/* NAVIGATION */}
           <div>
-            <p className="text-sm font-semibold tracking-wide text-foreground">
-              NAVIGATION
-            </p>
+            <p className="text-sm font-semibold tracking-wide text-foreground">NAVIGATION</p>
 
             <ul className="mt-6 space-y-4">
               <li>
                 <button
                   onClick={() => {
-                    setActiveTab?.('landing');
-                    setLandingSegment?.('students');
+                    setActiveTab?.("landing");
+                    setLandingSegment?.("students");
                     window.scrollTo({ top: 0, behavior: "smooth" });
                   }}
                   className="flex items-center space-x-2 text-base text-foreground-muted transition-colors hover:text-foreground"
@@ -58,9 +58,9 @@ export function Footer({ setActiveTab, setLandingSegment }: FooterProps) {
               <li>
                 <button
                   onClick={() => {
-                    setLocation('/marketplace');
-                    setActiveTab?.('catalog');
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    setLocation("/marketplace");
+                    setActiveTab?.("catalog");
+                    window.scrollTo({ top: 0, behavior: "smooth" });
                   }}
                   className="flex items-center space-x-2 text-base text-foreground-muted transition-colors hover:text-foreground"
                 >
@@ -71,9 +71,15 @@ export function Footer({ setActiveTab, setLandingSegment }: FooterProps) {
               <li>
                 <button
                   onClick={() => {
-                    setActiveTab?.('landing');
-                    setLandingSegment?.('students');
-                    setTimeout(() => document.getElementById('about-section')?.scrollIntoView({ behavior: 'smooth' }), 100);
+                    setActiveTab?.("landing");
+                    setLandingSegment?.("students");
+                    setTimeout(
+                      () =>
+                        document
+                          .getElementById("about-section")
+                          ?.scrollIntoView({ behavior: "smooth" }),
+                      100,
+                    );
                   }}
                   className="flex items-center space-x-2 text-base text-foreground-muted transition-colors hover:text-foreground"
                 >
@@ -85,31 +91,23 @@ export function Footer({ setActiveTab, setLandingSegment }: FooterProps) {
 
           {/* TRUST */}
           <div>
-            <p className="text-sm font-semibold tracking-wide text-foreground">
-              TRUST
-            </p>
+            <p className="text-sm font-semibold tracking-wide text-foreground">TRUST</p>
 
             <ul className="mt-6 space-y-4">
               <li>
-                <button
-                  className="text-base text-foreground-muted transition-colors hover:text-foreground"
-                >
+                <button className="text-base text-foreground-muted transition-colors hover:text-foreground">
                   Privacy
                 </button>
               </li>
 
               <li>
-                <button
-                  className="text-base text-foreground-muted transition-colors hover:text-foreground"
-                >
+                <button className="text-base text-foreground-muted transition-colors hover:text-foreground">
                   Terms
                 </button>
               </li>
 
               <li>
-                <button
-                  className="text-base text-foreground-muted transition-colors hover:text-foreground"
-                >
+                <button className="text-base text-foreground-muted transition-colors hover:text-foreground">
                   Security
                 </button>
               </li>
@@ -119,14 +117,12 @@ export function Footer({ setActiveTab, setLandingSegment }: FooterProps) {
 
         {/* BOTTOM SECTION */}
         <div className="mt-5 md:mt-5 flex flex-col items-start justify-between gap-8 border-t border-border pt-2 md:flex-row md:items-center">
-
           <p className="text-sm text-foreground-muted">
             © {new Date().getFullYear()} Neev. All rights reserved.
           </p>
 
           {/* SOCIAL ICONS */}
           <div className="flex items-center gap-3">
-
             {[
               {
                 icon: FaInstagram,

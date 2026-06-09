@@ -51,7 +51,9 @@ export default function HubBillingPage({ hubId }: { hubId: string }) {
   const { data: activeData, isLoading: activeLoading } = useQuery({
     queryKey: ["subscriptions", "hub-active", hubId],
     queryFn: async () => {
-      const res = await apiFetch<{ active: ActiveSub | null }>(`/api/subscriptions/hub-active?hubId=${hubId}`);
+      const res = await apiFetch<{ active: ActiveSub | null }>(
+        `/api/subscriptions/hub-active?hubId=${hubId}`,
+      );
       return res.active;
     },
   });

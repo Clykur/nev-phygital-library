@@ -154,7 +154,8 @@ function AdminUserDetailContent({ userId }: { userId: string }) {
   });
 
   const holdUser = useMutation({
-    mutationFn: () => apiFetch<{ ok: true }>(`/api/admin/users/${userId}/hold`, { method: "POST", token: token! }),
+    mutationFn: () =>
+      apiFetch<{ ok: true }>(`/api/admin/users/${userId}/hold`, { method: "POST", token: token! }),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ["admin", "user", userId] });
       void qc.invalidateQueries({ queryKey: ["admin", "users"] });
@@ -165,7 +166,10 @@ function AdminUserDetailContent({ userId }: { userId: string }) {
 
   const deactivateUser = useMutation({
     mutationFn: () =>
-      apiFetch<{ ok: true }>(`/api/admin/users/${userId}/deactivate`, { method: "POST", token: token! }),
+      apiFetch<{ ok: true }>(`/api/admin/users/${userId}/deactivate`, {
+        method: "POST",
+        token: token!,
+      }),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ["admin", "user", userId] });
       void qc.invalidateQueries({ queryKey: ["admin", "users"] });
@@ -175,7 +179,8 @@ function AdminUserDetailContent({ userId }: { userId: string }) {
   });
 
   const deleteUser = useMutation({
-    mutationFn: () => apiFetch<{ ok: true }>(`/api/admin/users/${userId}`, { method: "DELETE", token: token! }),
+    mutationFn: () =>
+      apiFetch<{ ok: true }>(`/api/admin/users/${userId}`, { method: "DELETE", token: token! }),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ["admin", "users"] });
       toast.success("User deleted.");
@@ -200,8 +205,10 @@ function AdminUserDetailContent({ userId }: { userId: string }) {
 
   const confirmBody = useMemo(() => {
     if (confirmAction === "hold") return "This temporarily restricts login and user actions.";
-    if (confirmAction === "deactivate") return "This disables the account and blocks login/actions.";
-    if (confirmAction === "delete") return "This permanently removes the user record and related memberships.";
+    if (confirmAction === "deactivate")
+      return "This disables the account and blocks login/actions.";
+    if (confirmAction === "delete")
+      return "This permanently removes the user record and related memberships.";
     return "";
   }, [confirmAction]);
 
@@ -213,7 +220,11 @@ function AdminUserDetailContent({ userId }: { userId: string }) {
     );
   }
   if (q.isError || !q.data) {
-    return <p className={cn("px-4 text-sm text-destructive", topPad)}>User not found or could not be loaded.</p>;
+    return (
+      <p className={cn("px-4 text-sm text-destructive", topPad)}>
+        User not found or could not be loaded.
+      </p>
+    );
   }
 
   const { user, memberships, activity } = q.data;
@@ -223,12 +234,7 @@ function AdminUserDetailContent({ userId }: { userId: string }) {
       <div className="mb-6 border-b border-border pb-5">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
           <div className="min-w-0">
-            <p
-              className={cn(
-                "section-kicker",
-                PORTAL_KICKER_COLOR,
-              )}
-            >
+            <p className={cn("section-kicker", PORTAL_KICKER_COLOR)}>
               {isSuperAdmin ? "Super admin" : "Hub portal"}
             </p>
             <h1 className={cn("mt-1", PORTAL_PAGE_TITLE)}>{user.name}</h1>
@@ -268,7 +274,13 @@ function AdminUserDetailContent({ userId }: { userId: string }) {
             </div>
             <div>
               <p className="section-kicker">Base role</p>
-              <span className={cn(uniformBadgeShape, getStatusColorClasses("approved"), "mt-1 font-normal")}>
+              <span
+                className={cn(
+                  uniformBadgeShape,
+                  getStatusColorClasses("approved"),
+                  "mt-1 font-normal",
+                )}
+              >
                 {baseRoleLabel(user.baseRole)}
               </span>
             </div>
@@ -277,8 +289,14 @@ function AdminUserDetailContent({ userId }: { userId: string }) {
               <span
                 className={cn(
                   uniformBadgeShape,
-                  getStatusColorClasses(user.accountStatus === "active" ? "available" : user.accountStatus === "deactivated" ? "rejected" : "set aside"),
-                  "mt-1 font-normal"
+                  getStatusColorClasses(
+                    user.accountStatus === "active"
+                      ? "available"
+                      : user.accountStatus === "deactivated"
+                        ? "rejected"
+                        : "set aside",
+                  ),
+                  "mt-1 font-normal",
                 )}
               >
                 {accountStatusLabel(user.accountStatus)}
@@ -313,9 +331,17 @@ function AdminUserDetailContent({ userId }: { userId: string }) {
                           {m.hubName}
                         </Link>
                       </TableCell>
-                      <TableCell className="text-foreground-muted">{m.hubKind || "other"}</TableCell>
+                      <TableCell className="text-foreground-muted">
+                        {m.hubKind || "other"}
+                      </TableCell>
                       <TableCell className="pr-4 sm:pr-6">
-                        <span className={cn(uniformBadgeShape, getStatusColorClasses("approved"), "font-normal")}>
+                        <span
+                          className={cn(
+                            uniformBadgeShape,
+                            getStatusColorClasses("approved"),
+                            "font-normal",
+                          )}
+                        >
                           {hubMembershipRoleLabel(m.role)}
                         </span>
                       </TableCell>
@@ -420,14 +446,22 @@ function AdminUserDetailContent({ userId }: { userId: string }) {
                       <TableCell>{r.hubName}</TableCell>
                       <TableCell>
                         <span
-                          className={cn(uniformBadgeShape, getStatusColorClasses(r.status === "active" ? "checked out" : "cancelled"), "font-normal")}
+                          className={cn(
+                            uniformBadgeShape,
+                            getStatusColorClasses(
+                              r.status === "active" ? "checked out" : "cancelled",
+                            ),
+                            "font-normal",
+                          )}
                         >
                           {r.status === "active" ? "Active" : "Returned"}
                         </span>
                       </TableCell>
                       <TableCell>{fmtDate(r.borrowedAt)}</TableCell>
                       <TableCell className="pr-4 sm:pr-6">
-                        {r.status === "returned" ? fmtDate(r.returnedAt) : `Due ${fmtDate(r.dueAt)}`}
+                        {r.status === "returned"
+                          ? fmtDate(r.returnedAt)
+                          : `Due ${fmtDate(r.dueAt)}`}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -440,7 +474,9 @@ function AdminUserDetailContent({ userId }: { userId: string }) {
         <section className={cn(adminPanel, "overflow-hidden")} aria-label="Admin actions">
           <div className="border-b border-border px-4 py-3">
             <SectionLabel>Admin actions</SectionLabel>
-            <p className="mt-1 body-scale font-normal text-foreground-muted">These actions are destructive and audit-logged.</p>
+            <p className="mt-1 body-scale font-normal text-foreground-muted">
+              These actions are destructive and audit-logged.
+            </p>
           </div>
           <div className="flex flex-wrap gap-2 p-4">
             <Button
@@ -477,8 +513,12 @@ function AdminUserDetailContent({ userId }: { userId: string }) {
       <AlertDialog open={confirmAction != null} onOpenChange={(o) => !o && setConfirmAction(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle className="h4-scale font-semibold text-foreground">{confirmTitle}</AlertDialogTitle>
-            <AlertDialogDescription className="body-scale text-foreground-muted">{confirmBody}</AlertDialogDescription>
+            <AlertDialogTitle className="h4-scale font-semibold text-foreground">
+              {confirmTitle}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="body-scale text-foreground-muted">
+              {confirmBody}
+            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>

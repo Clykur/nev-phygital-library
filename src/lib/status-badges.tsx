@@ -1,48 +1,70 @@
 import { cn } from "@/lib/utils";
 
 // Standardized visual shape for all status badges everywhere
-export const uniformBadgeShape = "inline-flex items-center justify-center whitespace-nowrap px-2.5 py-0.5 rounded-md caption-scale font-semibold tracking-kicker uppercase";
+export const uniformBadgeShape =
+  "inline-flex items-center justify-center whitespace-nowrap px-2.5 py-0.5 rounded-md caption-scale font-semibold tracking-kicker uppercase";
 
 // Keep this around for backwards compatibility where the cover shape was expected,
 // but now just map it to the new uniform shape + backdrop blur.
 export const shelfFilterChipOnCoverClass = "shadow-sm backdrop-blur-md bg-opacity-90";
 
-export const shelfFilterChipClass = cn(uniformBadgeShape, "border border-border bg-background text-foreground shadow-sm");
-export const shelfFilterChipOnDarkClass = cn(uniformBadgeShape, "border border-overlay-glass-border bg-overlay-backdrop text-on-media shadow-sm backdrop-blur-md");
+export const shelfFilterChipClass = cn(
+  uniformBadgeShape,
+  "border border-border bg-background text-foreground shadow-sm",
+);
+export const shelfFilterChipOnDarkClass = cn(
+  uniformBadgeShape,
+  "border border-overlay-glass-border bg-overlay-backdrop text-on-media shadow-sm backdrop-blur-md",
+);
 
 export function getStatusColorClasses(status: string): string {
   const s = status.toLowerCase();
-  
+
   // Available (Emerald)
-  if (["available", "ready", "on marketplace", "available_for_collection", "delivered"].includes(s)) {
+  if (
+    ["available", "ready", "on marketplace", "available_for_collection", "delivered"].includes(s)
+  ) {
     return "border border-success/30 bg-success/10 text-success";
   }
-  
+
   // Approved (Sky)
   if (["approved", "listed", "requested", "new", "pending"].includes(s)) {
     return "border border-primary/30 bg-primary/10 text-primary";
   }
-  
+
   // Set Aside (Amber)
   if (["set aside", "reserved", "fulfilled", "borrowed"].includes(s)) {
     return "border border-accent/35 bg-accent/10 text-accent";
   }
-  
+
   // Checked Out (Violet)
-  if (["checked out", "checked_out", "in_transit", "in transit", "transfer_pending", "transfer pending", "routed", "finding", "pending_dropoff", "pending drop-off"].includes(s)) {
+  if (
+    [
+      "checked out",
+      "checked_out",
+      "in_transit",
+      "in transit",
+      "transfer_pending",
+      "transfer pending",
+      "routed",
+      "finding",
+      "pending_dropoff",
+      "pending drop-off",
+    ].includes(s)
+  ) {
     return "border border-accent/30 bg-accent/10 text-accent-foreground";
   }
-  
+
   // Overdue (Rose)
   if (["overdue", "timed out"].includes(s)) {
     return "border border-destructive/30 bg-destructive/10 text-destructive";
   }
-  
+
   // Rejected (Red)
   if (["rejected", "unavailable", "expired"].includes(s)) {
     return "border border-destructive/30 bg-destructive/10 text-destructive";
   }
-  
+
   // Cancelled / completed (default ink hierarchy)
   if (["cancelled", "sold", "withdrawn", "picked", "completed"].includes(s)) {
     return "border border-border bg-background text-foreground-muted";
@@ -86,14 +108,7 @@ export function HubBookStatusBadge({
 
 export function P2pStatusBadge({ status, className }: { status: string; className?: string }) {
   return (
-    <span
-      className={cn(
-        uniformBadgeShape,
-        getStatusColorClasses(status),
-        className,
-      )}
-      role="status"
-    >
+    <span className={cn(uniformBadgeShape, getStatusColorClasses(status), className)} role="status">
       {status.replace(/_/g, " ")}
     </span>
   );
@@ -122,7 +137,13 @@ export function p2pPipelineStatusLabel(s: string): string {
 }
 
 /** Cover corner badge for peer pipeline listings (hub desk P2P), matching All copies placement. */
-export function P2pPipelineCoverStatusBadge({ status, className }: { status: string; className?: string }) {
+export function P2pPipelineCoverStatusBadge({
+  status,
+  className,
+}: {
+  status: string;
+  className?: string;
+}) {
   return (
     <span
       className={cn(
@@ -188,14 +209,7 @@ export function requestStatusLabel(status: string): string {
 export function RequestStatusBadge({ status, className }: { status: string; className?: string }) {
   const label = requestStatusLabel(status);
   return (
-    <span
-      className={cn(
-        uniformBadgeShape,
-        getStatusColorClasses(status),
-        className,
-      )}
-      role="status"
-    >
+    <span className={cn(uniformBadgeShape, getStatusColorClasses(status), className)} role="status">
       {label}
     </span>
   );

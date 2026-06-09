@@ -174,7 +174,8 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
   });
 
   const enableHub = useMutation({
-    mutationFn: () => apiFetch<{ ok: true }>(`/api/admin/hubs/${hubId}/enable`, { method: "POST", token: token! }),
+    mutationFn: () =>
+      apiFetch<{ ok: true }>(`/api/admin/hubs/${hubId}/enable`, { method: "POST", token: token! }),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ["admin", "hub", hubId] });
       void qc.invalidateQueries({ queryKey: ["admin", "hubs"] });
@@ -184,7 +185,8 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
   });
 
   const disableHub = useMutation({
-    mutationFn: () => apiFetch<{ ok: true }>(`/api/admin/hubs/${hubId}/disable`, { method: "POST", token: token! }),
+    mutationFn: () =>
+      apiFetch<{ ok: true }>(`/api/admin/hubs/${hubId}/disable`, { method: "POST", token: token! }),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ["admin", "hub", hubId] });
       void qc.invalidateQueries({ queryKey: ["admin", "hubs"] });
@@ -223,10 +225,23 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
     );
   }
   if (q.isError || !q.data) {
-    return <p className={cn("px-4 text-sm text-destructive", topPad)}>Hub not found or could not be loaded.</p>;
+    return (
+      <p className={cn("px-4 text-sm text-destructive", topPad)}>
+        Hub not found or could not be loaded.
+      </p>
+    );
   }
 
-  const { hub, memberCount, members, metrics, inventorySummary, requestsSummary, commerceSummary, activity } = q.data;
+  const {
+    hub,
+    memberCount,
+    members,
+    metrics,
+    inventorySummary,
+    requestsSummary,
+    commerceSummary,
+    activity,
+  } = q.data;
   const inventoryHref = `${SUPER_ADMIN_INVENTORY_PATH}?hubId=${encodeURIComponent(hub.id)}`;
   const requestsHref = `${SUPER_ADMIN_REQUESTS_PATH}?hubId=${encodeURIComponent(hub.id)}`;
 
@@ -235,12 +250,7 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
       <div className="mb-6 border-b border-border pb-5">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
           <div className="min-w-0">
-            <p
-              className={cn(
-                "section-kicker",
-                PORTAL_KICKER_COLOR,
-              )}
-            >
+            <p className={cn("section-kicker", PORTAL_KICKER_COLOR)}>
               {isSuperAdmin ? "Super admin" : "Hub portal"}
             </p>
             <h1 className={cn("mt-1", PORTAL_PAGE_TITLE)}>{hub.name}</h1>
@@ -278,7 +288,13 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
             </div>
             <div>
               <p className="section-kicker">Kind</p>
-              <span className={cn(uniformBadgeShape, getStatusColorClasses("approved"), "mt-1 font-medium")}>
+              <span
+                className={cn(
+                  uniformBadgeShape,
+                  getStatusColorClasses("approved"),
+                  "mt-1 font-medium",
+                )}
+              >
                 {hubKindLabel(hub.kind)}
               </span>
             </div>
@@ -292,7 +308,7 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
                 className={cn(
                   uniformBadgeShape,
                   getStatusColorClasses(hub.isActive ? "available" : "cancelled"),
-                  "mt-1 font-medium"
+                  "mt-1 font-medium",
                 )}
               >
                 {hub.isActive ? "Active" : "Disabled"}
@@ -327,13 +343,24 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
             </div>
             <div className="divide-y divide-border">
               {members.map((m) => (
-                <div key={m.userId} className="flex flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+                <div
+                  key={m.userId}
+                  className="flex flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+                >
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium">{m.name}</p>
-                    <p className="truncate body-scale font-normal text-foreground-muted">{m.email}</p>
+                    <p className="truncate body-scale font-normal text-foreground-muted">
+                      {m.email}
+                    </p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className={cn(uniformBadgeShape, getStatusColorClasses("approved"), "font-normal")}>
+                    <span
+                      className={cn(
+                        uniformBadgeShape,
+                        getStatusColorClasses("approved"),
+                        "font-normal",
+                      )}
+                    >
                       {hubMembershipRoleLabel(m.role)}
                     </span>
                     <Button variant="ghost" size="sm" className="h-8 rounded-md" asChild>
@@ -356,7 +383,10 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
           <div className="p-4">
             <div className="grid w-full gap-3 sm:grid-cols-2">
               <MetricCard label="Hub-owned copies" value={inventorySummary.hubOwnedCopies} />
-              <MetricCard label="Peer consignment copies" value={inventorySummary.peerConsignmentCopies} />
+              <MetricCard
+                label="Peer consignment copies"
+                value={inventorySummary.peerConsignmentCopies}
+              />
             </div>
           </div>
         </section>
@@ -383,7 +413,19 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
                         <CoverCell title={r.title} url={r.coverImageUrl} />
                       </TableCell>
                       <TableCell>
-                        <span className={cn(uniformBadgeShape, getStatusColorClasses(r.status.toLowerCase() === "available" ? "available" : r.status.toLowerCase() === "checked_out" ? "checked out" : "set aside"), "font-normal")}>
+                        <span
+                          className={cn(
+                            uniformBadgeShape,
+                            getStatusColorClasses(
+                              r.status.toLowerCase() === "available"
+                                ? "available"
+                                : r.status.toLowerCase() === "checked_out"
+                                  ? "checked out"
+                                  : "set aside",
+                            ),
+                            "font-normal",
+                          )}
+                        >
                           {r.status.replace(/_/g, " ")}
                         </span>
                       </TableCell>
@@ -422,7 +464,20 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
                       </TableCell>
                       <TableCell className="body-scale font-normal">{r.borrowerMasked}</TableCell>
                       <TableCell>
-                        <span className={cn(uniformBadgeShape, getStatusColorClasses(r.status.toLowerCase() === "active" || r.status.toLowerCase() === "checked_out" ? "checked out" : r.status.toLowerCase() === "overdue" ? "overdue" : "available"), "font-medium")}>
+                        <span
+                          className={cn(
+                            uniformBadgeShape,
+                            getStatusColorClasses(
+                              r.status.toLowerCase() === "active" ||
+                                r.status.toLowerCase() === "checked_out"
+                                ? "checked out"
+                                : r.status.toLowerCase() === "overdue"
+                                  ? "overdue"
+                                  : "available",
+                            ),
+                            "font-medium",
+                          )}
+                        >
                           {r.status.replace(/_/g, " ")}
                         </span>
                       </TableCell>
@@ -511,7 +566,8 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
           </div>
           <div className="space-y-3 p-4">
             <p className="body-scale font-normal text-foreground-muted">
-              Actions here are operational controls only. Inventory, requests, and commerce remain source-specific pages.
+              Actions here are operational controls only. Inventory, requests, and commerce remain
+              source-specific pages.
             </p>
             <div className="flex flex-wrap gap-2">
               {hub.isActive ? (
@@ -565,7 +621,8 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
             </AlertDialogTitle>
             <AlertDialogDescription className="body-scale text-foreground-muted">
               {confirmAction === "enable" && "The hub will return to active operations."}
-              {confirmAction === "disable" && "The hub will be marked disabled and deprioritized in operations."}
+              {confirmAction === "disable" &&
+                "The hub will be marked disabled and deprioritized in operations."}
               {confirmAction === "delete" &&
                 `This removes the hub and dependent records. Type "${hub.name}" to confirm.`}
             </AlertDialogDescription>

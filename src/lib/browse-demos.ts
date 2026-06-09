@@ -33,19 +33,22 @@ export const DEMO_LIBRARY_ROWS = [
     title: "The Great Gatsby",
     hubName: "Humanities Commons",
     status: "available",
-    coverImageUrl: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=800&auto=format&fit=crop",
+    coverImageUrl:
+      "https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=800&auto=format&fit=crop",
   },
   {
     title: "Atomic Habits",
     hubName: "Central Learning Hub",
     status: "available",
-    coverImageUrl: "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=800&auto=format&fit=crop",
+    coverImageUrl:
+      "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=800&auto=format&fit=crop",
   },
   {
     title: "Deep Work",
     hubName: "Central Learning Hub",
     status: "available",
-    coverImageUrl: "https://images.unsplash.com/photo-1512820790803-83ca734da794?q=80&w=800&auto=format&fit=crop",
+    coverImageUrl:
+      "https://images.unsplash.com/photo-1512820790803-83ca734da794?q=80&w=800&auto=format&fit=crop",
   },
 ] as const;
 
@@ -83,27 +86,31 @@ export const DEMO_MARKETPLACE_LISTINGS = [
     price: 150,
     borrowPrice: 30,
     status: "available",
-    coverImageUrl: "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?q=80&w=800&auto=format&fit=crop",
+    coverImageUrl:
+      "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?q=80&w=800&auto=format&fit=crop",
   },
   {
     bookTitle: "Modern Architecture",
     price: 850,
     borrowPrice: 150,
     status: "available",
-    coverImageUrl: "https://images.unsplash.com/photo-1541963463532-d68292c34b19?q=80&w=800&auto=format&fit=crop",
+    coverImageUrl:
+      "https://images.unsplash.com/photo-1541963463532-d68292c34b19?q=80&w=800&auto=format&fit=crop",
   },
   {
     bookTitle: "Creative Writing",
     price: 320,
     borrowPrice: 60,
     status: "available",
-    coverImageUrl: "https://images.unsplash.com/photo-1531241413003-efef247cb25d?q=80&w=800&auto=format&fit=crop",
+    coverImageUrl:
+      "https://images.unsplash.com/photo-1531241413003-efef247cb25d?q=80&w=800&auto=format&fit=crop",
   },
   {
     bookTitle: "Design Patterns",
     price: 620,
     borrowPrice: 110,
     status: "available",
-    coverImageUrl: "https://images.unsplash.com/photo-1512820790803-83ca734da794?q=80&w=800&auto=format&fit=crop",
+    coverImageUrl:
+      "https://images.unsplash.com/photo-1512820790803-83ca734da794?q=80&w=800&auto=format&fit=crop",
   },
 ] as const;

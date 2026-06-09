@@ -100,10 +100,12 @@ function fmtAge(iso: string) {
 
 function eventTypeLabel(type: string): string {
   if (type === "book_request_routed") return "Request created";
-  if (type === "book_request_fulfilled" || type === "book_request_ready") return "Request fulfilled";
+  if (type === "book_request_fulfilled" || type === "book_request_ready")
+    return "Request fulfilled";
   if (type === "p2p_hub_acquired_copy") return "Book acquired";
   if (type === "p2p_dropoff_approved") return "Drop-off approved";
-  if (type === "hub_purchase_confirmation" || type === "p2p_purchase_confirmation") return "Purchase completed";
+  if (type === "hub_purchase_confirmation" || type === "p2p_purchase_confirmation")
+    return "Purchase completed";
   return type;
 }
 
@@ -131,9 +133,12 @@ function SuperAdminOperationsContent() {
   const healthQ = useQuery({
     queryKey: ["admin", "system-health", hubId],
     queryFn: () =>
-      apiFetch<SystemHealth>(`/api/admin/system-health${hubId === "all" ? "" : `?hubId=${encodeURIComponent(hubId)}`}`, {
-        token: token!,
-      }),
+      apiFetch<SystemHealth>(
+        `/api/admin/system-health${hubId === "all" ? "" : `?hubId=${encodeURIComponent(hubId)}`}`,
+        {
+          token: token!,
+        },
+      ),
     enabled: !!token,
   });
 
@@ -265,12 +270,11 @@ function SuperAdminOperationsContent() {
       <div className="mb-6 border-b border-border pb-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between lg:gap-6">
           <div className="min-w-0 font-sans">
-            <p className={cn("section-kicker", PORTAL_KICKER_COLOR)}>
-              Super admin
-            </p>
+            <p className={cn("section-kicker", PORTAL_KICKER_COLOR)}>Super admin</p>
             <h1 className={cn("mt-1", PORTAL_PAGE_TITLE)}>System health & notifications</h1>
             <p className={cn("mt-2 max-w-2xl", PORTAL_PAGE_LEAD)}>
-              Action-first ops panel. Triage issues quickly and retry failed notification deliveries.
+              Action-first ops panel. Triage issues quickly and retry failed notification
+              deliveries.
             </p>
           </div>
           <div className="grid w-full gap-3 sm:grid-cols-2 lg:w-auto lg:min-w-[28rem]">
@@ -318,9 +322,7 @@ function SuperAdminOperationsContent() {
               <Loader2 className="h-8 w-8 animate-spin text-foreground-muted" />
             </div>
           ) : healthQ.isError ? (
-            <p className="p-4 text-sm text-destructive">
-              {userFacingErrorMessage(healthQ.error)}
-            </p>
+            <p className="p-4 text-sm text-destructive">{userFacingErrorMessage(healthQ.error)}</p>
           ) : sortedIssues.length === 0 ? (
             <p className="p-4 body-scale text-foreground-muted">No actionable issues in scope.</p>
           ) : (
@@ -342,24 +344,39 @@ function SuperAdminOperationsContent() {
                         <span
                           className={cn(
                             uniformBadgeShape,
-                            getStatusColorClasses(i.severity === "critical" ? "rejected" : i.severity === "warning" ? "set aside" : "approved"),
+                            getStatusColorClasses(
+                              i.severity === "critical"
+                                ? "rejected"
+                                : i.severity === "warning"
+                                  ? "set aside"
+                                  : "approved",
+                            ),
                           )}
                         >
                           {i.severity}
                         </span>
                       </TableCell>
-                      <TableCell className="min-w-[16rem] body-scale text-foreground-muted">{i.description}</TableCell>
+                      <TableCell className="min-w-[16rem] body-scale text-foreground-muted">
+                        {i.description}
+                      </TableCell>
                       <TableCell className="body-scale font-normal text-foreground-muted">
                         {i.relatedEntity.type}: {i.relatedEntity.label}
                       </TableCell>
-                      <TableCell className="body-scale font-normal text-foreground-muted">{fmtAge(i.startedAt)} ago</TableCell>
+                      <TableCell className="body-scale font-normal text-foreground-muted">
+                        {fmtAge(i.startedAt)} ago
+                      </TableCell>
                       <TableCell className="pr-4 sm:pr-6">
                         <Button
                           size="sm"
                           variant={i.severity === "critical" ? "default" : "outline"}
                           className="h-8 rounded-md"
                           onClick={() => runIssueAction(i)}
-                          disabled={assignAnyM.isPending || releaseM.isPending || closeM.isPending || reassignM.isPending}
+                          disabled={
+                            assignAnyM.isPending ||
+                            releaseM.isPending ||
+                            closeM.isPending ||
+                            reassignM.isPending
+                          }
                         >
                           {actionLabel(i.action)}
                         </Button>
@@ -381,9 +398,7 @@ function SuperAdminOperationsContent() {
               <Loader2 className="h-8 w-8 animate-spin text-foreground-muted" />
             </div>
           ) : notifQ.isError ? (
-            <p className="p-4 text-sm text-destructive">
-              {userFacingErrorMessage(notifQ.error)}
-            </p>
+            <p className="p-4 text-sm text-destructive">{userFacingErrorMessage(notifQ.error)}</p>
           ) : notifications.length === 0 ? (
             <p className="p-4 body-scale text-foreground-muted">No recent events in scope.</p>
           ) : (
@@ -401,11 +416,18 @@ function SuperAdminOperationsContent() {
                 <TableBody>
                   {notifications.map((d) => (
                     <TableRow key={d.id} className="border-border">
-                      <TableCell className="pl-4 body-scale font-medium sm:pl-6">{eventTypeLabel(d.type)}</TableCell>
-                      <TableCell className="max-w-[28rem] truncate body-scale font-normal text-foreground-muted" title={String(d.payload["body"] ?? "")}>
+                      <TableCell className="pl-4 body-scale font-medium sm:pl-6">
+                        {eventTypeLabel(d.type)}
+                      </TableCell>
+                      <TableCell
+                        className="max-w-[28rem] truncate body-scale font-normal text-foreground-muted"
+                        title={String(d.payload["body"] ?? "")}
+                      >
                         {String(d.payload["body"] ?? "System event")}
                       </TableCell>
-                      <TableCell className="body-scale font-normal text-foreground-muted">{new Date(d.updatedAt).toLocaleString()}</TableCell>
+                      <TableCell className="body-scale font-normal text-foreground-muted">
+                        {new Date(d.updatedAt).toLocaleString()}
+                      </TableCell>
                       <TableCell>
                         <span
                           className={cn(
@@ -444,8 +466,12 @@ function SuperAdminOperationsContent() {
       <Dialog open={!!reassignIssue} onOpenChange={(open) => !open && setReassignIssue(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="h4-scale font-semibold text-foreground">Reassign request to another hub</DialogTitle>
-            <DialogDescription className="body-scale text-foreground-muted">Choose the destination hub and apply immediately.</DialogDescription>
+            <DialogTitle className="h4-scale font-semibold text-foreground">
+              Reassign request to another hub
+            </DialogTitle>
+            <DialogDescription className="body-scale text-foreground-muted">
+              Choose the destination hub and apply immediately.
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-3">
             <Select value={targetHubId} onValueChange={setTargetHubId}>
@@ -463,7 +489,11 @@ function SuperAdminOperationsContent() {
               </SelectContent>
             </Select>
             <div className="flex justify-end gap-2">
-              <Button variant="outline" className="h-9 rounded-md" onClick={() => setReassignIssue(null)}>
+              <Button
+                variant="outline"
+                className="h-9 rounded-md"
+                onClick={() => setReassignIssue(null)}
+              >
                 Cancel
               </Button>
               <Button
@@ -472,7 +502,10 @@ function SuperAdminOperationsContent() {
                 onClick={() =>
                   reassignIssue &&
                   reassignIssue.action.kind === "reassign_hub" &&
-                  reassignM.mutate({ requestId: reassignIssue.action.requestId, hubId: targetHubId })
+                  reassignM.mutate({
+                    requestId: reassignIssue.action.requestId,
+                    hubId: targetHubId,
+                  })
                 }
               >
                 Reassign
@@ -485,8 +518,12 @@ function SuperAdminOperationsContent() {
       <Dialog open={!!assignIssue} onOpenChange={(open) => !open && setAssignIssue(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="h4-scale font-semibold text-foreground">Assign copy confirmation</DialogTitle>
-            <DialogDescription className="body-scale text-foreground-muted">Have you physically verified this book on shelf?</DialogDescription>
+            <DialogTitle className="h4-scale font-semibold text-foreground">
+              Assign copy confirmation
+            </DialogTitle>
+            <DialogDescription className="body-scale text-foreground-muted">
+              Have you physically verified this book on shelf?
+            </DialogDescription>
           </DialogHeader>
           <div className="grid gap-2">
             <Button
@@ -494,7 +531,8 @@ function SuperAdminOperationsContent() {
               className="h-9 rounded-md"
               disabled={!assignIssue || assignAnyM.isPending}
               onClick={() => {
-                const requestId = assignIssue?.action.kind === "assign_copy" ? assignIssue.action.requestId : null;
+                const requestId =
+                  assignIssue?.action.kind === "assign_copy" ? assignIssue.action.requestId : null;
                 if (!requestId) return;
                 assignAnyM.mutate({ requestId, assignmentVerified: true });
               }}
@@ -507,7 +545,8 @@ function SuperAdminOperationsContent() {
               className="h-9 rounded-md"
               disabled={!assignIssue || assignAnyM.isPending}
               onClick={() => {
-                const requestId = assignIssue?.action.kind === "assign_copy" ? assignIssue.action.requestId : null;
+                const requestId =
+                  assignIssue?.action.kind === "assign_copy" ? assignIssue.action.requestId : null;
                 if (!requestId) return;
                 assignAnyM.mutate({ requestId, assignmentVerified: false });
               }}

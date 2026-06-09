@@ -35,11 +35,12 @@ export function HubStudentAnalytics({ overviewHubId }: { overviewHubId: string }
   if (!data) return null;
 
   return (
-    <section aria-label="Student Analytics" className="rounded-xl border border-border bg-background overflow-hidden">
+    <section
+      aria-label="Student Analytics"
+      className="rounded-xl border border-border bg-background overflow-hidden"
+    >
       <div className="border-b border-border px-4 py-3">
-        <h2 className="section-kicker">
-          Student Analytics
-        </h2>
+        <h2 className="section-kicker">Student Analytics</h2>
       </div>
       <div className="grid grid-cols-2 divide-x divide-y divide-border sm:grid-cols-3 lg:grid-cols-5">
         <div className="p-3">
@@ -100,11 +101,12 @@ export function HubStudentsSection({ overviewHubId }: { overviewHubId: string })
   if (!data || !data.students) return null;
 
   return (
-    <section aria-label="Associated Students" className="rounded-xl border border-border bg-background overflow-hidden">
+    <section
+      aria-label="Associated Students"
+      className="rounded-xl border border-border bg-background overflow-hidden"
+    >
       <div className="border-b border-border px-4 py-3">
-        <h2 className="section-kicker">
-          Associated Students
-        </h2>
+        <h2 className="section-kicker">Associated Students</h2>
       </div>
 
       <div className="overflow-x-auto">
@@ -129,38 +131,61 @@ export function HubStudentsSection({ overviewHubId }: { overviewHubId: string })
               data.students.map((student: any) => (
                 <TableRow key={student.id} className="border-b border-border last:border-0 hover:">
                   <TableCell className="align-top py-3 px-4">
-                    <div className="font-medium text-foreground whitespace-nowrap">{student.name || "Unknown Student"}</div>
-                    <div className="caption-scale font-medium text-foreground-muted mt-0.5">{student.publicId}</div>
+                    <div className="font-medium text-foreground whitespace-nowrap">
+                      {student.name || "Unknown Student"}
+                    </div>
+                    <div className="caption-scale font-medium text-foreground-muted mt-0.5">
+                      {student.publicId}
+                    </div>
                     <div className="caption-scale font-medium text-foreground-muted mt-1.5 md:hidden space-y-0.5">
                       <div className="truncate max-w-[150px]">{student.email || "No email"}</div>
-                      <div className="capitalize">{student.subscriptionPlan || "No active plan"}</div>
+                      <div className="capitalize">
+                        {student.subscriptionPlan || "No active plan"}
+                      </div>
                     </div>
                   </TableCell>
                   <TableCell className="hidden md:table-cell align-top py-3 px-4">
-                    <div className="body-scale text-foreground truncate max-w-[180px]">{student.email || "-"}</div>
-                    {student.phone && <div className="caption-scale font-medium text-foreground-muted mt-0.5">{student.phone}</div>}
+                    <div className="body-scale text-foreground truncate max-w-[180px]">
+                      {student.email || "-"}
+                    </div>
+                    {student.phone && (
+                      <div className="caption-scale font-medium text-foreground-muted mt-0.5">
+                        {student.phone}
+                      </div>
+                    )}
                   </TableCell>
                   <TableCell className="align-top py-3 px-4">
-                    <Badge variant={student.accountStatus === 'active' ? 'default' : 'secondary'} className="capitalize rounded-sm px-2 py-0.5 caption-scale font-semibold">
-                      {student.accountStatus || 'Unknown'}
+                    <Badge
+                      variant={student.accountStatus === "active" ? "default" : "secondary"}
+                      className="capitalize rounded-sm px-2 py-0.5 caption-scale font-semibold"
+                    >
+                      {student.accountStatus || "Unknown"}
                     </Badge>
                   </TableCell>
                   <TableCell className="hidden md:table-cell align-top py-3 px-4">
                     <div className="flex flex-col gap-1 items-start">
-                      <Badge variant="outline" className={
-                        student.subscriptionStatus === 'active'
-                          ? "border-success/30 text-success bg-success/10 rounded-sm px-2 py-0.5 caption-scale font-semibold capitalize"
-                          : "border-border text-foreground-muted rounded-sm px-2 py-0.5 caption-scale font-semibold capitalize"
-                      }>
-                        {student.subscriptionStatus || 'Inactive'}
+                      <Badge
+                        variant="outline"
+                        className={
+                          student.subscriptionStatus === "active"
+                            ? "border-success/30 text-success bg-success/10 rounded-sm px-2 py-0.5 caption-scale font-semibold capitalize"
+                            : "border-border text-foreground-muted rounded-sm px-2 py-0.5 caption-scale font-semibold capitalize"
+                        }
+                      >
+                        {student.subscriptionStatus || "Inactive"}
                       </Badge>
-                      <span className="caption-scale font-medium text-foreground-muted capitalize">{student.subscriptionPlan || "No active plan"}</span>
+                      <span className="caption-scale font-medium text-foreground-muted capitalize">
+                        {student.subscriptionPlan || "No active plan"}
+                      </span>
                     </div>
                   </TableCell>
                   <TableCell className="text-right align-top py-3 px-4">
-                    <div className="font-semibold body-scale text-foreground">{student.walletBalance ?? 0} cr</div>
+                    <div className="font-semibold body-scale text-foreground">
+                      {student.walletBalance ?? 0} cr
+                    </div>
                     <div className="caption-scale font-medium text-foreground-muted mt-0.5 whitespace-nowrap">
-                      <span className="text-success">+{student.creditsEarned ?? 0}</span> / <span className="text-destructive">-{student.creditsSpent ?? 0}</span>
+                      <span className="text-success">+{student.creditsEarned ?? 0}</span> /{" "}
+                      <span className="text-destructive">-{student.creditsSpent ?? 0}</span>
                     </div>
                   </TableCell>
                 </TableRow>

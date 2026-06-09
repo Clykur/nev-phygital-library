@@ -47,9 +47,7 @@ type RoleFilter = "all" | "user" | "hub" | "super_admin";
 type StatusFilter = "all" | "active" | "held" | "deactivated";
 
 function SectionLabel({ children }: { children: ReactNode }) {
-  return (
-    <h2 className="section-kicker">{children}</h2>
-  );
+  return <h2 className="section-kicker">{children}</h2>;
 }
 
 function baseRoleLabel(role: string) {
@@ -82,7 +80,8 @@ function AdminUsersContent() {
   const filteredUsers = useMemo(() => {
     let out = rows;
     if (roleFilter !== "all") out = out.filter((u) => u.baseRole === roleFilter);
-    if (statusFilter !== "all") out = out.filter((u) => (u.accountStatus ?? "active") === statusFilter);
+    if (statusFilter !== "all")
+      out = out.filter((u) => (u.accountStatus ?? "active") === statusFilter);
     return out;
   }, [rows, roleFilter, statusFilter]);
 
@@ -97,18 +96,15 @@ function AdminUsersContent() {
       <div className="mb-6 border-b border-border pb-5">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
           <div className="min-w-0 font-sans">
-            <p
-              className={cn(
-                "section-kicker",
-                PORTAL_KICKER_COLOR,
-              )}
-            >
+            <p className={cn("section-kicker", PORTAL_KICKER_COLOR)}>
               {isSuperAdmin ? "Super admin" : "Hub portal"}
             </p>
             <h1 className={cn("mt-1", PORTAL_PAGE_TITLE)}>Users</h1>
             {isSuperAdmin ? (
               <p className={cn("mt-2 sm:whitespace-nowrap", PORTAL_PAGE_LEAD)}>
-                Filter with <span className="font-semibold text-foreground">Role</span> and <span className="font-semibold text-foreground">Search</span>; open a row for profile, roles, and hub memberships; open{" "}
+                Filter with <span className="font-semibold text-foreground">Role</span> and{" "}
+                <span className="font-semibold text-foreground">Search</span>; open a row for
+                profile, roles, and hub memberships; open{" "}
                 <Link
                   href={user ? portalPathsForUser(user).inventory : "/library"}
                   className={PORTAL_INLINE_LINK}
@@ -124,10 +120,7 @@ function AdminUsersContent() {
 
         <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
           <div className="flex w-full min-w-0 flex-col gap-1.5 sm:w-[12rem]">
-            <Label
-              htmlFor="admin-users-role"
-              className="section-kicker"
-            >
+            <Label htmlFor="admin-users-role" className="section-kicker">
               Role
             </Label>
             <Select value={roleFilter} onValueChange={(v) => setRoleFilter(v as RoleFilter)}>
@@ -143,10 +136,7 @@ function AdminUsersContent() {
             </Select>
           </div>
           <div className="flex w-full min-w-0 flex-col gap-1.5 sm:w-[12rem]">
-            <Label
-              htmlFor="admin-users-status"
-              className="section-kicker"
-            >
+            <Label htmlFor="admin-users-status" className="section-kicker">
               Status
             </Label>
             <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as StatusFilter)}>
@@ -162,10 +152,7 @@ function AdminUsersContent() {
             </Select>
           </div>
           <div className="min-w-0 flex-1 basis-[14rem]">
-            <Label
-              htmlFor="admin-users-search"
-              className="section-kicker"
-            >
+            <Label htmlFor="admin-users-search" className="section-kicker">
               Search
             </Label>
             <Input
@@ -194,9 +181,7 @@ function AdminUsersContent() {
             <Loader2 className="h-9 w-9 animate-spin text-foreground-muted" />
           </div>
         ) : q.isError ? (
-          <p className="px-4 py-10 text-sm text-destructive">
-            {userFacingErrorMessage(q.error)}
-          </p>
+          <p className="px-4 py-10 text-sm text-destructive">{userFacingErrorMessage(q.error)}</p>
         ) : (
           <>
             <div className="border-b border-border px-4 py-3">
@@ -208,9 +193,13 @@ function AdminUsersContent() {
               </p>
             </div>
             {!rows.length ? (
-              <p className="px-4 py-10 body-scale text-foreground-muted sm:px-4">No users match this search.</p>
+              <p className="px-4 py-10 body-scale text-foreground-muted sm:px-4">
+                No users match this search.
+              </p>
             ) : !filteredUsers.length ? (
-              <p className="px-4 py-10 body-scale text-foreground-muted sm:px-4">No users match the role filter.</p>
+              <p className="px-4 py-10 body-scale text-foreground-muted sm:px-4">
+                No users match the role filter.
+              </p>
             ) : (
               <div className="overflow-x-auto">
                 <Table>

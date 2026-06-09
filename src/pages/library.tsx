@@ -1,4 +1,11 @@
-import { useEffect, useMemo, useState, type ReactElement, type KeyboardEvent, type ReactNode } from "react";
+import {
+  useEffect,
+  useMemo,
+  useState,
+  type ReactElement,
+  type KeyboardEvent,
+  type ReactNode,
+} from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -44,10 +51,7 @@ import {
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useStudentShell } from "@/components/layout/StudentAppShell";
-import {
-  CheckoutFlowDialog,
-  type CheckoutFlowItem,
-} from "@/components/checkout-flow-dialog";
+import { CheckoutFlowDialog, type CheckoutFlowItem } from "@/components/checkout-flow-dialog";
 
 import { hasBookCover } from "@/lib/book-cover-display";
 import { BookCoverImage } from "@/components/ui/book-cover-image";
@@ -123,8 +127,6 @@ export function catalogRefLabel(id: string, sampleIndex: number | null) {
   return `#${tail}`;
 }
 
-
-
 export function CatalogBookCard({
   title,
   coverUrl,
@@ -164,26 +166,15 @@ export function CatalogBookCard({
   sharpCover?: boolean;
   hideBottomTitle?: boolean;
 }) {
-
-
   return (
     <motion.article
       layout={!sharpCover}
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-      className={cn(
-        STUDENT_CARD_SURFACE,
-        "group relative",
-        "w-full",
-      )}
+      className={cn(STUDENT_CARD_SURFACE, "group relative", "w-full")}
     >
-      <div
-        className={cn(
-          "relative w-full overflow-hidden bg-shimmer",
-          "aspect-[2/3]"
-        )}
-      >
+      <div className={cn("relative w-full overflow-hidden bg-shimmer", "aspect-[2/3]")}>
         {!isSample && (pipelineListingStatus || shelfStatus) ? (
           <div className="absolute right-2 top-2 z-10 max-w-[min(100%,12rem)]">
             {pipelineListingStatus ? (
@@ -260,8 +251,6 @@ export function CatalogBookCard({
           </div>
         </div>
       </div>
-
-
     </motion.article>
   );
 }
@@ -300,7 +289,6 @@ export function PeerListingCard({
   hideBottomTitle?: boolean;
   inventoryStats?: InventoryStats;
 }) {
-
   const onKeyDown = (e: KeyboardEvent<HTMLElement>) => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
@@ -385,7 +373,9 @@ export function PeerListingCard({
               <div className="flex flex-wrap items-center gap-2">
                 <dt className="shrink-0 text-on-media-subtle">Status</dt>
                 <dd className="m-0">
-                  <span className={shelfFilterChipOnDarkClass}>{peerShelfStatusLabel(listingStatus)}</span>
+                  <span className={shelfFilterChipOnDarkClass}>
+                    {peerShelfStatusLabel(listingStatus)}
+                  </span>
                 </dd>
               </div>
               <div className="flex gap-2">
@@ -403,7 +393,9 @@ export function PeerListingCard({
               {borrowPriceDisplay ? (
                 <div className="flex gap-2">
                   <dt className="shrink-0 text-on-media-subtle">Borrow</dt>
-                  <dd className="font-medium tabular-nums text-amber-200/95">{borrowPriceDisplay}</dd>
+                  <dd className="font-medium tabular-nums text-amber-200/95">
+                    {borrowPriceDisplay}
+                  </dd>
                 </div>
               ) : null}
               <div className="flex gap-2">
@@ -414,10 +406,7 @@ export function PeerListingCard({
               </div>
               <div className="flex gap-2">
                 <dt className="shrink-0 text-on-media-subtle">Ref</dt>
-                <dd
-                  className="caption-scale font-semibold tracking-wide"
-                  title={fullIdForTitle}
-                >
+                <dd className="caption-scale font-semibold tracking-wide" title={fullIdForTitle}>
                   {refDisplay}
                 </dd>
               </div>
@@ -428,8 +417,6 @@ export function PeerListingCard({
           </div>
         </div>
       </div>
-
-
     </motion.article>
   );
 }
@@ -452,9 +439,7 @@ export default function LibraryPage() {
 
   const booksUrl = useMemo(() => {
     const q = catalogSearch.trim();
-    return q
-      ? `/api/catalog/books?q=${encodeURIComponent(q)}`
-      : "/api/catalog/books";
+    return q ? `/api/catalog/books?q=${encodeURIComponent(q)}` : "/api/catalog/books";
   }, [catalogSearch]);
 
   const booksQ = useQuery({
@@ -502,11 +487,7 @@ export default function LibraryPage() {
 
   const catalogTotalPages = Math.max(1, Math.ceil(rowsOrdered.length / CATALOG_PAGE_SIZE));
   const rowsPage = useMemo(
-    () =>
-      rowsOrdered.slice(
-        (catalogPage - 1) * CATALOG_PAGE_SIZE,
-        catalogPage * CATALOG_PAGE_SIZE,
-      ),
+    () => rowsOrdered.slice((catalogPage - 1) * CATALOG_PAGE_SIZE, catalogPage * CATALOG_PAGE_SIZE),
     [rowsOrdered, catalogPage],
   );
 
@@ -544,9 +525,12 @@ export default function LibraryPage() {
             <p className="mt-3 max-w-xl text-base leading-relaxed text-muted-foreground">
               {inShell ? (
                 <>
-                  Physical copies you can check out from your college hub. Request a hold if nothing is
-                  on the shelf.                   For used copies, open{" "}
-                  <Link href={portalPaths.borrow} className="font-medium text-accent underline-offset-4 hover:underline">
+                  Physical copies you can check out from your college hub. Request a hold if nothing
+                  is on the shelf. For used copies, open{" "}
+                  <Link
+                    href={portalPaths.borrow}
+                    className="font-medium text-accent underline-offset-4 hover:underline"
+                  >
                     Borrow &amp; buy
                   </Link>{" "}
                   in the student app.
@@ -590,7 +574,8 @@ export default function LibraryPage() {
 
         {user && !isPremiumOk(user) && (
           <div className={cn(STUDENT_CARD_SURFACE, "mb-8 bg-card/80 px-5 py-4 text-sm")}>
-            Free members can borrow and buy with credits. Premium members borrow free; book requests still require an upgrade.
+            Free members can borrow and buy with credits. Premium members borrow free; book requests
+            still require an upgrade.
           </div>
         )}
 
@@ -601,12 +586,16 @@ export default function LibraryPage() {
               <div>
                 <p className="font-medium text-foreground">Couldn’t load the catalog</p>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Check that the API is running and <code className="rounded bg-shimmer px-1">/api</code>{" "}
-                  is reachable from this app.
+                  Check that the API is running and{" "}
+                  <code className="rounded bg-shimmer px-1">/api</code> is reachable from this app.
                 </p>
               </div>
             </div>
-            <Button variant="outline" className="shrink-0 rounded-full" onClick={() => refetchAll()}>
+            <Button
+              variant="outline"
+              className="shrink-0 rounded-full"
+              onClick={() => refetchAll()}
+            >
               <RefreshCw className="mr-2 h-4 w-4" />
               Retry
             </Button>
@@ -615,10 +604,11 @@ export default function LibraryPage() {
 
         {showSampleLayout && (
           <div className="mb-8 rounded-xl border border-accent/25 bg-accent/5 px-4 py-3 text-sm text-foreground">
-            <span className="font-medium text-accent">Live shelf is empty.</span>{" "}
-            Tiles below are a sample layout — start the API with{" "}
+            <span className="font-medium text-accent">Live shelf is empty.</span> Tiles below are a
+            sample layout — start the API with{" "}
             <code className="rounded bg-shimmer px-1 text-xs">AUTO_SEED=1</code> (default in{" "}
-            <code className="rounded bg-shimmer px-1 text-xs">npm run dev</code>) to load real copies.
+            <code className="rounded bg-shimmer px-1 text-xs">npm run dev</code>) to load real
+            copies.
           </div>
         )}
 
@@ -646,121 +636,125 @@ export default function LibraryPage() {
             <div className="grid grid-cols-1 items-start gap-5 sm:grid-cols-2 sm:items-stretch sm:gap-6 lg:grid-cols-3 xl:grid-cols-4">
               {showSampleLayout
                 ? DEMO_LIBRARY_ROWS.map((b, idx) => (
-                  <CatalogBookCard
-                    key={`sample-${idx}`}
-                    title={b.title}
-                    coverUrl={b.coverImageUrl}
-                    hubName={b.hubName}
-                    refDisplay={catalogRefLabel("sample", idx)}
-                    addedText="—"
-                    isSample
-                    action={
-                      <p className="text-center text-xs text-on-media-muted">Preview — not a live copy</p>
-                    }
-                  />
-                ))
-                : rowsPage.map((b) => {
-                  const canCheckout =
-                    !!user &&
-                    authorize(user, ACTIONS.CHECKOUT_BOOK, {
-                      type: "book",
-                      hubId: b.hubId,
-                      bookId: b.id,
-                    });
-                  const isAvailable = b.status === "available";
-                  return (
                     <CatalogBookCard
-                      key={b.id}
+                      key={`sample-${idx}`}
                       title={b.title}
                       coverUrl={b.coverImageUrl}
-                      hubName={hubName(b.hubId)}
-                      fromHubName={b.acquiredFromHubName ?? undefined}
-                      refDisplay={catalogRefLabel(b.refId ?? b.id, null)}
-                      addedText={addedLabel(b.createdAt)}
-                      addedAtTitle={
-                        b.createdAt ? new Date(b.createdAt).toLocaleString() : undefined
-                      }
-                      fullIdForTitle={b.id}
-                      isSample={false}
-                      shelfStatus={b.status}
-                      inventoryStats={b.inventoryStats}
+                      hubName={b.hubName}
+                      refDisplay={catalogRefLabel("sample", idx)}
+                      addedText="—"
+                      isSample
                       action={
-                        <>
-                          {!user && (
-                            <Button
-                              size="sm"
-                              className="w-full rounded-full bg-accent text-accent-foreground hover:bg-accent"
-                              asChild
-                            >
-                              <Link href={signInHref("/library")}>
-                                <BookOpen className="mr-2 h-4 w-4" />
-                                Sign in to borrow
-                              </Link>
-                            </Button>
-                          )}
-                          {user && token && !isAvailable && (
-                            <RequestBookSection
-                              token={token}
-                              user={user}
-                              initialBookTitle={b.title}
-                              redirectToActivityAfterSubmit
-                              onDone={() => {
-                                void qc.invalidateQueries({ queryKey: ["book-requests"] });
-                                void qc.invalidateQueries({ queryKey: ["notifications", "mine"] });
-                              }}
-                              trigger={
-                                <Button
-                                  size="sm"
-                                  variant="secondary"
-                                  className="w-full rounded-full border border-overlay-glass-border bg-overlay-glass text-on-media hover:bg-overlay-glass"
-                                >
-                                  Request a book
-                                </Button>
-                              }
-                            />
-                          )}
-                          {user && isAvailable && !canCheckout && (
-                            <Button
-                              size="sm"
-                              variant="secondary"
-                              className="w-full rounded-full"
-                              onClick={() =>
-                                toast.message(
-                                  "This account cannot borrow this copy. Check your wallet or account permissions.",
-                                )
-                              }
-                            >
-                              <BookOpen className="mr-2 h-4 w-4" />
-                              Borrow
-                            </Button>
-                          )}
-                          {user && isAvailable && canCheckout && (
-                            <Button
-                              size="sm"
-                              className="w-full rounded-full bg-accent text-accent-foreground hover:bg-accent"
-                              onClick={() =>
-                                setCheckout({
-                                  item: {
-                                    kind: "hub",
-                                    bookId: b.id,
-                                    title: b.title,
-                                    hubName: hubName(b.hubId),
-                                    buyPrice: b.buyPrice ?? 0,
-                                    borrowPrice: b.borrowPrice ?? 0,
-                                  },
-                                  initialMode: "borrow",
-                                })
-                              }
-                            >
-                              <BookOpen className="mr-2 h-4 w-4" />
-                              Borrow or buy
-                            </Button>
-                          )}
-                        </>
+                        <p className="text-center text-xs text-on-media-muted">
+                          Preview — not a live copy
+                        </p>
                       }
                     />
-                  );
-                })}
+                  ))
+                : rowsPage.map((b) => {
+                    const canCheckout =
+                      !!user &&
+                      authorize(user, ACTIONS.CHECKOUT_BOOK, {
+                        type: "book",
+                        hubId: b.hubId,
+                        bookId: b.id,
+                      });
+                    const isAvailable = b.status === "available";
+                    return (
+                      <CatalogBookCard
+                        key={b.id}
+                        title={b.title}
+                        coverUrl={b.coverImageUrl}
+                        hubName={hubName(b.hubId)}
+                        fromHubName={b.acquiredFromHubName ?? undefined}
+                        refDisplay={catalogRefLabel(b.refId ?? b.id, null)}
+                        addedText={addedLabel(b.createdAt)}
+                        addedAtTitle={
+                          b.createdAt ? new Date(b.createdAt).toLocaleString() : undefined
+                        }
+                        fullIdForTitle={b.id}
+                        isSample={false}
+                        shelfStatus={b.status}
+                        inventoryStats={b.inventoryStats}
+                        action={
+                          <>
+                            {!user && (
+                              <Button
+                                size="sm"
+                                className="w-full rounded-full bg-accent text-accent-foreground hover:bg-accent"
+                                asChild
+                              >
+                                <Link href={signInHref("/library")}>
+                                  <BookOpen className="mr-2 h-4 w-4" />
+                                  Sign in to borrow
+                                </Link>
+                              </Button>
+                            )}
+                            {user && token && !isAvailable && (
+                              <RequestBookSection
+                                token={token}
+                                user={user}
+                                initialBookTitle={b.title}
+                                redirectToActivityAfterSubmit
+                                onDone={() => {
+                                  void qc.invalidateQueries({ queryKey: ["book-requests"] });
+                                  void qc.invalidateQueries({
+                                    queryKey: ["notifications", "mine"],
+                                  });
+                                }}
+                                trigger={
+                                  <Button
+                                    size="sm"
+                                    variant="secondary"
+                                    className="w-full rounded-full border border-overlay-glass-border bg-overlay-glass text-on-media hover:bg-overlay-glass"
+                                  >
+                                    Request a book
+                                  </Button>
+                                }
+                              />
+                            )}
+                            {user && isAvailable && !canCheckout && (
+                              <Button
+                                size="sm"
+                                variant="secondary"
+                                className="w-full rounded-full"
+                                onClick={() =>
+                                  toast.message(
+                                    "This account cannot borrow this copy. Check your wallet or account permissions.",
+                                  )
+                                }
+                              >
+                                <BookOpen className="mr-2 h-4 w-4" />
+                                Borrow
+                              </Button>
+                            )}
+                            {user && isAvailable && canCheckout && (
+                              <Button
+                                size="sm"
+                                className="w-full rounded-full bg-accent text-accent-foreground hover:bg-accent"
+                                onClick={() =>
+                                  setCheckout({
+                                    item: {
+                                      kind: "hub",
+                                      bookId: b.id,
+                                      title: b.title,
+                                      hubName: hubName(b.hubId),
+                                      buyPrice: b.buyPrice ?? 0,
+                                      borrowPrice: b.borrowPrice ?? 0,
+                                    },
+                                    initialMode: "borrow",
+                                  })
+                                }
+                              >
+                                <BookOpen className="mr-2 h-4 w-4" />
+                                Borrow or buy
+                              </Button>
+                            )}
+                          </>
+                        }
+                      />
+                    );
+                  })}
             </div>
             {!showSampleLayout && catalogTotalPages > 1 && (
               <nav
@@ -796,7 +790,6 @@ export default function LibraryPage() {
             )}
           </>
         )}
-
       </div>
       {token ? (
         <CheckoutFlowDialog

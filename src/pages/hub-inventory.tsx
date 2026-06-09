@@ -33,11 +33,7 @@ import { userFacingErrorMessage } from "@/lib/error-messages";
 import { BookCoverImage } from "@/components/ui/book-cover-image";
 import { portalPathsForUser } from "@/lib/app-paths";
 import { hubKindLabel } from "@/lib/hub-display";
-import {
-  PORTAL_INLINE_LINK,
-  PORTAL_PAGE_GUTTER_X,
-  STUDENT_CARD_SURFACE,
-} from "@/lib/student-ui";
+import { PORTAL_INLINE_LINK, PORTAL_PAGE_GUTTER_X, STUDENT_CARD_SURFACE } from "@/lib/student-ui";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { Check, ChevronsUpDown, ImagePlus, Loader2, Plus, Shield } from "lucide-react";
@@ -88,18 +84,12 @@ const PAGE_SIZE = 50;
 const outline = "rounded-xl border border-border bg-background";
 
 function SectionLabel({ children }: { children: ReactNode }) {
-  return (
-    <h2 className="section-kicker">{children}</h2>
-  );
+  return <h2 className="section-kicker">{children}</h2>;
 }
 
 function CopyLifecycleStrip({ status }: { status: string }) {
   if (["sold", "unavailable", "transfer_pending", "in_transit"].includes(status)) {
-    return (
-      <p className="section-kicker">
-        Lifecycle: {status.replace(/_/g, " ")}
-      </p>
-    );
+    return <p className="section-kicker">Lifecycle: {status.replace(/_/g, " ")}</p>;
   }
   const idx =
     status === "available" ? 0 : status === "reserved" ? 1 : status === "checked_out" ? 2 : 0;
@@ -143,7 +133,8 @@ function InventoryPaginationBar({
   /** `header` = top of list, `footer` = below grid (same controls, distinct aria label) */
   placement: "header" | "footer";
 }) {
-  const label = placement === "header" ? "Page through inventory" : "Page through inventory (footer)";
+  const label =
+    placement === "header" ? "Page through inventory" : "Page through inventory (footer)";
   return (
     <div
       className="flex flex-wrap items-center justify-center gap-2 sm:justify-end"
@@ -160,7 +151,10 @@ function InventoryPaginationBar({
       >
         Previous
       </Button>
-      <span className="min-w-[6.5rem] text-center caption-scale font-medium tabular-nums text-foreground-muted" aria-current="page">
+      <span
+        className="min-w-[6.5rem] text-center caption-scale font-medium tabular-nums text-foreground-muted"
+        aria-current="page"
+      >
         Page {page + 1} / {totalPages}
       </span>
       <Button
@@ -339,8 +333,7 @@ export default function HubInventoryPage() {
       void qc.invalidateQueries({ queryKey: ["hub", "overview"] });
       void qc.invalidateQueries({ queryKey: ["book-requests", "hub"] });
     },
-    onError: (e) =>
-      toast.error(userFacingErrorMessage(e)),
+    onError: (e) => toast.error(userFacingErrorMessage(e)),
   });
 
   const convertP2pToHub = useMutation({
@@ -433,8 +426,7 @@ export default function HubInventoryPage() {
         /* sweep is best-effort */
       }
     },
-    onError: (e) =>
-      toast.error(userFacingErrorMessage(e)),
+    onError: (e) => toast.error(userFacingErrorMessage(e)),
   });
 
   const topPad = inShell ? "" : "pt-24";
@@ -460,7 +452,11 @@ export default function HubInventoryPage() {
   }
 
   const overviewHubId =
-    user && user.hubStaffHubIds.length === 1 ? user.hubStaffHubIds[0]! : hubId === "all" ? undefined : hubId;
+    user && user.hubStaffHubIds.length === 1
+      ? user.hubStaffHubIds[0]!
+      : hubId === "all"
+        ? undefined
+        : hubId;
 
   const booksUrl = useMemo(() => {
     const params = new URLSearchParams();
@@ -480,10 +476,12 @@ export default function HubInventoryPage() {
     queryKey: ["hub", "books", booksUrl, token, overviewHubId ?? "all"],
     enabled: !!token && !!user?.hubStaffHubIds.length,
     queryFn: async () => {
-      const data = await apiFetch<{ books: HubBookRow[]; total: number; limit: number; offset: number }>(
-        booksUrl,
-        { token: token! },
-      );
+      const data = await apiFetch<{
+        books: HubBookRow[];
+        total: number;
+        limit: number;
+        offset: number;
+      }>(booksUrl, { token: token! });
       const sweepBody = overviewHubId ? { hubId: overviewHubId } : {};
       void (async () => {
         try {
@@ -518,7 +516,13 @@ export default function HubInventoryPage() {
 
   if (!user?.hubStaffHubIds.length) {
     return (
-      <div className={cn("mx-auto max-w-lg pb-20 text-center", PORTAL_PAGE_GUTTER_X, inShell ? "pt-8" : "pt-28")}>
+      <div
+        className={cn(
+          "mx-auto max-w-lg pb-20 text-center",
+          PORTAL_PAGE_GUTTER_X,
+          inShell ? "pt-8" : "pt-28",
+        )}
+      >
         <div className="mx-auto flex h-14 w-14 items-center justify-center">
           <Shield className="h-7 w-7 text-muted-foreground" />
         </div>
@@ -548,7 +552,9 @@ export default function HubInventoryPage() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
           <div className="min-w-0 font-sans">
             <h1 className="mt-1 h3-scale font-bold tracking-tight text-foreground">Inventory</h1>
-            <p className="mt-2 w-full body-scale text-foreground-muted leading-relaxed">All physical copies in your hub.</p>
+            <p className="mt-2 w-full body-scale text-foreground-muted leading-relaxed">
+              All physical copies in your hub.
+            </p>
           </div>
           {!isSuperAdmin ? (
             <Button
@@ -590,10 +596,7 @@ export default function HubInventoryPage() {
           </div>
           {user.hubStaffHubIds.length > 1 ? (
             <div className="flex w-full flex-col gap-1.5 sm:min-w-[10rem] sm:shrink-0 sm:flex-1">
-              <Label
-                htmlFor="hub-inv-scope"
-                className="section-kicker"
-              >
+              <Label htmlFor="hub-inv-scope" className="section-kicker">
                 Scope
               </Label>
               <Select
@@ -794,7 +797,9 @@ export default function HubInventoryPage() {
                           </div>
                           <p className="text-foreground-muted">
                             by {b.request.assignedBy ?? "system"}
-                            {b.request.assignedAt ? ` at ${new Date(b.request.assignedAt).toLocaleString()}` : ""}
+                            {b.request.assignedAt
+                              ? ` at ${new Date(b.request.assignedAt).toLocaleString()}`
+                              : ""}
                           </p>
                         </div>
                       ) : null}
@@ -819,7 +824,8 @@ export default function HubInventoryPage() {
                               </p>
                             ) : null}
                             <p className="font-medium tabular-nums">
-                              {b.borrowPrice.toLocaleString("en-IN")} Credits borrow · {b.buyPrice.toLocaleString("en-IN")} Credits buy
+                              {b.borrowPrice.toLocaleString("en-IN")} Credits borrow ·{" "}
+                              {b.buyPrice.toLocaleString("en-IN")} Credits buy
                             </p>
                             <div className="flex flex-wrap items-center gap-1.5">
                               <span className="inline-flex h-5 items-center rounded-sm bg-shimmer px-1.5 caption-scale font-medium uppercase tracking-wider text-foreground md:bg-overlay-backdrop md:text-on-media-muted">
@@ -888,9 +894,9 @@ export default function HubInventoryPage() {
                               </Button>
                             ) : null}
                             {user &&
-                              user.hubStaffHubIds.includes(b.hubId) &&
-                              !inInterHubTransfer &&
-                              (b.status === "available" || b.status === "reserved") ? (
+                            user.hubStaffHubIds.includes(b.hubId) &&
+                            !inInterHubTransfer &&
+                            (b.status === "available" || b.status === "reserved") ? (
                               <Button
                                 type="button"
                                 size="sm"
@@ -910,9 +916,9 @@ export default function HubInventoryPage() {
                               </Button>
                             ) : null}
                             {user &&
-                              user.hubStaffHubIds.includes(b.hubId) &&
-                              !inInterHubTransfer &&
-                              b.status === "unavailable" ? (
+                            user.hubStaffHubIds.includes(b.hubId) &&
+                            !inInterHubTransfer &&
+                            b.status === "unavailable" ? (
                               <Button
                                 type="button"
                                 size="sm"
@@ -927,7 +933,10 @@ export default function HubInventoryPage() {
                                 Mark available
                               </Button>
                             ) : null}
-                            {b.source === "p2p" && b.status === "available" && !inInterHubTransfer && user?.hubStaffHubIds.includes(b.hubId) ? (
+                            {b.source === "p2p" &&
+                            b.status === "available" &&
+                            !inInterHubTransfer &&
+                            user?.hubStaffHubIds.includes(b.hubId) ? (
                               <Button
                                 type="button"
                                 size="sm"
@@ -946,7 +955,9 @@ export default function HubInventoryPage() {
                                 Convert to hub inventory
                               </Button>
                             ) : null}
-                            {b.status === "transfer_pending" && b.targetHubId && user?.hubStaffHubIds.includes(b.hubId) ? (
+                            {b.status === "transfer_pending" &&
+                            b.targetHubId &&
+                            user?.hubStaffHubIds.includes(b.hubId) ? (
                               <Button
                                 type="button"
                                 size="sm"
@@ -954,7 +965,12 @@ export default function HubInventoryPage() {
                                 className="h-8 w-full rounded-md caption-scale"
                                 asChild
                               >
-                                <Link href={portalPathsForUser(user).inventory + `?q=${encodeURIComponent(b.title)}`}>
+                                <Link
+                                  href={
+                                    portalPathsForUser(user).inventory +
+                                    `?q=${encodeURIComponent(b.title)}`
+                                  }
+                                >
                                   Transfer / inventory
                                 </Link>
                               </Button>
@@ -1004,11 +1020,14 @@ export default function HubInventoryPage() {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="h4-scale font-semibold text-foreground">New shelf copy</DialogTitle>
+            <DialogTitle className="h4-scale font-semibold text-foreground">
+              New shelf copy
+            </DialogTitle>
             <DialogDescription className="body-scale text-foreground-muted">
-              Register one hub-owned copy on the shelf. Set a <strong className="font-semibold text-foreground">buy</strong> price and a{" "}
-              <strong className="font-semibold text-foreground">borrow</strong> fee (whole credits; borrow may be 0 credits). Book photo is optional same as
-              student listings.
+              Register one hub-owned copy on the shelf. Set a{" "}
+              <strong className="font-semibold text-foreground">buy</strong> price and a{" "}
+              <strong className="font-semibold text-foreground">borrow</strong> fee (whole credits;
+              borrow may be 0 credits). Book photo is optional same as student listings.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 pt-2">
@@ -1050,7 +1069,9 @@ export default function HubInventoryPage() {
                           {addDialogHubs.map((h) => (
                             <CommandItem
                               key={h.id}
-                              value={[h.name, h.kind, hubKindLabel(h.kind), h.id].filter(Boolean).join(" ")}
+                              value={[h.name, h.kind, hubKindLabel(h.kind), h.id]
+                                .filter(Boolean)
+                                .join(" ")}
                               onSelect={() => {
                                 setAddTargetHubId(h.id);
                                 setAddHubPickerOpen(false);
@@ -1098,7 +1119,9 @@ export default function HubInventoryPage() {
                 onChange={(e) => setAddBuy(e.target.value.replace(/[^\d]/g, ""))}
               />
               {!addBuyValid && addBuy.trim() !== "" ? (
-                <p className="caption-scale font-medium text-destructive">Enter a whole number 0 or more.</p>
+                <p className="caption-scale font-medium text-destructive">
+                  Enter a whole number 0 or more.
+                </p>
               ) : null}
             </div>
             <div className="space-y-2">
@@ -1113,7 +1136,9 @@ export default function HubInventoryPage() {
                 onChange={(e) => setAddBorrow(e.target.value.replace(/[^\d]/g, ""))}
               />
               {!addBorrowValid && addBorrow.trim() !== "" ? (
-                <p className="caption-scale font-medium text-destructive">Enter a whole number 0 or more.</p>
+                <p className="caption-scale font-medium text-destructive">
+                  Enter a whole number 0 or more.
+                </p>
               ) : null}
             </div>
             <div className="space-y-2">
@@ -1136,14 +1161,16 @@ export default function HubInventoryPage() {
                   e.target.value = "";
                 }}
               />
-              <p className="caption-scale font-medium text-foreground-muted">JPEG, PNG, WebP, or GIF · up to 5&nbsp;MB</p>
+              <p className="caption-scale font-medium text-foreground-muted">
+                JPEG, PNG, WebP, or GIF · up to 5&nbsp;MB
+              </p>
               <BookCoverImage
                 src={addCoverPreview}
                 alt={addCoverPreview ? "Cover preview" : "Default book cover"}
                 className={cn(
                   STUDENT_CARD_SURFACE,
                   "mt-2 max-h-40 w-28 object-cover",
-                  !addCoverPreview && "opacity-80"
+                  !addCoverPreview && "opacity-80",
                 )}
               />
             </div>

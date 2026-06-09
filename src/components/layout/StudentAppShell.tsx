@@ -1,11 +1,15 @@
-import {
-  createContext,
-  useContext,
-  type ReactNode,
-} from "react";
+import { createContext, useContext, type ReactNode } from "react";
 import { Link, useLocation } from "wouter";
 import type { LucideIcon } from "lucide-react";
-import { LogOut, Library, LayoutDashboard, BookOpen, Tag, Wallet, ClipboardList } from "lucide-react";
+import {
+  LogOut,
+  Library,
+  LayoutDashboard,
+  BookOpen,
+  Tag,
+  Wallet,
+  ClipboardList,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProfileAvatar } from "@/components/profile-avatar";
 import { useAuth } from "@/context/auth-context";
@@ -24,10 +28,7 @@ import {
   STUDENT_WALLET_PATH,
   STUDENT_REQUESTS_PATH,
 } from "@/lib/app-paths";
-import {
-  hubDeskGroupsForUser,
-  isHubDeskPathActive,
-} from "@/components/layout/HubDeskNav";
+import { hubDeskGroupsForUser, isHubDeskPathActive } from "@/components/layout/HubDeskNav";
 
 const StudentShellContext = createContext(false);
 
@@ -91,7 +92,7 @@ function UnifiedAppShell({
                       "text-sm font-medium transition-colors whitespace-nowrap",
                       active
                         ? "font-semibold text-primary"
-                        : "text-muted-foreground hover:text-foreground"
+                        : "text-muted-foreground hover:text-foreground",
                     )}
                   >
                     {item.label}
@@ -101,9 +102,14 @@ function UnifiedAppShell({
             </nav>
           </div>
           <div className="flex items-center justify-end gap-2">
-            <Link href={profileHref} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+            <Link
+              href={profileHref}
+              className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+            >
               <div className="hidden flex-col items-end sm:flex">
-                <span className="text-sm font-semibold text-foreground leading-none">{user?.name}</span>
+                <span className="text-sm font-semibold text-foreground leading-none">
+                  {user?.name}
+                </span>
                 <span className="caption-scale font-bold uppercase tracking-kicker text-muted-foreground mt-1">
                   {portalName}
                 </span>
@@ -133,7 +139,10 @@ function UnifiedAppShell({
             Neev
           </Link>
           <div className="flex items-center gap-2">
-            <Link href={profileHref} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+            <Link
+              href={profileHref}
+              className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+            >
               <span className="caption-scale font-bold uppercase tracking-kicker text-muted-foreground">
                 {portalName}
               </span>
@@ -156,9 +165,7 @@ function UnifiedAppShell({
         {/* Main Content */}
         <main className="flex-1 w-full pb-20 md:pb-0">
           {wrapContent ? (
-            <div className={cn(PORTAL_PAGE_CONTAINER, "h-full pt-4")}>
-              {children}
-            </div>
+            <div className={cn(PORTAL_PAGE_CONTAINER, "h-full pt-4")}>{children}</div>
           ) : (
             children
           )}
@@ -175,11 +182,13 @@ function UnifiedAppShell({
                 href={item.href}
                 className={cn(
                   "flex flex-col items-center justify-center gap-1 w-full h-full transition-colors",
-                  active ? "text-primary" : "text-muted-foreground hover:text-foreground"
+                  active ? "text-primary" : "text-muted-foreground hover:text-foreground",
                 )}
               >
                 <Icon className={cn("h-5 w-5", active ? "text-primary" : "")} />
-                <span className={cn("caption-scale", active ? "font-semibold" : "font-medium")}>{item.label}</span>
+                <span className={cn("caption-scale", active ? "font-semibold" : "font-medium")}>
+                  {item.label}
+                </span>
               </Link>
             );
           })}
@@ -200,13 +209,16 @@ export function StudentAppShell({ children }: { children: ReactNode }) {
         ? hubOverviewPathForUser(user)
         : portalPathsForUser(user).borrow;
 
-    const navItems = hubDeskGroupsForUser(user).flatMap((g) => g.tabs).map(t => ({
-      label: t.label,
-      href: t.href,
-      icon: t.Icon,
-    }));
+    const navItems = hubDeskGroupsForUser(user)
+      .flatMap((g) => g.tabs)
+      .map((t) => ({
+        label: t.label,
+        href: t.href,
+        icon: t.Icon,
+      }));
 
-    const profileHref = user?.baseRole === "super_admin" ? SUPER_ADMIN_PROFILE_PATH : HUB_PROFILE_PATH;
+    const profileHref =
+      user?.baseRole === "super_admin" ? SUPER_ADMIN_PROFILE_PATH : HUB_PROFILE_PATH;
     const portalName = user?.baseRole === "super_admin" ? "Admin Portal" : "Hub Portal";
 
     return (

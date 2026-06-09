@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from "react";
 
 interface GeolocationState {
   coords: {
@@ -58,7 +58,7 @@ export function useGeolocation() {
           error: errorMsg,
           permissionDenied: error.code === error.PERMISSION_DENIED,
         });
-      }
+      },
     );
   };
 

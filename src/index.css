@@ -131,13 +131,21 @@
     overflow-x: hidden;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--app-font-display);
     font-weight: 700;
     letter-spacing: var(--tracking-tight);
   }
 
-  code, kbd, pre, samp {
+  code,
+  kbd,
+  pre,
+  samp {
     font-family: var(--app-font-mono);
   }
 
@@ -187,7 +195,8 @@
     letter-spacing: var(--tracking-tight);
   }
 
-  .hero-title, .display-heading {
+  .hero-title,
+  .display-heading {
     font-family: var(--app-font-display);
     font-size: var(--text-h1);
     line-height: var(--leading-heading);
@@ -241,19 +250,22 @@
     font-weight: 400;
   }
 
-  .body-scale, .body-medium {
+  .body-scale,
+  .body-medium {
     font-size: var(--text-body-sm);
     line-height: var(--leading-body);
     font-weight: 400;
   }
 
-  .small-scale, .body-small {
+  .small-scale,
+  .body-small {
     font-size: var(--text-body-sm);
     line-height: var(--leading-body);
     font-weight: 400;
   }
 
-  .caption-scale, .text-meta {
+  .caption-scale,
+  .text-meta {
     font-size: var(--text-meta);
     line-height: var(--leading-meta);
     font-weight: 500;
@@ -312,9 +324,10 @@
   .card-standard {
     @apply rounded-xl border border-border bg-card text-card-foreground;
     box-shadow: var(--shadow-sm);
-    transition: box-shadow var(--duration-normal) var(--ease-out),
-                border-color var(--duration-normal) var(--ease-out),
-                transform var(--duration-normal) var(--ease-out);
+    transition:
+      box-shadow var(--duration-normal) var(--ease-out),
+      border-color var(--duration-normal) var(--ease-out),
+      transform var(--duration-normal) var(--ease-out);
   }
 
   .card-standard:hover {
@@ -325,9 +338,10 @@
   .card-elevated {
     @apply rounded-xl border border-border bg-surface-elevated text-card-foreground;
     box-shadow: var(--shadow-md);
-    transition: box-shadow var(--duration-normal) var(--ease-out),
-                border-color var(--duration-normal) var(--ease-out),
-                transform var(--duration-normal) var(--ease-out);
+    transition:
+      box-shadow var(--duration-normal) var(--ease-out),
+      border-color var(--duration-normal) var(--ease-out),
+      transform var(--duration-normal) var(--ease-out);
   }
 
   .card-elevated:hover {

@@ -16,22 +16,11 @@ import { useAuth } from "@/context/auth-context";
 import { apiFetch } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { hubKindLabel } from "@/lib/hub-display";
-import {
-  PORTAL_INLINE_LINK,
-  PORTAL_PAGE_GUTTER_X,
-  PORTAL_PANEL_SURFACE,
-} from "@/lib/student-ui";
+import { PORTAL_INLINE_LINK, PORTAL_PAGE_GUTTER_X, PORTAL_PANEL_SURFACE } from "@/lib/student-ui";
 import { PORTAL_PAGE_LEAD, PORTAL_PAGE_TITLE, PORTAL_STAT_VALUE } from "@/lib/portal-typography";
 import { adminSelectTrigger } from "@/lib/admin-desk-ui";
 import { portalPathsForUser } from "@/lib/app-paths";
-import {
-  ClipboardList,
-  Loader2,
-  Package,
-  Shield,
-  Wallet,
-  type LucideIcon,
-} from "lucide-react";
+import { ClipboardList, Loader2, Package, Shield, Wallet, type LucideIcon } from "lucide-react";
 import { useMemo, useState, type ReactNode } from "react";
 import { Link } from "wouter";
 
@@ -173,22 +162,12 @@ type SuperAdminOverviewPayload = HubOverviewPayload & {
   };
 };
 
-
 /** Second-key sort: pending → ready pickup → consignment / low stock → expired. */
 
-const REQUEST_KEYS = [
-  "pending",
-  "available_for_collection",
-  "delivered",
-  "cancelled",
-] as const;
+const REQUEST_KEYS = ["pending", "available_for_collection", "delivered", "cancelled"] as const;
 
 function SectionLabel({ children }: { children: ReactNode }) {
-  return (
-    <h2 className="section-kicker">
-      {children}
-    </h2>
-  );
+  return <h2 className="section-kicker">{children}</h2>;
 }
 
 function DeskQuickLink({
@@ -205,30 +184,21 @@ function DeskQuickLink({
   return (
     <Link
       href={href}
-      className={cn(
-        PORTAL_PANEL_SURFACE,
-        "flex items-start gap-3 p-4 transition-colors hover:",
-      )}
+      className={cn(PORTAL_PANEL_SURFACE, "flex items-start gap-3 p-4 transition-colors hover:")}
     >
       <Icon className="mt-0.5 h-4 w-4 shrink-0 text-foreground-muted" aria-hidden />
       <div className="min-w-0">
         <p className="body-scale font-semibold leading-tight text-foreground">{title}</p>
-        <p className="mt-0.5 caption-scale font-medium leading-snug text-foreground-muted">{hint}</p>
+        <p className="mt-0.5 caption-scale font-medium leading-snug text-foreground-muted">
+          {hint}
+        </p>
       </div>
     </Link>
   );
 }
 
 /** Label + value inside a grid cell (borders come from parent `divide-*`). */
-function StatCell({
-  label,
-  value,
-  sub,
-}: {
-  label: string;
-  value: number | string;
-  sub?: string;
-}) {
+function StatCell({ label, value, sub }: { label: string; value: number | string; sub?: string }) {
   return (
     <div className="p-3">
       <p className="section-kicker">{label}</p>
@@ -237,7 +207,6 @@ function StatCell({
     </div>
   );
 }
-
 
 function pipelineBarLabel(key: string): string {
   switch (key) {
@@ -254,9 +223,7 @@ function pipelineBarLabel(key: string): string {
   }
 }
 
-function executiveFunnelFromBreakdown(
-  requestBreakdown: HubOverviewPayload["requestBreakdown"],
-) {
+function executiveFunnelFromBreakdown(requestBreakdown: HubOverviewPayload["requestBreakdown"]) {
   const g = (k: string) => requestBreakdown[k] ?? 0;
   return {
     needAction: g("pending"),
@@ -294,15 +261,11 @@ export default function HubOverviewPage() {
     ],
     enabled: !!token && !!user?.hubStaffHubIds.length,
     queryFn: () => {
-      const hubQ =
-        overviewHubId === "all"
-          ? ""
-          : `&hubId=${encodeURIComponent(overviewHubId)}`;
+      const hubQ = overviewHubId === "all" ? "" : `&hubId=${encodeURIComponent(overviewHubId)}`;
       const path = isSuperAdmin ? "/api/hub/super-admin-overview" : "/api/hub/overview";
-      return apiFetch<HubOverviewPayload & Partial<Pick<SuperAdminOverviewPayload, "network" | "executive">>>(
-        `${path}?range=${overviewRange}${hubQ}`,
-        { token: token! },
-      );
+      return apiFetch<
+        HubOverviewPayload & Partial<Pick<SuperAdminOverviewPayload, "network" | "executive">>
+      >(`${path}?range=${overviewRange}${hubQ}`, { token: token! });
     },
   });
 
@@ -318,7 +281,13 @@ export default function HubOverviewPage() {
 
   if (!user?.hubStaffHubIds.length) {
     return (
-      <div className={cn("mx-auto max-w-lg pb-20 text-center", PORTAL_PAGE_GUTTER_X, inShell ? "pt-8" : "pt-28")}>
+      <div
+        className={cn(
+          "mx-auto max-w-lg pb-20 text-center",
+          PORTAL_PAGE_GUTTER_X,
+          inShell ? "pt-8" : "pt-28",
+        )}
+      >
         <div
           className={cn(
             "mx-auto flex h-14 w-14 items-center justify-center rounded-xl border border-border ",
@@ -341,9 +310,7 @@ export default function HubOverviewPage() {
 
   const ov = overviewQ.data;
   const network: SuperAdminNetworkKpis | undefined =
-    isSuperAdmin && ov && "network" in ov
-      ? (ov as SuperAdminOverviewPayload).network
-      : undefined;
+    isSuperAdmin && ov && "network" in ov ? (ov as SuperAdminOverviewPayload).network : undefined;
   const executive =
     isSuperAdmin && ov && "executive" in ov
       ? (ov as SuperAdminOverviewPayload).executive
@@ -385,10 +352,7 @@ export default function HubOverviewPage() {
             )}
           >
             <div className="flex min-w-0 flex-col gap-1.5">
-              <Label
-                htmlFor="hub-overview-period"
-                className="section-kicker"
-              >
+              <Label htmlFor="hub-overview-period" className="section-kicker">
                 Period
               </Label>
               <Select
@@ -410,17 +374,11 @@ export default function HubOverviewPage() {
             </div>
             {user.hubStaffHubIds.length > 1 ? (
               <div className="flex min-w-0 flex-col gap-1.5">
-                <Label
-                  htmlFor="hub-overview-scope"
-                  className="section-kicker"
-                >
+                <Label htmlFor="hub-overview-scope" className="section-kicker">
                   Network scope
                 </Label>
                 <Select value={overviewHubId} onValueChange={setOverviewHubId}>
-                  <SelectTrigger
-                    id="hub-overview-scope"
-                    className={adminSelectTrigger}
-                  >
+                  <SelectTrigger id="hub-overview-scope" className={adminSelectTrigger}>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -450,7 +408,10 @@ export default function HubOverviewPage() {
         <div className="space-y-6">
           {isSuperAdmin && network && executive ? (
             <>
-              <section className={cn(PORTAL_PANEL_SURFACE, "px-4 py-3")} aria-label="System health strip">
+              <section
+                className={cn(PORTAL_PANEL_SURFACE, "px-4 py-3")}
+                aria-label="System health strip"
+              >
                 <SectionLabel>Health</SectionLabel>
                 <div className="mt-2 grid grid-cols-1 gap-2 text-sm sm:grid-cols-3">
                   <p className="text-foreground-muted">
@@ -463,33 +424,46 @@ export default function HubOverviewPage() {
                 </div>
               </section>
               <header className={cn(PORTAL_PANEL_SURFACE, "p-4 md:p-5")}>
-                <h1 className="h4-scale font-semibold text-foreground">
-                  Business control tower
-                </h1>
+                <h1 className="h4-scale font-semibold text-foreground">Business control tower</h1>
                 <div className="mt-2 max-w-full overflow-x-auto overflow-y-hidden pb-0.5">
                   <p className="w-max whitespace-nowrap body-scale font-normal text-foreground-muted">
                     <span className="font-medium text-foreground">{ov.hubScope.label}</span>
                     {" · "}
-                    {rangeLabel}. Queue scores rank hubs by pending desk, ready pickup, and peer drop-off backlog.
+                    {rangeLabel}. Queue scores rank hubs by pending desk, ready pickup, and peer
+                    drop-off backlog.
                   </p>
                 </div>
               </header>
 
-              <section aria-label="Network footprint" className={cn(PORTAL_PANEL_SURFACE, "overflow-hidden")}>
+              <section
+                aria-label="Network footprint"
+                className={cn(PORTAL_PANEL_SURFACE, "overflow-hidden")}
+              >
                 <div className="border-b border-border px-4 py-3">
                   <SectionLabel>Network</SectionLabel>
                 </div>
                 <div className="grid grid-cols-2 divide-x divide-y divide-border sm:grid-cols-3 lg:grid-cols-6">
-                  <StatCell label="Hubs live" value={`${network.hubsActive}/${network.hubsTotal}`} sub="active / total" />
+                  <StatCell
+                    label="Hubs live"
+                    value={`${network.hubsActive}/${network.hubsTotal}`}
+                    sub="active / total"
+                  />
                   <StatCell label="Users" value={network.usersTotal} sub="all roles" />
                   <StatCell label="Students" value={network.studentAccounts} />
                   <StatCell label="Hub operators" value={network.hubOperatorAccounts} />
-                  <StatCell label="Premium" value={network.activePremiumSubscribers} sub="active subs" />
+                  <StatCell
+                    label="Premium"
+                    value={network.activePremiumSubscribers}
+                    sub="active subs"
+                  />
                   <StatCell label="Super admins" value={network.superAdmins} />
                 </div>
               </section>
 
-              <section aria-label="Derived KPIs" className={cn(PORTAL_PANEL_SURFACE, "overflow-hidden")}>
+              <section
+                aria-label="Derived KPIs"
+                className={cn(PORTAL_PANEL_SURFACE, "overflow-hidden")}
+              >
                 <div className="border-b border-border px-4 py-3">
                   <SectionLabel>Health · {rangeLabel.toLowerCase()}</SectionLabel>
                   <p className="mt-1 caption-scale font-medium text-foreground-muted">
@@ -523,15 +497,26 @@ export default function HubOverviewPage() {
                   />
                 </div>
                 <div className="grid grid-cols-2 divide-x divide-y divide-border border-t border-border md:grid-cols-4">
-                  <StatCell label="Open desk queue" value={execFunnel.needAction} sub="req + routed" />
-                  <StatCell label="Fulfilment prep" value={execFunnel.inPrep} sub="fulfilled + ready" />
+                  <StatCell
+                    label="Open desk queue"
+                    value={execFunnel.needAction}
+                    sub="req + routed"
+                  />
+                  <StatCell
+                    label="Fulfilment prep"
+                    value={execFunnel.inPrep}
+                    sub="fulfilled + ready"
+                  />
                   <StatCell label="Completed" value={execFunnel.completed} sub="picked" />
                   <StatCell label="Closed" value={execFunnel.closed} sub="expired + withdrawn" />
                 </div>
               </section>
 
               {executive.hubAttention.length > 0 ? (
-                <section className={cn(PORTAL_PANEL_SURFACE, "overflow-hidden")} aria-label="Hubs by operational load">
+                <section
+                  className={cn(PORTAL_PANEL_SURFACE, "overflow-hidden")}
+                  aria-label="Hubs by operational load"
+                >
                   <div className="border-b border-border px-4 py-3">
                     <SectionLabel>Where to act first</SectionLabel>
                     <p className="mt-1 caption-scale font-medium text-foreground-muted">
@@ -598,26 +583,33 @@ export default function HubOverviewPage() {
                   />
                 </div>
               </section>
-
             </>
           ) : !isSuperAdmin ? (
             <>
-              <section className={cn(PORTAL_PANEL_SURFACE, "px-4 py-3")} aria-label="What to do next">
+              <section
+                className={cn(PORTAL_PANEL_SURFACE, "px-4 py-3")}
+                aria-label="What to do next"
+              >
                 <SectionLabel>What to do next</SectionLabel>
                 <div className="mt-2 grid gap-2 sm:grid-cols-2">
                   {ov.metrics.pendingRequests > 0 ? (
                     <Link href={d.requests} className={cn("text-sm", PORTAL_INLINE_LINK)}>
-                      Pending requests need action ({ov.metrics.pendingRequests}) → Open Book Requests
+                      Pending requests need action ({ov.metrics.pendingRequests}) → Open Book
+                      Requests
                     </Link>
                   ) : (
-                    <p className="body-scale font-normal text-foreground-muted">Request queue is healthy.</p>
+                    <p className="body-scale font-normal text-foreground-muted">
+                      Request queue is healthy.
+                    </p>
                   )}
                   {ov.metrics.totalBooks === 0 ? (
                     <Link href={d.inventory} className={cn("text-sm", PORTAL_INLINE_LINK)}>
                       No inventory yet → Open Inventory
                     </Link>
                   ) : (
-                    <p className="body-scale font-normal text-foreground-muted">Inventory is populated.</p>
+                    <p className="body-scale font-normal text-foreground-muted">
+                      Inventory is populated.
+                    </p>
                   )}
                 </div>
               </section>
@@ -644,12 +636,18 @@ export default function HubOverviewPage() {
                 </div>
               </section>
 
-              <section className={cn(PORTAL_PANEL_SURFACE, "overflow-hidden")} aria-label="Bounty Books">
+              <section
+                className={cn(PORTAL_PANEL_SURFACE, "overflow-hidden")}
+                aria-label="Bounty Books"
+              >
                 <div className="border-b border-border px-4 py-3">
                   <SectionLabel>Bounty Books</SectionLabel>
                   <p className="mt-1 caption-scale font-medium text-foreground-muted">
                     Library acquisition requests.{" "}
-                    <Link href={d.bountyBooks ?? d.p2pListings} className="underline underline-offset-2">
+                    <Link
+                      href={d.bountyBooks ?? d.p2pListings}
+                      className="underline underline-offset-2"
+                    >
                       Manage bounties
                     </Link>
                   </p>
@@ -698,9 +696,7 @@ export default function HubOverviewPage() {
             <div className="grid grid-cols-2 divide-x divide-y divide-border sm:grid-cols-4">
               {REQUEST_KEYS.map((key) => (
                 <div key={key} className="p-3 text-center">
-                  <p className="section-kicker text-foreground">
-                    {pipelineBarLabel(key)}
-                  </p>
+                  <p className="section-kicker text-foreground">{pipelineBarLabel(key)}</p>
                   <p className="mt-1 text-base tabular-nums text-foreground">
                     {ov.requestBreakdown[key] ?? 0}
                   </p>
@@ -710,7 +706,10 @@ export default function HubOverviewPage() {
           </section>
 
           {ov.topRequestedTitles && ov.topRequestedTitles.length > 0 ? (
-            <section className={cn(PORTAL_PANEL_SURFACE, "overflow-hidden")} aria-label="Top requested titles">
+            <section
+              className={cn(PORTAL_PANEL_SURFACE, "overflow-hidden")}
+              aria-label="Top requested titles"
+            >
               <div className="border-b border-border px-4 py-3">
                 <SectionLabel>Top requested titles</SectionLabel>
                 <p className="mt-1 caption-scale font-medium text-foreground-muted">

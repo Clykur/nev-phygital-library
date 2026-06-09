@@ -5,7 +5,14 @@ import { apiFetch, ApiError } from "@/lib/api";
 import { useStudentShell } from "@/components/layout/StudentAppShell";
 import { PORTAL_INLINE_LINK, PORTAL_PAGE_CONTAINER, PORTAL_PANEL_SURFACE } from "@/lib/student-ui";
 import { PORTAL_PAGE_LEAD, PORTAL_PAGE_TITLE } from "@/lib/portal-typography";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { isHubAccount, portalPathsForUser } from "@/lib/app-paths";
@@ -40,7 +47,12 @@ function fmtKindLabel(kind: string) {
 
 function notificationPriority(kind: string) {
   if (kind === "book_request_available" || kind === "book_request_ready") return 1;
-  if (kind === "book_request_new" || kind === "book_request_routed" || kind === "book_request_fulfilled") return 2;
+  if (
+    kind === "book_request_new" ||
+    kind === "book_request_routed" ||
+    kind === "book_request_fulfilled"
+  )
+    return 2;
   if (kind === "hub_return_confirmation" || kind === "p2p_return_confirmation") return 3;
   if (kind === "p2p_purchase_confirmation" || kind === "hub_purchase_confirmation") return 3;
   if (kind === "book_request_expired" || kind === "book_request_cancelled") return 4;
@@ -66,7 +78,9 @@ function resolveAlertNav(n: NotifRow, activity: string, borrow: string): AlertNa
     return {
       type: "ready_for_pickup",
       referenceId: ref,
-      href: ref ? `/student/library?focus=request&ref=${encodeURIComponent(ref)}` : "/student/library",
+      href: ref
+        ? `/student/library?focus=request&ref=${encodeURIComponent(ref)}`
+        : "/student/library",
     };
   }
   if (requestUpdateKinds.has(n.kind)) {
@@ -74,9 +88,7 @@ function resolveAlertNav(n: NotifRow, activity: string, borrow: string): AlertNa
     return {
       type: "request_update",
       referenceId: ref,
-      href: ref
-        ? `${activity}?focus=request&ref=${encodeURIComponent(ref)}#requests`
-        : activity,
+      href: ref ? `${activity}?focus=request&ref=${encodeURIComponent(ref)}#requests` : activity,
     };
   }
   if (n.kind === "p2p_purchase_confirmation") {
@@ -189,14 +201,25 @@ export default function StudentAlertsPage() {
                 <p className="body-scale text-foreground-muted">Loading…</p>
               ) : notifQ.isError ? (
                 <p className="body-scale text-destructive">
-                  {notifQ.error instanceof ApiError ? notifQ.error.message : "Could not load notifications."}
+                  {notifQ.error instanceof ApiError
+                    ? notifQ.error.message
+                    : "Could not load notifications."}
                 </p>
               ) : notifications.length === 0 ? (
                 <p className="body-scale text-foreground-muted">
                   No alerts yet.{" "}
-                  <Link href={portalPaths.borrow} className={PORTAL_INLINE_LINK}>Browse books</Link>,{" "}
-                  <Link href={portalPaths.activity} className={PORTAL_INLINE_LINK}>request a book</Link>, or{" "}
-                  <Link href={portalPaths.sell} className={PORTAL_INLINE_LINK}>list a book</Link>.
+                  <Link href={portalPaths.borrow} className={PORTAL_INLINE_LINK}>
+                    Browse books
+                  </Link>
+                  ,{" "}
+                  <Link href={portalPaths.activity} className={PORTAL_INLINE_LINK}>
+                    request a book
+                  </Link>
+                  , or{" "}
+                  <Link href={portalPaths.sell} className={PORTAL_INLINE_LINK}>
+                    list a book
+                  </Link>
+                  .
                 </p>
               ) : (
                 <div className="space-y-6">
@@ -215,7 +238,11 @@ export default function StudentAlertsPage() {
                         {/* Mobile: card list */}
                         <div className="space-y-2 sm:hidden">
                           {bucket.rows.map((n) => {
-                            const nav = resolveAlertNav(n, portalPaths.activity, portalPaths.borrow);
+                            const nav = resolveAlertNav(
+                              n,
+                              portalPaths.activity,
+                              portalPaths.borrow,
+                            );
                             return (
                               <div
                                 key={n.id}
@@ -264,7 +291,12 @@ export default function StudentAlertsPage() {
                                 <TableCell className="min-w-[200px] pr-5 py-3 align-top body-scale leading-relaxed text-foreground">
                                   <div className="space-y-1">
                                     <p>{n.body}</p>
-                                    <Link href={resolveAlertNav(n, portalPaths.activity, portalPaths.borrow).href}>
+                                    <Link
+                                      href={
+                                        resolveAlertNav(n, portalPaths.activity, portalPaths.borrow)
+                                          .href
+                                      }
+                                    >
                                       <span className="inline-flex h-7 items-center rounded-xl border border-border  px-3 text-xs font-medium text-foreground">
                                         Take action
                                       </span>

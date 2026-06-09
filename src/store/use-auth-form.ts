@@ -1,9 +1,9 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
 interface AuthFormState {
   // Common
-  authTab: 'login' | 'signup';
-  collegeAuthTab: 'login' | 'signup';
+  authTab: "login" | "signup";
+  collegeAuthTab: "login" | "signup";
 
   // Student Login
   loginEmail: string;
@@ -41,8 +41,8 @@ interface AuthFormState {
   confirmPassword: string;
 
   // Setters
-  setAuthTab: (tab: 'login' | 'signup') => void;
-  setCollegeAuthTab: (tab: 'login' | 'signup') => void;
+  setAuthTab: (tab: "login" | "signup") => void;
+  setCollegeAuthTab: (tab: "login" | "signup") => void;
 
   setLoginEmail: (val: string) => void;
   setLoginPassword: (val: string) => void;
@@ -80,39 +80,39 @@ interface AuthFormState {
 }
 
 export const useAuthFormStore = create<AuthFormState>((set) => ({
-  authTab: 'login',
-  collegeAuthTab: 'login',
+  authTab: "login",
+  collegeAuthTab: "login",
 
-  loginEmail: '',
-  loginPassword: '',
+  loginEmail: "",
+  loginPassword: "",
 
-  signUpName: '',
-  signUpEmail: '',
-  signUpPhone: '',
-  signUpPassword: '',
-  signUpBranch: 'RVCE-BLR',
+  signUpName: "",
+  signUpEmail: "",
+  signUpPhone: "",
+  signUpPassword: "",
+  signUpBranch: "RVCE-BLR",
   signUpPremium: true,
 
-  collegeEmail: '',
-  collegePassword: '',
-  collegeName: '',
-  collegeBranch: 'RVCE-BLR',
+  collegeEmail: "",
+  collegePassword: "",
+  collegeName: "",
+  collegeBranch: "RVCE-BLR",
 
-  adminName: '',
-  adminEmail: '',
-  phone: '',
-  designation: '',
-  institutionName: '',
-  institutionType: 'college',
-  country: 'India',
-  adminState: '',
-  city: '',
-  district: '',
-  address: '',
-  postalCode: '',
-  adminRole: 'hub',
-  password: '',
-  confirmPassword: '',
+  adminName: "",
+  adminEmail: "",
+  phone: "",
+  designation: "",
+  institutionName: "",
+  institutionType: "college",
+  country: "India",
+  adminState: "",
+  city: "",
+  district: "",
+  address: "",
+  postalCode: "",
+  adminRole: "hub",
+  password: "",
+  confirmPassword: "",
 
   setAuthTab: (tab) => set({ authTab: tab }),
   setCollegeAuthTab: (tab) => set({ collegeAuthTab: tab }),

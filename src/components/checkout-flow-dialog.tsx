@@ -27,21 +27,21 @@ import { fmtCredits, fmtCreditWithRupeeEquivalent } from "@/lib/credits";
 
 export type CheckoutFlowItem =
   | {
-    kind: "hub";
-    bookId: string;
-    title: string;
-    hubName: string;
-    buyPrice: number;
-    borrowPrice: number;
-  }
+      kind: "hub";
+      bookId: string;
+      title: string;
+      hubName: string;
+      buyPrice: number;
+      borrowPrice: number;
+    }
   | {
-    kind: "p2p";
-    listingId: string;
-    title: string;
-    hubName: string | null;
-    buyPrice: number;
-    borrowPrice: number;
-  };
+      kind: "p2p";
+      listingId: string;
+      title: string;
+      hubName: string | null;
+      buyPrice: number;
+      borrowPrice: number;
+    };
 
 type Step = "details" | "payment" | "success";
 
@@ -92,16 +92,17 @@ export function CheckoutFlowDialog({
   const actualBorrowPrice = isPremium ? 0 : item.borrowPrice;
   const amount = mode === "borrow" ? actualBorrowPrice : item.buyPrice;
   const requiresWalletDebit = amount > 0;
-  const hubLine = item.kind === "hub" ? item.hubName : item.hubName ?? "Campus hub (TBD)";
+  const hubLine = item.kind === "hub" ? item.hubName : (item.hubName ?? "Campus hub (TBD)");
   const pickupRef =
-    item.kind === "hub" ? `REF-${item.bookId.slice(0, 8).toUpperCase()}` : `REF-${item.listingId.slice(0, 8).toUpperCase()}`;
+    item.kind === "hub"
+      ? `REF-${item.bookId.slice(0, 8).toUpperCase()}`
+      : `REF-${item.listingId.slice(0, 8).toUpperCase()}`;
 
   const shelfAcquireBody =
     mode === "buy" && deskAcquireHubs?.length
       ? {
-        acquireForHubId:
-          deskAcquireHubs.length === 1 ? deskAcquireHubs[0]!.id : acquireHubId,
-      }
+          acquireForHubId: deskAcquireHubs.length === 1 ? deskAcquireHubs[0]!.id : acquireHubId,
+        }
       : null;
 
   const runPayment = async () => {
@@ -205,9 +206,7 @@ export function CheckoutFlowDialog({
                     )}
                   >
                     <span className="font-medium">Buy</span>
-                    <span className="tabular-nums text-primary">
-                      {fmtCredits(item.buyPrice)}
-                    </span>
+                    <span className="tabular-nums text-primary">{fmtCredits(item.buyPrice)}</span>
                   </button>
                 </div>
               </div>
@@ -232,13 +231,14 @@ export function CheckoutFlowDialog({
                       </SelectContent>
                     </Select>
                     <p className="caption-scale leading-relaxed text-muted-foreground">
-                      Hub desk buy moves the on-shelf copy into this hub’s inventory as hub-owned stock
-                      (other hubs and peer consignment).
+                      Hub desk buy moves the on-shelf copy into this hub’s inventory as hub-owned
+                      stock (other hubs and peer consignment).
                     </p>
                   </div>
                 ) : (
                   <p className="rounded-xl border border-border px-3 py-2 caption-scale leading-relaxed text-muted-foreground">
-                    Buying adds this copy to <span className="font-medium text-foreground">{deskAcquireHubs[0]!.name}</span>{" "}
+                    Buying adds this copy to{" "}
+                    <span className="font-medium text-foreground">{deskAcquireHubs[0]!.name}</span>{" "}
                     shelf inventory as hub-owned stock.
                   </p>
                 ))}
@@ -275,7 +275,9 @@ export function CheckoutFlowDialog({
               <div className="space-y-2 mt-4 p-4 border border-primary/20 bg-primary/5 rounded-xl flex items-center justify-between">
                 <div>
                   <p className="text-sm font-semibold text-primary">Wallet Balance</p>
-                  <p className="text-xl font-bold">{balance.toLocaleString()} <span className="text-xs font-normal">Credits</span></p>
+                  <p className="text-xl font-bold">
+                    {balance.toLocaleString()} <span className="text-xs font-normal">Credits</span>
+                  </p>
                 </div>
                 <Wallet className="h-8 w-8 text-primary/50" />
               </div>
@@ -292,7 +294,16 @@ export function CheckoutFlowDialog({
                 </Button>
                 <Button
                   className="flex-1 rounded-xl bg-primary/90 text-primary-foreground hover:bg-primary/80"
-                  disabled={pending || balance < amount || !!(shelfAcquireBody && deskAcquireHubs && deskAcquireHubs.length > 1 && !acquireHubId)}
+                  disabled={
+                    pending ||
+                    balance < amount ||
+                    !!(
+                      shelfAcquireBody &&
+                      deskAcquireHubs &&
+                      deskAcquireHubs.length > 1 &&
+                      !acquireHubId
+                    )
+                  }
                   onClick={() => void runPayment()}
                 >
                   {pending ? (
@@ -302,8 +313,10 @@ export function CheckoutFlowDialog({
                     </>
                   ) : balance < amount ? (
                     "Insufficient Credits"
+                  ) : amount === 0 ? (
+                    "Confirm Free Borrow"
                   ) : (
-                    amount === 0 ? "Confirm Free Borrow" : `Pay ${fmtCredits(amount)}`
+                    `Pay ${fmtCredits(amount)}`
                   )}
                 </Button>
               </div>
@@ -316,15 +329,16 @@ export function CheckoutFlowDialog({
               <div className="w-full rounded-xl border border-border  p-3 text-left">
                 <p className="text-sm font-medium text-foreground">Pick up at {hubLine}</p>
                 <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                  Bring your student ID, mention this reference at the desk, and collect within desk hours.
+                  Bring your student ID, mention this reference at the desk, and collect within desk
+                  hours.
                   {mode === "borrow"
                     ? " Returns are processed at the same hub desk."
                     : " Staff will confirm handover before completion."}
                 </p>
-                <p className="mt-2 text-xs text-accent">
-                  Pickup ref: {pickupRef}
+                <p className="mt-2 text-xs text-accent">Pickup ref: {pickupRef}</p>
+                <p className="mt-1 caption-scale text-muted-foreground">
+                  QR support can be added on top of this ref in the next phase.
                 </p>
-                <p className="mt-1 caption-scale text-muted-foreground">QR support can be added on top of this ref in the next phase.</p>
               </div>
               <Button
                 className="w-full rounded-xl"

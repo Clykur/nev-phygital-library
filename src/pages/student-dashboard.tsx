@@ -7,7 +7,12 @@ import { Link } from "wouter";
 import { STUDENT_WALLET_PATH, STUDENT_BORROW_PATH } from "@/lib/app-paths";
 import { useAuth } from "@/context/auth-context";
 import { PORTAL_PAGE_CONTAINER } from "@/lib/student-ui";
-import { PORTAL_PAGE_LEAD, PORTAL_PAGE_TITLE, PORTAL_SECTION_LABEL, PORTAL_STAT_VALUE } from "@/lib/portal-typography";
+import {
+  PORTAL_PAGE_LEAD,
+  PORTAL_PAGE_TITLE,
+  PORTAL_SECTION_LABEL,
+  PORTAL_STAT_VALUE,
+} from "@/lib/portal-typography";
 import { PORTAL_INLINE_LINK } from "@/lib/student-ui";
 import { cn } from "@/lib/utils";
 import { useStudentDashboard } from "@/hooks/use-student-dashboard";
@@ -31,7 +36,8 @@ export default function StudentDashboardPage() {
   const hubsQ = useQuery({
     queryKey: ["catalog", "hubs", "student-dashboard"],
     enabled: !!token,
-    queryFn: () => apiFetch<{ hubs: { id: string; name: string }[] }>("/api/catalog/hubs", { token: token! }),
+    queryFn: () =>
+      apiFetch<{ hubs: { id: string; name: string }[] }>("/api/catalog/hubs", { token: token! }),
   });
   const booksQ = useQuery({
     queryKey: ["catalog", "books", "student-dashboard", user?.userId],
@@ -73,7 +79,7 @@ export default function StudentDashboardPage() {
   });
 
   const hubName = (hubId: string | undefined | null) =>
-    hubId ? hubsQ.data?.hubs.find((h) => h.id === hubId)?.name ?? "Hub" : "Hub";
+    hubId ? (hubsQ.data?.hubs.find((h) => h.id === hubId)?.name ?? "Hub") : "Hub";
 
   const fmtDue = (iso: string | undefined | null) => {
     if (!iso) return "—";
@@ -94,7 +100,11 @@ export default function StudentDashboardPage() {
 
   const borrowingRows: BorrowingRow[] = [
     ...((booksQ.data?.books ?? [])
-      .filter((b) => b.borrowerUserId === user?.userId && (b.status === "checked_out" || b.status === "overdue"))
+      .filter(
+        (b) =>
+          b.borrowerUserId === user?.userId &&
+          (b.status === "checked_out" || b.status === "overdue"),
+      )
       .map((b) => ({
         id: b.id,
         title: b.title,
@@ -152,9 +162,7 @@ export default function StudentDashboardPage() {
                   </div>
 
                   <div className="mt-3">
-                    <h3 className={PORTAL_STAT_VALUE}>
-                      {fmtCredits(balance)}
-                    </h3>
+                    <h3 className={PORTAL_STAT_VALUE}>{fmtCredits(balance)}</h3>
 
                     <p className="mt-1 text-sm text-foreground-muted">
                       Available credits for borrowing books
@@ -165,10 +173,7 @@ export default function StudentDashboardPage() {
                 <CardContent className="pt-0">
                   <Link
                     href={STUDENT_WALLET_PATH}
-                    className={cn(
-                      "inline-flex items-center font-semibold",
-                      PORTAL_INLINE_LINK
-                    )}
+                    className={cn("inline-flex items-center font-semibold", PORTAL_INLINE_LINK)}
                   >
                     View Wallet →
                   </Link>
@@ -193,9 +198,7 @@ export default function StudentDashboardPage() {
                   </div>
 
                   <div className="mt-3">
-                    <h3 className={cn(PORTAL_STAT_VALUE, "capitalize")}>
-                      {subscription} Tier
-                    </h3>
+                    <h3 className={cn(PORTAL_STAT_VALUE, "capitalize")}>{subscription} Tier</h3>
 
                     <p className="mt-1 text-sm text-foreground-muted">
                       {subscription === "pro"
@@ -208,10 +211,7 @@ export default function StudentDashboardPage() {
                 <CardContent className="pt-0">
                   <Link
                     href={STUDENT_WALLET_PATH}
-                    className={cn(
-                      "inline-flex items-center font-semibold",
-                      PORTAL_INLINE_LINK
-                    )}
+                    className={cn("inline-flex items-center font-semibold", PORTAL_INLINE_LINK)}
                   >
                     Manage Subscription →
                   </Link>
@@ -244,23 +244,47 @@ export default function StudentDashboardPage() {
               <CardContent className="space-y-5">
                 <div>
                   <p className={cn(PORTAL_SECTION_LABEL, "mb-1")}>Total Books Bought</p>
-                  {isLoading ? <div className="h-6 w-12 animate-pulse rounded bg-shimmer" /> : <p className={PORTAL_STAT_VALUE}>{data?.stats.totalBought}</p>}
+                  {isLoading ? (
+                    <div className="h-6 w-12 animate-pulse rounded bg-shimmer" />
+                  ) : (
+                    <p className={PORTAL_STAT_VALUE}>{data?.stats.totalBought}</p>
+                  )}
                 </div>
                 <div>
                   <p className={cn(PORTAL_SECTION_LABEL, "mb-1")}>Total Books Sold</p>
-                  {isLoading ? <div className="h-6 w-12 animate-pulse rounded bg-shimmer" /> : <p className={cn(PORTAL_STAT_VALUE, "text-success")}>{data?.stats.totalSold}</p>}
+                  {isLoading ? (
+                    <div className="h-6 w-12 animate-pulse rounded bg-shimmer" />
+                  ) : (
+                    <p className={cn(PORTAL_STAT_VALUE, "text-success")}>{data?.stats.totalSold}</p>
+                  )}
                 </div>
                 <div>
                   <p className={cn(PORTAL_SECTION_LABEL, "mb-1")}>Credits Earned All Time</p>
-                  {isLoading ? <div className="h-6 w-20 animate-pulse rounded bg-shimmer" /> : <p className={cn(PORTAL_STAT_VALUE, "text-accent")}>{fmtCredits(data?.stats.creditsEarned ?? 0)}</p>}
+                  {isLoading ? (
+                    <div className="h-6 w-20 animate-pulse rounded bg-shimmer" />
+                  ) : (
+                    <p className={cn(PORTAL_STAT_VALUE, "text-accent")}>
+                      {fmtCredits(data?.stats.creditsEarned ?? 0)}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <p className={cn(PORTAL_SECTION_LABEL, "mb-1")}>Active Borrowings</p>
-                  {isLoading ? <div className="h-6 w-12 animate-pulse rounded bg-shimmer" /> : <p className={PORTAL_STAT_VALUE}>{data?.stats.activeBorrowings ?? borrowingRows.length}</p>}
+                  {isLoading ? (
+                    <div className="h-6 w-12 animate-pulse rounded bg-shimmer" />
+                  ) : (
+                    <p className={PORTAL_STAT_VALUE}>
+                      {data?.stats.activeBorrowings ?? borrowingRows.length}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <p className={cn(PORTAL_SECTION_LABEL, "mb-1")}>Recently Viewed</p>
-                  {isLoading ? <div className="h-6 w-12 animate-pulse rounded bg-shimmer" /> : <p className={PORTAL_STAT_VALUE}>{data?.stats.recentlyViewedCount ?? 0}</p>}
+                  {isLoading ? (
+                    <div className="h-6 w-12 animate-pulse rounded bg-shimmer" />
+                  ) : (
+                    <p className={PORTAL_STAT_VALUE}>{data?.stats.recentlyViewedCount ?? 0}</p>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -335,10 +359,13 @@ export default function StudentDashboardPage() {
                       <div className="min-w-0 flex-1">
                         <p className="truncate body-scale font-semibold">{book.title}</p>
                         {book.author ? (
-                          <p className="truncate caption-scale text-foreground-muted">{book.author}</p>
+                          <p className="truncate caption-scale text-foreground-muted">
+                            {book.author}
+                          </p>
                         ) : null}
                         <p className="mt-1 caption-scale text-foreground-muted">
-                          {fmtCreditWithRupeeEquivalent(book.buyPrice)} · Borrow {fmtCredits(book.borrowPrice)}
+                          {fmtCreditWithRupeeEquivalent(book.buyPrice)} · Borrow{" "}
+                          {fmtCredits(book.borrowPrice)}
                         </p>
                         <p className="mt-0.5 caption-scale text-foreground-muted">
                           Viewed {addedLabel(book.lastViewedAt)}

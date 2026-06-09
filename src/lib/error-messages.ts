@@ -2,11 +2,9 @@
  * Maps unknown failures (network, HTTP, thrown Errors) to short, safe copy for toasts and UI.
  */
 
-const NETWORK =
-  "We couldn't reach the server. Check your internet connection and try again.";
+const NETWORK = "We couldn't reach the server. Check your internet connection and try again.";
 
-const SERVER =
-  "Something went wrong on our end. Please try again in a moment.";
+const SERVER = "Something went wrong on our end. Please try again in a moment.";
 
 function looksTechnical(msg: string): boolean {
   const m = msg.trim();
@@ -27,28 +25,26 @@ export function httpErrorMessage(status: number, rawBody?: string): string {
   if (status === 0) return raw || NETWORK;
   if (status >= 500) return SERVER;
   if (status === 401) {
-    return bodyUsable
-      ? raw
-      : "Your session expired or sign-in didn't work. Please sign in again.";
+    return bodyUsable ? raw : "Your session expired or sign-in didn't work. Please sign in again.";
   }
   if (status === 403) {
     return bodyUsable ? raw : "You don't have permission to do that.";
   }
-  if (status === 404)
-    return "We couldn't find what you're looking for.";
+  if (status === 404) return "We couldn't find what you're looking for.";
   if (status === 409) {
     return bodyUsable
       ? raw
       : "That action isn't available right now. Refresh the page and try again.";
   }
+  if (/rate limit/i.test(raw)) {
+    return "Too many sign-up attempts from Supabase. Wait a while, use Continue with Google, or sign in if you already have an account.";
+  }
   if (status === 422) {
     return bodyUsable ? raw : "Please check the information you entered and try again.";
   }
-  if (status === 429)
-    return "Too many requests. Please wait a moment and try again.";
+  if (status === 429) return "Too many requests. Please wait a moment and try again.";
   if (bodyUsable) return raw;
-  if (status >= 400)
-    return "We couldn't complete that request.";
+  if (status >= 400) return "We couldn't complete that request.";
   return SERVER;
 }
 
@@ -56,18 +52,14 @@ export function wrapNetworkFailure(err: unknown): string {
   if (err instanceof Error) {
     const m = err.message;
     if (/abort/i.test(m)) return "The request was cancelled.";
-    if (
-      /failed to fetch|networkerror|load failed|network request failed/i.test(m)
-    ) {
+    if (/failed to fetch|networkerror|load failed|network request failed/i.test(m)) {
       return NETWORK;
     }
   }
   return NETWORK;
 }
 
-function isApiLike(
-  err: unknown,
-): err is { status: number; message: string } {
+function isApiLike(err: unknown): err is { status: number; message: string } {
   return (
     typeof err === "object" &&
     err !== null &&

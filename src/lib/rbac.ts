@@ -74,11 +74,7 @@ export function isPremiumOk(user: AuthUser): boolean {
   return user.premiumActive || user.baseRole === "hub" || user.baseRole === "super_admin";
 }
 
-export function authorize(
-  user: AuthUser | null,
-  action: Action,
-  resource: RbacResource,
-): boolean {
+export function authorize(user: AuthUser | null, action: Action, resource: RbacResource): boolean {
   if (!user) {
     return action === ACTIONS.VIEW_CATALOG && resource.type === "catalog";
   }
@@ -98,9 +94,7 @@ export function authorize(
     action === ACTIONS.BORROW_P2P;
 
   if (!creditWalletAllowed) {
-    const premiumAllowed =
-      action === ACTIONS.REQUEST_BOOK ||
-      action === ACTIONS.CREATE_P2P_LISTING;
+    const premiumAllowed = action === ACTIONS.REQUEST_BOOK || action === ACTIONS.CREATE_P2P_LISTING;
 
     if (premiumAllowed && !isPremiumOk(user)) return false;
   }

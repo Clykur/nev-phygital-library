@@ -6,7 +6,13 @@ import { INITIAL_FREE_CREDITS } from "@/lib/credits";
 
 export type Transaction = {
   id: string;
-  type: "credit" | "debit" | "transfer" | "bounty_reward_credit" | "bounty_reward_cash_request" | string;
+  type:
+    | "credit"
+    | "debit"
+    | "transfer"
+    | "bounty_reward_credit"
+    | "bounty_reward_cash_request"
+    | string;
   amount: number;
   creditsAdded?: number;
   creditsDeducted?: number;
@@ -93,7 +99,11 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         token,
         body: JSON.stringify({ tier: plan }),
       });
-      toast.success(plan === "pro" ? "Subscribed to Pro! Credits added to your wallet." : "Switched to Free plan.");
+      toast.success(
+        plan === "pro"
+          ? "Subscribed to Pro! Credits added to your wallet."
+          : "Switched to Free plan.",
+      );
       await refreshWallet();
     } catch (err: any) {
       toast.error(err.message || "Failed to subscribe");

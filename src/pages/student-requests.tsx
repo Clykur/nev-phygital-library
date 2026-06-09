@@ -119,7 +119,7 @@ function ProgressBar({ status }: { status: string }) {
             title={s}
             className={cn(
               "h-1 flex-1 rounded-full transition-colors",
-              idx >= i ? "bg-primary/70" : "bg-muted"
+              idx >= i ? "bg-primary/70" : "bg-muted",
             )}
           />
         ))}
@@ -146,8 +146,7 @@ function StatusChip({ status }: { status: string }) {
           "border-border bg-background text-muted-foreground",
         (n === "cancelled" || n === "lease_refunded") &&
           "border-destructive/30 bg-destructive/10 text-destructive",
-        n === "lease_return_pending" &&
-          "border-primary/30 bg-primary/10 text-primary"
+        n === "lease_return_pending" && "border-primary/30 bg-primary/10 text-primary",
       )}
     >
       {label}
@@ -176,13 +175,7 @@ function NotifKindLabel({ kind }: { kind: string }) {
 
 // ── Request Form ────────────────────────────────────────────────────────────
 
-function RequestForm({
-  onSuccess,
-  activeCount,
-}: {
-  onSuccess: () => void;
-  activeCount: number;
-}) {
+function RequestForm({ onSuccess, activeCount }: { onSuccess: () => void; activeCount: number }) {
   const { token, user } = useAuth();
   const isPremium = user ? isPremiumOk(user) : false;
   const [title, setTitle] = useState("");
@@ -197,7 +190,13 @@ function RequestForm({
       apiFetch<{ request: BookRequestRow }>("/api/book-requests/", {
         method: "POST",
         token: token!,
-        body: JSON.stringify({ bookTitle: title, author, isbn, notes, isLongTermLease: isPremium ? isLongTermLease : false }),
+        body: JSON.stringify({
+          bookTitle: title,
+          author,
+          isbn,
+          notes,
+          isLongTermLease: isPremium ? isLongTermLease : false,
+        }),
       }),
     onSuccess: () => {
       toast.success("Request submitted! Hubs across the network have been notified.");
@@ -209,8 +208,7 @@ function RequestForm({
       setOpen(false);
       onSuccess();
     },
-    onError: (e) =>
-      toast.error(e instanceof ApiError ? e.message : "Could not submit request"),
+    onError: (e) => toast.error(e instanceof ApiError ? e.message : "Could not submit request"),
   });
 
   const canSubmit = title.trim().length > 0 && !submit.isPending;
@@ -227,9 +225,7 @@ function RequestForm({
         <div className="flex items-center gap-3">
           <PlusCircle className="h-5 w-5 text-primary" />
           <div>
-            <p className="text-sm font-semibold text-foreground">
-              Request a Book
-            </p>
+            <p className="text-sm font-semibold text-foreground">Request a Book</p>
             <p className="text-xs text-muted-foreground">
               {atLimit
                 ? "3 active requests limit reached — complete or cancel one first"
@@ -248,8 +244,7 @@ function RequestForm({
         <div className="border-t border-border px-5 pb-5 pt-4">
           {atLimit ? (
             <p className="rounded-lg border border-destructive/20 bg-destructive/5 p-3 text-sm text-destructive">
-              You already have 3 active book requests. Complete or cancel one
-              before adding another.
+              You already have 3 active book requests. Complete or cancel one before adding another.
             </p>
           ) : (
             <form
@@ -334,11 +329,7 @@ function RequestForm({
                   </p>
                 </div>
               )}
-              <Button
-                type="submit"
-                disabled={!canSubmit}
-                className="w-full sm:w-auto"
-              >
+              <Button type="submit" disabled={!canSubmit} className="w-full sm:w-auto">
                 {submit.isPending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -378,28 +369,20 @@ function ConfirmCollectionDialog({
           <DialogTitle>Confirm collection</DialogTitle>
           <DialogDescription>
             Please physically collect your copy at{" "}
-            <span className="font-semibold text-foreground">{hubName}</span>{" "}
-            before confirming here.
+            <span className="font-semibold text-foreground">{hubName}</span> before confirming here.
           </DialogDescription>
         </DialogHeader>
         {request && (
           <div className="rounded-xl border border-border bg-muted/30 p-4">
-            <p className="text-sm font-medium text-foreground">
-              {request.bookTitle}
-            </p>
-            {hubName && (
-              <p className="mt-1 text-xs text-muted-foreground">{hubName}</p>
-            )}
+            <p className="text-sm font-medium text-foreground">{request.bookTitle}</p>
+            {hubName && <p className="mt-1 text-xs text-muted-foreground">{hubName}</p>}
           </div>
         )}
         <DialogFooter>
           <Button variant="outline" onClick={onClose} disabled={isPending}>
             Cancel
           </Button>
-          <Button
-            disabled={!request || isPending}
-            onClick={() => request && onConfirm(request.id)}
-          >
+          <Button disabled={!request || isPending} onClick={() => request && onConfirm(request.id)}>
             {isPending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -434,15 +417,13 @@ function CancelRequestDialog({
         <DialogHeader>
           <DialogTitle>Cancel request?</DialogTitle>
           <DialogDescription>
-            This will withdraw your request. If a copy was reserved for you, it
-            will be released back to inventory.
+            This will withdraw your request. If a copy was reserved for you, it will be released
+            back to inventory.
           </DialogDescription>
         </DialogHeader>
         {request && (
           <div className="rounded-xl border border-border bg-muted/30 p-4">
-            <p className="text-sm font-medium text-foreground">
-              {request.bookTitle}
-            </p>
+            <p className="text-sm font-medium text-foreground">{request.bookTitle}</p>
           </div>
         )}
         <DialogFooter>
@@ -518,8 +499,7 @@ export default function StudentRequestsPage() {
       void qc.invalidateQueries({ queryKey: ["book-requests"] });
       void qc.invalidateQueries({ queryKey: ["notifications"] });
     },
-    onError: (e) =>
-      toast.error(e instanceof ApiError ? e.message : "Could not confirm collection"),
+    onError: (e) => toast.error(e instanceof ApiError ? e.message : "Could not confirm collection"),
   });
 
   const cancelMutation = useMutation({
@@ -533,8 +513,7 @@ export default function StudentRequestsPage() {
       setCancelTarget(null);
       void qc.invalidateQueries({ queryKey: ["book-requests"] });
     },
-    onError: (e) =>
-      toast.error(e instanceof ApiError ? e.message : "Could not cancel request"),
+    onError: (e) => toast.error(e instanceof ApiError ? e.message : "Could not cancel request"),
   });
 
   const hubName = (id: string | null | undefined) => {
@@ -561,13 +540,11 @@ export default function StudentRequestsPage() {
 
   const activeRequests = useMemo(
     () => requests.filter((r) => isActiveBookRequest(r.status)),
-    [requests]
+    [requests],
   );
 
   const recentNotifs = useMemo(() => {
-    const rows = (notifQ.data?.notifications ?? []).filter((n) =>
-      REQUEST_NOTIF_KINDS.has(n.kind)
-    );
+    const rows = (notifQ.data?.notifications ?? []).filter((n) => REQUEST_NOTIF_KINDS.has(n.kind));
     return [...rows]
       .sort((a, b) => {
         const ta = a.createdAt ? new Date(a.createdAt).getTime() : 0;
@@ -589,7 +566,7 @@ export default function StudentRequestsPage() {
     el.classList.add("ring-2", "ring-primary/40", "bg-primary/5");
     const t = window.setTimeout(
       () => el.classList.remove("ring-2", "ring-primary/40", "bg-primary/5"),
-      2600
+      2600,
     );
     return () => window.clearTimeout(t);
   }, [reqQ.data?.requests]);
@@ -597,276 +574,247 @@ export default function StudentRequestsPage() {
   return (
     <div className={cn(PORTAL_PAGE_CONTAINER, "space-y-8 py-8")}>
       <header className="border-b border-border pb-6">
-          <h1 className={PORTAL_PAGE_TITLE}>My Book Requests</h1>
-          <p className={cn(PORTAL_PAGE_LEAD, "mt-2")}>
-            Request any book from the network — hubs will notify you when it's
-            available for collection.
-          </p>
-        </header>
+        <h1 className={PORTAL_PAGE_TITLE}>My Book Requests</h1>
+        <p className={cn(PORTAL_PAGE_LEAD, "mt-2")}>
+          Request any book from the network — hubs will notify you when it's available for
+          collection.
+        </p>
+      </header>
 
-        {/* Inline notifications */}
-        {recentNotifs.length > 0 && (
-          <section className="mb-6" aria-label="Request notifications">
-            <div className="rounded-xl border border-border bg-card overflow-hidden">
-              <div className="flex items-center gap-2 border-b border-border px-5 py-3">
-                <Bell className="h-4 w-4 text-primary" />
-                <h2 className="text-sm font-semibold text-foreground">
-                  Recent updates
-                </h2>
-              </div>
-              <ul className="divide-y divide-border">
-                {recentNotifs.map((n) => (
-                  <li key={n.id} className="px-5 py-3">
-                    <div className="flex flex-wrap items-start justify-between gap-2">
-                      <div className="min-w-0 flex-1">
-                        <NotifKindLabel kind={n.kind} />
-                        <p className="mt-0.5 text-sm leading-relaxed text-foreground">
-                          {n.body}
-                        </p>
-                      </div>
-                      <span className="shrink-0 text-xs text-muted-foreground">
-                        {fmtRelative(n.createdAt)}
-                      </span>
+      {/* Inline notifications */}
+      {recentNotifs.length > 0 && (
+        <section className="mb-6" aria-label="Request notifications">
+          <div className="rounded-xl border border-border bg-card overflow-hidden">
+            <div className="flex items-center gap-2 border-b border-border px-5 py-3">
+              <Bell className="h-4 w-4 text-primary" />
+              <h2 className="text-sm font-semibold text-foreground">Recent updates</h2>
+            </div>
+            <ul className="divide-y divide-border">
+              {recentNotifs.map((n) => (
+                <li key={n.id} className="px-5 py-3">
+                  <div className="flex flex-wrap items-start justify-between gap-2">
+                    <div className="min-w-0 flex-1">
+                      <NotifKindLabel kind={n.kind} />
+                      <p className="mt-0.5 text-sm leading-relaxed text-foreground">{n.body}</p>
                     </div>
-                  </li>
-                ))}
-              </ul>
+                    <span className="shrink-0 text-xs text-muted-foreground">
+                      {fmtRelative(n.createdAt)}
+                    </span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
+
+      {/* Request submission */}
+      <div className="mb-8">
+        <RequestForm
+          activeCount={activeRequests.length}
+          onSuccess={() => void qc.invalidateQueries({ queryKey: ["book-requests"] })}
+        />
+      </div>
+
+      {/* Active requests */}
+      {activeRequests.length > 0 && (
+        <>
+          <section className="mb-8" aria-label="Active requests">
+            <h2 className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+              Active ({activeRequests.length})
+            </h2>
+            <div className="space-y-3">
+              {activeRequests.map((r) => {
+                const assignedHubId =
+                  (r as any).assignedHubId ?? (r as any).fulfilledByHubId ?? r.hubId ?? null;
+                const hub = hubName(assignedHubId);
+                const n = normalizeBookRequestStatus(r.status);
+                const isReady = n === "available_for_collection";
+                const isPending = n === "pending";
+                return (
+                  <div
+                    key={r.id}
+                    data-request-id={r.id}
+                    className={cn(
+                      "rounded-xl border bg-card p-5 transition-all",
+                      isReady ? "border-success/40 bg-success/5" : "border-border",
+                    )}
+                  >
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div className="min-w-0 flex-1 space-y-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <StatusIcon status={r.status} />
+                          <span className="font-semibold text-foreground">
+                            {r.bookTitle?.trim() || "Book request"}
+                          </span>
+                          {r.isLongTermLease && (
+                            <span className="inline-flex h-5 items-center rounded bg-primary/10 px-1.5 text-[10px] font-bold uppercase tracking-wider text-primary border border-primary/20">
+                              Lease
+                            </span>
+                          )}
+                          <StatusChip status={r.status} />
+                        </div>
+                        {r.author?.trim() && (
+                          <p className="text-xs text-muted-foreground">by {r.author}</p>
+                        )}
+                        {isReady && (
+                          <p className="text-sm font-medium text-success">Ready at: {hub}</p>
+                        )}
+                        {isPending && !assignedHubId && (
+                          <p className="text-xs text-muted-foreground">
+                            Broadcast to all hubs — awaiting claim
+                          </p>
+                        )}
+                        <ProgressBar status={r.status} />
+                      </div>
+
+                      <div className="flex shrink-0 flex-col gap-2">
+                        {isReady && (
+                          <Button
+                            size="sm"
+                            className="h-9 rounded-lg bg-success text-success-foreground hover:bg-success/90"
+                            onClick={() => setCollectTarget(r)}
+                          >
+                            <CheckCircle2 className="mr-1.5 h-4 w-4" />
+                            I've collected it
+                          </Button>
+                        )}
+                        {isPending && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-9 rounded-lg border-destructive/30 text-destructive hover:bg-destructive/5"
+                            onClick={() => setCancelTarget(r)}
+                          >
+                            Cancel request
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-xs text-muted-foreground">
+                      {r.isbn && <span>ISBN: {r.isbn}</span>}
+                      <span>Requested {fmtDate(r.createdAt)}</span>
+                      {r.updatedAt && r.updatedAt !== r.createdAt && (
+                        <span>Updated {fmtRelative(r.updatedAt)}</span>
+                      )}
+                    </div>
+
+                    {r.notes?.trim() && (
+                      <p className="mt-2 rounded-lg border border-border bg-muted/30 px-3 py-2 text-xs text-muted-foreground">
+                        {r.notes}
+                      </p>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </section>
-        )}
+          <Separator className="my-6" />
+        </>
+      )}
 
-        {/* Request submission */}
-        <div className="mb-8">
-          <RequestForm
-            activeCount={activeRequests.length}
-            onSuccess={() => void qc.invalidateQueries({ queryKey: ["book-requests"] })}
-          />
+      {/* All / Historical requests */}
+      <section aria-label="All requests">
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+            All requests ({requests.length})
+          </h2>
         </div>
 
-        {/* Active requests */}
-        {activeRequests.length > 0 && (
-          <>
-            <section className="mb-8" aria-label="Active requests">
-              <h2 className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-                Active ({activeRequests.length})
-              </h2>
-              <div className="space-y-3">
-                {activeRequests.map((r) => {
-                  const assignedHubId =
-                    (r as any).assignedHubId ??
-                    (r as any).fulfilledByHubId ??
-                    r.hubId ??
-                    null;
-                  const hub = hubName(assignedHubId);
-                  const n = normalizeBookRequestStatus(r.status);
-                  const isReady = n === "available_for_collection";
-                  const isPending = n === "pending";
-                  return (
-                    <div
-                      key={r.id}
-                      data-request-id={r.id}
-                      className={cn(
-                        "rounded-xl border bg-card p-5 transition-all",
-                        isReady
-                          ? "border-success/40 bg-success/5"
-                          : "border-border"
-                      )}
-                    >
-                      <div className="flex flex-wrap items-start justify-between gap-3">
-                        <div className="min-w-0 flex-1 space-y-1">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <StatusIcon status={r.status} />
-                            <span className="font-semibold text-foreground">
-                              {r.bookTitle?.trim() || "Book request"}
+        {reqQ.isLoading ? (
+          <div className="flex items-center gap-2 py-12 text-muted-foreground">
+            <Loader2 className="h-5 w-5 animate-spin" />
+            <span className="text-sm">Loading your requests…</span>
+          </div>
+        ) : reqQ.isError ? (
+          <p className="py-8 text-sm text-destructive">
+            {reqQ.error instanceof ApiError ? reqQ.error.message : "Could not load requests."}
+          </p>
+        ) : requests.length === 0 ? (
+          <div className="flex flex-col items-center gap-4 rounded-xl border border-dashed border-border py-16 text-center">
+            <BookOpen className="h-10 w-10 text-muted-foreground/40" />
+            <div>
+              <p className="text-sm font-medium text-foreground">No requests yet</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Use the form above to request a book from the network
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="overflow-hidden rounded-xl border border-border bg-card">
+            <ul className="divide-y divide-border">
+              {requests.map((r) => {
+                const assignedHubId =
+                  (r as any).assignedHubId ?? (r as any).fulfilledByHubId ?? r.hubId ?? null;
+                const n = normalizeBookRequestStatus(r.status);
+                const isReady = n === "available_for_collection";
+                const isPending = n === "pending";
+                const isActive = isReady || isPending;
+                return (
+                  <li key={r.id} data-request-id={r.id} className="px-5 py-4">
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div className="min-w-0 flex-1 space-y-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <StatusIcon status={r.status} />
+                          <span className="font-medium text-foreground">
+                            {r.bookTitle?.trim() || "Book request"}
+                          </span>
+                          {r.isLongTermLease && (
+                            <span className="inline-flex h-5 items-center rounded bg-primary/10 px-1.5 text-[10px] font-bold uppercase tracking-wider text-primary border border-primary/20">
+                              Lease
                             </span>
-                            {r.isLongTermLease && (
-                              <span className="inline-flex h-5 items-center rounded bg-primary/10 px-1.5 text-[10px] font-bold uppercase tracking-wider text-primary border border-primary/20">
-                                Lease
-                              </span>
-                            )}
-                            <StatusChip status={r.status} />
-                          </div>
-                          {r.author?.trim() && (
-                            <p className="text-xs text-muted-foreground">
-                              by {r.author}
-                            </p>
                           )}
-                          {isReady && (
-                            <p className="text-sm font-medium text-success">
-                              Ready at: {hub}
-                            </p>
-                          )}
-                          {isPending && !assignedHubId && (
-                            <p className="text-xs text-muted-foreground">
-                              Broadcast to all hubs — awaiting claim
-                            </p>
-                          )}
-                          <ProgressBar status={r.status} />
+                          <StatusChip status={r.status} />
                         </div>
-
+                        {r.author?.trim() && (
+                          <p className="text-xs text-muted-foreground">by {r.author}</p>
+                        )}
+                        <div className="flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-muted-foreground">
+                          {assignedHubId && (
+                            <span>
+                              Hub: <span className="text-foreground">{hubName(assignedHubId)}</span>
+                            </span>
+                          )}
+                          <span>Requested {fmtDate(r.createdAt)}</span>
+                          {r.updatedAt && r.updatedAt !== r.createdAt && (
+                            <span>Updated {fmtRelative(r.updatedAt)}</span>
+                          )}
+                        </div>
+                      </div>
+                      {isActive && (
                         <div className="flex shrink-0 flex-col gap-2">
                           {isReady && (
                             <Button
                               size="sm"
-                              className="h-9 rounded-lg bg-success text-success-foreground hover:bg-success/90"
+                              variant="outline"
+                              className="h-8 rounded-lg"
                               onClick={() => setCollectTarget(r)}
                             >
-                              <CheckCircle2 className="mr-1.5 h-4 w-4" />
-                              I've collected it
+                              <CheckCircle2 className="mr-1.5 h-3.5 w-3.5 text-success" />
+                              Confirm collection
                             </Button>
                           )}
                           {isPending && (
                             <Button
                               size="sm"
-                              variant="outline"
-                              className="h-9 rounded-lg border-destructive/30 text-destructive hover:bg-destructive/5"
+                              variant="ghost"
+                              className="h-8 rounded-lg text-destructive hover:bg-destructive/5 hover:text-destructive"
                               onClick={() => setCancelTarget(r)}
                             >
-                              Cancel request
+                              Cancel
                             </Button>
                           )}
                         </div>
-                      </div>
-
-                      <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-xs text-muted-foreground">
-                        {r.isbn && <span>ISBN: {r.isbn}</span>}
-                        <span>Requested {fmtDate(r.createdAt)}</span>
-                        {r.updatedAt && r.updatedAt !== r.createdAt && (
-                          <span>Updated {fmtRelative(r.updatedAt)}</span>
-                        )}
-                      </div>
-
-                      {r.notes?.trim() && (
-                        <p className="mt-2 rounded-lg border border-border bg-muted/30 px-3 py-2 text-xs text-muted-foreground">
-                          {r.notes}
-                        </p>
                       )}
                     </div>
-                  );
-                })}
-              </div>
-            </section>
-            <Separator className="my-6" />
-          </>
-        )}
-
-        {/* All / Historical requests */}
-        <section aria-label="All requests">
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-              All requests ({requests.length})
-            </h2>
+                  </li>
+                );
+              })}
+            </ul>
           </div>
-
-          {reqQ.isLoading ? (
-            <div className="flex items-center gap-2 py-12 text-muted-foreground">
-              <Loader2 className="h-5 w-5 animate-spin" />
-              <span className="text-sm">Loading your requests…</span>
-            </div>
-          ) : reqQ.isError ? (
-            <p className="py-8 text-sm text-destructive">
-              {reqQ.error instanceof ApiError
-                ? reqQ.error.message
-                : "Could not load requests."}
-            </p>
-          ) : requests.length === 0 ? (
-            <div className="flex flex-col items-center gap-4 rounded-xl border border-dashed border-border py-16 text-center">
-              <BookOpen className="h-10 w-10 text-muted-foreground/40" />
-              <div>
-                <p className="text-sm font-medium text-foreground">
-                  No requests yet
-                </p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  Use the form above to request a book from the network
-                </p>
-              </div>
-            </div>
-          ) : (
-            <div className="overflow-hidden rounded-xl border border-border bg-card">
-              <ul className="divide-y divide-border">
-                {requests.map((r) => {
-                  const assignedHubId =
-                    (r as any).assignedHubId ??
-                    (r as any).fulfilledByHubId ??
-                    r.hubId ??
-                    null;
-                  const n = normalizeBookRequestStatus(r.status);
-                  const isReady = n === "available_for_collection";
-                  const isPending = n === "pending";
-                  const isActive = isReady || isPending;
-                  return (
-                    <li
-                      key={r.id}
-                      data-request-id={r.id}
-                      className="px-5 py-4"
-                    >
-                      <div className="flex flex-wrap items-start justify-between gap-3">
-                        <div className="min-w-0 flex-1 space-y-1">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <StatusIcon status={r.status} />
-                            <span className="font-medium text-foreground">
-                              {r.bookTitle?.trim() || "Book request"}
-                            </span>
-                            {r.isLongTermLease && (
-                              <span className="inline-flex h-5 items-center rounded bg-primary/10 px-1.5 text-[10px] font-bold uppercase tracking-wider text-primary border border-primary/20">
-                                Lease
-                              </span>
-                            )}
-                            <StatusChip status={r.status} />
-                          </div>
-                          {r.author?.trim() && (
-                            <p className="text-xs text-muted-foreground">
-                              by {r.author}
-                            </p>
-                          )}
-                          <div className="flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-muted-foreground">
-                            {assignedHubId && (
-                              <span>
-                                Hub:{" "}
-                                <span className="text-foreground">
-                                  {hubName(assignedHubId)}
-                                </span>
-                              </span>
-                            )}
-                            <span>Requested {fmtDate(r.createdAt)}</span>
-                            {r.updatedAt && r.updatedAt !== r.createdAt && (
-                              <span>Updated {fmtRelative(r.updatedAt)}</span>
-                            )}
-                          </div>
-                        </div>
-                        {isActive && (
-                          <div className="flex shrink-0 flex-col gap-2">
-                            {isReady && (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="h-8 rounded-lg"
-                                onClick={() => setCollectTarget(r)}
-                              >
-                                <CheckCircle2 className="mr-1.5 h-3.5 w-3.5 text-success" />
-                                Confirm collection
-                              </Button>
-                            )}
-                            {isPending && (
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                className="h-8 rounded-lg text-destructive hover:bg-destructive/5 hover:text-destructive"
-                                onClick={() => setCancelTarget(r)}
-                              >
-                                Cancel
-                              </Button>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          )}
-        </section>
+        )}
+      </section>
 
       {/* Dialogs */}
       <ConfirmCollectionDialog
@@ -874,7 +822,7 @@ export default function StudentRequestsPage() {
         hubName={hubName(
           (collectTarget as any)?.assignedHubId ??
             (collectTarget as any)?.fulfilledByHubId ??
-            collectTarget?.hubId
+            collectTarget?.hubId,
         )}
         onClose={() => setCollectTarget(null)}
         onConfirm={(id) => confirmMutation.mutate(id)}

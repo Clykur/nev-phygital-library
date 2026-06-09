@@ -58,14 +58,17 @@ export default function StudentBountyBooksPage() {
   const requestsQ = useQuery({
     queryKey: ["bounty", "requests", token],
     enabled: !!token,
-    queryFn: () => apiFetch<{ requests: BountyRequestRow[] }>("/api/bounty/requests", { token: token! }),
+    queryFn: () =>
+      apiFetch<{ requests: BountyRequestRow[] }>("/api/bounty/requests", { token: token! }),
   });
 
   const mySubmissionsQ = useQuery({
     queryKey: ["bounty", "my-submissions", token],
     enabled: !!token,
     queryFn: () =>
-      apiFetch<{ submissions: BountySubmissionRow[] }>("/api/bounty/my-submissions", { token: token! }),
+      apiFetch<{ submissions: BountySubmissionRow[] }>("/api/bounty/my-submissions", {
+        token: token!,
+      }),
   });
 
   const submitMutation = useMutation({
@@ -124,196 +127,192 @@ export default function StudentBountyBooksPage() {
     ["credits_accepted", "cash_requested", "completed", "paid"].includes(sub.rewardStatus ?? "");
   const canAcceptReward = (sub: BountySubmissionRow) =>
     (sub.status === "inventory_confirmed" && sub.rewardStatus === "awaiting_acceptance") ||
-    (
-      !rewardAlreadyAccepted(sub) &&
-      (
-        sub.rewardStatus === "awaiting_acceptance" ||
+    (!rewardAlreadyAccepted(sub) &&
+      (sub.rewardStatus === "awaiting_acceptance" ||
         sub.rewardStatus === "delivered" ||
         sub.rewardStatus === "approved" ||
         sub.status === "awaiting_acceptance" ||
-        sub.status === "inventory_confirmed"
-      )
-    );
+        sub.status === "inventory_confirmed"));
 
   return (
     <div className={cn(PORTAL_PAGE_CONTAINER, "space-y-8 py-8")}>
-        <header className="border-b border-border pb-6">
-          <h1 className={PORTAL_PAGE_TITLE}>Bounty Books</h1>
-          <p className={cn(PORTAL_PAGE_LEAD, "mt-2")}>
-            Earn rewards by bringing books your library needs. Browse active acquisition requests and
-            submit copies you own.
-          </p>
-        </header>
+      <header className="border-b border-border pb-6">
+        <h1 className={PORTAL_PAGE_TITLE}>Bounty Books</h1>
+        <p className={cn(PORTAL_PAGE_LEAD, "mt-2")}>
+          Earn rewards by bringing books your library needs. Browse active acquisition requests and
+          submit copies you own.
+        </p>
+      </header>
 
-        <div className="mb-6">
-          <Label htmlFor="bounty-search" className="section-kicker">
-            Search bounties
-          </Label>
-          <Input
-            id="bounty-search"
-            className="mt-1.5 rounded-xl"
-            placeholder="Title, author, hub…"
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-          />
+      <div className="mb-6">
+        <Label htmlFor="bounty-search" className="section-kicker">
+          Search bounties
+        </Label>
+        <Input
+          id="bounty-search"
+          className="mt-1.5 rounded-xl"
+          placeholder="Title, author, hub…"
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+        />
+      </div>
+
+      {requestsQ.isLoading ? (
+        <div className="flex justify-center py-24">
+          <Loader2 className="h-9 w-9 animate-spin text-foreground-muted" />
         </div>
-
-        {requestsQ.isLoading ? (
-          <div className="flex justify-center py-24">
-            <Loader2 className="h-9 w-9 animate-spin text-foreground-muted" />
-          </div>
-        ) : filtered.length === 0 ? (
-          <div className={cn(STUDENT_CARD_SURFACE, "p-8 text-center text-foreground-muted")}>
-            No active bounty requests right now. Check back later.
-          </div>
-        ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((row) => (
-              <article key={row.id} className={cn(STUDENT_CARD_SURFACE, "flex flex-col p-5")}>
-                <div className="flex items-start gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-border bg-card">
-                    <BookOpen className="h-5 w-5 text-primary" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h2 className="font-semibold leading-snug text-foreground">{row.title}</h2>
-                    {row.author ? (
-                      <p className="caption-scale text-foreground-muted">{row.author}</p>
-                    ) : null}
-                    <p className="mt-1 caption-scale text-foreground-subtle">{row.hubName}</p>
-                  </div>
+      ) : filtered.length === 0 ? (
+        <div className={cn(STUDENT_CARD_SURFACE, "p-8 text-center text-foreground-muted")}>
+          No active bounty requests right now. Check back later.
+        </div>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {filtered.map((row) => (
+            <article key={row.id} className={cn(STUDENT_CARD_SURFACE, "flex flex-col p-5")}>
+              <div className="flex items-start gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-border bg-card">
+                  <BookOpen className="h-5 w-5 text-primary" />
                 </div>
-                <dl className="mt-4 grid grid-cols-2 gap-2 text-sm">
-                  <div>
-                    <dt className="caption-scale text-foreground-muted">Reward</dt>
-                    <dd className="font-semibold tabular-nums text-primary">{fmtBountyReward(row.rewardAmount)}</dd>
-                  </div>
-                  <div>
-                    <dt className="caption-scale text-foreground-muted">Qty needed</dt>
-                    <dd className="tabular-nums text-foreground">{row.quantity}</dd>
-                  </div>
-                  {row.department ? (
-                    <div className="col-span-2">
-                      <dt className="caption-scale text-foreground-muted">Department</dt>
-                      <dd className="text-foreground">{row.department}</dd>
-                    </div>
+                <div className="min-w-0 flex-1">
+                  <h2 className="font-semibold leading-snug text-foreground">{row.title}</h2>
+                  {row.author ? (
+                    <p className="caption-scale text-foreground-muted">{row.author}</p>
                   ) : null}
+                  <p className="mt-1 caption-scale text-foreground-subtle">{row.hubName}</p>
+                </div>
+              </div>
+              <dl className="mt-4 grid grid-cols-2 gap-2 text-sm">
+                <div>
+                  <dt className="caption-scale text-foreground-muted">Reward</dt>
+                  <dd className="font-semibold tabular-nums text-primary">
+                    {fmtBountyReward(row.rewardAmount)}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="caption-scale text-foreground-muted">Qty needed</dt>
+                  <dd className="tabular-nums text-foreground">{row.quantity}</dd>
+                </div>
+                {row.department ? (
                   <div className="col-span-2">
-                    <dt className="caption-scale text-foreground-muted">Posted</dt>
-                    <dd className="text-foreground-muted">
-                      {new Date(row.createdAt).toLocaleDateString()}
-                    </dd>
+                    <dt className="caption-scale text-foreground-muted">Department</dt>
+                    <dd className="text-foreground">{row.department}</dd>
                   </div>
-                </dl>
-                <div className="mt-3">
-                  <Badge variant="outline" status="neutral">
-                    {bountyRequestStatusLabel(row.status)}
+                ) : null}
+                <div className="col-span-2">
+                  <dt className="caption-scale text-foreground-muted">Posted</dt>
+                  <dd className="text-foreground-muted">
+                    {new Date(row.createdAt).toLocaleDateString()}
+                  </dd>
+                </div>
+              </dl>
+              <div className="mt-3">
+                <Badge variant="outline" status="neutral">
+                  {bountyRequestStatusLabel(row.status)}
+                </Badge>
+              </div>
+              <Button className="mt-4 w-full rounded-xl" onClick={() => setSubmitTarget(row)}>
+                I have this book
+              </Button>
+            </article>
+          ))}
+        </div>
+      )}
+
+      <section className="mt-10" aria-label="My Bounty Books">
+        <h2 className="h4-scale font-semibold text-foreground">My Bounty Books</h2>
+        <p className="mt-1 text-sm text-foreground-muted">
+          Track delivery, hub approval, inventory intake, and reward payout.
+        </p>
+        {mySubmissionsQ.isLoading ? (
+          <div className="flex justify-center py-12">
+            <Loader2 className="h-7 w-7 animate-spin text-foreground-muted" />
+          </div>
+        ) : mySubmissions.length > 0 ? (
+          <ul className="mt-4 space-y-4">
+            {mySubmissions.map((sub) => (
+              <li key={sub.id} className={cn(STUDENT_CARD_SURFACE, "p-5")}>
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <p className="font-semibold text-foreground">{sub.bountyTitle}</p>
+                    <p className="caption-scale text-foreground-muted">{sub.hubName}</p>
+                  </div>
+                  <Badge variant="outline" status={sub.status === "rejected" ? "error" : "neutral"}>
+                    {bountySubmissionStatusLabel(sub.status)}
                   </Badge>
                 </div>
-                <Button className="mt-4 w-full rounded-xl" onClick={() => setSubmitTarget(row)}>
-                  I have this book
-                </Button>
-              </article>
+                <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-3">
+                  <div>
+                    <dt className="caption-scale text-foreground-muted">Requested reward</dt>
+                    <dd className="font-semibold tabular-nums text-primary">
+                      {fmtBountyReward(sub.rewardAmount ?? 0)} ·{" "}
+                      {fmtCreditWithRupeeEquivalent(rupeesToCredits(sub.rewardAmount ?? 0))}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="caption-scale text-foreground-muted">Inventory</dt>
+                    <dd className="font-medium text-foreground">
+                      {sub.status === "inventory_confirmed" ? "Added to Inventory" : "Pending"}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="caption-scale text-foreground-muted">Reward payout</dt>
+                    <dd className="font-medium text-foreground">
+                      {bountyRewardStatusLabel(sub.rewardStatus)}
+                    </dd>
+                    {sub.rewardMethod ? (
+                      <p className="caption-scale text-foreground-muted">
+                        Selected: {sub.rewardMethod === "credits" ? "Credits" : "Cash offline"}
+                      </p>
+                    ) : null}
+                  </div>
+                </dl>
+                {canAcceptReward(sub) ? (
+                  <div className="mt-4">
+                    <Button
+                      type="button"
+                      className="rounded-xl"
+                      onClick={() => setRewardTarget(sub)}
+                    >
+                      Accept Reward
+                    </Button>
+                  </div>
+                ) : null}
+                {sub.status === "rejected" ? (
+                  <p className="mt-4 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive">
+                    This submission was not accepted by the hub.
+                  </p>
+                ) : (
+                  <ol className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
+                    {BOUNTY_STUDENT_STEPS.map((step, index) => {
+                      const reached = index <= bountySubmissionStep(sub.status);
+                      return (
+                        <li
+                          key={step.status}
+                          className={cn(
+                            "rounded-lg border px-2 py-2 text-center caption-scale font-medium",
+                            reached
+                              ? "border-primary/30 bg-primary/10 text-primary"
+                              : "border-border text-foreground-subtle",
+                          )}
+                        >
+                          {step.label}
+                        </li>
+                      );
+                    })}
+                  </ol>
+                )}
+                <p className="mt-3 caption-scale text-foreground-muted">
+                  Updated {new Date(sub.updatedAt).toLocaleString()}
+                </p>
+              </li>
             ))}
+          </ul>
+        ) : (
+          <div className={cn(STUDENT_CARD_SURFACE, "mt-4 p-6 text-center text-foreground-muted")}>
+            You have not submitted a bounty book yet.
           </div>
         )}
-
-        <section className="mt-10" aria-label="My Bounty Books">
-          <h2 className="h4-scale font-semibold text-foreground">My Bounty Books</h2>
-          <p className="mt-1 text-sm text-foreground-muted">
-            Track delivery, hub approval, inventory intake, and reward payout.
-          </p>
-          {mySubmissionsQ.isLoading ? (
-            <div className="flex justify-center py-12">
-              <Loader2 className="h-7 w-7 animate-spin text-foreground-muted" />
-            </div>
-          ) : mySubmissions.length > 0 ? (
-            <ul className="mt-4 space-y-4">
-              {mySubmissions.map((sub) => (
-                <li key={sub.id} className={cn(STUDENT_CARD_SURFACE, "p-5")}>
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div>
-                      <p className="font-semibold text-foreground">{sub.bountyTitle}</p>
-                      <p className="caption-scale text-foreground-muted">{sub.hubName}</p>
-                    </div>
-                    <Badge
-                      variant="outline"
-                      status={sub.status === "rejected" ? "error" : "neutral"}
-                    >
-                      {bountySubmissionStatusLabel(sub.status)}
-                    </Badge>
-                  </div>
-                  <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-3">
-                    <div>
-                      <dt className="caption-scale text-foreground-muted">Requested reward</dt>
-                      <dd className="font-semibold tabular-nums text-primary">
-                        {fmtBountyReward(sub.rewardAmount ?? 0)} · {fmtCreditWithRupeeEquivalent(rupeesToCredits(sub.rewardAmount ?? 0))}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="caption-scale text-foreground-muted">Inventory</dt>
-                      <dd className="font-medium text-foreground">
-                        {sub.status === "inventory_confirmed" ? "Added to Inventory" : "Pending"}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="caption-scale text-foreground-muted">Reward payout</dt>
-                      <dd className="font-medium text-foreground">
-                        {bountyRewardStatusLabel(sub.rewardStatus)}
-                      </dd>
-                      {sub.rewardMethod ? (
-                        <p className="caption-scale text-foreground-muted">
-                          Selected: {sub.rewardMethod === "credits" ? "Credits" : "Cash offline"}
-                        </p>
-                      ) : null}
-                    </div>
-                  </dl>
-                  {canAcceptReward(sub) ? (
-                    <div className="mt-4">
-                      <Button
-                        type="button"
-                        className="rounded-xl"
-                        onClick={() => setRewardTarget(sub)}
-                      >
-                        Accept Reward
-                      </Button>
-                    </div>
-                  ) : null}
-                  {sub.status === "rejected" ? (
-                    <p className="mt-4 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive">
-                      This submission was not accepted by the hub.
-                    </p>
-                  ) : (
-                    <ol className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
-                      {BOUNTY_STUDENT_STEPS.map((step, index) => {
-                        const reached = index <= bountySubmissionStep(sub.status);
-                        return (
-                          <li
-                            key={step.status}
-                            className={cn(
-                              "rounded-lg border px-2 py-2 text-center caption-scale font-medium",
-                              reached
-                                ? "border-primary/30 bg-primary/10 text-primary"
-                                : "border-border text-foreground-subtle",
-                            )}
-                          >
-                            {step.label}
-                          </li>
-                        );
-                      })}
-                    </ol>
-                  )}
-                  <p className="mt-3 caption-scale text-foreground-muted">
-                    Updated {new Date(sub.updatedAt).toLocaleString()}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <div className={cn(STUDENT_CARD_SURFACE, "mt-4 p-6 text-center text-foreground-muted")}>
-              You have not submitted a bounty book yet.
-            </div>
-          )}
-        </section>
+      </section>
 
       <Dialog open={!!submitTarget} onOpenChange={(open) => !open && setSubmitTarget(null)}>
         <DialogContent className="sm:max-w-md">
@@ -340,11 +339,19 @@ export default function StudentBountyBooksPage() {
             </div>
             <div className="space-y-1.5">
               <Label>Edition (optional)</Label>
-              <Input className="rounded-xl" value={edition} onChange={(e) => setEdition(e.target.value)} />
+              <Input
+                className="rounded-xl"
+                value={edition}
+                onChange={(e) => setEdition(e.target.value)}
+              />
             </div>
             <div className="space-y-1.5">
               <Label>Notes (optional)</Label>
-              <Textarea className="rounded-xl min-h-[72px]" value={notes} onChange={(e) => setNotes(e.target.value)} />
+              <Textarea
+                className="rounded-xl min-h-[72px]"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+              />
             </div>
           </div>
           <DialogFooter>
@@ -392,7 +399,9 @@ export default function StudentBountyBooksPage() {
                 type="button"
                 className="w-full rounded-xl"
                 disabled={acceptRewardMutation.isPending}
-                onClick={() => acceptRewardMutation.mutate({ id: rewardTarget.id, method: "credits" })}
+                onClick={() =>
+                  acceptRewardMutation.mutate({ id: rewardTarget.id, method: "credits" })
+                }
               >
                 Receive Credits
               </Button>
@@ -406,7 +415,8 @@ export default function StudentBountyBooksPage() {
                 Receive Cash Offline
               </Button>
               <p className="caption-scale text-foreground-muted">
-                Credits are added to your wallet with a bounty reward transaction. Cash requests do not change wallet balance.
+                Credits are added to your wallet with a bounty reward transaction. Cash requests do
+                not change wallet balance.
               </p>
             </div>
           ) : null}

@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "./ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "./ui/dialog";
 import { Button } from "./ui/button";
 import { Loader2, ShieldCheck } from "lucide-react";
 
@@ -42,7 +49,7 @@ export function MockCheckoutDialog({
             You are subscribing to <strong>{planName}</strong>
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="py-6">
           <div className="rounded-xl border border-border p-4 flex items-center justify-between">
             <span className="text-sm font-medium text-muted-foreground">Total Amount</span>
@@ -54,17 +61,13 @@ export function MockCheckoutDialog({
         </div>
 
         <DialogFooter className="flex flex-col sm:flex-col gap-2">
-          <Button 
-            className="w-full" 
-            onClick={() => handleSimulate("success")}
-            disabled={!!loading}
-          >
+          <Button className="w-full" onClick={() => handleSimulate("success")} disabled={!!loading}>
             {loading === "success" && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Simulate Successful Payment
           </Button>
-          <Button 
-            variant="destructive" 
-            className="w-full sm:mt-0" 
+          <Button
+            variant="destructive"
+            className="w-full sm:mt-0"
             onClick={() => handleSimulate("failure")}
             disabled={!!loading}
           >

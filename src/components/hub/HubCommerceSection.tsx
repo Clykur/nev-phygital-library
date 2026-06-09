@@ -47,7 +47,9 @@ const outline = "rounded-xl border border-border bg-background";
 
 function SectionLabel({ children }: { children: ReactNode }) {
   return (
-    <h2 className="caption-scale font-bold uppercase tracking-[0.18em] text-foreground">{children}</h2>
+    <h2 className="caption-scale font-bold uppercase tracking-[0.18em] text-foreground">
+      {children}
+    </h2>
   );
 }
 
@@ -74,9 +76,7 @@ function commerceEventKind(
   return "borrow";
 }
 
-function commerceEventSource(
-  r: Pick<CommerceRow, "action" | "resourceType">,
-): "hub" | "p2p" {
+function commerceEventSource(r: Pick<CommerceRow, "action" | "resourceType">): "hub" | "p2p" {
   if (
     r.resourceType === "p2p_listing" ||
     r.action === "BUY_P2P" ||
@@ -93,7 +93,6 @@ export function HubCommerceSection() {
   const [commerceHubId, setCommerceHubId] = useState<string>("all");
   const [typeFilter, setTypeFilter] = useState<"all" | "borrow" | "buy" | "return">("all");
   const [sourceFilter, setSourceFilter] = useState<"all" | "hub" | "p2p">("all");
-  
 
   const hubsQ = useQuery({
     queryKey: ["catalog", "hubs", "hub-commerce"],
@@ -106,12 +105,12 @@ export function HubCommerceSection() {
     enabled: !!token && !!user?.hubStaffHubIds.length,
     queryFn: async () => {
       const q =
-        commerceHubId === "all" ? "?limit=80" : `?hubId=${encodeURIComponent(commerceHubId)}&limit=80`;
+        commerceHubId === "all"
+          ? "?limit=80"
+          : `?hubId=${encodeURIComponent(commerceHubId)}&limit=80`;
       return apiFetch<HubCommercePayload>(`/api/hub/commerce${q}`, { token: token! });
     },
   });
-
-  
 
   if (loading) {
     return (
@@ -202,7 +201,10 @@ export function HubCommerceSection() {
             >
               Source
             </Label>
-            <Select value={sourceFilter} onValueChange={(v) => setSourceFilter(v as typeof sourceFilter)}>
+            <Select
+              value={sourceFilter}
+              onValueChange={(v) => setSourceFilter(v as typeof sourceFilter)}
+            >
               <SelectTrigger id="hub-commerce-source" className={selectTriggerClass}>
                 <SelectValue />
               </SelectTrigger>
@@ -229,9 +231,10 @@ export function HubCommerceSection() {
           <div className="border-b border-border px-4 py-3">
             <SectionLabel>Hub-wide · member actions</SectionLabel>
             <p className="mt-1 text-xs text-muted-foreground">
-              Showing <span className="font-medium text-foreground">{scopeLabel}</span>. All members’ borrow /
-              buy / return events tied to your managed shelf scope (audit). Excludes rows for this hub login.
-              those are personal and belong in Activity when you act as a shopper.
+              Showing <span className="font-medium text-foreground">{scopeLabel}</span>. All
+              members’ borrow / buy / return events tied to your managed shelf scope (audit).
+              Excludes rows for this hub login. those are personal and belong in Activity when you
+              act as a shopper.
             </p>
           </div>
           {commerceQ.isError ? (
@@ -282,12 +285,15 @@ export function HubCommerceSection() {
           )}
         </section>
 
-        <section className={cn(outline, "overflow-hidden")} aria-label="This login shopping elsewhere">
+        <section
+          className={cn(outline, "overflow-hidden")}
+          aria-label="This login shopping elsewhere"
+        >
           <div className="border-b border-border px-4 py-3">
             <SectionLabel>This login · shopping elsewhere</SectionLabel>
             <p className="mt-1 text-xs text-muted-foreground">
-              When this hub account borrows or buys on other campuses or peer listings, still audit, still
-              ledger-style (not the same as Activity’s personal summary tiles).
+              When this hub account borrows or buys on other campuses or peer listings, still audit,
+              still ledger-style (not the same as Activity’s personal summary tiles).
             </p>
           </div>
           {commerceQ.isError ? (

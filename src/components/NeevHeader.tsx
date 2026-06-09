@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import type { FC } from 'react';
-import { BookOpen, Map, Cpu, Library, School, LogOut, UserCircle2 } from 'lucide-react';
-import { cn } from '../lib/utils';
+import type { FC } from "react";
+import { BookOpen, Map, Cpu, Library, School, LogOut, UserCircle2 } from "lucide-react";
+import { cn } from "../lib/utils";
 
 interface NeevHeaderProps {
   activeTab: string;
@@ -10,10 +10,10 @@ interface NeevHeaderProps {
   branch: string;
   setBranch: (branch: string) => void;
   isLoggedIn: boolean;
-  userRole: 'student' | 'college_ambassador' | 'admin' | null;
+  userRole: "student" | "college_ambassador" | "admin" | null;
   onLogout: () => void;
-  landingSegment?: 'students' | 'colleges';
-  setLandingSegment?: (segment: 'students' | 'colleges') => void;
+  landingSegment?: "students" | "colleges";
+  setLandingSegment?: (segment: "students" | "colleges") => void;
 }
 
 export const NeevHeader: FC<NeevHeaderProps> = ({
@@ -31,14 +31,18 @@ export const NeevHeader: FC<NeevHeaderProps> = ({
     <header className="sticky top-0 z-50 w-full bg-background/95 border-b border-border backdrop-blur-md transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 relative">
-
           {/* Logo Brand */}
-          <div className="flex items-center space-x-3 cursor-pointer group" onClick={() => setActiveTab('overview')}>
+          <div
+            className="flex items-center space-x-3 cursor-pointer group"
+            onClick={() => setActiveTab("overview")}
+          >
             <div className="relative flex items-center justify-center w-8 h-8 bg-primary rounded-md shadow-sm transition-transform duration-300 group-hover:scale-105">
               <Library className="w-4 h-4 text-primary-foreground" />
             </div>
             <div className="flex items-center space-x-1">
-              <span className="font-display text-base font-bold tracking-tight text-foreground">Neev</span>
+              <span className="font-display text-base font-bold tracking-tight text-foreground">
+                Neev
+              </span>
             </div>
           </div>
 
@@ -47,21 +51,26 @@ export const NeevHeader: FC<NeevHeaderProps> = ({
             {isLoggedIn ? (
               <nav className="flex space-x-1 items-center">
                 {(() => {
-                  const tabs = userRole === 'student' ? [
-                    { id: 'student_dashboard', label: 'Portal', icon: Library },
-                    { id: 'catalog', label: 'Find a Book', icon: BookOpen },
-                    { id: 'member', label: 'Membership', icon: UserCircle2 },
-                  ] : (userRole === 'college_ambassador' || userRole === 'admin') ? [
-                    { id: 'college_dashboard', label: 'Kiosk', icon: Cpu },
-                    { id: 'catalog', label: 'Find a Book', icon: BookOpen },
-                    { id: 'map', label: 'Map', icon: Map },
-                    { id: 'college', label: 'Hub', icon: School },
-                    { id: 'librarian', label: 'Ledger', icon: SlidersIcon },
-                  ] : [
-                    { id: 'overview', label: 'Overview', icon: Library },
-                    { id: 'catalog', label: 'Find a Book', icon: BookOpen },
-                    { id: 'map', label: 'Map', icon: Map },
-                  ];
+                  const tabs =
+                    userRole === "student"
+                      ? [
+                          { id: "student_dashboard", label: "Portal", icon: Library },
+                          { id: "catalog", label: "Find a Book", icon: BookOpen },
+                          { id: "member", label: "Membership", icon: UserCircle2 },
+                        ]
+                      : userRole === "college_ambassador" || userRole === "admin"
+                        ? [
+                            { id: "college_dashboard", label: "Kiosk", icon: Cpu },
+                            { id: "catalog", label: "Find a Book", icon: BookOpen },
+                            { id: "map", label: "Map", icon: Map },
+                            { id: "college", label: "Hub", icon: School },
+                            { id: "librarian", label: "Ledger", icon: SlidersIcon },
+                          ]
+                        : [
+                            { id: "overview", label: "Overview", icon: Library },
+                            { id: "catalog", label: "Find a Book", icon: BookOpen },
+                            { id: "map", label: "Map", icon: Map },
+                          ];
 
                   return tabs.map((tab) => {
                     const isActive = activeTab === tab.id;
@@ -74,7 +83,7 @@ export const NeevHeader: FC<NeevHeaderProps> = ({
                           "px-3 py-1.5 rounded-md text-sm font-medium transition-colors duration-200",
                           isActive
                             ? " text-foreground"
-                            : "text-muted-foreground hover:text-foreground hover:shadow-sm"
+                            : "text-muted-foreground hover:text-foreground hover:shadow-sm",
                         )}
                       >
                         {tab.label}
@@ -87,35 +96,41 @@ export const NeevHeader: FC<NeevHeaderProps> = ({
               <nav className="flex items-center space-x-2">
                 <button
                   onClick={() => {
-                    setLandingSegment?.('students');
-                    setActiveTab('landing');
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    setLandingSegment?.("students");
+                    setActiveTab("landing");
+                    window.scrollTo({ top: 0, behavior: "smooth" });
                   }}
                   className={cn(
                     "px-3 py-1.5 rounded-md text-sm font-medium transition-colors duration-200",
-                    activeTab !== 'catalog' && landingSegment === 'students' ? " text-foreground" : "text-muted-foreground hover:text-foreground hover:shadow-sm"
+                    activeTab !== "catalog" && landingSegment === "students"
+                      ? " text-foreground"
+                      : "text-muted-foreground hover:text-foreground hover:shadow-sm",
                   )}
                 >
                   Home
                 </button>
                 <button
                   onClick={() => {
-                    setActiveTab('catalog');
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    setActiveTab("catalog");
+                    window.scrollTo({ top: 0, behavior: "smooth" });
                   }}
                   className={cn(
                     "px-3 py-1.5 rounded-md text-sm font-medium transition-colors duration-200",
-                    activeTab === 'catalog' ? " text-foreground" : "text-muted-foreground hover:text-foreground hover:shadow-sm"
+                    activeTab === "catalog"
+                      ? " text-foreground"
+                      : "text-muted-foreground hover:text-foreground hover:shadow-sm",
                   )}
                 >
                   Find a Book
                 </button>
                 <button
                   onClick={() => {
-                    setActiveTab('landing');
-                    setLandingSegment?.('students');
+                    setActiveTab("landing");
+                    setLandingSegment?.("students");
                     setTimeout(() => {
-                      document.getElementById('about-section')?.scrollIntoView({ behavior: 'smooth' });
+                      document
+                        .getElementById("about-section")
+                        ?.scrollIntoView({ behavior: "smooth" });
                     }, 100);
                   }}
                   className="px-3 py-1.5 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:shadow-sm transition-colors"
@@ -150,7 +165,7 @@ export const NeevHeader: FC<NeevHeaderProps> = ({
               <div className="flex items-center space-x-3">
                 <div className="hidden sm:flex flex-col items-end">
                   <span className="text-sm font-medium text-foreground capitalize">
-                    {userRole?.replace('_', ' ')}
+                    {userRole?.replace("_", " ")}
                   </span>
                 </div>
                 <div className="h-6 w-px bg-border mx-1 hidden sm:block" />
@@ -167,10 +182,11 @@ export const NeevHeader: FC<NeevHeaderProps> = ({
                 <button
                   role="button"
                   onClick={() => {
-                    setActiveTab('landing');
+                    setActiveTab("landing");
                     setTimeout(() => {
-                      const sectionId = landingSegment === 'colleges' ? 'college-auth-section' : 'auth-section';
-                      document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
+                      const sectionId =
+                        landingSegment === "colleges" ? "college-auth-section" : "auth-section";
+                      document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth" });
                     }, 100);
                   }}
                   className="px-4 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:shadow-sm transition-colors"
@@ -180,10 +196,11 @@ export const NeevHeader: FC<NeevHeaderProps> = ({
                 <button
                   role="button"
                   onClick={() => {
-                    setActiveTab('landing');
+                    setActiveTab("landing");
                     setTimeout(() => {
-                      const sectionId = landingSegment === 'colleges' ? 'college-auth-section' : 'auth-section';
-                      document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
+                      const sectionId =
+                        landingSegment === "colleges" ? "college-auth-section" : "auth-section";
+                      document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth" });
                     }, 100);
                   }}
                   className="px-4 py-2 rounded-md text-sm font-medium text-primary-foreground bg-primary hover:bg-primary-hover transition-colors"

@@ -23,9 +23,7 @@ export const PORTAL_PANEL_SURFACE = cn(
 );
 
 /** Border, radius, shadow — search bars, dashed empty states, etc. */
-export const STUDENT_CARD_CHROME = cn(
-  "rounded-xl border border-border bg-card shadow-sm",
-);
+export const STUDENT_CARD_CHROME = cn("rounded-xl border border-border bg-card shadow-sm");
 
 /** Same as chrome plus clip for media tiles and full-bleed headers */
 export const STUDENT_CARD_SURFACE = cn(STUDENT_CARD_CHROME, "overflow-hidden");

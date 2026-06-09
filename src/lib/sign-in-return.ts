@@ -34,7 +34,11 @@ function mapHubDeskPathToSuperAdmin(path: string, user: AuthUser): string {
     [HUB_PROFILE_PATH, SUPER_ADMIN_PROFILE_PATH],
   ];
   for (const [hubP, supP] of deskPairs) {
-    if (path === hubP || path.startsWith(`${hubP}?`) || (path.length > hubP.length && path.startsWith(`${hubP}/`))) {
+    if (
+      path === hubP ||
+      path.startsWith(`${hubP}?`) ||
+      (path.length > hubP.length && path.startsWith(`${hubP}/`))
+    ) {
       return supP + path.slice(hubP.length);
     }
   }

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from "react";
 import { Switch, Route, Router as WouterRouter, useLocation, Redirect } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster as SonnerToaster } from "sonner";
@@ -64,12 +64,12 @@ import SuperAdminOperationsPage from "@/pages/superadmin-operations";
 import StudentDashboardPage from "@/pages/student-dashboard";
 import StudentWalletPage from "@/pages/student-wallet";
 import { Loader2 } from "lucide-react";
-import { useEffect } from "react";
 
 // Neev Components for Landing
-import { NeevLanding } from '@/components/NeevLanding';
-import { NeevHeader } from '@/components/NeevHeader';
-import { Footer } from '@/components/Footer';
+import { NeevLanding } from "@/components/NeevLanding";
+import { logGoogleBackendAuthStart, logGooglePortalAccessDenied } from "@/lib/google-auth-debug";
+import { NeevHeader } from "@/components/NeevHeader";
+import { Footer } from "@/components/Footer";
 
 const queryClient = new QueryClient();
 
@@ -113,7 +113,11 @@ function LoggedInHomeRedirect() {
 function LegacyAppRedirect({ suffix }: { suffix: string }) {
   const { user } = useAuth();
   if (hasHubPortalAccess(user?.baseRole) && suffix === "borrow") {
-    return <Redirect to={user?.baseRole === "super_admin" ? SUPER_ADMIN_INVENTORY_PATH : HUB_CATALOG_PATH} />;
+    return (
+      <Redirect
+        to={user?.baseRole === "super_admin" ? SUPER_ADMIN_INVENTORY_PATH : HUB_CATALOG_PATH}
+      />
+    );
   }
   if (hasHubPortalAccess(user?.baseRole) && suffix === "sell") {
     return <Redirect to={user ? defaultLoggedInHome(user) : HUB_OVERVIEW_PATH} />;
@@ -171,7 +175,11 @@ function SuperAdminCatalogRoute() {
 function HubBorrowLegacyRedirect() {
   const { user } = useAuth();
   if (user && !hasHubPortalAccess(user.baseRole)) return <Redirect to={STUDENT_BORROW_PATH} />;
-  return <Redirect to={user?.baseRole === "super_admin" ? SUPER_ADMIN_INVENTORY_PATH : HUB_CATALOG_PATH} />;
+  return (
+    <Redirect
+      to={user?.baseRole === "super_admin" ? SUPER_ADMIN_INVENTORY_PATH : HUB_CATALOG_PATH}
+    />
+  );
 }
 
 function StudentBountyRoute() {
@@ -327,23 +335,54 @@ function StudentWalletRoute() {
 }
 
 function PublicRoutes() {
-  const { login, loginGoogle, register, user, logout } = useAuth();
+  const {
+    login,
+    loginGoogle,
+    register,
+    user,
+    logout,
+    loading: authLoading,
+    oauthLandingSegment,
+    clearOauthLandingSegment,
+  } = useAuth();
   const [, setLocation] = useLocation();
-  const [landingSegment, setLandingSegment] = useState<'students' | 'colleges'>('students');
-  const [branch, setBranch] = useState<string>('RVCE-BLR');
-  const [activeTab, setActiveTab] = useState<string>('landing');
+  const [landingSegment, setLandingSegment] = useState<"students" | "colleges">("students");
+  const [branch, setBranch] = useState<string>("RVCE-BLR");
+  const [activeTab, setActiveTab] = useState<string>("landing");
 
-  function ensurePortalAccess(loggedInUser: NonNullable<typeof user>) {
-    if (landingSegment === 'students' && hasHubPortalAccess(loggedInUser.baseRole)) {
+  function ensurePortalAccess(
+    loggedInUser: NonNullable<typeof user>,
+    segment: "students" | "colleges" = landingSegment,
+  ) {
+    if (segment === "students" && hasHubPortalAccess(loggedInUser.baseRole)) {
+      logGooglePortalAccessDenied("students", loggedInUser.baseRole);
       logout();
-      throw new Error("Invalid credentials for Student Portal.");
+      throw new Error("This account is for hub staff. Open Colleges & Institutes to sign in.");
     }
-    if (landingSegment === 'colleges' && !hasHubPortalAccess(loggedInUser.baseRole)) {
+    if (segment === "colleges" && !hasHubPortalAccess(loggedInUser.baseRole)) {
+      logGooglePortalAccessDenied("colleges", loggedInUser.baseRole);
       logout();
-      throw new Error("Invalid credentials for Hub Portal.");
+      throw new Error(
+        "This Google account is a student account, not a hub admin. Use student login, or create a hub account under Sign Up Hub.",
+      );
     }
     setLocation(defaultLoggedInHome(loggedInUser));
   }
+
+  useEffect(() => {
+    if (authLoading || !user || !oauthLandingSegment) return;
+    setLandingSegment(oauthLandingSegment);
+    clearOauthLandingSegment();
+    try {
+      ensurePortalAccess(user, oauthLandingSegment);
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Login failed",
+        description: userFacingErrorMessage(error),
+      });
+    }
+  }, [authLoading, user, oauthLandingSegment, clearOauthLandingSegment]);
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans flex flex-col relative overflow-x-hidden">
@@ -353,13 +392,13 @@ function PublicRoutes() {
         branch={branch}
         setBranch={setBranch}
         isLoggedIn={!!user}
-        userRole={user?.baseRole as any ?? null}
-        onLogout={() => { }}
+        userRole={(user?.baseRole as any) ?? null}
+        onLogout={() => {}}
         landingSegment={landingSegment}
         setLandingSegment={setLandingSegment}
       />
       <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
-        {activeTab === 'catalog' ? (
+        {activeTab === "catalog" ? (
           <Marketplace />
         ) : (
           <NeevLanding
@@ -378,11 +417,28 @@ function PublicRoutes() {
                 });
               }
             }}
-            onGoogleLogin={async (token: string, extra?: { accountType?: string, hubLocation?: string, hubName?: string, hubKind?: string }) => {
+            onGoogleLogin={async (
+              token: string,
+              extra?: {
+                accountType?: string;
+                hubLocation?: string;
+                hubName?: string;
+                hubKind?: string;
+              },
+            ) => {
               try {
+                const authLabel = `${landingSegment}${extra?.accountType ? `/${extra.accountType}` : ""}`;
+                logGoogleBackendAuthStart(authLabel);
                 const loggedInUser = await loginGoogle({ token, ...extra });
                 ensurePortalAccess(loggedInUser);
               } catch (error) {
+                if (import.meta.env.DEV) {
+                  console.error("[Google Auth] login handler failed", {
+                    landingSegment,
+                    extra,
+                    error,
+                  });
+                }
                 toast({
                   variant: "destructive",
                   title: "Login failed",
@@ -390,16 +446,49 @@ function PublicRoutes() {
                 });
               }
             }}
-            onSignUp={async (name: string, email: string, _isPremium: boolean, hubLocationId: string, password?: string, role?: string, hubName?: string, hubKind?: string, phone?: string) => {
-              if (password) {
-                await register({
+            onSignUp={async (
+              name: string,
+              email: string,
+              _isPremium: boolean,
+              hubLocationId: string,
+              password?: string,
+              role?: string,
+              hubName?: string,
+              hubKind?: string,
+              phone?: string,
+            ) => {
+              if (!password) {
+                toast({
+                  variant: "destructive",
+                  title: "Sign up failed",
+                  description:
+                    "Enter a password, or use Continue with Google if you already signed in that way.",
+                });
+                return;
+              }
+              try {
+                const registeredUser = await register({
                   name,
                   email,
                   password,
                   phone,
-                  accountType: role === "super_admin" ? "super_admin" : role === "hub" ? "hub" : "user",
-                  ...(role === "hub" || role === "super_admin" ? { hubName: hubName || name, hubLocation: hubLocationId, hubKind: hubKind || "college" } : { hubLocation: hubLocationId })
+                  accountType:
+                    role === "super_admin" ? "super_admin" : role === "hub" ? "hub" : "user",
+                  ...(role === "hub" || role === "super_admin"
+                    ? {
+                        hubName: hubName || name,
+                        hubLocation: hubLocationId,
+                        hubKind: hubKind || "college",
+                      }
+                    : { hubLocation: hubLocationId }),
                 } as any);
+                ensurePortalAccess(registeredUser);
+              } catch (error) {
+                toast({
+                  variant: "destructive",
+                  title: "Sign up failed",
+                  description: userFacingErrorMessage(error),
+                });
               }
             }}
             addXp={(amount: number) => {
@@ -461,7 +550,9 @@ function LoggedInRoutes() {
         </Route>
         <Route path={SUPER_ADMIN_OVERVIEW_PATH} component={SuperAdminOverviewRoute} />
         <Route path={HUB_OVERVIEW_PATH} component={HubStaffOverviewRoute} />
-        <Route path="/hub/:id/billing">{(params: any) => <HubBillingPage hubId={params?.id!} />}</Route>
+        <Route path="/hub/:id/billing">
+          {(params: any) => <HubBillingPage hubId={params?.id!} />}
+        </Route>
         <Route path={SUPER_ADMIN_INVENTORY_PATH} component={SuperAdminInventoryRoute} />
         <Route path={HUB_INVENTORY_PATH} component={HubInventoryDeskRoute} />
         <Route path={SUPER_ADMIN_REQUESTS_PATH} component={SuperAdminBookRequestsRoute} />

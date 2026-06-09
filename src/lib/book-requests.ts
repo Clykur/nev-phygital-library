@@ -9,7 +9,7 @@ export const BOOK_REQUEST_STATUSES = [
   "lease_active",
   "lease_return_pending",
   "lease_completed",
-  "lease_refunded"
+  "lease_refunded",
 ] as const;
 
 export type BookRequestStatus = (typeof BOOK_REQUEST_STATUSES)[number];
@@ -20,7 +20,7 @@ export const BOOK_REQUEST_ACTIVE_STATUSES: readonly BookRequestStatus[] = [
   "lease_requested",
   "lease_approved",
   "lease_active",
-  "lease_return_pending"
+  "lease_return_pending",
 ];
 
 export type BookRequestRow = {
@@ -60,7 +60,9 @@ const LEGACY_STATUS_MAP: Record<string, BookRequestStatus> = {
 
 export function normalizeBookRequestStatus(status: string): BookRequestStatus | string {
   const s = status.toLowerCase();
-  return LEGACY_STATUS_MAP[s] ?? (BOOK_REQUEST_STATUSES.includes(s as BookRequestStatus) ? s : status);
+  return (
+    LEGACY_STATUS_MAP[s] ?? (BOOK_REQUEST_STATUSES.includes(s as BookRequestStatus) ? s : status)
+  );
 }
 
 export function isActiveBookRequest(status: string): boolean {
@@ -70,7 +72,9 @@ export function isActiveBookRequest(status: string): boolean {
 
 export function isTerminalBookRequest(status: string): boolean {
   const n = normalizeBookRequestStatus(status);
-  return n === "delivered" || n === "cancelled" || n === "lease_completed" || n === "lease_refunded";
+  return (
+    n === "delivered" || n === "cancelled" || n === "lease_completed" || n === "lease_refunded"
+  );
 }
 
 export function bookRequestStatusLabel(status: string): string {
@@ -100,6 +104,8 @@ export function bookRequestStatusLabel(status: string): string {
   }
 }
 
-export function bookRequestAssignedHubId(row: Pick<BookRequestRow, "hubId" | "assignedHubId" | "fulfilledByHubId">): string | null {
+export function bookRequestAssignedHubId(
+  row: Pick<BookRequestRow, "hubId" | "assignedHubId" | "fulfilledByHubId">,
+): string | null {
   return row.assignedHubId ?? row.fulfilledByHubId ?? row.hubId ?? null;
 }
