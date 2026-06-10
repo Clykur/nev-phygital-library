@@ -94,6 +94,7 @@ export type LibraryCatalogBook = {
   targetHubName?: string | null;
   originalHubName?: string | null;
   inventoryStats?: InventoryStats;
+  distanceKm?: number | null;
 };
 
 type Book = LibraryCatalogBook;
@@ -145,6 +146,7 @@ export function CatalogBookCard({
   /** Square cover area — no radius on placeholder/image clip (e.g. marketplace grid). */
   sharpCover,
   hideBottomTitle,
+  distanceKm,
 }: {
   title: string;
   coverUrl: string | null | undefined;
@@ -165,6 +167,7 @@ export function CatalogBookCard({
   onOpen?: () => void;
   sharpCover?: boolean;
   hideBottomTitle?: boolean;
+  distanceKm?: number | null;
 }) {
   return (
     <motion.article
@@ -182,6 +185,14 @@ export function CatalogBookCard({
             ) : (
               <HubBookStatusBadge status={shelfStatus!} />
             )}
+          </div>
+        ) : null}
+        {!isSample && distanceKm != null ? (
+          <div className="absolute left-2 top-2 z-10">
+            <span className="inline-flex items-center gap-1 rounded-full bg-overlay-backdrop/70 backdrop-blur-md px-2.5 py-1 text-xs font-semibold text-on-media border border-overlay-glass-border">
+              <MapPin className="h-3 w-3 text-accent" />
+              {distanceKm.toFixed(1)} km away
+            </span>
           </div>
         ) : null}
         <BookCoverImage
@@ -271,6 +282,7 @@ export function PeerListingCard({
   onOpen,
   sharpCover,
   hideBottomTitle,
+  distanceKm,
 }: {
   title: string;
   coverUrl: string | null | undefined;
@@ -288,6 +300,7 @@ export function PeerListingCard({
   sharpCover?: boolean;
   hideBottomTitle?: boolean;
   inventoryStats?: InventoryStats;
+  distanceKm?: number | null;
 }) {
   const onKeyDown = (e: KeyboardEvent<HTMLElement>) => {
     if (e.key === "Enter" || e.key === " ") {
@@ -316,6 +329,14 @@ export function PeerListingCard({
         {listingStatus && !isSample && (
           <div className="absolute right-2 top-2 z-10">
             <ShelfPeerStatusBadge status={listingStatus} />
+          </div>
+        )}
+        {!isSample && distanceKm != null && (
+          <div className="absolute left-2 top-2 z-10">
+            <span className="inline-flex items-center gap-1 rounded-full bg-overlay-backdrop/70 backdrop-blur-md px-2.5 py-1 text-xs font-semibold text-on-media border border-overlay-glass-border">
+              <MapPin className="h-3 w-3 text-accent" />
+              {distanceKm.toFixed(1)} km away
+            </span>
           </div>
         )}
         <BookCoverImage

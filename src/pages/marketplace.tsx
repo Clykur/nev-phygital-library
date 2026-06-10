@@ -54,7 +54,8 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation } from "wouter";
-import { useGeolocation } from "@/hooks/use-geolocation";
+import { useLocationContext } from "@/context/location-context";
+import { LocationButton } from "@/components/LocationButton";
 import { CheckoutFlowDialog, type CheckoutFlowItem } from "@/components/checkout-flow-dialog";
 import { recordRecentlyViewed } from "@/lib/recently-viewed";
 
@@ -80,9 +81,10 @@ type P2pListing = {
     issued: number;
     reserved: number;
   };
+  distanceKm?: number | null;
 };
 
-type Hub = { id: string; name: string; kind?: string };
+type Hub = { id: string; name: string; kind?: string; distanceKm?: number | null };
 type RequestRow = { id: string; bookTitle?: string | null; status: string; createdAt?: string };
 const RECENT_VIEWED_KEY = "student.recentViewedTitles";
 const RECENT_SEARCHES_KEY = "student.recentSearches";
@@ -149,6 +151,7 @@ function MarketplacePeerCard({
       inventoryStats={l.inventoryStats}
       sharpCover
       hideBottomTitle={hideBottomTitle}
+      distanceKm={l.distanceKm}
       onOpen={() => {
         pushRecentViewedTitle(l.bookTitle);
         onViewed?.(l);
@@ -302,7 +305,9 @@ export default function Marketplace(props?: MarketplaceProps) {
   const studentShellBrowse = inShell && !hubDesk && isBrowseMode;
   const studentShellFlat = inShell && !hubDesk;
   const [location] = useLocation();
-  const { coords, requestLocation, loading: locLoading, permissionDenied } = useGeolocation();
+  const { coords, requestLocation, loading: locLoading, error: locError } = useLocationContext();
+  const permissionDenied = locError === "Location permission denied";
+  const hasActiveLocation = !!user && !!coords;
   const [locationFilter, setLocationFilter] = useState("all");
   const qc = useQueryClient();
   const [search, setSearch] = useState("");
@@ -367,12 +372,25 @@ export default function Marketplace(props?: MarketplaceProps) {
   }, [search]);
 
   const hubsQ = useQuery({
-    queryKey: ["catalog", "hubs"],
-    queryFn: () => apiFetch<{ hubs: Hub[] }>("/api/catalog/hubs", { token: token ?? undefined }),
+    queryKey: [
+      "catalog",
+      "hubs",
+      hasActiveLocation ? coords?.latitude : null,
+      hasActiveLocation ? coords?.longitude : null,
+    ],
+    queryFn: () => {
+      const url = hasActiveLocation
+        ? `/api/catalog/hubs?lat=${coords.latitude}&lng=${coords.longitude}`
+        : "/api/catalog/hubs";
+      return apiFetch<{ hubs: Hub[] }>(url, { token: token ?? undefined });
+    },
   });
 
-  const nearbyHubs = coords
-    ? [...(hubsQ.data?.hubs || [])].sort((a, b) => a.name.length - b.name.length).slice(0, 3)
+  const nearbyHubs = hasActiveLocation
+    ? [...(hubsQ.data?.hubs || [])]
+        .filter((h) => h.distanceKm !== null && h.distanceKm !== undefined && h.distanceKm <= 20)
+        .sort((a, b) => (a.distanceKm || 0) - (b.distanceKm || 0))
+        .slice(0, 3)
     : [];
 
   const listingsQueryEnabled =
@@ -381,18 +399,31 @@ export default function Marketplace(props?: MarketplaceProps) {
     (isBrowseMode && (sourceFilter === "all" || sourceFilter === "peers"));
 
   const listingsQ = useQuery({
-    queryKey: ["p2p-listings"],
+    queryKey: [
+      "p2p-listings",
+      hasActiveLocation ? coords?.latitude : null,
+      hasActiveLocation ? coords?.longitude : null,
+    ],
     enabled: listingsQueryEnabled,
-    queryFn: () =>
-      apiFetch<{ listings: P2pListing[] }>("/api/p2p/listings", {
+    queryFn: () => {
+      const url = hasActiveLocation
+        ? `/api/p2p/listings?lat=${coords.latitude}&lng=${coords.longitude}`
+        : "/api/p2p/listings";
+      return apiFetch<{ listings: P2pListing[] }>(url, {
         token: token ?? undefined,
-      }),
+      });
+    },
   });
 
   const hubBooksUrl = useMemo(() => {
     const q = search.trim();
-    return q ? `/api/catalog/books?q=${encodeURIComponent(q)}` : "/api/catalog/books";
-  }, [search]);
+    let base = q ? `/api/catalog/books?q=${encodeURIComponent(q)}` : "/api/catalog/books";
+    if (hasActiveLocation) {
+      const sep = base.includes("?") ? "&" : "?";
+      base = `${base}${sep}lat=${coords.latitude}&lng=${coords.longitude}`;
+    }
+    return base;
+  }, [search, coords, hasActiveLocation]);
 
   const hubBooksEnabled = isBrowseMode && (sourceFilter === "all" || sourceFilter === "hub");
 
@@ -517,16 +548,28 @@ export default function Marketplace(props?: MarketplaceProps) {
     const rows: BrowseRow[] = [];
     if (sourceFilter === "all" || sourceFilter === "hub") {
       for (const b of hubBooksSorted) {
+        if (
+          hasActiveLocation &&
+          (b.distanceKm === null || b.distanceKm === undefined || b.distanceKm > 20)
+        ) {
+          continue;
+        }
         rows.push({ kind: "hub", book: b, key: `hub-${b.id}` });
       }
     }
     if (sourceFilter === "all" || sourceFilter === "peers") {
       for (const l of peerShelfOrdered) {
+        if (
+          hasActiveLocation &&
+          (l.distanceKm === null || l.distanceKm === undefined || l.distanceKm > 20)
+        ) {
+          continue;
+        }
         rows.push({ kind: "p2p", listing: l, key: `p2p-${l.id}` });
       }
     }
     return rows;
-  }, [isBrowseMode, sourceFilter, hubBooksSorted, peerShelfOrdered]);
+  }, [isBrowseMode, sourceFilter, hubBooksSorted, peerShelfOrdered, coords, hasActiveLocation]);
 
   const browseTotalPages = Math.max(1, Math.ceil(browseRowsFull.length / CATALOG_PAGE_SIZE));
   const browseRows = useMemo(
@@ -1058,6 +1101,7 @@ export default function Marketplace(props?: MarketplaceProps) {
               )}
             </div>
             <div className="flex flex-wrap items-center gap-3">
+              {isBrowseMode && <LocationButton />}
               {user && showListCta ? (
                 <>
                   <Button
@@ -1614,6 +1658,18 @@ export default function Marketplace(props?: MarketplaceProps) {
               <div className="flex justify-center py-12">
                 <Loader2 className="h-10 w-10 animate-spin text-muted-foreground" />
               </div>
+            ) : browseRows.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-16 text-center px-4 rounded-2xl border border-dashed border-border bg-card/50">
+                <MapPin className="w-10 h-10 text-muted-foreground/60 mb-3" />
+                <h3 className="text-base font-bold text-foreground mb-1">
+                  {hasActiveLocation ? "No Nearby Copies" : "No Books Found"}
+                </h3>
+                <p className="text-sm text-muted-foreground max-w-sm">
+                  {hasActiveLocation
+                    ? "No nearby hubs found within 20 km."
+                    : "No campus copies match your current filters. Try adjusting your search."}
+                </p>
+              </div>
             ) : (
               <>
                 <div className="grid grid-cols-2 gap-3 sm:gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 auto-rows-fr">
@@ -1670,6 +1726,7 @@ export default function Marketplace(props?: MarketplaceProps) {
                             shelfStatus={b.status}
                             sharpCover
                             hideBottomTitle
+                            distanceKm={b.distanceKm}
                             action={
                               <>
                                 {!user && (

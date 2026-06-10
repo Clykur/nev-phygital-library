@@ -2,12 +2,18 @@ import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiFetch } from "../lib/api";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./ui/dialog";
-import { useGeolocation } from "../hooks/use-geolocation";
+import { useLocationContext } from "../context/location-context";
 import { Loader2, MapPin, School, BookOpen, AlertCircle } from "lucide-react";
 import { cn } from "../lib/utils";
 import { LibraryCatalogBook } from "../pages/library";
 
-type Hub = { id: string; name: string; location?: string; kind?: string };
+type Hub = {
+  id: string;
+  name: string;
+  location?: string;
+  kind?: string;
+  distanceKm?: number | null;
+};
 
 interface LocationDiscoveryDialogProps {
   open: boolean;
@@ -20,13 +26,9 @@ export function LocationDiscoveryDialog({
   onOpenChange,
   token,
 }: LocationDiscoveryDialogProps) {
-  const {
-    coords,
-    requestLocation,
-    loading: locLoading,
-    error: locError,
-    permissionDenied,
-  } = useGeolocation();
+  const { coords, requestLocation, loading: locLoading, error: locError } = useLocationContext();
+
+  const permissionDenied = locError === "Location permission denied";
 
   // We request location when the dialog opens, if we don't have it yet.
   useEffect(() => {
@@ -36,18 +38,27 @@ export function LocationDiscoveryDialog({
   }, [open, coords, locLoading, locError, permissionDenied, requestLocation]);
 
   const hubsQ = useQuery({
-    queryKey: ["catalog", "hubs", "nearby"],
+    queryKey: ["catalog", "hubs", "nearby", coords?.latitude, coords?.longitude],
     enabled: open && !!coords,
-    queryFn: () => apiFetch<{ hubs: Hub[] }>("/api/catalog/hubs", { token: token || undefined }),
+    queryFn: () => {
+      const url = coords
+        ? `/api/catalog/hubs?lat=${coords.latitude}&lng=${coords.longitude}`
+        : "/api/catalog/hubs";
+      return apiFetch<{ hubs: Hub[] }>(url, { token: token || undefined });
+    },
   });
 
   const booksQ = useQuery({
-    queryKey: ["catalog", "books", "nearby"],
+    queryKey: ["catalog", "books", "nearby", coords?.latitude, coords?.longitude],
     enabled: open && !!coords,
-    queryFn: () =>
-      apiFetch<{ books: LibraryCatalogBook[] }>("/api/catalog/books", {
+    queryFn: () => {
+      const url = coords
+        ? `/api/catalog/books?lat=${coords.latitude}&lng=${coords.longitude}`
+        : "/api/catalog/books";
+      return apiFetch<{ books: LibraryCatalogBook[] }>(url, {
         token: token || undefined,
-      }),
+      });
+    },
   });
 
   // Calculate mock distances deterministically based on hub/book IDs to simulate proximity
@@ -127,7 +138,9 @@ export function LocationDiscoveryDialog({
                           </p>
                           <div className="mt-2 flex items-center gap-1.5 caption-scale font-medium text-secondary">
                             <MapPin className="w-3 h-3" />
-                            {getMockDistance(hub.id)} km away
+                            {hub.distanceKm != null
+                              ? `${hub.distanceKm.toFixed(1)} km away`
+                              : `${getMockDistance(hub.id)} km away`}
                           </div>
                         </div>
                       </div>
@@ -186,7 +199,10 @@ export function LocationDiscoveryDialog({
                                 {isAvailable ? "Available" : "Reserved"}
                               </span>
                               <span className="caption-scale text-muted-foreground flex items-center gap-1">
-                                <MapPin className="w-2.5 h-2.5" /> {getMockDistance(book.id)} km
+                                <MapPin className="w-2.5 h-2.5" />{" "}
+                                {book.distanceKm != null
+                                  ? `${book.distanceKm.toFixed(1)} km`
+                                  : `${getMockDistance(book.id)} km`}
                               </span>
                             </div>
                           </div>

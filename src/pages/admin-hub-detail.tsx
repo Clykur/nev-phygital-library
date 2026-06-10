@@ -35,7 +35,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2, MapPin } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { adminPanel } from "@/lib/admin-desk-ui";
@@ -43,6 +43,14 @@ import { PORTAL_PAGE_TITLE, PORTAL_STAT_VALUE } from "@/lib/portal-typography";
 import { PORTAL_KICKER_COLOR } from "@/lib/student-ui";
 import { BOOK_COVER_PLACEHOLDER_URL, bookCoverDisplayUrl } from "@/lib/book-cover-display";
 import { hubKindLabel, hubMembershipRoleLabel } from "@/lib/hub-display";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 type HubPayload = {
   id: string;
@@ -52,6 +60,8 @@ type HubPayload = {
   kind: string;
   isActive: boolean;
   capacity: number | null;
+  latitude: number | null;
+  longitude: number | null;
 };
 
 type Member = { userId: string; name: string; email: string; role: string };
@@ -167,10 +177,122 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
   const [deleteConfirmName, setDeleteConfirmName] = useState("");
   const topPad = inShell ? "" : "pt-24";
 
+  // Edit Hub form state
+  const [editOpen, setEditOpen] = useState(false);
+  const [editName, setEditName] = useState("");
+  const [editLocation, setEditLocation] = useState("");
+  const [editKind, setEditKind] = useState("other");
+  const [editCapacity, setEditCapacity] = useState<number | "">("");
+  const [editLatitude, setEditLatitude] = useState<number | "">("");
+  const [editLongitude, setEditLongitude] = useState<number | "">("");
+  const [editGeolocating, setEditGeolocating] = useState(false);
+
   const q = useQuery({
     queryKey: ["admin", "hub", hubId, "summary-panel"],
     queryFn: () => apiFetch<HubDetailPayload>(`/api/admin/hubs/${hubId}`, { token: token! }),
     enabled: !!token && !!hubId,
+  });
+
+  const hubData = q.data?.hub;
+
+  // Update edit states when hub data loads
+  useState(() => {
+    if (hubData) {
+      setEditName(hubData.name);
+      setEditLocation(hubData.location || "");
+      setEditKind(hubData.kind);
+      setEditCapacity(hubData.capacity ?? "");
+      setEditLatitude(hubData.latitude ?? "");
+      setEditLongitude(hubData.longitude ?? "");
+    }
+  });
+
+  // Since useState initializers only run once, let's also update on query data change
+  const queryData = q.data;
+  useState(() => {
+    if (queryData?.hub) {
+      const h = queryData.hub;
+      setEditName(h.name);
+      setEditLocation(h.location || "");
+      setEditKind(h.kind);
+      setEditCapacity(h.capacity ?? "");
+      setEditLatitude(h.latitude ?? "");
+      setEditLongitude(h.longitude ?? "");
+    }
+  });
+
+  // Let's use standard useEffect to keep states in sync with API query results
+  useState(() => {});
+  const [lastDataId, setLastDataId] = useState("");
+  if (hubData && hubData.id !== lastDataId) {
+    setEditName(hubData.name);
+    setEditLocation(hubData.location || "");
+    setEditKind(hubData.kind);
+    setEditCapacity(hubData.capacity ?? "");
+    setEditLatitude(hubData.latitude ?? "");
+    setEditLongitude(hubData.longitude ?? "");
+    setLastDataId(hubData.id);
+  }
+
+  const handleUseLocationForEdit = () => {
+    if (!navigator.geolocation) {
+      toast.error("Geolocation is not supported by your browser");
+      return;
+    }
+    setEditGeolocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        setEditLatitude(lat);
+        setEditLongitude(lng);
+        try {
+          const res = await apiFetch<{ success: boolean; data: any }>(
+            `/api/geo/reverse-geocode?latitude=${lat}&longitude=${lng}`,
+          );
+          if (res.success && res.data) {
+            const { city: resolvedCity, region } = res.data;
+            const loc = [resolvedCity, region].filter(Boolean).join(", ");
+            if (loc) setEditLocation(loc);
+            toast.success("Coordinates and address resolved successfully!");
+          }
+        } catch (err) {
+          console.error("Error reverse geocoding:", err);
+          toast.error("Coordinates captured, but failed to resolve address.");
+        } finally {
+          setEditGeolocating(false);
+        }
+      },
+      (err) => {
+        console.error("Error geolocating:", err);
+        setEditGeolocating(false);
+        toast.error("Could not obtain location permission or coordinates.");
+      },
+      { timeout: 10000 },
+    );
+  };
+
+  const patchHub = useMutation({
+    mutationFn: () =>
+      apiFetch<{ hub: HubPayload }>(`/api/admin/hubs/${hubId}`, {
+        method: "PATCH",
+        token: token!,
+        body: JSON.stringify({
+          name: editName,
+          location: editLocation,
+          kind: editKind,
+          capacity: editCapacity === "" ? null : Number(editCapacity),
+          latitude: editLatitude === "" ? null : Number(editLatitude),
+          longitude: editLongitude === "" ? null : Number(editLongitude),
+        }),
+      }),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["admin", "hub", hubId] });
+      void qc.invalidateQueries({ queryKey: ["admin", "hubs"] });
+      toast.success("Hub updated successfully!");
+      setEditOpen(false);
+    },
+    onError: (e) => toast.error(userFacingErrorMessage(e)),
   });
 
   const enableHub = useMutation({
@@ -318,6 +440,14 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
               <div>
                 <p className="section-kicker">Capacity</p>
                 <p className="mt-1">{hub.capacity}</p>
+              </div>
+            ) : null}
+            {hub.latitude != null && hub.longitude != null ? (
+              <div>
+                <p className="section-kicker">Coordinates</p>
+                <p className="mt-1 font-mono text-xs text-primary">
+                  {hub.latitude.toFixed(6)}, {hub.longitude.toFixed(6)}
+                </p>
               </div>
             ) : null}
           </div>
@@ -533,6 +663,13 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
               source-specific pages.
             </p>
             <div className="flex flex-wrap gap-2">
+              <Button
+                variant="outline"
+                className="h-10 rounded-md border-primary/30 text-primary hover:bg-primary/5"
+                onClick={() => setEditOpen(true)}
+              >
+                Edit hub
+              </Button>
               {hub.isActive ? (
                 <Button
                   variant="outline"
@@ -611,6 +748,113 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <Dialog open={editOpen} onOpenChange={setEditOpen}>
+        <DialogContent className="max-w-md bg-card border border-border">
+          <DialogHeader>
+            <DialogTitle className="h4-scale font-semibold text-foreground">
+              Edit Hub Details
+            </DialogTitle>
+            <DialogDescription className="body-scale text-foreground-muted">
+              Modify the properties of {hub.name}.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-3">
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-foreground-muted">Hub Name</label>
+              <Input
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+                placeholder="Hub Name"
+                className="h-10 rounded-md"
+              />
+            </div>
+            <div className="space-y-1">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-foreground-muted">
+                  Location / Area
+                </label>
+                <button
+                  type="button"
+                  onClick={handleUseLocationForEdit}
+                  disabled={editGeolocating}
+                  className="text-xs font-semibold text-primary hover:text-primary-hover disabled:opacity-50 flex items-center gap-1 cursor-pointer"
+                >
+                  {editGeolocating ? "Locating..." : "Use Current Location"}
+                </button>
+              </div>
+              <Input
+                value={editLocation}
+                onChange={(e) => setEditLocation(e.target.value)}
+                placeholder="Area or City"
+                className="h-10 rounded-md"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-foreground-muted">Hub Type</label>
+              <select
+                value={editKind}
+                onChange={(e) => setEditKind(e.target.value)}
+                className="w-full h-10 rounded-md border border-border bg-background px-3 py-2 text-sm focus:outline-none cursor-pointer text-foreground"
+              >
+                <option value="college">College / University</option>
+                <option value="public">Public Library</option>
+                <option value="government">Government Library</option>
+                <option value="private">Private Hub</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-foreground-muted">Capacity</label>
+                <Input
+                  type="number"
+                  value={editCapacity}
+                  onChange={(e) =>
+                    setEditCapacity(e.target.value === "" ? "" : Number(e.target.value))
+                  }
+                  placeholder="Unlimited"
+                  className="h-10 rounded-md"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-foreground-muted">Latitude</label>
+                <Input
+                  type="number"
+                  step="any"
+                  value={editLatitude}
+                  onChange={(e) =>
+                    setEditLatitude(e.target.value === "" ? "" : Number(e.target.value))
+                  }
+                  placeholder="Lat"
+                  className="h-10 rounded-md"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-foreground-muted">Longitude</label>
+                <Input
+                  type="number"
+                  step="any"
+                  value={editLongitude}
+                  onChange={(e) =>
+                    setEditLongitude(e.target.value === "" ? "" : Number(e.target.value))
+                  }
+                  placeholder="Lng"
+                  className="h-10 rounded-md"
+                />
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={() => patchHub.mutate()} disabled={patchHub.isPending}>
+              {patchHub.isPending ? "Saving..." : "Save Changes"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -19,6 +19,8 @@ import {
 } from "lucide-react";
 import { GoogleSignInAnchor, GoogleSignInHost } from "@/components/GoogleSignInHost";
 import { useAuthFormStore } from "@/store/use-auth-form";
+import { toast } from "sonner";
+import { apiFetch } from "@/lib/api";
 interface NeevLandingProps {
   onLogin: (email: string, password?: string, isGoogleAuth?: boolean) => void;
   onGoogleLogin: (
@@ -40,6 +42,8 @@ interface NeevLandingProps {
     district?: string,
     state?: string,
     postalCode?: string,
+    latitude?: number | null,
+    longitude?: number | null,
   ) => void;
   addXp: (amount: number) => void;
   activeSegment: "students" | "colleges";
@@ -171,6 +175,51 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({
     confirmPassword,
     setConfirmPassword,
   } = useAuthFormStore();
+
+  const [latitude, setLatitude] = useState<number | undefined>(undefined);
+  const [longitude, setLongitude] = useState<number | undefined>(undefined);
+  const [geolocating, setGeolocating] = useState(false);
+
+  const handleUseLocation = async () => {
+    if (!navigator.geolocation) {
+      toast.error("Geolocation is not supported by your browser");
+      return;
+    }
+
+    setGeolocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        setLatitude(lat);
+        setLongitude(lng);
+        try {
+          const res = await apiFetch<{ success: boolean; data: any }>(
+            `/api/geo/reverse-geocode?latitude=${lat}&longitude=${lng}`,
+          );
+          if (res.success && res.data) {
+            const { city: resolvedCity, region, postal_code } = res.data;
+            if (resolvedCity) setCity(resolvedCity);
+            if (region) setAdminState(region);
+            if (postal_code) setPostalCode(postal_code);
+            setAddress([resolvedCity, region].filter(Boolean).join(", "));
+            toast.success("Location coordinates and address resolved successfully!");
+          }
+        } catch (err) {
+          console.error("Error reverse geocoding:", err);
+          toast.error("Failed to resolve address, but coordinates are captured.");
+        } finally {
+          setGeolocating(false);
+        }
+      },
+      (err) => {
+        console.error("Error getting location:", err);
+        setGeolocating(false);
+        toast.error("Could not obtain location permission or coordinates.");
+      },
+      { timeout: 10000 },
+    );
+  };
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
 
@@ -2225,6 +2274,8 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({
                             district,
                             adminState,
                             postalCode,
+                            latitude,
+                            longitude,
                           );
                         }}
                         className="space-y-4"
@@ -2258,9 +2309,26 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({
                           />
                         </div>
                         <div className="border border-border rounded-xl p-4 space-y-4">
-                          <h4 className="text-xs font-semibold uppercase tracking-wider text-foreground">
-                            Institution Information
-                          </h4>
+                          <div className="flex items-center justify-between">
+                            <h4 className="text-xs font-semibold uppercase tracking-wider text-foreground">
+                              Institution Information
+                            </h4>
+                            <button
+                              type="button"
+                              onClick={handleUseLocation}
+                              disabled={geolocating}
+                              className="text-xs font-semibold text-primary hover:text-primary-hover disabled:opacity-50 cursor-pointer flex items-center gap-1"
+                            >
+                              {geolocating ? (
+                                <>
+                                  <span className="h-3 w-3 animate-spin rounded-full border border-primary border-t-transparent inline-block" />
+                                  <span>Locating...</span>
+                                </>
+                              ) : (
+                                "Use Current Location"
+                              )}
+                            </button>
+                          </div>
 
                           <input
                             type="text"
@@ -2328,6 +2396,15 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({
                               className="rounded-xl border border-border bg-background p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                             />
                           </div>
+
+                          {latitude && longitude && (
+                            <div className="text-[11px] text-muted-foreground bg-primary/5 p-2 rounded-lg border border-primary/10">
+                              Coordinates captured:{" "}
+                              <span className="font-semibold text-primary">
+                                {latitude.toFixed(6)}, {longitude.toFixed(6)}
+                              </span>
+                            </div>
+                          )}
 
                           <p className="text-xs text-muted-foreground">
                             This information will be used to verify and register your institution.
@@ -2548,6 +2625,8 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({
                       district,
                       adminState,
                       postalCode,
+                      latitude,
+                      longitude,
                     );
                   } catch (error) {
                     setAuthLoading(false);

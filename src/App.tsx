@@ -482,6 +482,8 @@ function PublicRoutes() {
               district,
               state,
               postalCode,
+              latitude,
+              longitude,
             ) => {
               if (!password) {
                 toast({
@@ -512,6 +514,8 @@ function PublicRoutes() {
                         district,
                         state,
                         postalCode,
+                        latitude,
+                        longitude,
                       }
                     : { hubLocation: hubLocationId }),
                 } as any);
@@ -666,20 +670,23 @@ function Router() {
 }
 
 import { WalletProvider } from "@/context/wallet-context";
+import { LocationProvider } from "@/context/location-context";
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <WalletProvider>
-          <TooltipProvider>
-            <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-              <Router />
-            </WouterRouter>
-            <Toaster />
-            <SonnerToaster theme="system" position="bottom-right" />
-          </TooltipProvider>
-        </WalletProvider>
+        <LocationProvider>
+          <WalletProvider>
+            <TooltipProvider>
+              <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+                <Router />
+              </WouterRouter>
+              <Toaster />
+              <SonnerToaster theme="system" position="bottom-right" />
+            </TooltipProvider>
+          </WalletProvider>
+        </LocationProvider>
       </AuthProvider>
     </QueryClientProvider>
   );
