@@ -841,10 +841,6 @@ export function RequestBookSection({
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isPremiumOk(user)) {
-      toast.message("Premium required to request books. Use Upgrade to continue.");
-      return;
-    }
     const titleTrim = bookTitle.trim();
     if (!titleTrim) {
       toast.error("Enter the book title");
@@ -891,7 +887,7 @@ export function RequestBookSection({
           </p>
           <DialogTitle className="font-serif">Request a Book</DialogTitle>
           <DialogDescription>
-            Premium only. Your request is broadcast to every hub. Track updates under My activity.
+            Your request is broadcast to every hub. Track updates under My activity.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={submit} className="space-y-4 pt-2">
@@ -939,16 +935,7 @@ export function RequestBookSection({
               className="min-h-[80px] resize-y"
             />
           </div>
-          {!isPremiumOk(user) && (
-            <p className="text-sm text-accent">
-              Premium required for book requests. Use Upgrade to continue.
-            </p>
-          )}
-          <Button
-            type="submit"
-            className="w-full rounded-xl"
-            disabled={!isPremiumOk(user) || !bookTitle.trim()}
-          >
+          <Button type="submit" className="w-full rounded-xl" disabled={!bookTitle.trim()}>
             Submit request
           </Button>
         </form>

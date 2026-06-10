@@ -1,8 +1,15 @@
-import { useQuery } from "@tanstack/react-query";
-import { HubCommerceSection } from "@/components/hub/HubCommerceSection";
-import { HubStudentAnalytics, HubStudentsSection } from "@/components/hub/HubStudentsManagement";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { fmtCredits } from "@/lib/credits";
 import { Button } from "@/components/ui/button";
-import { uniformBadgeShape } from "@/lib/status-badges";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -23,6 +30,40 @@ import { portalPathsForUser } from "@/lib/app-paths";
 import { ClipboardList, Loader2, Package, Shield, Wallet, type LucideIcon } from "lucide-react";
 import { useMemo, useState, type ReactNode } from "react";
 import { Link } from "wouter";
+
+function fmtDateShort(iso: string | undefined | null) {
+  if (!iso) return "";
+  try {
+    return new Date(iso).toLocaleDateString(undefined, {
+      day: "numeric",
+      month: "short",
+    });
+  } catch {
+    return "";
+  }
+}
+
+function FlatStatus({
+  label,
+  tone = "neutral",
+}: {
+  label: string;
+  tone?: "neutral" | "amber" | "emerald" | "destructive";
+}) {
+  return (
+    <span
+      className={cn(
+        "inline-flex h-7 items-center whitespace-nowrap rounded-sm border px-3 text-xs font-semibold uppercase tracking-wider",
+        tone === "emerald" && "border-emerald-500/30 bg-emerald-500/10 text-emerald-500",
+        tone === "amber" && "border-amber-500/30 bg-amber-500/10 text-amber-500",
+        tone === "destructive" && "border-destructive/30 bg-destructive/10 text-destructive",
+        tone === "neutral" && "border-border text-foreground",
+      )}
+    >
+      {label}
+    </span>
+  );
+}
 
 type Hub = { id: string; name: string; kind?: string };
 
@@ -268,6 +309,20 @@ export default function HubOverviewPage() {
       >(`${path}?range=${overviewRange}${hubQ}`, { token: token! });
     },
   });
+
+  const qc = useQueryClient();
+
+  const leasesQ = useQuery({
+    queryKey: ["hub", "long-term-leases", token, overviewHubId],
+    enabled: !!token && !isSuperAdmin && !!user?.hubStaffHubIds.length,
+    queryFn: () =>
+      apiFetch<{ leases: any[] }>(
+        `/api/hub/long-term-leases${overviewHubId === "all" ? "" : `?hubId=${overviewHubId}`}`,
+        { token: token! },
+      ),
+  });
+
+  // Long-term lease approval mutations have been removed (now processed from the Book Requests page)
 
   const topPad = inShell ? "" : "pt-24";
 
@@ -633,6 +688,101 @@ export default function HubOverviewPage() {
                     value={ov.metrics.transactionsToday}
                     sub={`${rangeLabel}: ${ov.metrics.transactionsInRange}`}
                   />
+                </div>
+              </section>
+
+              <section
+                className={cn(PORTAL_PANEL_SURFACE, "overflow-hidden")}
+                aria-label="Long-Term Lease Requests"
+              >
+                <div className="border-b border-border px-4 py-3">
+                  <SectionLabel>Long-Term Lease History</SectionLabel>
+                  <p className="mt-1 caption-scale font-medium text-foreground-muted">
+                    Complete history of long-term lease requests for this hub.
+                  </p>
+                </div>
+
+                <div className="px-2 pb-4 pt-2">
+                  <Table className="table-fixed w-full">
+                    <TableHeader>
+                      <TableRow className="border-border hover:bg-transparent">
+                        <TableHead className="pl-5">Student</TableHead>
+                        <TableHead>Book</TableHead>
+                        <TableHead>Requested</TableHead>
+                        <TableHead>Deposit</TableHead>
+                        <TableHead>Status</TableHead>
+                      </TableRow>
+                    </TableHeader>
+
+                    <TableBody>
+                      {leasesQ.isLoading ? (
+                        <TableRow>
+                          <TableCell colSpan={6} className="py-8 text-center">
+                            <Loader2 className="h-6 w-6 animate-spin mx-auto text-foreground-muted" />
+                          </TableCell>
+                        </TableRow>
+                      ) : leasesQ.isError ? (
+                        <TableRow>
+                          <TableCell colSpan={6} className="py-8 text-center text-destructive">
+                            Failed to load lease history.
+                          </TableCell>
+                        </TableRow>
+                      ) : leasesQ.data?.leases?.length ? (
+                        leasesQ.data.leases.map((l: any) => (
+                          <TableRow key={l.id}>
+                            <TableCell className="pl-5">
+                              <div className="min-w-0">
+                                <p className="font-medium text-foreground">{l.studentName}</p>
+                                <p className="caption-scale text-foreground-muted truncate">
+                                  {l.studentEmail}
+                                </p>
+                              </div>
+                            </TableCell>
+
+                            <TableCell>
+                              <div className="min-w-0">
+                                <p className="font-medium text-foreground">{l.bookTitle}</p>
+                                {l.bookAuthor ? (
+                                  <p className="caption-scale text-foreground-muted truncate">
+                                    {l.bookAuthor}
+                                  </p>
+                                ) : null}
+                              </div>
+                            </TableCell>
+
+                            <TableCell className="text-muted-foreground">
+                              {fmtDateShort(l.requestedAt)}
+                            </TableCell>
+
+                            <TableCell className="tabular-nums text-muted-foreground">
+                              {fmtCredits(l.depositAmount)}
+                            </TableCell>
+
+                            <TableCell>
+                              <FlatStatus
+                                label={l.status}
+                                tone={
+                                  l.status === "approved" || l.status === "active"
+                                    ? "emerald"
+                                    : l.status === "rejected"
+                                      ? "destructive"
+                                      : l.status === "completed" || l.status === "refunded"
+                                        ? "neutral"
+                                        : "amber"
+                                }
+                              />
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      ) : (
+                        <TableRow>
+                          <TableCell colSpan={6} className="py-8 text-center text-muted-foreground">
+                            No long-term lease records found.
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
                 </div>
               </section>
 

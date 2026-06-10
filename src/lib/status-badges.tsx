@@ -28,7 +28,17 @@ export function getStatusColorClasses(status: string): string {
   }
 
   // Approved (Sky)
-  if (["approved", "listed", "requested", "new", "pending"].includes(s)) {
+  if (
+    [
+      "approved",
+      "listed",
+      "requested",
+      "new",
+      "pending",
+      "lease_requested",
+      "lease_approved",
+    ].includes(s)
+  ) {
     return "border border-primary/30 bg-primary/10 text-primary";
   }
 
@@ -50,6 +60,8 @@ export function getStatusColorClasses(status: string): string {
       "finding",
       "pending_dropoff",
       "pending drop-off",
+      "lease_active",
+      "lease_return_pending",
     ].includes(s)
   ) {
     return "border border-accent/30 bg-accent/10 text-accent-foreground";
@@ -66,7 +78,17 @@ export function getStatusColorClasses(status: string): string {
   }
 
   // Cancelled / completed (default ink hierarchy)
-  if (["cancelled", "sold", "withdrawn", "picked", "completed"].includes(s)) {
+  if (
+    [
+      "cancelled",
+      "sold",
+      "withdrawn",
+      "picked",
+      "completed",
+      "lease_completed",
+      "lease_refunded",
+    ].includes(s)
+  ) {
     return "border border-border bg-background text-foreground-muted";
   }
 
@@ -201,6 +223,20 @@ export function requestStatusLabel(status: string): string {
     case "cancelled":
     case "expired":
       return "Cancelled";
+    case "rejected":
+      return "Rejected";
+    case "lease_requested":
+      return "Lease Requested";
+    case "lease_approved":
+      return "Lease Approved";
+    case "lease_active":
+      return "Lease Active";
+    case "lease_return_pending":
+      return "Return Pending";
+    case "lease_completed":
+      return "Lease Completed";
+    case "lease_refunded":
+      return "Lease Refunded";
     default:
       return status.replace(/_/g, " ");
   }

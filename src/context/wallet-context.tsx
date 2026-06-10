@@ -99,11 +99,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         token,
         body: JSON.stringify({ tier: plan }),
       });
-      toast.success(
-        plan === "pro"
-          ? "Subscribed to Pro! Credits added to your wallet."
-          : "Switched to Free plan.",
-      );
+      toast.success("Your subscription request has been submitted and is awaiting admin approval.");
       await refreshWallet();
     } catch (err: any) {
       toast.error(err.message || "Failed to subscribe");

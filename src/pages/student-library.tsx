@@ -151,8 +151,7 @@ export default function StudentLibraryPage() {
     hubId ? (hubsQ.data?.hubs.find((h) => h.id === hubId)?.name ?? "Hub") : "Hub";
 
   const borrowedFromHub = useMemo<BorrowingRow[]>(() => {
-    const rows = booksQ.data?.books ?? [];
-    return rows
+    const hubRows = (booksQ.data?.books ?? [])
       .filter(
         (b) =>
           b.borrowerUserId === user?.userId &&
@@ -169,15 +168,13 @@ export default function StudentLibraryPage() {
         due: fmtDue(b.dueAt),
         state: dueState(b.dueAt),
         creditsUsed: b.borrowPrice ?? 0,
+        isLease: (b as any).isLease || false,
         ctaLabel: "Return this book",
         onCta: () =>
           setConfirmReturn({ type: "hub", id: b.id, hubName: hubName(b.hubId), title: b.title }),
       }));
-  }, [booksQ.data?.books, user?.userId, hubsQ.data?.hubs]);
 
-  const peerBorrows = useMemo<BorrowingRow[]>(() => {
-    const rows = p2pQ.data?.listings ?? [];
-    return rows
+    const peerRows = (p2pQ.data?.listings ?? [])
       .filter((l) => l.borrowerUserId === user?.userId && l.status === "reserved")
       .map((l) => ({
         id: l.id,
@@ -198,7 +195,9 @@ export default function StudentLibraryPage() {
             title: l.bookTitle,
           }),
       }));
-  }, [p2pQ.data?.listings, user?.userId, hubsQ.data?.hubs]);
+
+    return [...hubRows, ...peerRows];
+  }, [booksQ.data?.books, p2pQ.data?.listings, user?.userId, hubsQ.data?.hubs]);
 
   const pendingPickupPurchases = useMemo<BorrowingRow[]>(() => {
     const ready = (reqQ.data?.requests ?? [])
@@ -247,7 +246,7 @@ export default function StudentLibraryPage() {
           <BorrowingsTable
             title="Books borrowed from library"
             rows={borrowedFromHub}
-            loading={booksQ.isLoading || hubsQ.isLoading}
+            loading={booksQ.isLoading || p2pQ.isLoading || hubsQ.isLoading}
           />
           <BorrowingsTable
             title="Books purchased (not yet picked up)"

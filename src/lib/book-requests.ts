@@ -47,6 +47,7 @@ export type BookRequestRow = {
   createdAt?: string;
   updatedAt?: string;
   isLongTermLease?: boolean | null;
+  fromLeaseTable?: boolean;
 };
 
 const LEGACY_STATUS_MAP: Record<string, BookRequestStatus> = {
@@ -67,7 +68,7 @@ export function normalizeBookRequestStatus(status: string): BookRequestStatus | 
 
 export function isActiveBookRequest(status: string): boolean {
   const n = normalizeBookRequestStatus(status);
-  return n === "pending" || n === "available_for_collection";
+  return BOOK_REQUEST_ACTIVE_STATUSES.includes(n as BookRequestStatus);
 }
 
 export function isTerminalBookRequest(status: string): boolean {

@@ -57,14 +57,14 @@ export function CheckoutFlowDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
   item: CheckoutFlowItem | null;
-  initialMode?: "borrow" | "buy";
+  initialMode?: "borrow" | "buy" | "lease";
   token: string;
   onComplete: () => void;
   /** Hub desk: buying adds the on-shelf copy to this hub’s inventory (cross-hub / peer). */
   deskAcquireHubs?: readonly { id: string; name: string }[] | null;
 }) {
   const [step, setStep] = useState<Step>("details");
-  const [mode, setMode] = useState<"borrow" | "buy">(initialMode);
+  const [mode, setMode] = useState<"borrow" | "buy" | "lease">(initialMode);
   const [payError, setPayError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [acquireHubId, setAcquireHubId] = useState("");
@@ -91,7 +91,7 @@ export function CheckoutFlowDialog({
 
   const actualBorrowPrice = isPremium ? 0 : item.borrowPrice;
   const amount = mode === "borrow" ? actualBorrowPrice : item.buyPrice;
-  const requiresWalletDebit = amount > 0;
+  const requiresWalletDebit = mode !== "lease" && amount > 0;
   const hubLine = item.kind === "hub" ? item.hubName : (item.hubName ?? "Campus hub (TBD)");
   const pickupRef =
     item.kind === "hub"
@@ -114,7 +114,16 @@ export function CheckoutFlowDialog({
           `Insufficient credits. You need ${fmtCredits(amount)} but only have ${fmtCredits(balance)}.`,
         );
       }
-      if (item.kind === "hub") {
+      if (mode === "lease") {
+        if (item.kind !== "hub") {
+          throw new Error("Long-term leases are only available for hub catalog books.");
+        }
+        await apiFetch(`/api/long-term-leases`, {
+          method: "POST",
+          token,
+          body: JSON.stringify({ bookId: item.bookId }),
+        });
+      } else if (item.kind === "hub") {
         if (mode === "borrow") {
           await apiFetch(`/api/books/${item.bookId}/checkout`, { method: "POST", token });
         } else {
@@ -160,12 +169,16 @@ export function CheckoutFlowDialog({
                 ? "You’re all set"
                 : mode === "borrow"
                   ? "Borrow copy"
-                  : "Buy copy"}
+                  : mode === "buy"
+                    ? "Buy copy"
+                    : "Lease Long-Term"}
             </DialogTitle>
             <DialogDescription className="text-sm text-muted-foreground">
               {step === "success"
                 ? "Your campus desk will confirm pickup per local process."
-                : "Review details, then confirm mock payment (no real card charge)."}
+                : mode === "lease"
+                  ? "Confirm your 12-month long-term lease request."
+                  : "Review details, then confirm mock payment (no real card charge)."}
             </DialogDescription>
           </DialogHeader>
         </div>
@@ -208,6 +221,23 @@ export function CheckoutFlowDialog({
                     <span className="font-medium">Buy</span>
                     <span className="tabular-nums text-primary">{fmtCredits(item.buyPrice)}</span>
                   </button>
+                  {item.kind === "hub" && (
+                    <button
+                      type="button"
+                      onClick={() => setMode("lease")}
+                      className={cn(
+                        "flex w-full items-center justify-between rounded-xl border border-border px-3 py-2.5 text-left text-sm transition-colors",
+                        mode === "lease"
+                          ? "border-primary bg-primary/30"
+                          : "border-border hover:shadow-sm",
+                      )}
+                    >
+                      <span className="font-medium">Lease Long-Term</span>
+                      <span className="tabular-nums text-primary">
+                        Deposit: {fmtCredits(item.buyPrice)}
+                      </span>
+                    </button>
+                  )}
                 </div>
               </div>
               {deskAcquireHubs &&
@@ -254,7 +284,9 @@ export function CheckoutFlowDialog({
           {step === "payment" && (
             <>
               <div className="rounded-xl border border-border bg-card/60 p-4 text-sm">
-                <p className="text-muted-foreground">Amount due</p>
+                <p className="text-muted-foreground">
+                  {mode === "lease" ? "Refundable Deposit" : "Amount due"}
+                </p>
                 <p className="mt-1 text-2xl font-semibold tabular-nums text-foreground">
                   {mode === "borrow" && isPremium ? (
                     <span className="text-primary">Premium Member — Borrow Free</span>
@@ -263,13 +295,15 @@ export function CheckoutFlowDialog({
                   )}
                 </p>
                 <p className="mt-2 text-xs text-muted-foreground">
-                  {mode === "borrow"
-                    ? isPremium
-                      ? "No credits required for borrowing. Return the copy on time."
-                      : "Borrow fee for this loan period. Return the copy on time."
-                    : deskAcquireHubs?.length
-                      ? "Desk shelf acquisition — copy becomes hub-owned stock at the hub you selected."
-                      : "Full purchase, you keep this copy (hub or peer rules apply at pickup)."}
+                  {mode === "lease"
+                    ? "Lease duration: 12 months. Upfront amount: Book retail cost (fully refundable upon successful return). Long-term leases bypass the normal 5,000 credit borrowing limit. Request requires Hub approval."
+                    : mode === "borrow"
+                      ? isPremium
+                        ? "No credits required for borrowing. Return the copy on time."
+                        : "Borrow fee for this loan period. Return the copy on time."
+                      : deskAcquireHubs?.length
+                        ? "Desk shelf acquisition — copy becomes hub-owned stock at the hub you selected."
+                        : "Full purchase, you keep this copy (hub or peer rules apply at pickup)."}
                 </p>
               </div>
               <div className="space-y-2 mt-4 p-4 border border-primary/20 bg-primary/5 rounded-xl flex items-center justify-between">
@@ -296,7 +330,7 @@ export function CheckoutFlowDialog({
                   className="flex-1 rounded-xl bg-primary/90 text-primary-foreground hover:bg-primary/80"
                   disabled={
                     pending ||
-                    balance < amount ||
+                    (requiresWalletDebit && balance < amount) ||
                     !!(
                       shelfAcquireBody &&
                       deskAcquireHubs &&
@@ -311,6 +345,8 @@ export function CheckoutFlowDialog({
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Processing…
                     </>
+                  ) : mode === "lease" ? (
+                    "Confirm Lease Request"
                   ) : balance < amount ? (
                     "Insufficient Credits"
                   ) : amount === 0 ? (
@@ -331,10 +367,16 @@ export function CheckoutFlowDialog({
 
               <div className="space-y-1 text-center">
                 <h3 className="text-lg font-semibold text-foreground">
-                  {mode === "borrow" ? "Borrow Request Confirmed" : "Purchase Confirmed"}
+                  {mode === "lease"
+                    ? "Lease Request Submitted"
+                    : mode === "borrow"
+                      ? "Borrow Request Confirmed"
+                      : "Purchase Confirmed"}
                 </h3>
                 <p className="text-sm text-muted-foreground">
-                  Your request has been successfully recorded.
+                  {mode === "lease"
+                    ? "Your long-term lease request has been submitted and is awaiting Hub approval."
+                    : "Your request has been successfully recorded."}
                 </p>
               </div>
 

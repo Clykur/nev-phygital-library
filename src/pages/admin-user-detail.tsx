@@ -269,7 +269,13 @@ function AdminUserDetailContent({ userId }: { userId: string }) {
               <p className="mt-1 break-all">{user.email}</p>
             </div>
             <div>
-              <p className="section-kicker">Student ID</p>
+              <p className="section-kicker">
+                {user.baseRole === "hub"
+                  ? "Hub ID"
+                  : user.baseRole === "super_admin"
+                    ? "Admin ID"
+                    : "Student ID"}
+              </p>
               <p className="mt-1 body-scale font-normal">{user.publicId}</p>
             </div>
             <div>
@@ -308,50 +314,6 @@ function AdminUserDetailContent({ userId }: { userId: string }) {
             </div>
           </div>
         </section>
-
-        {memberships.length > 0 ? (
-          <section className={cn(adminPanel, "overflow-hidden")} aria-label="Memberships">
-            <div className="border-b border-border px-4 py-3">
-              <SectionLabel>Memberships</SectionLabel>
-            </div>
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow className="border-border hover:bg-transparent">
-                    <TableHead className="pl-4 sm:pl-6">Hub</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead className="pr-4 sm:pr-6">Role</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {memberships.map((m) => (
-                    <TableRow key={m.hubId} className="border-border">
-                      <TableCell className="pl-4 sm:pl-6">
-                        <Link href={adminHubPath(m.hubId)} className={PORTAL_INLINE_LINK}>
-                          {m.hubName}
-                        </Link>
-                      </TableCell>
-                      <TableCell className="text-foreground-muted">
-                        {m.hubKind || "other"}
-                      </TableCell>
-                      <TableCell className="pr-4 sm:pr-6">
-                        <span
-                          className={cn(
-                            uniformBadgeShape,
-                            getStatusColorClasses("approved"),
-                            "font-normal",
-                          )}
-                        >
-                          {hubMembershipRoleLabel(m.role)}
-                        </span>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          </section>
-        ) : null}
 
         {activity.purchases.length > 0 ? (
           <section className={cn(adminPanel, "overflow-hidden")} aria-label="Purchases">

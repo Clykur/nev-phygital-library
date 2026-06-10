@@ -17,6 +17,10 @@ export interface RecentBook {
 }
 
 export interface RecentPurchase {
+  amount: number;
+  author: string;
+  coverImageUrl: string;
+  bookId: string;
   id: number;
   title: string;
   date: string;

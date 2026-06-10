@@ -171,6 +171,13 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({
     confirmPassword,
     setConfirmPassword,
   } = useAuthFormStore();
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+
+    if (params.get("auth") === "login") {
+      setAuthTab("login");
+    }
+  }, [setAuthTab]);
 
   // FAQ Accordion tracker
   const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -310,7 +317,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({
     onSignUp(
       signUpName.trim(),
       signUpEmail.trim().toLowerCase(),
-      signUpPremium,
+      false,
       signUpBranch,
       signUpPassword,
       undefined,
@@ -452,7 +459,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({
       <div className="space-y-5 py-1 animate-in fade-in duration-700 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Dynamic Segment Switcher Pill (Capsule) */}
         <div className="flex justify-center select-none">
-          <div className="inline-flex items-center p-1 bg-background/65 border border-border rounded-xl shadow-2xl backdrop-blur-md">
+          <div className="inline-flex items-center p-1 bg-background/65 border border-border rounded-xl shadow-2xl backdrop-blur-md mt-15">
             <button
               type="button"
               onClick={() => {
@@ -1305,6 +1312,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({
                       type="button"
                       onClick={() => {
                         setAuthTab("signup");
+                        setSignUpPremium(false);
                         addXp(10);
                       }}
                       className={`flex-1 pb-3 text-xs font-semibold uppercase tracking-wider transition-all relative ${
@@ -1525,11 +1533,14 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({
                             <button
                               type="button"
                               onClick={() => {
-                                window.alert(
-                                  "Premium subscriptions will be available soon.\nOnline payment integration is currently under development.\nPlease register using the Free plan.",
-                                );
+                                setSignUpPremium(true);
+                                addXp(15);
                               }}
-                              className={`group relative rounded-xl border p-4 text-left transition-all duration-200 opacity-60 cursor-not-allowed border-border bg-background hover:bg-background`}
+                              className={`group relative rounded-xl border p-4 text-left transition-all duration-200 ${
+                                signUpPremium
+                                  ? "border-primary bg-primary/5 shadow-sm"
+                                  : "border-border bg-background hover:border-primary/20 hover:shadow-sm"
+                              }`}
                             >
                               <div className="flex items-start justify-between">
                                 <div>
@@ -1549,10 +1560,35 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({
                                 )}
                               </div>
 
-                              <p className="mt-3 body-scale leading-5 text-foreground-muted">
-                                Premium subscriptions will be available soon. Online payment
-                                integration is currently under development.
-                              </p>
+                              <div className="mt-4 space-y-2">
+                                <div className="flex items-start gap-2">
+                                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                                  <span className="text-sm text-foreground-muted">
+                                    Unlimited book borrowing
+                                  </span>
+                                </div>
+
+                                <div className="flex items-start gap-2">
+                                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                                  <span className="text-sm text-foreground-muted">
+                                    Priority access to high-demand titles
+                                  </span>
+                                </div>
+
+                                <div className="flex items-start gap-2">
+                                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                                  <span className="text-sm text-foreground-muted">
+                                    Eligible for long-term lease requests
+                                  </span>
+                                </div>
+
+                                <div className="flex items-start gap-2">
+                                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                                  <span className="text-sm text-foreground-muted">
+                                    Activated after admin approval
+                                  </span>
+                                </div>
+                              </div>
                             </button>
 
                             {/* Free Tier */}
@@ -1586,10 +1622,35 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({
                                 )}
                               </div>
 
-                              <p className="mt-3 body-scale leading-5 text-foreground-muted">
-                                Includes an instant 5,000 Credit limit. Borrow physical textbooks
-                                instantly against your credits instead of cash security deposits.
-                              </p>
+                              <div className="mt-4 space-y-2">
+                                <div className="flex items-start gap-2">
+                                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                                  <span className="text-sm text-foreground-muted">
+                                    Instant 5,000 Credit borrowing limit
+                                  </span>
+                                </div>
+
+                                <div className="flex items-start gap-2">
+                                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                                  <span className="text-sm text-foreground-muted">
+                                    Borrow and buy books from campus hubs
+                                  </span>
+                                </div>
+
+                                <div className="flex items-start gap-2">
+                                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                                  <span className="text-sm text-foreground-muted">
+                                    No cash security deposits required
+                                  </span>
+                                </div>
+
+                                <div className="flex items-start gap-2">
+                                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                                  <span className="text-sm text-foreground-muted">
+                                    Upgrade to Premium anytime
+                                  </span>
+                                </div>
+                              </div>
                             </button>
                           </div>
                         </div>
@@ -1700,7 +1761,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({
                     }}
                     className="px-6 py-3 bg-surface text-foreground font-bold rounded-xl text-xs sm:text-sm tracking-wider uppercase hover:border border-border bg-background transition shadow-lg"
                   >
-                    Schedule a Consultation
+                    Schedule a Conversation
                   </button>
                 </div>
               </div>
@@ -1872,7 +1933,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({
                 >
                   {/* Click 1: Institution name */}
                   <div className="space-y-1.5 text-xs">
-                    <label className="caption-scale text-muted-foreground/60 uppercase tracking-wider font-semibold">
+                    <label className="caption-scale text-foreground/80 uppercase tracking-wider font-semibold">
                       1. Institution Name:
                     </label>
                     <select
@@ -1892,7 +1953,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({
 
                   {/* Click 2: Time slot selection */}
                   <div className="space-y-1.5 text-xs">
-                    <label className="caption-scale text-muted-foreground/60 uppercase tracking-wider font-semibold">
+                    <label className="caption-scale text-foreground/80 uppercase tracking-wider font-semibold">
                       2. Select Consultation Date:
                     </label>
                     <input
@@ -1906,7 +1967,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({
 
                   {/* Click 3: Confirm Submit */}
                   <div className="space-y-1.5 text-xs">
-                    <label className="caption-scale text-muted-foreground/60 uppercase tracking-wider font-semibold">
+                    <label className="caption-scale text-foreground/80 uppercase tracking-wider font-semibold">
                       3. Admin Email Address:
                     </label>
                     <div className="flex space-x-2">
@@ -1996,6 +2057,7 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({
                       type="button"
                       onClick={() => {
                         setCollegeAuthTab("signup");
+                        setSignUpPremium(false);
                         addXp(10);
                       }}
                       className={`flex-1 pb-3 text-xs font-semibold uppercase tracking-wider transition-all relative ${

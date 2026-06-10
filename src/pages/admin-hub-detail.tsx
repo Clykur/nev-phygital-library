@@ -336,43 +336,6 @@ function AdminHubDetailContent({ hubId }: { hubId: string }) {
           </div>
         </section>
 
-        {members.length > 0 ? (
-          <section className={cn(adminPanel, "overflow-hidden")} aria-label="Staff">
-            <div className="border-b border-border px-4 py-3">
-              <SectionLabel>Staff & memberships</SectionLabel>
-            </div>
-            <div className="divide-y divide-border">
-              {members.map((m) => (
-                <div
-                  key={m.userId}
-                  className="flex flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
-                >
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-medium">{m.name}</p>
-                    <p className="truncate body-scale font-normal text-foreground-muted">
-                      {m.email}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={cn(
-                        uniformBadgeShape,
-                        getStatusColorClasses("approved"),
-                        "font-normal",
-                      )}
-                    >
-                      {hubMembershipRoleLabel(m.role)}
-                    </span>
-                    <Button variant="ghost" size="sm" className="h-8 rounded-md" asChild>
-                      <Link href={adminUserPath(m.userId)}>Open user</Link>
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-        ) : null}
-
         <section className={cn(adminPanel, "overflow-hidden")} aria-label="Inventory summary">
           <div className="flex items-center justify-between gap-2 border-b border-border px-4 py-3">
             <SectionLabel>Inventory summary</SectionLabel>

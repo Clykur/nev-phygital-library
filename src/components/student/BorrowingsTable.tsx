@@ -43,6 +43,7 @@ export type BorrowingRow = {
   ctaLabel?: string;
   onCta?: () => void;
   ctaHref?: string;
+  isLease?: boolean;
 };
 
 function stateLabel(state: BorrowingState) {
@@ -80,7 +81,7 @@ function fmtDate(iso: string | undefined | null, fallback = "—") {
 }
 
 type SortKey = "recent" | "due" | "title" | "credits";
-const PAGE_SIZE = 6;
+const PAGE_SIZE = 10;
 
 export function BorrowingsTable({
   title = "All Borrowings",
@@ -197,13 +198,13 @@ export function BorrowingsTable({
             <Table className="table-fixed w-full">
               <TableHeader>
                 <TableRow className="border-border hover:bg-transparent">
-                  <TableHead className="pl-5">Book details</TableHead>
-                  <TableHead>Borrow date</TableHead>
-                  <TableHead>Due date</TableHead>
-                  <TableHead>Credits used</TableHead>
-                  <TableHead>Hub</TableHead>
-                  <TableHead>Action</TableHead>
-                  <TableHead className="pr-5 text-right">Status</TableHead>
+                  <TableHead className="w-[30%] pl-5">Book details</TableHead>
+                  <TableHead className="w-[11%]">Borrow date</TableHead>
+                  <TableHead className="w-[11%]">Due date</TableHead>
+                  <TableHead className="w-[10%]">Credits used</TableHead>
+                  <TableHead className="w-[8%]">Hub</TableHead>
+                  <TableHead className="w-[13%]">Action</TableHead>
+                  <TableHead className="w-[13%] pr-5 text-right">Status</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -217,20 +218,32 @@ export function BorrowingsTable({
                     )}
                     data-library-row-id={row.id}
                   >
-                    <TableCell className="min-w-[220px] pl-5">
-                      <div className="flex items-center gap-3">
+                    <TableCell className="w-[35%] pl-5">
+                      <div className="flex items-center gap-2 min-w-0">
                         <BookCoverImage
                           src={row.coverImageUrl ?? null}
                           alt={row.title}
                           className="h-8 w-6 shrink-0 object-cover"
                         />
-                        <div className="min-w-0">
-                          <p className="truncate font-medium text-foreground">{row.title}</p>
-                          {row.author ? (
-                            <p className="truncate caption-scale text-foreground-muted">
-                              {row.author}
-                            </p>
-                          ) : null}
+                        <div className="min-w-0 flex-1">
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-2">
+                              <span className="truncate font-medium text-foreground">
+                                {row.title}
+                              </span>
+                              {row.isLease && (
+                                <span className="inline-flex shrink-0 items-center rounded-full border border-primary/20 bg-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
+                                  Long-Term Lease
+                                </span>
+                              )}
+                            </div>
+
+                            {row.author ? (
+                              <p className="truncate caption-scale text-foreground-muted">
+                                {row.author}
+                              </p>
+                            ) : null}
+                          </div>
                         </div>
                       </div>
                     </TableCell>

@@ -347,6 +347,27 @@ function PublicRoutes() {
   } = useAuth();
   const [, setLocation] = useLocation();
   const [landingSegment, setLandingSegment] = useState<"students" | "colleges">("students");
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+
+    const segment = params.get("segment");
+    const auth = params.get("auth");
+
+    if (segment === "students") {
+      setLandingSegment("students");
+    } else if (segment === "colleges") {
+      setLandingSegment("colleges");
+    }
+
+    if (auth === "login") {
+      setTimeout(() => {
+        document.getElementById("auth-section")?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 100);
+    }
+  }, []);
   const [branch, setBranch] = useState<string>("RVCE-BLR");
   const [activeTab, setActiveTab] = useState<string>("landing");
 

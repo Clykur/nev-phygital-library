@@ -77,6 +77,26 @@ export default function StudentDashboardPage() {
         }>;
       }>("/api/p2p/listings", { token: token! }),
   });
+  const leasesQ = useQuery({
+    queryKey: ["long-term-leases", "my", user?.userId],
+    enabled: !!token && !!user,
+    queryFn: () =>
+      apiFetch<{
+        leases: Array<{
+          id: string;
+          bookId: string;
+          bookTitle: string;
+          bookAuthor?: string | null;
+          coverImageUrl?: string | null;
+          hubId: string;
+          depositAmount: number;
+          status: string;
+          requestedAt?: string | null;
+          approvedAt?: string | null;
+          completedAt?: string | null;
+        }>;
+      }>("/api/long-term-leases/my", { token: token! }),
+  });
 
   const hubName = (hubId: string | undefined | null) =>
     hubId ? (hubsQ.data?.hubs.find((h) => h.id === hubId)?.name ?? "Hub") : "Hub";
@@ -97,7 +117,20 @@ export default function StudentDashboardPage() {
     if (due - now < 2 * 24 * 60 * 60 * 1000) return "soon";
     return "active";
   };
-
+  const activeBorrowedBookIds = new Set(
+    (booksQ.data?.books ?? [])
+      .filter(
+        (b) =>
+          b.borrowerUserId === user?.userId &&
+          (b.status === "checked_out" || b.status === "overdue"),
+      )
+      .map((b) => b.id),
+  );
+  const activeLeaseBookIds = new Set(
+    (leasesQ.data?.leases ?? [])
+      .filter((l) => ["approved", "active", "return_pending", "completed"].includes(l.status))
+      .map((l) => l.bookId),
+  );
   const borrowingRows: BorrowingRow[] = [
     ...((booksQ.data?.books ?? [])
       .filter(
@@ -118,6 +151,7 @@ export default function StudentDashboardPage() {
         creditsUsed: b.borrowPrice ?? 0,
         ctaLabel: "Open library",
         ctaHref: "/student/library",
+        isLease: activeLeaseBookIds.has(b.id),
       })) satisfies BorrowingRow[]),
     ...((p2pQ.data?.listings ?? [])
       .filter((l) => l.borrowerUserId === user?.userId && l.status === "reserved")
@@ -134,8 +168,28 @@ export default function StudentDashboardPage() {
         ctaLabel: "Open library",
         ctaHref: "/student/library",
       })) satisfies BorrowingRow[]),
+    ...((leasesQ.data?.leases ?? [])
+      .filter(
+        (l) =>
+          ["approved", "active", "return_pending", "completed"].includes(l.status) &&
+          !activeBorrowedBookIds.has(l.bookId),
+      )
+      .map((l) => ({
+        id: l.id,
+        title: l.bookTitle,
+        author: l.bookAuthor,
+        coverImageUrl: l.coverImageUrl ? apiPublicUrl(l.coverImageUrl) : l.coverImageUrl,
+        hub: hubName(l.hubId),
+        borrowedAt: l.approvedAt ?? l.requestedAt,
+        dueAt: l.completedAt,
+        due: fmtDue(l.completedAt),
+        state: l.status === "approved" || l.status === "return_pending" ? "soon" : "active",
+        creditsUsed: l.depositAmount,
+        ctaLabel: "View lease",
+        ctaHref: "/student/requests",
+        isLease: true,
+      })) satisfies BorrowingRow[]),
   ];
-
   return (
     <div className={cn(PORTAL_PAGE_CONTAINER, "space-y-8 py-8")}>
       <header className="border-b border-border pb-6">
@@ -198,10 +252,12 @@ export default function StudentDashboardPage() {
                   </div>
 
                   <div className="mt-3">
-                    <h3 className={cn(PORTAL_STAT_VALUE, "capitalize")}>{subscription} Tier</h3>
+                    <h3 className={cn(PORTAL_STAT_VALUE, "capitalize")}>
+                      {user?.premiumActive ? "Pro Tier" : "Free Tier"}
+                    </h3>
 
                     <p className="mt-1 text-sm text-foreground-muted">
-                      {subscription === "pro"
+                      {user?.premiumActive
                         ? "Premium Member — Unlimited free borrowing"
                         : "Use wallet credits to borrow books"}
                     </p>
@@ -223,7 +279,7 @@ export default function StudentDashboardPage() {
           <BorrowingsTable
             title="All Borrowings"
             rows={borrowingRows}
-            loading={booksQ.isLoading || p2pQ.isLoading || hubsQ.isLoading}
+            loading={booksQ.isLoading || p2pQ.isLoading || hubsQ.isLoading || leasesQ.isLoading}
           />
         </div>
 
@@ -281,7 +337,7 @@ export default function StudentDashboardPage() {
                 <div>
                   <p className={cn(PORTAL_SECTION_LABEL, "mb-1")}>Recently Viewed</p>
                   {isLoading ? (
-                    <div className="h-6 w-12 animate-pulse rounded bg-shimmer" />
+                    <div className="h-5 w-8 animate-pulse rounded bg-shimmer" />
                   ) : (
                     <p className={PORTAL_STAT_VALUE}>{data?.stats.recentlyViewedCount ?? 0}</p>
                   )}
@@ -310,14 +366,28 @@ export default function StudentDashboardPage() {
                     <div className="h-3 w-1/4 animate-pulse rounded bg-shimmer" />
                   </div>
                 ) : data?.recentPurchases && data.recentPurchases.length > 0 ? (
-                  data.recentPurchases.map((p) => (
-                    <div
+                  data.recentPurchases.slice(0, 3).map((p) => (
+                    <Link
                       key={p.id}
-                      className="flex items-start justify-between gap-4 border-b border-border pb-3 last:border-0 last:pb-0"
+                      href={`${STUDENT_BORROW_PATH}?book=${p.bookId}`}
+                      className="flex items-start justify-between gap-4 border-b border-border pb-3 transition-opacity hover:opacity-80 last:border-0 last:pb-0"
                     >
-                      <p className="body-scale font-semibold">{p.title}</p>
-                      <p className="caption-scale shrink-0 text-foreground-muted">{p.date}</p>
-                    </div>
+                      <BookCoverImage
+                        src={p.coverImageUrl ? apiPublicUrl(p.coverImageUrl) : null}
+                        alt={p.title}
+                        className="h-10 w-8 shrink-0 object-cover"
+                      />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate body-scale font-semibold">{p.title}</p>
+                        {p.author ? (
+                          <p className="truncate caption-scale text-foreground-muted">{p.author}</p>
+                        ) : null}
+                        <p className="mt-1 caption-scale text-foreground-muted">
+                          Purchased for{" "}
+                          <span className="font-semibold text-success">{fmtCredits(p.amount)}</span>
+                        </p>
+                      </div>
+                    </Link>
                   ))
                 ) : (
                   <div className="rounded-xl border border-dashed border-border py-6 text-center">
@@ -345,7 +415,7 @@ export default function StudentDashboardPage() {
                 {isLoading ? (
                   <div className="h-16 animate-pulse rounded bg-shimmer" />
                 ) : data?.recentBooks && data.recentBooks.length > 0 ? (
-                  data.recentBooks.map((book) => (
+                  data.recentBooks.slice(0, 3).map((book) => (
                     <Link
                       key={book.id}
                       href={STUDENT_BORROW_PATH}
@@ -354,7 +424,7 @@ export default function StudentDashboardPage() {
                       <BookCoverImage
                         src={book.coverImageUrl ? apiPublicUrl(book.coverImageUrl) : null}
                         alt={book.title}
-                        className="h-16 w-11 shrink-0 object-cover"
+                        className="h-14 w-10 shrink-0 object-cover"
                       />
                       <div className="min-w-0 flex-1">
                         <p className="truncate body-scale font-semibold">{book.title}</p>

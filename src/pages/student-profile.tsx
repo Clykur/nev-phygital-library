@@ -60,6 +60,13 @@ export default function StudentProfilePage() {
   const pageWrap = inShell
     ? "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8"
     : cn(PORTAL_PAGE_CONTAINER, "py-8 space-y-8");
+  const fmtPremiumUntil = (value: string | Date) =>
+    new Date(value).toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+
   const runUpgrade = async () => {
     setUpgradeBusy(true);
     try {
@@ -222,13 +229,21 @@ export default function StudentProfilePage() {
               <div className="flex flex-col gap-1 border-b border-border pb-4 sm:flex-row sm:items-center sm:justify-between">
                 <dt className="text-foreground-muted">Phone</dt>
                 <dd className="font-semibold text-foreground">
-                  {isHubAccount ? hubProfileQ.data?.hub?.contactPhone || "—" : user.phone || "—"}
+                  {isHubAccount(user)
+                    ? (hubProfileQ.data?.hub?.contactPhone ?? "—")
+                    : (user?.phone ?? "—")}
                 </dd>
               </div>
               <div className="flex flex-col gap-1 border-b border-border pb-4 sm:flex-row sm:items-center sm:justify-between">
                 <dt className="text-foreground-muted">Registration date</dt>
                 <dd className="font-semibold text-foreground">
-                  {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "—"}
+                  {user.createdAt
+                    ? new Date(user.createdAt).toLocaleDateString("en-IN", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                      })
+                    : "—"}
                 </dd>
               </div>
               <div className="flex flex-col gap-1 border-b border-border pb-4 sm:flex-row sm:items-center sm:justify-between">

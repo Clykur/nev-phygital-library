@@ -183,6 +183,34 @@ export default function HubBookRequestsPage() {
     onError: (e) => toast.error(e instanceof ApiError ? e.message : "Could not verify assignment"),
   });
 
+  const approveLeaseMutation = useMutation({
+    mutationFn: async (id: string) =>
+      apiFetch(`/api/hub/long-term-leases/${id}`, {
+        method: "PATCH",
+        token: token!,
+        body: JSON.stringify({ status: "approved" }),
+      }),
+    onSuccess: () => {
+      toast.success("Lease request approved.");
+      void qc.invalidateQueries({ queryKey: ["book-requests"] });
+    },
+    onError: (e: any) => toast.error(e.message || "Approval failed"),
+  });
+
+  const rejectLeaseMutation = useMutation({
+    mutationFn: async (id: string) =>
+      apiFetch(`/api/hub/long-term-leases/${id}`, {
+        method: "PATCH",
+        token: token!,
+        body: JSON.stringify({ status: "rejected" }),
+      }),
+    onSuccess: () => {
+      toast.success("Lease request rejected.");
+      void qc.invalidateQueries({ queryKey: ["book-requests"] });
+    },
+    onError: (e: any) => toast.error(e.message || "Rejection failed"),
+  });
+
   // ── Helpers ──────────────────────────────────────────────────────────────
 
   const hubName = useCallback(
@@ -248,7 +276,10 @@ export default function HubBookRequestsPage() {
   // ── Action predicates ─────────────────────────────────────────────────────
 
   const canClaim = (r: BookRequestRow) =>
-    normalizeBookRequestStatus(r.status) === "pending" && !bookRequestAssignedHubId(r);
+    !r.fromLeaseTable &&
+    (normalizeBookRequestStatus(r.status) === "pending" ||
+      normalizeBookRequestStatus(r.status) === "lease_requested") &&
+    !bookRequestAssignedHubId(r);
 
   const isAssignedToMyHub = (r: BookRequestRow) => {
     const hid = bookRequestAssignedHubId(r);
@@ -256,16 +287,18 @@ export default function HubBookRequestsPage() {
   };
 
   const canAssignCopy = (r: BookRequestRow) =>
+    !r.fromLeaseTable &&
     isAssignedToMyHub(r) &&
     (normalizeBookRequestStatus(r.status) === "pending" ||
       normalizeBookRequestStatus(r.status) === "lease_requested" ||
       normalizeBookRequestStatus(r.status) === "lease_approved") &&
     !r.assignedCopyId;
 
-  const canReleaseAssignment = (r: BookRequestRow) => isAssignedToMyHub(r) && !!r.assignedCopyId;
+  const canReleaseAssignment = (r: BookRequestRow) =>
+    !r.fromLeaseTable && isAssignedToMyHub(r) && !!r.assignedCopyId;
 
   const canVerifyAssignment = (r: BookRequestRow) =>
-    isAssignedToMyHub(r) && !!r.assignedCopyId && !r.assignmentVerified;
+    !r.fromLeaseTable && isAssignedToMyHub(r) && !!r.assignedCopyId && !r.assignmentVerified;
 
   const topPad = inShell ? "" : "pt-24";
 
@@ -390,6 +423,7 @@ export default function HubBookRequestsPage() {
               const showAssign = canAssignCopy(r);
               const showRelease = canReleaseAssignment(r);
               const showVerify = canVerifyAssignment(r);
+              const showLeaseActions = r.fromLeaseTable && nStatus === "lease_requested";
 
               return (
                 <li key={r.id} className="px-4 py-4 md:px-5 md:py-5">
@@ -477,6 +511,34 @@ export default function HubBookRequestsPage() {
 
                       {/* ── Actions ── */}
                       <div className="flex w-full shrink-0 flex-col gap-2 sm:w-48">
+                        {showLeaseActions ? (
+                          <>
+                            <Button
+                              type="button"
+                              size="sm"
+                              className="h-9 rounded-md"
+                              disabled={
+                                approveLeaseMutation.isPending || rejectLeaseMutation.isPending
+                              }
+                              onClick={() => approveLeaseMutation.mutate(r.id)}
+                            >
+                              Approve Lease
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="sm"
+                              className="h-9 rounded-md"
+                              disabled={
+                                approveLeaseMutation.isPending || rejectLeaseMutation.isPending
+                              }
+                              onClick={() => rejectLeaseMutation.mutate(r.id)}
+                            >
+                              Reject Lease
+                            </Button>
+                          </>
+                        ) : null}
+
                         {showClaim ? (
                           <Button
                             type="button"

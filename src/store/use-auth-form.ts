@@ -91,7 +91,7 @@ export const useAuthFormStore = create<AuthFormState>((set) => ({
   signUpPhone: "",
   signUpPassword: "",
   signUpBranch: "RVCE-BLR",
-  signUpPremium: true,
+  signUpPremium: false,
 
   collegeEmail: "",
   collegePassword: "",

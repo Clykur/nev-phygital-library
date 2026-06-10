@@ -1629,6 +1629,14 @@ export default function Marketplace(props?: MarketplaceProps) {
                         });
                       const isAvailable = b.status === "available";
                       const refShort = catalogRefLabel(b.refId ?? b.id, null);
+                      function setActiveSegment(arg0: string) {
+                        throw new Error("Function not implemented.");
+                      }
+
+                      function setAuthTab(arg0: string) {
+                        throw new Error("Function not implemented.");
+                      }
+
                       return (
                         <div
                           key={row.key}
@@ -1673,12 +1681,8 @@ export default function Marketplace(props?: MarketplaceProps) {
                                       studentShellFlat ? "rounded-xl" : "rounded-xl",
                                     )}
                                     onClick={() => {
-                                      const authSection = document.getElementById("auth-section");
-                                      if (authSection) {
-                                        authSection.scrollIntoView({ behavior: "smooth" });
-                                      } else {
-                                        window.location.href = "/";
-                                      }
+                                      window.location.href =
+                                        "/?segment=students&auth=login#auth-section";
                                     }}
                                   >
                                     <div className="flex min-w-0 items-center justify-center gap-2 px-2 text-center">

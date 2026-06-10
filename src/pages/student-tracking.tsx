@@ -381,6 +381,12 @@ export default function StudentTrackingPage() {
     queryFn: () => apiFetch<{ listings: P2pRow[] }>("/api/p2p/listings", { token: token! }),
   });
 
+  const leasesQ = useQuery({
+    queryKey: ["long-term-leases", "my"],
+    enabled: !!token,
+    queryFn: () => apiFetch<{ leases: any[] }>("/api/long-term-leases/my", { token: token! }),
+  });
+
   const confirmDelivery = useMutation({
     mutationFn: async (requestId: string) => {
       await apiFetch(`/api/book-requests/${requestId}/confirm-delivery`, {
@@ -555,7 +561,9 @@ export default function StudentTrackingPage() {
     p2pQ.isLoading;
   const showRequests = requestsByRecent.length > 0 || reqQ.isLoading;
   const showListings = myListings.length > 0 || p2pQ.isLoading;
-  const showYourActions = showPurchases || showRequests || showListings;
+  const leases = leasesQ.data?.leases ?? [];
+  const showLeases = leases.length > 0 || leasesQ.isLoading;
+  const showYourActions = showPurchases || showRequests || showListings || showLeases;
   const showPeerSection = false;
 
   const nextActions = useMemo(() => {
@@ -1068,6 +1076,64 @@ export default function StudentTrackingPage() {
                                 <p className="mt-2 text-left caption-scale text-muted-foreground sm:text-right">
                                   {requestNextText(r.status, hubLabel(bookRequestAssignedHubId(r)))}
                                 </p>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>,
+                    )}
+                  </BlockCard>
+                ) : null}
+
+                {showLeases ? (
+                  <BlockCard
+                    id="leases"
+                    title="Long-Term Lease Requests"
+                    description="Track your 12-month long-term lease requests and their approval status."
+                    isLoading={leasesQ.isLoading}
+                  >
+                    {tableShell(
+                      <Table className="w-full table-fixed">
+                        <TableHeader>
+                          <TableRow className="border-border hover:bg-transparent">
+                            <TableHead className="w-[45%] pl-5">Book</TableHead>
+                            <TableHead className="w-[25%] whitespace-nowrap">Requested</TableHead>
+                            <TableHead className="w-[15%] whitespace-nowrap text-right">
+                              Deposit
+                            </TableHead>
+                            <TableHead className="w-[15%] pr-5 text-right">Status</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {leases.map((l) => (
+                            <TableRow key={l.id} className={rowStripe}>
+                              <TableCell className="pl-5 align-top font-medium min-w-0">
+                                <span className="line-clamp-2">{l.bookTitle}</span>
+                                {l.bookAuthor && (
+                                  <p className="mt-1 caption-scale text-xs text-muted-foreground">
+                                    {l.bookAuthor}
+                                  </p>
+                                )}
+                              </TableCell>
+                              <TableCell className="align-top text-xs text-muted-foreground">
+                                {fmtDateShort(l.requestedAt)}
+                              </TableCell>
+                              <TableCell className="align-top text-right text-sm tabular-nums">
+                                {fmtCredits(l.depositAmount)}
+                              </TableCell>
+                              <TableCell className="pr-5 align-top text-right">
+                                <FlatStatus
+                                  label={l.status}
+                                  tone={
+                                    l.status === "approved" || l.status === "active"
+                                      ? "emerald"
+                                      : l.status === "pending"
+                                        ? "amber"
+                                        : l.status === "rejected"
+                                          ? "destructive"
+                                          : "neutral"
+                                  }
+                                />
                               </TableCell>
                             </TableRow>
                           ))}

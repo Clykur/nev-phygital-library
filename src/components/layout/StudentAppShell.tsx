@@ -131,7 +131,7 @@ function UnifiedAppShell({
         </header>
 
         {/* Mobile Header */}
-        <header className="sticky top-0 z-40 flex h-16 w-full items-center justify-between px-4 backdrop-blur md:hidden">
+        <header className="sticky top-0 z-40 flex h-16 w-full items-center justify-between border-b border-border bg-background/95 px-4 backdrop-blur md:hidden">
           <Link
             href={shellHome}
             className="font-display text-lg font-extrabold tracking-tight text-foreground flex items-center"
@@ -181,12 +181,17 @@ function UnifiedAppShell({
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex flex-col items-center justify-center gap-1 w-full h-full transition-colors",
+                  "flex h-full w-full flex-col items-center justify-center gap-1 px-1 transition-colors",
                   active ? "text-primary" : "text-muted-foreground hover:text-foreground",
                 )}
               >
                 <Icon className={cn("h-5 w-5", active ? "text-primary" : "")} />
-                <span className={cn("caption-scale", active ? "font-semibold" : "font-medium")}>
+                <span
+                  className={cn(
+                    "text-[10px] leading-none text-center whitespace-nowrap",
+                    active ? "font-semibold" : "font-medium",
+                  )}
+                >
                   {item.label}
                 </span>
               </Link>
@@ -238,7 +243,7 @@ export function StudentAppShell({ children }: { children: ReactNode }) {
   const studentNavItems = [
     { label: "Dashboard", href: STUDENT_DASHBOARD_PATH, icon: LayoutDashboard },
     { label: "Browse Books", href: STUDENT_BORROW_PATH, icon: BookOpen },
-    { label: "Requests", href: STUDENT_REQUESTS_PATH, icon: ClipboardList },
+    { label: "My Requests", href: STUDENT_REQUESTS_PATH, icon: ClipboardList },
     { label: "Bounty Books", href: STUDENT_BOUNTY_PATH, icon: Tag },
     { label: "Wallet", href: STUDENT_WALLET_PATH, icon: Wallet },
   ];

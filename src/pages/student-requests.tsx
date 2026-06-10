@@ -629,8 +629,8 @@ export default function StudentRequestsPage() {
                   (r as any).assignedHubId ?? (r as any).fulfilledByHubId ?? r.hubId ?? null;
                 const hub = hubName(assignedHubId);
                 const n = normalizeBookRequestStatus(r.status);
-                const isReady = n === "available_for_collection";
-                const isPending = n === "pending";
+                const isReady = n === "available_for_collection" || n === "lease_approved";
+                const isPending = n === "pending" || n === "lease_requested";
                 return (
                   <div
                     key={r.id}
@@ -748,8 +748,8 @@ export default function StudentRequestsPage() {
                 const assignedHubId =
                   (r as any).assignedHubId ?? (r as any).fulfilledByHubId ?? r.hubId ?? null;
                 const n = normalizeBookRequestStatus(r.status);
-                const isReady = n === "available_for_collection";
-                const isPending = n === "pending";
+                const isReady = n === "available_for_collection" || n === "lease_approved";
+                const isPending = n === "pending" || n === "lease_requested";
                 const isActive = isReady || isPending;
                 return (
                   <li key={r.id} data-request-id={r.id} className="px-5 py-4">

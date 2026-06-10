@@ -26,6 +26,7 @@ import {
   fmtCredits,
   fmtRupees,
 } from "@/lib/credits";
+import { useAuth } from "@/context/auth-context";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 16 },
@@ -33,9 +34,8 @@ const fadeInUp = {
 };
 
 export default function StudentWalletPage() {
+  const { user } = useAuth();
   const { balance, transactions, subscription, subscribe } = useWallet();
-
-  const consumedCredits = Math.max(0, INITIAL_FREE_CREDITS - balance);
   const transactionAmount = (t: {
     amount: number;
     creditsAdded?: number;
@@ -43,7 +43,9 @@ export default function StudentWalletPage() {
   }) => t.creditsAdded ?? t.creditsDeducted ?? t.amount;
   const isCreditTransaction = (type: string) =>
     type === "credit" || type === "bounty_reward_credit";
-
+  const consumedCredits = transactions
+    .filter((t) => !isCreditTransaction(t.type))
+    .reduce((total, t) => total + (t.creditsDeducted ?? t.amount ?? 0), 0);
   return (
     <div className={cn(PORTAL_PAGE_CONTAINER, "space-y-8 py-8")}>
       <header className="border-b border-border pb-6">
@@ -80,15 +82,15 @@ export default function StudentWalletPage() {
             </Card>
           </motion.div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <Card variant="default">
+          <div className="gap-4">
+            {/* <Card variant="default">
               <CardContent className="p-6">
                 <p className={PORTAL_SECTION_LABEL}>Max capacity</p>
                 <p className={cn(PORTAL_STAT_VALUE, "mt-2")}>
                   {INITIAL_FREE_CREDITS.toLocaleString("en-IN")}
                 </p>
               </CardContent>
-            </Card>
+            </Card> */}
             <Card variant="default">
               <CardContent className="p-6">
                 <p className={PORTAL_SECTION_LABEL}>Consumed credits</p>
@@ -168,11 +170,11 @@ export default function StudentWalletPage() {
           <Card variant="elevated">
             <CardHeader>
               <p className={PORTAL_SECTION_LABEL}>Membership status</p>
-              <CardTitle>{subscription === "pro" ? "Pro member" : "Free member"}</CardTitle>
+              <CardTitle>{user?.premiumActive ? "Pro member" : "Free member"}</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="body-scale text-foreground-muted">
-                {subscription === "pro"
+                {user?.premiumActive
                   ? "Premium Member — Borrow Free. No credits required for borrowing; purchases still use credits."
                   : "Free members can borrow and buy with wallet credits."}
               </p>
@@ -186,7 +188,7 @@ export default function StudentWalletPage() {
 
             <Card
               variant="default"
-              className={cn(subscription === "free" && "border-primary ring-2 ring-primary/10")}
+              className={cn(!user?.premiumActive && "border-primary ring-2 ring-primary/10")}
             >
               <CardContent className="p-6">
                 <div className="mb-5 flex items-start justify-between gap-3">
@@ -199,7 +201,7 @@ export default function StudentWalletPage() {
                       </span>
                     </p>
                   </div>
-                  {subscription === "free" ? (
+                  {!user?.premiumActive ? (
                     <CheckCircle2 className="h-6 w-6 shrink-0 text-primary" aria-hidden />
                   ) : null}
                 </div>
@@ -218,12 +220,12 @@ export default function StudentWalletPage() {
                   </li>
                 </ul>
                 <Button
-                  variant={subscription === "free" ? "secondary" : "outline"}
+                  variant={!user?.premiumActive ? "secondary" : "outline"}
+                  disabled={!user?.premiumActive}
                   className="h-11 w-full rounded-xl"
-                  disabled={subscription === "free"}
                   onClick={() => subscribe("free")}
                 >
-                  {subscription === "free" ? "Current plan" : "Downgrade"}
+                  {!user?.premiumActive ? "Current plan" : "Downgrade"}
                 </Button>
               </CardContent>
             </Card>
@@ -232,7 +234,7 @@ export default function StudentWalletPage() {
               variant="bento"
               className={cn(
                 "relative overflow-hidden",
-                subscription === "pro" && "border-primary ring-2 ring-primary/10",
+                user?.premiumActive && "border-primary ring-2 ring-primary/10",
               )}
             >
               <span className="absolute right-4 top-4 rounded-full bg-primary px-3 py-1 caption-scale font-semibold uppercase tracking-kicker text-primary-foreground">
@@ -249,7 +251,7 @@ export default function StudentWalletPage() {
                       </span>
                     </p>
                   </div>
-                  {subscription === "pro" ? (
+                  {user?.premiumActive ? (
                     <CheckCircle2 className="h-6 w-6 shrink-0 text-primary" aria-hidden />
                   ) : null}
                 </div>
@@ -273,10 +275,10 @@ export default function StudentWalletPage() {
                 </ul>
                 <Button
                   className="h-11 w-full rounded-xl"
-                  disabled={subscription === "pro"}
+                  disabled={user?.premiumActive}
                   onClick={() => subscribe("pro")}
                 >
-                  {subscription === "pro" ? "Current plan" : "Upgrade to Pro"}
+                  {user?.premiumActive ? "Current plan" : "Upgrade to Pro"}
                 </Button>
               </CardContent>
             </Card>
