@@ -1,4 +1,4 @@
-import { useEffect, useMemo, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/context/auth-context";
 import { apiFetch, ApiError } from "@/lib/api";
@@ -16,7 +16,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { CheckCircle2, Loader2, MessageSquare, Star } from "lucide-react";
 import { Link } from "wouter";
 import { isHubAccount, portalPathsForUser } from "@/lib/app-paths";
 import { STATUS_CHIP_EMERALD } from "@/lib/status-chip-tones";
@@ -26,6 +26,8 @@ import {
   normalizeBookRequestStatus,
 } from "@/lib/book-requests";
 import { fmtCreditWithRupeeEquivalent, fmtCredits } from "@/lib/credits";
+import { FeedbackFormDialog } from "@/components/FeedbackFormDialog";
+import { BookCoverImage } from "@/components/ui/book-cover-image";
 
 type BookRow = {
   id: string;
@@ -349,6 +351,16 @@ export default function StudentTrackingPage() {
   const hubDesk = !!user && isHubAccount(user);
   const qc = useQueryClient();
 
+  // Feedback dialog state
+  const [feedbackDialogBook, setFeedbackDialogBook] = useState<{
+    bookId: string;
+    bookTitle: string;
+    feedbackId?: string | null;
+    feedbackRating?: number | null;
+    feedbackComment?: string | null;
+    feedbackWouldRecommend?: boolean | null;
+  } | null>(null);
+
   const hubsQ = useQuery({
     queryKey: ["catalog", "hubs", "activity"],
     enabled: !!token,
@@ -386,6 +398,31 @@ export default function StudentTrackingPage() {
     enabled: !!token,
     queryFn: () => apiFetch<{ leases: any[] }>("/api/long-term-leases/my", { token: token! }),
   });
+
+  // Borrow history — returned books with feedback eligibility
+  const borrowHistoryQ = useQuery({
+    queryKey: ["student", "borrow-history", user?.userId],
+    enabled: !!token && !!user && !hubDesk,
+    queryFn: () =>
+      apiFetch<{
+        history: Array<{
+          lifecycleEventId: string;
+          bookId: string;
+          returnedAt: string;
+          title: string;
+          author: string | null;
+          coverImageUrl: string | null;
+          hubName: string | null;
+          feedbackId: string | null;
+          feedbackRating: number | null;
+          feedbackComment: string | null;
+          feedbackWouldRecommend: boolean | null;
+          feedbackSubmitted: boolean;
+        }>;
+      }>("/api/student/borrow-history", { token: token! }),
+  });
+
+  const pendingReviews = (borrowHistoryQ.data?.history ?? []).filter((h) => !h.feedbackSubmitted);
 
   const confirmDelivery = useMutation({
     mutationFn: async (requestId: string) => {
@@ -647,6 +684,94 @@ export default function StudentTrackingPage() {
         <div className="mb-8 border-b border-border pb-2">
           <h1 className="mt-1 h3-scale font-bold tracking-tight text-foreground">Activity</h1>
         </div>
+
+        {/* Pending Reviews Section */}
+        {!hubDesk && pendingReviews.length > 0 && (
+          <>
+            <section aria-label="Pending Reviews" className="mb-8">
+              <div className="mb-3 flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center shrink-0">
+                  <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
+                </div>
+                <div>
+                  <p className="caption-scale font-semibold uppercase tracking-kicker text-amber-400">
+                    Pending Reviews
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {pendingReviews.length} returned{" "}
+                    {pendingReviews.length === 1 ? "book" : "books"} await your review
+                  </p>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {pendingReviews.map((book) => (
+                  <div
+                    key={book.lifecycleEventId}
+                    className={cn(
+                      outline,
+                      "overflow-hidden flex gap-4 p-3 hover:border-amber-500/30 transition-colors",
+                    )}
+                  >
+                    {/* Cover thumbnail */}
+                    <div className="w-14 h-20 rounded-lg overflow-hidden shrink-0 border border-border bg-muted">
+                      <BookCoverImage src={book.coverImageUrl} alt={book.title} />
+                    </div>
+                    <div className="min-w-0 flex-1 flex flex-col justify-between">
+                      <div>
+                        <p className="text-sm font-semibold text-foreground line-clamp-2 leading-tight">
+                          {book.title}
+                        </p>
+                        {book.author && (
+                          <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                            {book.author}
+                          </p>
+                        )}
+                        <p className="text-[10px] text-muted-foreground mt-1">
+                          Returned{" "}
+                          {new Date(book.returnedAt).toLocaleDateString(undefined, {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          })}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() =>
+                          setFeedbackDialogBook({
+                            bookId: book.bookId,
+                            bookTitle: book.title,
+                            feedbackId: null,
+                          })
+                        }
+                        className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline w-fit"
+                      >
+                        <MessageSquare className="w-3.5 h-3.5" />
+                        Write a Review
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+            <Separator className="my-8" />
+          </>
+        )}
+
+        {/* Completed reviews banner */}
+        {!hubDesk &&
+          !borrowHistoryQ.isLoading &&
+          borrowHistoryQ.data &&
+          pendingReviews.length === 0 &&
+          borrowHistoryQ.data.history.length > 0 && (
+            <>
+              <div className="mb-6 flex items-center gap-2 p-3 rounded-xl border border-emerald-500/20 bg-emerald-500/5">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                <p className="text-xs text-emerald-400 font-medium">
+                  All returned books have been reviewed. Thank you!
+                </p>
+              </div>
+            </>
+          )}
 
         <section aria-label="Summary">
           <SectionHeading
@@ -1343,6 +1468,24 @@ export default function StudentTrackingPage() {
           </>
         ) : null}
       </div>
+
+      {/* Feedback Form Dialog */}
+      {feedbackDialogBook && token && (
+        <FeedbackFormDialog
+          open={!!feedbackDialogBook}
+          onOpenChange={(o) => !o && setFeedbackDialogBook(null)}
+          bookId={feedbackDialogBook.bookId}
+          bookTitle={feedbackDialogBook.bookTitle}
+          token={token}
+          existingFeedbackId={feedbackDialogBook.feedbackId ?? undefined}
+          existingRating={feedbackDialogBook.feedbackRating ?? undefined}
+          existingComment={feedbackDialogBook.feedbackComment ?? undefined}
+          existingWouldRecommend={feedbackDialogBook.feedbackWouldRecommend ?? undefined}
+          onSuccess={() => {
+            void qc.invalidateQueries({ queryKey: ["student", "borrow-history"] });
+          }}
+        />
+      )}
     </div>
   );
 }

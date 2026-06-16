@@ -16,8 +16,17 @@ import {
   Calendar,
   User,
   CreditCard,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { GoogleSignInAnchor, GoogleSignInHost } from "@/components/GoogleSignInHost";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { useAuthFormStore } from "@/store/use-auth-form";
 import { toast } from "sonner";
 import { apiFetch } from "@/lib/api";
@@ -179,6 +188,24 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({
   const [latitude, setLatitude] = useState<number | undefined>(undefined);
   const [longitude, setLongitude] = useState<number | undefined>(undefined);
   const [geolocating, setGeolocating] = useState(false);
+
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
+  const [showSignUpPassword, setShowSignUpPassword] = useState(false);
+  const [showSignUpConfirmPassword, setShowSignUpConfirmPassword] = useState(false);
+  const [showCollegeLoginPassword, setShowCollegeLoginPassword] = useState(false);
+  const [showCollegeSignUpPassword, setShowCollegeSignUpPassword] = useState(false);
+  const [showCollegeSignUpConfirmPassword, setShowCollegeSignUpConfirmPassword] = useState(false);
+
+  const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
+  const [forgotStep, setForgotStep] = useState(1);
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotOtp, setForgotOtp] = useState("");
+  const [forgotNewPassword, setForgotNewPassword] = useState("");
+  const [forgotConfirmPassword, setForgotConfirmPassword] = useState("");
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [showForgotNewPassword, setShowForgotNewPassword] = useState(false);
+  const [showForgotConfirmPassword, setShowForgotConfirmPassword] = useState(false);
+  const [devOtpText, setDevOtpText] = useState<string | null>(null);
 
   const handleUseLocation = async () => {
     if (!navigator.geolocation) {
@@ -349,6 +376,100 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({
     } else {
       setOtpError("Security check failed: Incorrect session passcode pattern entered.");
       addXp(-10);
+    }
+  };
+
+  const handleSendResetOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!forgotEmail.trim()) return;
+
+    setForgotLoading(true);
+    setDevOtpText(null);
+    try {
+      const res = await apiFetch<{ ok: boolean; message: string; devOtp?: string }>(
+        "/api/auth/forgot-password",
+        {
+          method: "POST",
+          body: JSON.stringify({ email: forgotEmail.trim().toLowerCase() }),
+        },
+      );
+      if (res.ok) {
+        toast.success(res.message);
+        setForgotStep(2);
+        if (res.devOtp) {
+          setDevOtpText(res.devOtp);
+        }
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to send OTP. Account may not exist.");
+    } finally {
+      setForgotLoading(false);
+    }
+  };
+
+  const handleVerifyResetOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!forgotOtp.trim()) return;
+
+    setForgotLoading(true);
+    try {
+      const res = await apiFetch<{ ok: boolean; message: string }>("/api/auth/verify-reset-otp", {
+        method: "POST",
+        body: JSON.stringify({
+          email: forgotEmail.trim().toLowerCase(),
+          otp: forgotOtp.trim(),
+        }),
+      });
+      if (res.ok) {
+        toast.success(res.message);
+        setForgotStep(3);
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Invalid or expired OTP.");
+    } finally {
+      setForgotLoading(false);
+    }
+  };
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!forgotNewPassword || !forgotConfirmPassword) return;
+
+    if (forgotNewPassword.length < 8) {
+      toast.error("Password must be at least 8 characters long");
+      return;
+    }
+
+    if (forgotNewPassword !== forgotConfirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
+    setForgotLoading(true);
+    try {
+      const res = await apiFetch<{ ok: boolean; message: string }>("/api/auth/reset-password", {
+        method: "POST",
+        body: JSON.stringify({
+          email: forgotEmail.trim().toLowerCase(),
+          otp: forgotOtp.trim(),
+          newPassword: forgotNewPassword,
+        }),
+      });
+      if (res.ok) {
+        toast.success(res.message);
+        // Reset and close
+        setForgotPasswordOpen(false);
+        setForgotStep(1);
+        setForgotEmail("");
+        setForgotOtp("");
+        setForgotNewPassword("");
+        setForgotConfirmPassword("");
+        setDevOtpText(null);
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to reset password.");
+    } finally {
+      setForgotLoading(false);
     }
   };
 
@@ -1426,15 +1547,40 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({
                           <label className="caption-scale text-muted-foreground uppercase font-bold">
                             Password:
                           </label>
-                          <input
-                            type="password"
-                            required
-                            autoComplete="current-password"
-                            value={loginPassword}
-                            onChange={(e) => setLoginPassword(e.target.value)}
-                            placeholder="Enter Your Password"
-                            className="w-full bg-background border border-border rounded-xl p-3 text-foreground/90 focus:border-border outline-none placeholder-foreground-subtle text-xs animate-in"
-                          />
+                          <div className="relative">
+                            <input
+                              type={showLoginPassword ? "text" : "password"}
+                              required
+                              autoComplete="current-password"
+                              value={loginPassword}
+                              onChange={(e) => setLoginPassword(e.target.value)}
+                              placeholder="Enter Your Password"
+                              className="w-full bg-background border border-border rounded-xl p-3 pr-10 text-foreground/90 focus:border-border outline-none placeholder-foreground-subtle text-xs animate-in"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowLoginPassword((prev) => !prev)}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                            >
+                              {showLoginPassword ? (
+                                <EyeOff className="h-4 w-4" />
+                              ) : (
+                                <Eye className="h-4 w-4" />
+                              )}
+                            </button>
+                          </div>
+                        </div>
+                        <div className="flex justify-end mt-1">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setForgotStep(1);
+                              setForgotPasswordOpen(true);
+                            }}
+                            className="text-xs text-primary hover:underline font-semibold"
+                          >
+                            Forgot Password?
+                          </button>
                         </div>
 
                         <button
@@ -1543,27 +1689,53 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({
                           <label className="caption-scale text-muted-foreground uppercase font-bold">
                             Create Password:
                           </label>
-                          <input
-                            type="password"
-                            required
-                            autoComplete="new-password"
-                            value={signUpPassword}
-                            onChange={(e) => setSignUpPassword(e.target.value)}
-                            placeholder="Create password"
-                            className="w-full bg-background border border-border rounded-xl p-3 text-foreground/90 focus:border-border outline-none placeholder-foreground-subtle text-xs"
-                          />
-                          <label className="caption-scale text-muted-foreground uppercase font-bold">
+                          <div className="relative">
+                            <input
+                              type={showSignUpPassword ? "text" : "password"}
+                              required
+                              autoComplete="new-password"
+                              value={signUpPassword}
+                              onChange={(e) => setSignUpPassword(e.target.value)}
+                              placeholder="Create password"
+                              className="w-full bg-background border border-border rounded-xl p-3 pr-10 text-foreground/90 focus:border-border outline-none placeholder-foreground-subtle text-xs"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowSignUpPassword((prev) => !prev)}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                            >
+                              {showSignUpPassword ? (
+                                <EyeOff className="h-4 w-4" />
+                              ) : (
+                                <Eye className="h-4 w-4" />
+                              )}
+                            </button>
+                          </div>
+                          <label className="caption-scale text-muted-foreground uppercase font-bold mt-2 block">
                             Confirm Password:
                           </label>
-                          <input
-                            type="password"
-                            required
-                            autoComplete="new-password"
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                            placeholder="Confirm password"
-                            className="w-full bg-background border border-border rounded-xl p-3 text-foreground/90 focus:border-border outline-none placeholder-foreground-subtle text-xs"
-                          />
+                          <div className="relative">
+                            <input
+                              type={showSignUpConfirmPassword ? "text" : "password"}
+                              required
+                              autoComplete="new-password"
+                              value={confirmPassword}
+                              onChange={(e) => setConfirmPassword(e.target.value)}
+                              placeholder="Confirm password"
+                              className="w-full bg-background border border-border rounded-xl p-3 pr-10 text-foreground/90 focus:border-border outline-none placeholder-foreground-subtle text-xs"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowSignUpConfirmPassword((prev) => !prev)}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                            >
+                              {showSignUpConfirmPassword ? (
+                                <EyeOff className="h-4 w-4" />
+                              ) : (
+                                <Eye className="h-4 w-4" />
+                              )}
+                            </button>
+                          </div>
                           {signUpPassword !== confirmPassword && (
                             <p className="caption-scale text-danger mt-1">
                               Passwords do not match.
@@ -2174,18 +2346,42 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({
 
                         <div className="space-y-1.5 text-xs">
                           <label className="caption-scale text-muted-foreground uppercase font-bold">
-                            {" "}
                             Password:
                           </label>
-                          <input
-                            type="password"
-                            required
-                            autoComplete="current-password"
-                            value={collegePassword}
-                            onChange={(e) => setCollegePassword(e.target.value)}
-                            placeholder="Password"
-                            className="w-full bg-background border border-border rounded-xl p-3 text-foreground focus:border-border outline-none text-xs"
-                          />
+                          <div className="relative">
+                            <input
+                              type={showCollegeLoginPassword ? "text" : "password"}
+                              required
+                              autoComplete="current-password"
+                              value={collegePassword}
+                              onChange={(e) => setCollegePassword(e.target.value)}
+                              placeholder="Password"
+                              className="w-full bg-background border border-border rounded-xl p-3 pr-10 text-foreground focus:border-border outline-none text-xs"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowCollegeLoginPassword((prev) => !prev)}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                            >
+                              {showCollegeLoginPassword ? (
+                                <EyeOff className="h-4 w-4" />
+                              ) : (
+                                <Eye className="h-4 w-4" />
+                              )}
+                            </button>
+                          </div>
+                        </div>
+                        <div className="flex justify-end mt-1">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setForgotStep(1);
+                              setForgotPasswordOpen(true);
+                            }}
+                            className="text-xs text-primary hover:underline font-semibold"
+                          >
+                            Forgot Password?
+                          </button>
                         </div>
 
                         <button
@@ -2414,27 +2610,53 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({
                           <label className="text-xs font-medium text-muted-foreground">
                             Create Password
                           </label>
-                          <input
-                            type="password"
-                            required
-                            autoComplete="new-password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Create Password"
-                            className="w-full rounded-xl border border-border bg-background p-3 text-sm focus:outline-none"
-                          />
+                          <div className="relative">
+                            <input
+                              type={showCollegeSignUpPassword ? "text" : "password"}
+                              required
+                              autoComplete="new-password"
+                              value={password}
+                              onChange={(e) => setPassword(e.target.value)}
+                              placeholder="Create Password"
+                              className="w-full rounded-xl border border-border bg-background p-3 pr-10 text-sm focus:outline-none"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowCollegeSignUpPassword((prev) => !prev)}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                            >
+                              {showCollegeSignUpPassword ? (
+                                <EyeOff className="h-4 w-4" />
+                              ) : (
+                                <Eye className="h-4 w-4" />
+                              )}
+                            </button>
+                          </div>
                           <label className="text-xs font-medium text-muted-foreground">
                             Confirm Password
                           </label>
-                          <input
-                            type="password"
-                            required
-                            autoComplete="new-password"
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                            placeholder="Confirm Password"
-                            className="w-full rounded-xl border border-border bg-background p-3 text-sm focus:outline-none"
-                          />
+                          <div className="relative">
+                            <input
+                              type={showCollegeSignUpConfirmPassword ? "text" : "password"}
+                              required
+                              autoComplete="new-password"
+                              value={confirmPassword}
+                              onChange={(e) => setConfirmPassword(e.target.value)}
+                              placeholder="Confirm Password"
+                              className="w-full rounded-xl border border-border bg-background p-3 pr-10 text-sm focus:outline-none"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowCollegeSignUpConfirmPassword((prev) => !prev)}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                            >
+                              {showCollegeSignUpConfirmPassword ? (
+                                <EyeOff className="h-4 w-4" />
+                              ) : (
+                                <Eye className="h-4 w-4" />
+                              )}
+                            </button>
+                          </div>
                         </div>
                         <label className="flex items-start gap-2 text-xs text-muted-foreground">
                           <input type="checkbox" required />
@@ -2674,6 +2896,203 @@ export const NeevLanding: React.FC<NeevLandingProps> = ({
             </div>
           </div>
         )}
+
+        {/* Forgot Password Dialog */}
+        <Dialog
+          open={forgotPasswordOpen}
+          onOpenChange={(open) => {
+            setForgotPasswordOpen(open);
+            if (!open) {
+              setForgotStep(1);
+              setForgotEmail("");
+              setForgotOtp("");
+              setForgotNewPassword("");
+              setForgotConfirmPassword("");
+              setDevOtpText(null);
+            }
+          }}
+        >
+          <DialogContent className="sm:max-w-[420px] bg-background border border-border text-foreground shadow-2xl p-6 rounded-2xl">
+            <DialogHeader className="space-y-1">
+              <DialogTitle className="text-xl font-bold tracking-tight">
+                {forgotStep === 1 && "Reset Password"}
+                {forgotStep === 2 && "Verify OTP"}
+                {forgotStep === 3 && "Create New Password"}
+              </DialogTitle>
+              <DialogDescription className="text-xs text-muted-foreground leading-relaxed">
+                {forgotStep === 1 &&
+                  "Enter your registered email address to receive a one-time verification passcode."}
+                {forgotStep === 2 &&
+                  `We have sent a 6-digit verification OTP to ${forgotEmail}. Please enter it to proceed.`}
+                {forgotStep === 3 &&
+                  "Securely set a new password for your account. Make sure it is at least 8 characters long."}
+              </DialogDescription>
+            </DialogHeader>
+
+            {forgotStep === 1 && (
+              <form onSubmit={handleSendResetOtp} className="space-y-4 pt-2">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block">
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    placeholder="name@example.com"
+                    value={forgotEmail}
+                    onChange={(e) => setForgotEmail(e.target.value)}
+                    className="w-full bg-surface border border-border focus:border-primary rounded-xl p-3 text-xs text-foreground outline-none transition"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={forgotLoading}
+                  className="w-full py-3 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl font-semibold tracking-wide transition flex items-center justify-center gap-2"
+                >
+                  {forgotLoading && (
+                    <div className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                  )}
+                  {forgotLoading ? "Sending Code..." : "Send Verification Code"}
+                </button>
+              </form>
+            )}
+
+            {forgotStep === 2 && (
+              <form onSubmit={handleVerifyResetOtp} className="space-y-4 pt-2">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block">
+                    Verification OTP
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    maxLength={6}
+                    placeholder="Enter 6-digit code"
+                    value={forgotOtp}
+                    onChange={(e) => setForgotOtp(e.target.value)}
+                    className="w-full bg-surface border border-border focus:border-primary rounded-xl p-3 text-xs text-foreground outline-none tracking-widest text-center font-mono text-lg transition"
+                  />
+                  {devOtpText && (
+                    <div className="p-3 bg-primary/10 border border-primary/20 rounded-lg text-xs text-primary mt-2 flex items-center justify-between">
+                      <span>
+                        Development OTP: <strong className="font-mono text-sm">{devOtpText}</strong>
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setForgotOtp(devOtpText);
+                          toast.success("OTP filled from environment!");
+                        }}
+                        className="text-xs underline hover:text-primary-hover font-semibold"
+                      >
+                        Auto-fill
+                      </button>
+                    </div>
+                  )}
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setForgotStep(1)}
+                    className="w-1/3 py-3 border border-border text-foreground hover:bg-surface rounded-xl font-semibold tracking-wide transition"
+                  >
+                    Back
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={forgotLoading}
+                    className="flex-1 py-3 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl font-semibold tracking-wide transition flex items-center justify-center gap-2"
+                  >
+                    {forgotLoading && (
+                      <div className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                    )}
+                    {forgotLoading ? "Verifying..." : "Verify Code"}
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {forgotStep === 3 && (
+              <form onSubmit={handleResetPassword} className="space-y-4 pt-2">
+                <div className="space-y-3">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block">
+                      New Password
+                    </label>
+                    <div className="relative">
+                      <input
+                        type={showForgotNewPassword ? "text" : "password"}
+                        required
+                        placeholder="••••••••"
+                        value={forgotNewPassword}
+                        onChange={(e) => setForgotNewPassword(e.target.value)}
+                        className="w-full bg-surface border border-border focus:border-primary rounded-xl p-3 pr-10 text-xs text-foreground outline-none transition"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowForgotNewPassword(!showForgotNewPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      >
+                        {showForgotNewPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block">
+                      Confirm New Password
+                    </label>
+                    <div className="relative">
+                      <input
+                        type={showForgotConfirmPassword ? "text" : "password"}
+                        required
+                        placeholder="••••••••"
+                        value={forgotConfirmPassword}
+                        onChange={(e) => setForgotConfirmPassword(e.target.value)}
+                        className="w-full bg-surface border border-border focus:border-primary rounded-xl p-3 pr-10 text-xs text-foreground outline-none transition"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowForgotConfirmPassword(!showForgotConfirmPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      >
+                        {showForgotConfirmPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setForgotStep(2)}
+                    className="w-1/3 py-3 border border-border text-foreground hover:bg-surface rounded-xl font-semibold tracking-wide transition"
+                  >
+                    Back
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={forgotLoading}
+                    className="flex-1 py-3 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl font-semibold tracking-wide transition flex items-center justify-center gap-2"
+                  >
+                    {forgotLoading && (
+                      <div className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                    )}
+                    {forgotLoading ? "Resetting..." : "Reset Password"}
+                  </button>
+                </div>
+              </form>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </GoogleSignInHost>
   );

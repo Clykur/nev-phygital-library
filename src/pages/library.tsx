@@ -52,6 +52,7 @@ import {
 import { Link, useLocation } from "wouter";
 import { useStudentShell } from "@/components/layout/StudentAppShell";
 import { CheckoutFlowDialog, type CheckoutFlowItem } from "@/components/checkout-flow-dialog";
+import { BookDetailsModal } from "@/components/BookDetailsModal";
 
 import { hasBookCover } from "@/lib/book-cover-display";
 import { BookCoverImage } from "@/components/ui/book-cover-image";
@@ -79,6 +80,8 @@ export type LibraryCatalogBook = {
   refId?: string | null;
   source?: string;
   title: string;
+  author?: string | null;
+  isbn?: string | null;
   coverImageUrl?: string | null;
   hubId: string;
   status: string;
@@ -169,13 +172,28 @@ export function CatalogBookCard({
   hideBottomTitle?: boolean;
   distanceKm?: number | null;
 }) {
+  const onKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      onOpen?.();
+    }
+  };
+
   return (
     <motion.article
+      role="button"
+      tabIndex={0}
       layout={!sharpCover}
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-      className={cn(STUDENT_CARD_SURFACE, "group relative", "w-full")}
+      className={cn(
+        STUDENT_CARD_SURFACE,
+        "group relative cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        "w-full",
+      )}
+      onClick={onOpen}
+      onKeyDown={onKeyDown}
     >
       <div className={cn("relative w-full overflow-hidden bg-shimmer", "aspect-[2/3]")}>
         {!isSample && (pipelineListingStatus || shelfStatus) ? (
@@ -258,7 +276,18 @@ export function CatalogBookCard({
                 </dd>
               </div>
             </dl>
-            <div className="pt-1">{action}</div>
+            <div
+              className="pt-1"
+              onClick={(e) => e.stopPropagation()}
+              onMouseDown={(e) => e.stopPropagation()}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.stopPropagation();
+                }
+              }}
+            >
+              {action}
+            </div>
           </div>
         </div>
       </div>
@@ -452,6 +481,8 @@ export default function LibraryPage() {
     item: CheckoutFlowItem;
     initialMode?: "borrow" | "buy";
   } | null>(null);
+  const [selectedBookId, setSelectedBookId] = useState<string | null>(null);
+  const [detailsModalOpen, setDetailsModalOpen] = useState(false);
 
   const hubsQ = useQuery({
     queryKey: ["catalog", "hubs"],
@@ -492,13 +523,33 @@ export default function LibraryPage() {
 
   const rowsAll = booksQ.data?.books ?? [];
   const rowsOrdered = useMemo(() => {
-    return [...rowsAll].sort((a, b) => {
+    const sorted = [...rowsAll].sort((a, b) => {
       const d = hubStatusRank(a.status) - hubStatusRank(b.status);
       if (d !== 0) return d;
       const ta = a.createdAt ? new Date(a.createdAt).getTime() : 0;
       const tb = b.createdAt ? new Date(b.createdAt).getTime() : 0;
       return tb - ta;
     });
+
+    const result: typeof rowsAll = [];
+    const groupedKeys = new Set<string>();
+
+    for (const b of sorted) {
+      const titleKey = b.title.trim().toLowerCase();
+      const authorKey = (b.author || "").trim().toLowerCase();
+      const isbnKey = (b.isbn || "").trim().toLowerCase();
+      const key = `${b.hubId}:${titleKey}:${authorKey}:${isbnKey}`;
+
+      if (b.status === "available") {
+        if (!groupedKeys.has(key)) {
+          groupedKeys.add(key);
+          result.push(b);
+        }
+      } else {
+        result.push(b);
+      }
+    }
+    return result;
   }, [rowsAll]);
 
   const [catalogPage, setCatalogPage] = useState(1);
@@ -697,6 +748,10 @@ export default function LibraryPage() {
                         isSample={false}
                         shelfStatus={b.status}
                         inventoryStats={b.inventoryStats}
+                        onOpen={() => {
+                          setSelectedBookId(b.id);
+                          setDetailsModalOpen(true);
+                        }}
                         action={
                           <>
                             {!user && (
@@ -823,6 +878,12 @@ export default function LibraryPage() {
           deskAcquireHubs={deskAcquireHubs ?? undefined}
         />
       ) : null}
+
+      <BookDetailsModal
+        bookId={selectedBookId}
+        open={detailsModalOpen}
+        onOpenChange={setDetailsModalOpen}
+      />
     </div>
   );
 }

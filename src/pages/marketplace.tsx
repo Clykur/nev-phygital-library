@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useStudentShell } from "@/components/layout/StudentAppShell";
+import { BookDetailsModal } from "@/components/BookDetailsModal";
 import { useAuth } from "@/context/auth-context";
 import { CATALOG_PAGE_SIZE, hubStatusRank, p2pShelfStatusRank } from "@/lib/catalog-sort";
 import { hubKindLabel } from "@/lib/hub-display";
@@ -48,9 +49,11 @@ import {
   BookOpen,
   ImagePlus,
   Loader2,
+  LogIn,
   MapPin,
   RefreshCw,
   Search,
+  X,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation } from "wouter";
@@ -315,6 +318,9 @@ export default function Marketplace(props?: MarketplaceProps) {
   const [sourceFilter, setSourceFilter] = useState<"all" | "hub" | "peers">("all");
   const [soldToFilter, setSoldToFilter] = useState<"all" | "peer" | "hub">("all");
   const [selected, setSelected] = useState<P2pListing | null>(null);
+  const [selectedBookId, setSelectedBookId] = useState<string | null>(null);
+  const [detailsModalOpen, setDetailsModalOpen] = useState(false);
+  const [signInDialogOpen, setSignInDialogOpen] = useState(false);
   const [listOpen, setListOpen] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [newPrice, setNewPrice] = useState("499");
@@ -517,7 +523,26 @@ export default function Marketplace(props?: MarketplaceProps) {
       const own = new Set(user.hubStaffHubIds);
       list = list.filter((b) => b.hubId != null && !own.has(b.hubId));
     }
-    return list;
+
+    const result: typeof list = [];
+    const groupedKeys = new Set<string>();
+
+    for (const b of list) {
+      const titleKey = b.title.trim().toLowerCase();
+      const authorKey = (b.author || "").trim().toLowerCase();
+      const isbnKey = (b.isbn || "").trim().toLowerCase();
+      const key = `${b.hubId}:${titleKey}:${authorKey}:${isbnKey}`;
+
+      if (b.status === "available") {
+        if (!groupedKeys.has(key)) {
+          groupedKeys.add(key);
+          result.push(b);
+        }
+      } else {
+        result.push(b);
+      }
+    }
+    return result;
   }, [hubBooksQ.data?.books, hubDesk, user?.hubStaffHubIds]);
 
   const peerShelfOrdered = useMemo(() => {
@@ -1727,6 +1752,14 @@ export default function Marketplace(props?: MarketplaceProps) {
                             sharpCover
                             hideBottomTitle
                             distanceKm={b.distanceKm}
+                            onOpen={() => {
+                              if (!token || !user) {
+                                setSignInDialogOpen(true);
+                                return;
+                              }
+                              setSelectedBookId(b.id);
+                              setDetailsModalOpen(true);
+                            }}
                             action={
                               <>
                                 {!user && (
@@ -2476,6 +2509,49 @@ export default function Marketplace(props?: MarketplaceProps) {
             deskAcquireHubs={deskAcquireHubs ?? undefined}
           />
         ) : null}
+
+        <BookDetailsModal
+          bookId={selectedBookId}
+          open={detailsModalOpen}
+          onOpenChange={setDetailsModalOpen}
+        />
+
+        {/* Sign In Required Dialog — shown when unauthenticated user clicks a book */}
+        <Dialog open={signInDialogOpen} onOpenChange={setSignInDialogOpen}>
+          <DialogContent className="max-w-sm bg-background border border-border rounded-2xl p-6 text-center space-y-5 shadow-2xl">
+            <DialogHeader>
+              <div className="mx-auto w-14 h-14 rounded-full flex items-center justify-center mb-2">
+                <LogIn className="w-7 h-7 text-primary" />
+              </div>
+              <DialogTitle className="text-lg font-bold text-foreground">
+                Sign In Required
+              </DialogTitle>
+              <DialogDescription className="text-sm text-muted-foreground leading-relaxed">
+                Please sign in to view complete book details and access marketplace features.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex flex-col gap-3">
+              <Button
+                className="w-full h-11 rounded-xl font-semibold bg-primary text-primary-foreground hover:bg-primary/90"
+                onClick={() => {
+                  setSignInDialogOpen(false);
+                  window.location.href = "/?segment=students&auth=login#auth-section";
+                }}
+              >
+                <LogIn className="w-4 h-4 mr-2" />
+                Sign In
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full h-11 rounded-xl font-semibold"
+                onClick={() => setSignInDialogOpen(false)}
+              >
+                <X className="w-4 h-4 mr-2" />
+                Cancel
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </>
   );

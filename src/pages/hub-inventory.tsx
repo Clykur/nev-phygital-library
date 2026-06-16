@@ -40,6 +40,7 @@ import { Check, ChevronsUpDown, ImagePlus, Loader2, Plus, Shield } from "lucide-
 
 import { Link } from "wouter";
 import { CatalogBookCard, addedLabel, catalogRefLabel } from "@/pages/library";
+import { BookDetailsModal } from "@/components/BookDetailsModal";
 
 type Hub = { id: string; name: string; kind?: string };
 
@@ -47,6 +48,8 @@ type HubBookRow = {
   id: string;
   refId?: string | null;
   title: string;
+  author?: string | null;
+  isbn?: string | null;
   hubId: string;
   coverImageUrl?: string | null;
   status: string;
@@ -195,12 +198,28 @@ export default function HubInventoryPage() {
 
   const [addOpen, setAddOpen] = useState(false);
   const [addTitle, setAddTitle] = useState("");
+  const [addAuthor, setAddAuthor] = useState("");
+  const [addCategory, setAddCategory] = useState("");
+  const [addDescription, setAddDescription] = useState("");
+  const [addIsbn, setAddIsbn] = useState("");
+  const [addPublisher, setAddPublisher] = useState("");
+  const [addPublicationDate, setAddPublicationDate] = useState("");
+  const [addStatus, setAddStatus] = useState("available");
+  const [addCondition, setAddCondition] = useState("good");
+  const [addEdition, setAddEdition] = useState("");
+  const [addLanguage, setAddLanguage] = useState("");
+  const [addNumberOfPages, setAddNumberOfPages] = useState("");
+  const [addShelfNumber, setAddShelfNumber] = useState("");
+  const [addNumberOfCopies, setAddNumberOfCopies] = useState("1");
+  const [addTags, setAddTags] = useState("");
   const [addBuy, setAddBuy] = useState("399");
   const [addBorrow, setAddBorrow] = useState("49");
   const [addCoverFile, setAddCoverFile] = useState<File | null>(null);
   const [addCoverPreview, setAddCoverPreview] = useState<string | null>(null);
   const [addTargetHubId, setAddTargetHubId] = useState<string>("");
   const [addHubPickerOpen, setAddHubPickerOpen] = useState(false);
+  const [selectedBookId, setSelectedBookId] = useState<string | null>(null);
+  const [detailsModalOpen, setDetailsModalOpen] = useState(false);
 
   const addBuyParsed = Number.parseInt(addBuy, 10);
   const addBorrowParsed = Number.parseInt(addBorrow, 10);
@@ -354,7 +373,11 @@ export default function HubInventoryPage() {
   const addShelfCopy = useMutation({
     mutationFn: async () => {
       if (!addTitle.trim()) throw new Error("Enter a title.");
+      if (!addAuthor.trim()) throw new Error("Enter an author.");
+      if (!addCategory.trim()) throw new Error("Enter a category.");
+      if (!addDescription.trim()) throw new Error("Enter a description.");
       if (!addTargetHubId) throw new Error("Pick a hub.");
+
       let coverImageUrl: string | undefined;
       if (addCoverFile) {
         const fd = new FormData();
@@ -380,8 +403,24 @@ export default function HubInventoryPage() {
         body: JSON.stringify({
           hubId: addTargetHubId,
           title: addTitle.trim(),
+          author: addAuthor.trim(),
+          category: addCategory.trim(),
+          description: addDescription.trim(),
+          isbn: addIsbn.trim() || undefined,
+          publisher: addPublisher.trim() || undefined,
+          publicationDate: addPublicationDate.trim() || undefined,
           buyPrice: Number.isFinite(buyPrice) ? Math.max(0, buyPrice) : 0,
           borrowPrice: Number.isFinite(borrowPrice) ? Math.max(0, borrowPrice) : 0,
+          status: addStatus,
+          condition: addCondition,
+          edition: addEdition.trim() || undefined,
+          language: addLanguage.trim() || undefined,
+          numberOfPages: addNumberOfPages.trim()
+            ? Number.parseInt(addNumberOfPages, 10)
+            : undefined,
+          shelfNumber: addShelfNumber.trim() || undefined,
+          numberOfCopies: addNumberOfCopies.trim() ? Number.parseInt(addNumberOfCopies, 10) : 1,
+          tags: addTags.trim() || undefined,
           ...(coverImageUrl ? { coverImageUrl } : {}),
         }),
       });
@@ -390,6 +429,20 @@ export default function HubInventoryPage() {
       toast.success("Shelf copy added.");
       setAddOpen(false);
       setAddTitle("");
+      setAddAuthor("");
+      setAddCategory("");
+      setAddDescription("");
+      setAddIsbn("");
+      setAddPublisher("");
+      setAddPublicationDate("");
+      setAddStatus("available");
+      setAddCondition("good");
+      setAddEdition("");
+      setAddLanguage("");
+      setAddNumberOfPages("");
+      setAddShelfNumber("");
+      setAddNumberOfCopies("1");
+      setAddTags("");
       setAddCoverFile(null);
       setAddCoverPreview((prev) => {
         if (prev) URL.revokeObjectURL(prev);
@@ -541,7 +594,28 @@ export default function HubInventoryPage() {
 
   const total = booksQ.data?.total ?? 0;
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
-  const rows = booksQ.data?.books ?? [];
+  const rawRows = booksQ.data?.books ?? [];
+  const rows = useMemo(() => {
+    const result: HubBookRow[] = [];
+    const groupedKeys = new Set<string>();
+
+    for (const b of rawRows) {
+      const titleKey = b.title.trim().toLowerCase();
+      const authorKey = (b.author || "").trim().toLowerCase();
+      const isbnKey = (b.isbn || "").trim().toLowerCase();
+      const key = `${b.hubId}:${titleKey}:${authorKey}:${isbnKey}`;
+
+      if (b.status === "available") {
+        if (!groupedKeys.has(key)) {
+          groupedKeys.add(key);
+          result.push(b);
+        }
+      } else {
+        result.push(b);
+      }
+    }
+    return result;
+  }, [rawRows]);
 
   const selectTriggerClass = "h-10 w-full text-primary rounded-xl border-border bg-background";
   const inputClass = "h-10 w-full rounded-xl border-border bg-background text-sm";
@@ -562,6 +636,20 @@ export default function HubInventoryPage() {
               className="h-10 shrink-0 gap-1.5 self-start rounded-md sm:self-auto"
               onClick={() => {
                 setAddTitle("");
+                setAddAuthor("");
+                setAddCategory("");
+                setAddDescription("");
+                setAddIsbn("");
+                setAddPublisher("");
+                setAddPublicationDate("");
+                setAddStatus("available");
+                setAddCondition("good");
+                setAddEdition("");
+                setAddLanguage("");
+                setAddNumberOfPages("");
+                setAddShelfNumber("");
+                setAddNumberOfCopies("1");
+                setAddTags("");
                 setAddBuy("399");
                 setAddBorrow("49");
                 setAddCoverFile(null);
@@ -816,6 +904,10 @@ export default function HubInventoryPage() {
                         fullIdForTitle={b.id}
                         isSample={false}
                         shelfStatus={b.status}
+                        onOpen={() => {
+                          setSelectedBookId(b.id);
+                          setDetailsModalOpen(true);
+                        }}
                         action={
                           <div className="mt-3 w-full space-y-2 text-left body-scale font-normal text-foreground md:text-on-media-muted">
                             {inInterHubTransfer && b.targetHubName ? (
@@ -1018,22 +1110,22 @@ export default function HubInventoryPage() {
           }
         }}
       >
-        <DialogContent>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl border border-border bg-background p-6 sm:p-8 shadow-2xl">
           <DialogHeader>
-            <DialogTitle className="h4-scale font-semibold text-foreground">
-              New shelf copy
+            <DialogTitle className="h4-scale font-serif font-bold text-foreground">
+              New Shelf Copy Registration
             </DialogTitle>
             <DialogDescription className="body-scale text-foreground-muted">
-              Register one hub-owned copy on the shelf. Set a{" "}
-              <strong className="font-semibold text-foreground">buy</strong> price and a{" "}
-              <strong className="font-semibold text-foreground">borrow</strong> fee (whole credits;
-              borrow may be 0 credits). Book photo is optional same as student listings.
+              Register physical library inventory. Enter complete book metadata, physical copy
+              attributes, and acquisition prices.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 pt-2">
+          <div className="space-y-6 pt-2">
             {user && user.hubStaffHubIds.length > 0 ? (
               <div className="space-y-2">
-                <Label htmlFor="add-shelf-hub-trigger">Hub</Label>
+                <Label htmlFor="add-shelf-hub-trigger" className="font-semibold text-foreground">
+                  Hub / Shelf Location
+                </Label>
                 <Popover open={addHubPickerOpen} onOpenChange={setAddHubPickerOpen} modal={false}>
                   <PopoverTrigger asChild>
                     <Button
@@ -1043,7 +1135,7 @@ export default function HubInventoryPage() {
                       role="combobox"
                       aria-expanded={addHubPickerOpen}
                       disabled={!addDialogHubs.length && !hubsQ.isLoading}
-                      className="h-10 w-full justify-between rounded-md font-normal"
+                      className="h-10 w-full justify-between rounded-xl font-normal border-border bg-background"
                     >
                       <span className="truncate text-left">
                         {hubsQ.isLoading
@@ -1098,53 +1190,123 @@ export default function HubInventoryPage() {
                 </Popover>
               </div>
             ) : null}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+              {/* Left Column: Book Details */}
+              <div className="space-y-4">
+                <h3 className="text-sm font-semibold tracking-wider text-muted-foreground uppercase border-b border-border pb-1.5">
+                  Book Information
+                </h3>
+                <div className="space-y-2">
+                  <Label htmlFor="add-book-title">Book Title</Label>
+                  <Input
+                    id="add-book-title"
+                    placeholder="e.g. Organic Chemistry"
+                    value={addTitle}
+                    onChange={(e) => setAddTitle(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="add-book-author">Author</Label>
+                  <Input
+                    id="add-book-author"
+                    placeholder="e.g. Jonathan Clayden"
+                    value={addAuthor}
+                    onChange={(e) => setAddAuthor(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="add-book-category">Category / Genre</Label>
+                  <Input
+                    id="add-book-category"
+                    placeholder="e.g. Science / Chemistry"
+                    value={addCategory}
+                    onChange={(e) => setAddCategory(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="add-book-isbn">ISBN</Label>
+                  <Input
+                    id="add-book-isbn"
+                    placeholder="e.g. 9780199270293"
+                    value={addIsbn}
+                    onChange={(e) => setAddIsbn(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              {/* Right Column: Physical & Inventory Info */}
+              <div className="space-y-4">
+                <h3 className="text-sm font-semibold tracking-wider text-muted-foreground uppercase border-b border-border pb-1.5">
+                  Copy & Pricing Details
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="add-buy">Buy Price (Credits)</Label>
+                    <Input
+                      id="add-buy"
+                      inputMode="numeric"
+                      min={0}
+                      placeholder="e.g. 399"
+                      value={addBuy}
+                      onChange={(e) => setAddBuy(e.target.value.replace(/[^\d]/g, ""))}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="add-borrow">Borrow Fee (Credits)</Label>
+                    <Input
+                      id="add-borrow"
+                      inputMode="numeric"
+                      min={0}
+                      placeholder="e.g. 49"
+                      value={addBorrow}
+                      onChange={(e) => setAddBorrow(e.target.value.replace(/[^\d]/g, ""))}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="add-copies-count">Number of Copies (optional)</Label>
+                    <Input
+                      id="add-copies-count"
+                      inputMode="numeric"
+                      min={1}
+                      placeholder="e.g. 1"
+                      value={addNumberOfCopies}
+                      onChange={(e) => setAddNumberOfCopies(e.target.value.replace(/[^\d]/g, ""))}
+                    />
+                  </div>
+
+                  <div className="col-span-1 space-y-2">
+                    <Label htmlFor="add-edition">Edition (optional)</Label>
+                    <Input
+                      id="add-edition"
+                      placeholder="e.g. 2nd"
+                      value={addEdition}
+                      onChange={(e) => setAddEdition(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div className="space-y-2">
-              <Label htmlFor="add-book-title">Title</Label>
-              <Input
-                id="add-book-title"
-                placeholder="e.g. Chemistry"
-                value={addTitle}
-                onChange={(e) => setAddTitle(e.target.value)}
+              <Label htmlFor="add-book-description">Description / Summary</Label>
+              <textarea
+                id="add-book-description"
+                placeholder="e.g. A comprehensive guide to organic chemistry..."
+                rows={3}
+                className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                value={addDescription}
+                onChange={(e) => setAddDescription(e.target.value)}
               />
             </div>
+
             <div className="space-y-2">
-              <Label htmlFor="add-buy">Buy price (Credits)</Label>
-              <Input
-                id="add-buy"
-                inputMode="numeric"
-                min={0}
-                placeholder="e.g. 399"
-                className="tabular-nums"
-                value={addBuy}
-                onChange={(e) => setAddBuy(e.target.value.replace(/[^\d]/g, ""))}
-              />
-              {!addBuyValid && addBuy.trim() !== "" ? (
-                <p className="caption-scale font-medium text-destructive">
-                  Enter a whole number 0 or more.
-                </p>
-              ) : null}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="add-borrow">Borrow fee (Credits)</Label>
-              <Input
-                id="add-borrow"
-                inputMode="numeric"
-                min={0}
-                placeholder="e.g. 49 or 0"
-                className="tabular-nums"
-                value={addBorrow}
-                onChange={(e) => setAddBorrow(e.target.value.replace(/[^\d]/g, ""))}
-              />
-              {!addBorrowValid && addBorrow.trim() !== "" ? (
-                <p className="caption-scale font-medium text-destructive">
-                  Enter a whole number 0 or more.
-                </p>
-              ) : null}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="add-cover" className="flex items-center gap-2">
+              <Label htmlFor="add-cover" className="flex items-center gap-2 font-semibold">
                 <ImagePlus className="h-4 w-4" aria-hidden />
-                Book photo (optional)
+                Book Cover Photo (optional)
               </Label>
               <Input
                 id="add-cover"
@@ -1174,10 +1336,14 @@ export default function HubInventoryPage() {
                 )}
               />
             </div>
+
             <Button
-              className="w-full rounded-full"
+              className="w-full rounded-full py-6 text-sm font-semibold"
               disabled={
                 !addTitle.trim() ||
+                !addAuthor.trim() ||
+                !addCategory.trim() ||
+                !addDescription.trim() ||
                 !addTargetHubId ||
                 !addBuyValid ||
                 !addBorrowValid ||
@@ -1185,11 +1351,16 @@ export default function HubInventoryPage() {
               }
               onClick={() => void addShelfCopy.mutate()}
             >
-              {addShelfCopy.isPending ? "Adding…" : "Add shelf copy"}
+              {addShelfCopy.isPending ? "Adding shelf copies…" : "Add shelf copy"}
             </Button>
           </div>
         </DialogContent>
       </Dialog>
+      <BookDetailsModal
+        bookId={selectedBookId}
+        open={detailsModalOpen}
+        onOpenChange={setDetailsModalOpen}
+      />
     </div>
   );
 }
